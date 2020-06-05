@@ -1,0 +1,8 @@
+venv
+.idea
+client-portal.iml
+client_portal/local
+.env-reporting
+data
+docker/app.mk
+*.iml
