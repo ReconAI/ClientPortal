@@ -25,7 +25,7 @@ class User(models.Model):
         db_table = 'Users'
     id = models.BigAutoField(primary_key=True)
     time_created = models.DateTimeField(null=True, blank=True)
-    organization = models.ForeignKey(Organization, models.PROTECT, db_column='organizationId')
+    organization = models.ForeignKey(Organization, models.DO_NOTHING, db_column='organizationId')
     firstname = models.CharField(null=True, blank=True, max_length=255)
     lastname = models.CharField(null=True, blank=True, max_length=255)
     address = models.CharField(null=True, blank=True, max_length=255)
@@ -44,7 +44,7 @@ class License(models.Model):
     name = models.CharField(null=True, blank=True, max_length=255)
     type = models.IntegerField(null=True, blank=True)
     price = models.CharField(null=True, blank=True, max_length=255)
-    user = models.ForeignKey(User, models.PROTECT, db_column="userId")
+    user = models.ForeignKey(User, models.DO_NOTHING, db_column="userId")
     next_payment = models.DateTimeField(null=True, blank=True, db_column='nextPayment')
     purchase_date = models.DateTimeField(null=True, blank=True, db_column='purchaseDate')
     termination_date = models.DateTimeField(null=True, blank=True, db_column='terminationDate')
@@ -54,7 +54,7 @@ class Ecosystem(models.Model):
     class Meta:
         db_table = 'Ecosystems'
     id = models.BigAutoField(primary_key=True)
-    organization = models.ForeignKey(Organization, models.PROTECT, db_column="organizationId")
+    organization = models.ForeignKey(Organization, models.DO_NOTHING, db_column="organizationId")
 
 
 class FeatureModel(models.Model):
@@ -75,9 +75,9 @@ class Project(models.Model):
     id = models.BigAutoField(primary_key=True)
     name = models.CharField(null=True, blank=True, max_length=255)
     decription = models.CharField(null=True, blank=True, max_length=255)
-    organization = models.ForeignKey(Organization, models.PROTECT, db_column="organizationId")
-    ecosystem = models.ForeignKey(Ecosystem, models.PROTECT, db_column="ecosystemId")
-    featuremodel = models.ForeignKey(FeatureModel, models.PROTECT, db_column="featuremodelId")
+    organization = models.ForeignKey(Organization, models.DO_NOTHING, db_column="organizationId")
+    ecosystem = models.ForeignKey(Ecosystem, models.DO_NOTHING, db_column="ecosystemId")
+    featuremodel = models.ForeignKey(FeatureModel, models.DO_NOTHING, db_column="featuremodelId")
     status = models.CharField(null=True, blank=True, max_length=255)
     settings = JSONField(null=True, blank=True, db_column='settingsJSON')
 
@@ -94,15 +94,15 @@ class DockerModel(models.Model):
 class DockerModelFeatureModel(models.Model):
     class Meta:
         db_table = 'DockerModelFeatureModel'
-    docker_model = models.ForeignKey(DockerModel, models.PROTECT, db_column='dockerModelId')
-    feature_model = models.ForeignKey(FeatureModel, models.PROTECT, db_column='featureModelId')
+    docker_model = models.ForeignKey(DockerModel, models.DO_NOTHING, db_column='dockerModelId')
+    feature_model = models.ForeignKey(FeatureModel, models.DO_NOTHING, db_column='featureModelId')
 
 
 class DockerInstance(models.Model):
     class Meta:
         db_table = 'DockerInstances'
     id = models.BigAutoField(primary_key=True)
-    docker_model = models.ForeignKey(DockerModel, models.PROTECT, db_column="dockerModelId")
+    docker_model = models.ForeignKey(DockerModel, models.DO_NOTHING, db_column="dockerModelId")
     version = models.IntegerField(null=True, blank=True)
 
 
@@ -110,10 +110,10 @@ class EdgeNode(models.Model):
     class Meta:
         db_table = 'EdgeNodes'
     id = models.BigAutoField(primary_key=True)
-    organization = models.ForeignKey(Organization, models.PROTECT, db_column="organizationId")
+    organization = models.ForeignKey(Organization, models.DO_NOTHING, db_column="organizationId")
     feature_models = JSONField(null=True, blank=True, db_column='featureModelsJSON')
     feature_instances = JSONField(null=True, blank=True, db_column='featureInstancesJSON')
-    docker_instance = models.ForeignKey(DockerInstance, models.PROTECT, db_column="dockerInstanceId")
+    docker_instance = models.ForeignKey(DockerInstance, models.DO_NOTHING, db_column="dockerInstanceId")
     projects = models.ManyToManyField(Project, through='ProjectEdgeNode')
     ecosystems = models.ManyToManyField(Ecosystem, through='EcosystemsEdgeNode')
 
@@ -122,15 +122,15 @@ class EcosystemsEdgeNode(models.Model):
     class Meta:
         db_table = 'EcosystemsEdgeNodes'
 
-    ecosystem = models.ForeignKey(Ecosystem, models.PROTECT, db_column='ecosystemId')
-    edge_node = models.ForeignKey(EdgeNode, models.PROTECT, db_column='edgeNodeId')
+    ecosystem = models.ForeignKey(Ecosystem, models.DO_NOTHING, db_column='ecosystemId')
+    edge_node = models.ForeignKey(EdgeNode, models.DO_NOTHING, db_column='edgeNodeId')
 
 
 class ProjectEdgeNode(models.Model):
     class Meta:
         db_table = 'ProjectEdgeNodes'
-    project = models.ForeignKey(Project, models.PROTECT, db_column='projectId')
-    edge_node = models.ForeignKey(EdgeNode, models.PROTECT, db_column='edgeNodeId')
+    project = models.ForeignKey(Project, models.DO_NOTHING, db_column='projectId')
+    edge_node = models.ForeignKey(EdgeNode, models.DO_NOTHING, db_column='edgeNodeId')
 
 
 class DeviceParameter(models.Model):
@@ -170,15 +170,15 @@ class DeviceClass(models.Model):
         db_table = 'DeviceClasses'
     id = models.BigAutoField(primary_key=True)
     docker_base = models.CharField(null=True, blank=True, max_length=255, db_column='dockerBase')
-    device_parameter = models.ForeignKey(DeviceParameter, models.PROTECT, db_column="deviceParameterId")
+    device_parameter = models.ForeignKey(DeviceParameter, models.DO_NOTHING, db_column="deviceParameterId")
     docker_models = models.ManyToManyField(DockerModel, through='DockerModelDeviceClass')
 
 
 class DockerModelDeviceClass(models.Model):
     class Meta:
         db_table = 'DockerModelDeviceClasses'
-    docker_model = models.ForeignKey(DockerModel, models.PROTECT, db_column='dockerModelId')
-    device_class = models.ForeignKey(DeviceClass, models.PROTECT, db_column='deviceClassId')
+    docker_model = models.ForeignKey(DockerModel, models.DO_NOTHING, db_column='dockerModelId')
+    device_class = models.ForeignKey(DeviceClass, models.DO_NOTHING, db_column='deviceClassId')
     type = models.CharField(null=True, blank=True, max_length=255)
 
 
@@ -186,7 +186,7 @@ class DeviceInstance(models.Model):
     class Meta:
         db_table = 'DeviceInstances'
     id = models.BigAutoField(primary_key=True)
-    device_class = models.ForeignKey(DeviceClass, models.PROTECT, db_column="deviceClassId")
+    device_class = models.ForeignKey(DeviceClass, models.DO_NOTHING, db_column="deviceClassId")
     serial = models.IntegerField(null=True, blank=True)
     parameters = JSONField(null=True, blank=True, db_column='parametersJSON')
     edge_nodes = models.ManyToManyField(EdgeNode, through='EdgeNodeDevice')
@@ -195,8 +195,8 @@ class DeviceInstance(models.Model):
 class EdgeNodeDevice(models.Model):
     class Meta:
         db_table = 'EdgeNodeDevices'
-    edge_node = models.ForeignKey(EdgeNode, models.PROTECT, db_column='edgeNodeId')
-    device_instance = models.ForeignKey(DeviceInstance, models.PROTECT, db_column='deviceInstanceId')
+    edge_node = models.ForeignKey(EdgeNode, models.DO_NOTHING, db_column='edgeNodeId')
+    device_instance = models.ForeignKey(DeviceInstance, models.DO_NOTHING, db_column='deviceInstanceId')
     type = models.CharField(null=True, blank=True, max_length=255)
 
 
@@ -204,11 +204,11 @@ class FeatureInstance(models.Model):
     class Meta:
         db_table = 'FeatureInstances'
     id = models.BigAutoField(primary_key=True)
-    project = models.ForeignKey(Project, models.PROTECT, db_column="projectId")
-    feature_model = models.ForeignKey(FeatureModel, models.PROTECT, db_column="featureModelId")
+    project = models.ForeignKey(Project, models.DO_NOTHING, db_column="projectId")
+    feature_model = models.ForeignKey(FeatureModel, models.DO_NOTHING, db_column="featureModelId")
     high_level_fidelity = JSONField(null=True, blank=True, db_column='highLevelFidelityJSON')
     total_comp_time = models.IntegerField(null=True, blank=True, db_column='totalCompTime')
-    parent_ECU_class = models.ForeignKey(DeviceClass, models.PROTECT, db_column="parentECUclass")
+    parent_ECU_class = models.ForeignKey(DeviceClass, models.DO_NOTHING, db_column="parentECUclass")
     version = models.IntegerField(null=True, blank=True)
 
 
@@ -236,14 +236,14 @@ class AlgorithmModel(models.Model):
     name = models.CharField(null=True, blank=True, max_length=255)
     description = models.TextField(null=True, blank=True)
     preprocessor = models.CharField(null=True, blank=True, max_length=255)
-    architecture = models.ForeignKey(Architecture, models.PROTECT, db_column="architectureId")
+    architecture = models.ForeignKey(Architecture, models.DO_NOTHING, db_column="architectureId")
     postprocessor = models.CharField(null=True, blank=True, max_length=255)
     payload = models.TextField(null=True, blank=True)
     hyperparameter_structure = JSONField(null=True, blank=True, db_column='HyperparameterStructureJSON')
     validation_structure = JSONField(null=True, blank=True, db_column='ValidationStructureJSON')
     model_class = models.BooleanField(null=True, blank=True, db_column='class')
     is_trainable = models.BooleanField(null=True, blank=True, db_column='isTrainable')
-    init_weight = models.ForeignKey(Weight, models.PROTECT, db_column="initWeights")
+    init_weight = models.ForeignKey(Weight, models.DO_NOTHING, db_column="initWeights")
     version = models.IntegerField(null=True, blank=True)
     feature_models = models.ManyToManyField(FeatureModel, through='FeatureModelAlgorithm')
 
@@ -251,8 +251,8 @@ class AlgorithmModel(models.Model):
 class FeatureModelAlgorithm(models.Model):
     class Meta:
         db_table = 'FeatureModelAlgorithm'
-    feature_model = models.ForeignKey(FeatureModel, models.PROTECT, db_column='featureModelId')
-    algorithm_model = models.ForeignKey(AlgorithmModel, models.PROTECT, db_column='algorithmModelId')
+    feature_model = models.ForeignKey(FeatureModel, models.DO_NOTHING, db_column='featureModelId')
+    algorithm_model = models.ForeignKey(AlgorithmModel, models.DO_NOTHING, db_column='algorithmModelId')
 
 
 class ValidationInstruction(models.Model):
@@ -273,7 +273,7 @@ class TrainingInstruction(models.Model):
     class Meta:
         db_table = 'TrainingInstructions'
     id = models.BigAutoField(primary_key=True)
-    data_split_inst = models.ForeignKey(DataSplitInstruction, models.PROTECT, db_column="dataSplitInst")
+    data_split_inst = models.ForeignKey(DataSplitInstruction, models.DO_NOTHING, db_column="dataSplitInst")
     hyperparameters = JSONField(null=True, blank=True, db_column='hyperparametersJSON')
 
 
@@ -281,9 +281,9 @@ class AlgorithmInstance(models.Model):
     class Meta:
         db_table = 'AlgorithmInstances'
     id = models.BigAutoField(primary_key=True)
-    project = models.ForeignKey(Project, models.PROTECT, db_column="projectId")
-    algorithm_model = models.ForeignKey(AlgorithmModel, models.PROTECT, db_column="algorithmModelId")
-    weight = models.ForeignKey(Weight, models.PROTECT, db_column="weightId")
+    project = models.ForeignKey(Project, models.DO_NOTHING, db_column="projectId")
+    algorithm_model = models.ForeignKey(AlgorithmModel, models.DO_NOTHING, db_column="algorithmModelId")
+    weight = models.ForeignKey(Weight, models.DO_NOTHING, db_column="weightId")
     version = models.IntegerField(null=True, blank=True)
     status = models.CharField(null=True, blank=True, max_length=255)
     current_validation = JSONField(null=True, blank=True, db_column='currentValidationJSON')
@@ -299,23 +299,23 @@ class AlgorithmInstance(models.Model):
 class AlgorithmInstanceTrainingInst(models.Model):
     class Meta:
         db_table = 'AlgorithmInstanceTrainingInst'
-    algorithm_instance = models.ForeignKey(AlgorithmInstance, models.PROTECT, db_column='algorithmInstanceId')
-    training_instruction = models.ForeignKey(TrainingInstruction, models.PROTECT, db_column='trainingInstructionId')
+    algorithm_instance = models.ForeignKey(AlgorithmInstance, models.DO_NOTHING, db_column='algorithmInstanceId')
+    training_instruction = models.ForeignKey(TrainingInstruction, models.DO_NOTHING, db_column='trainingInstructionId')
 
 
 class FeatureInstanceAlgorithm(models.Model):
     class Meta:
         db_table = 'FeatureInstanceAlgorithm'
-    feature_instance = models.ForeignKey(FeatureInstance, models.PROTECT, db_column='featureInstanceId')
-    algorithm = models.ForeignKey(AlgorithmInstance, models.PROTECT, db_column='algorithmId')
+    feature_instance = models.ForeignKey(FeatureInstance, models.DO_NOTHING, db_column='featureInstanceId')
+    algorithm = models.ForeignKey(AlgorithmInstance, models.DO_NOTHING, db_column='algorithmId')
 
 
 class AlgorithmInstanceDeployedDevice(models.Model):
     class Meta:
         db_table = 'AlgorithmInstanceDeployedDevices'
 
-    algorithm_instance = models.ForeignKey(AlgorithmInstance, models.PROTECT, db_column='algorithmInstanceId')
-    deployed_device_instance = models.ForeignKey(DeviceInstance, models.PROTECT, db_column='deployedDeviceInstanceId')
+    algorithm_instance = models.ForeignKey(AlgorithmInstance, models.DO_NOTHING, db_column='algorithmInstanceId')
+    deployed_device_instance = models.ForeignKey(DeviceInstance, models.DO_NOTHING, db_column='deployedDeviceInstanceId')
 
 
 class ObjectModel(models.Model):
@@ -334,29 +334,29 @@ class ObjectModel(models.Model):
 class ObjectModelAlgorithmModel(models.Model):
     class Meta:
         db_table = 'ObjectModelAlgorithmModel'
-    object_model = models.ForeignKey(ObjectModel, models.PROTECT, db_column='objectModelId')
-    algorithm_model = models.ForeignKey(AlgorithmModel, models.PROTECT, db_column='algorithmModelId')
+    object_model = models.ForeignKey(ObjectModel, models.DO_NOTHING, db_column='objectModelId')
+    algorithm_model = models.ForeignKey(AlgorithmModel, models.DO_NOTHING, db_column='algorithmModelId')
 
 
 class ObjectModelFeatureModel(models.Model):
     class Meta:
         db_table = 'ObjectModelFeatureModel'
-    object_model = models.ForeignKey(ObjectModel, models.PROTECT, db_column='objectModelId')
-    feature_model = models.ForeignKey(FeatureModel, models.PROTECT, db_column='featureModelId')
+    object_model = models.ForeignKey(ObjectModel, models.DO_NOTHING, db_column='objectModelId')
+    feature_model = models.ForeignKey(FeatureModel, models.DO_NOTHING, db_column='featureModelId')
 
 
 class ObjectModelProject(models.Model):
     class Meta:
         db_table = 'ObjectModelProject'
-    object_model = models.ForeignKey(ObjectModel, models.PROTECT, db_column='objectModelId')
-    project = models.ForeignKey(Project, models.PROTECT, db_column='projectId')
+    object_model = models.ForeignKey(ObjectModel, models.DO_NOTHING, db_column='objectModelId')
+    project = models.ForeignKey(Project, models.DO_NOTHING, db_column='projectId')
 
 
 class AlgorithmInstanceObjectModel(models.Model):
     class Meta:
         db_table = 'AlgorithmInstanceObjectModel'
-    algorithm_instance = models.ForeignKey(AlgorithmInstance, models.PROTECT, db_column='algorithmInstanceId')
-    object_model = models.ForeignKey(ObjectModel, models.PROTECT, db_column='objectModelId')
+    algorithm_instance = models.ForeignKey(AlgorithmInstance, models.DO_NOTHING, db_column='algorithmInstanceId')
+    object_model = models.ForeignKey(ObjectModel, models.DO_NOTHING, db_column='objectModelId')
 
 
 class DataAcqInstruction(models.Model):
@@ -391,7 +391,7 @@ class FrameDataset(models.Model):
     VDL_is_downloaded = models.BooleanField(null=True, blank=True, db_column='VDLisDownloaded')
     VDL_address = models.CharField(null=True, blank=True, max_length=255, db_column='VDLaddress')
     VDL_timestamp_found = models.DateTimeField(null=True, blank=True, db_column='VDLtimestampFound')
-    data_acq_instruction = models.ForeignKey(DataAcqInstruction, models.PROTECT, db_column='DataAcqInstructionsId')
+    data_acq_instruction = models.ForeignKey(DataAcqInstruction, models.DO_NOTHING, db_column='DataAcqInstructionsId')
     aug_metadata = JSONField(null=True, blank=True, db_column='augMetadataJSON')
     projects = models.ManyToManyField(Project, through='FrameDatasetsProject')
 
@@ -399,16 +399,16 @@ class FrameDataset(models.Model):
 class FrameDatasetsProject(models.Model):
     class Meta:
         db_table = 'FrameDatasetsProjects'
-    frame_dataset = models.ForeignKey(FrameDataset, models.PROTECT, db_column='frameDatasetId')
-    project = models.ForeignKey(Project, models.PROTECT, db_column='projectId')
+    frame_dataset = models.ForeignKey(FrameDataset, models.DO_NOTHING, db_column='frameDatasetId')
+    project = models.ForeignKey(Project, models.DO_NOTHING, db_column='projectId')
 
 
 class AugmentationInstruction(models.Model):
     class Meta:
         db_table = 'AugmentationInstructions'
     id = models.BigAutoField(primary_key=True)
-    frame_dataset = models.ForeignKey(FrameDataset, models.PROTECT, db_column="frameDatasetId")
-    project = models.ForeignKey(Project, models.PROTECT, db_column="projectId")
+    frame_dataset = models.ForeignKey(FrameDataset, models.DO_NOTHING, db_column="frameDatasetId")
+    project = models.ForeignKey(Project, models.DO_NOTHING, db_column="projectId")
     aug_operations = JSONField(null=True, blank=True, db_column='augOperationsJSON')
 
 
@@ -416,12 +416,12 @@ class ProjectInstruction(models.Model):
     class Meta:
         db_table = 'ProjectInstructions'
     id = models.BigAutoField(primary_key=True)
-    project = models.ForeignKey(Project, models.PROTECT, db_column="projectId")
-    data_acq_inst = models.ForeignKey(DataAcqInstruction, models.PROTECT, db_column="dataAcqInstId")
-    annot_inst = models.ForeignKey(AnnotationInstruction, models.PROTECT, db_column="annotInstId")
-    augment_inst = models.ForeignKey(AugmentationInstruction, models.PROTECT, db_column="augmentInstId")
-    training_inst = models.ForeignKey(TrainingInstruction, models.PROTECT, db_column="trainingInstrId")
-    validation_inst = models.ForeignKey(ValidationInstruction, models.PROTECT, db_column="validationInstrId")
+    project = models.ForeignKey(Project, models.DO_NOTHING, db_column="projectId")
+    data_acq_inst = models.ForeignKey(DataAcqInstruction, models.DO_NOTHING, db_column="dataAcqInstId")
+    annot_inst = models.ForeignKey(AnnotationInstruction, models.DO_NOTHING, db_column="annotInstId")
+    augment_inst = models.ForeignKey(AugmentationInstruction, models.DO_NOTHING, db_column="augmentInstId")
+    training_inst = models.ForeignKey(TrainingInstruction, models.DO_NOTHING, db_column="trainingInstrId")
+    validation_inst = models.ForeignKey(ValidationInstruction, models.DO_NOTHING, db_column="validationInstrId")
     version = models.IntegerField(null=True, blank=True)
 
 
@@ -453,7 +453,7 @@ class QuestionXML(models.Model):
     question_title = models.CharField(null=True, blank=True, max_length=255, db_column='questionTitle')
     question_description = models.TextField(null=True, blank=True, db_column='questionDescription')
     question_inst_text = models.CharField(null=True, blank=True, max_length=255, db_column='questionInstText')
-    label_class = models.ForeignKey(LabelClass, models.PROTECT, db_column="labelClassId")
+    label_class = models.ForeignKey(LabelClass, models.DO_NOTHING, db_column="labelClassId")
     label_class_arg = models.CharField(null=True, blank=True, max_length=255, db_column='labelClassArg')
     label_class_conf_arg = models.CharField(null=True, blank=True, max_length=255, db_column='labelClassConfArg')
 
@@ -463,9 +463,9 @@ class OutsourcedInst(models.Model):
         db_table = 'OutsourcedInst'
     id = models.BigAutoField(primary_key=True)
     name = models.CharField(null=True, blank=True, max_length=255)
-    annot_inst = models.ForeignKey(AnnotationInstruction, models.PROTECT, db_column="annotInstId")
-    question_XML = models.ForeignKey(QuestionXML, models.PROTECT, db_column="questionXMLid")
-    frame_dataset = models.ForeignKey(FrameDataset, models.PROTECT, db_column="frameDatasetId")
+    annot_inst = models.ForeignKey(AnnotationInstruction, models.DO_NOTHING, db_column="annotInstId")
+    question_XML = models.ForeignKey(QuestionXML, models.DO_NOTHING, db_column="questionXMLid")
+    frame_dataset = models.ForeignKey(FrameDataset, models.DO_NOTHING, db_column="frameDatasetId")
     label_name = models.CharField(null=True, blank=True, max_length=255, db_column='labelName')
     label_description = models.TextField(null=True, blank=True, db_column='labelDescription')
     HIT_set_name = models.CharField(null=True, blank=True, max_length=255, db_column='HITsetName')
@@ -478,27 +478,27 @@ class LabelDataset(models.Model):
     class Meta:
         db_table = 'LabelDatasets'
     id = models.BigAutoField(primary_key=True)
-    parent_frame_dataset = models.ForeignKey(FrameDataset, models.PROTECT, db_column="parentFrameDatasetId")
+    parent_frame_dataset = models.ForeignKey(FrameDataset, models.DO_NOTHING, db_column="parentFrameDatasetId")
     label_name = models.CharField(null=True, blank=True, max_length=255, db_column='labelName')
     label_description = models.TextField(null=True, blank=True, db_column='labelDescription')
-    parent_algorithm_model = models.ForeignKey(AlgorithmModel, models.PROTECT, db_column="parentAlgorithmModelId")
-    label_class = models.ForeignKey(LabelClass, models.PROTECT, db_column="labelClassId")
+    parent_algorithm_model = models.ForeignKey(AlgorithmModel, models.DO_NOTHING, db_column="parentAlgorithmModelId")
+    label_class = models.ForeignKey(LabelClass, models.DO_NOTHING, db_column="labelClassId")
     training_instructions = models.ManyToManyField('TrainingInstruction', through='TrainingInstructionsLabelDataset')
 
 
 class TrainingInstructionsLabelDataset(models.Model):
     class Meta:
         db_table = 'TrainingInstructionsLabelDatasets'
-    training_inst = models.ForeignKey(TrainingInstruction, models.PROTECT, db_column='TrainingInstId')
-    label_dataset = models.ForeignKey(LabelDataset, models.PROTECT, db_column='labelDatasetId')
+    training_inst = models.ForeignKey(TrainingInstruction, models.DO_NOTHING, db_column='TrainingInstId')
+    label_dataset = models.ForeignKey(LabelDataset, models.DO_NOTHING, db_column='labelDatasetId')
 
 
 class HITset(models.Model):
     class Meta:
         db_table = 'HITsets'
     id = models.BigAutoField(primary_key=True)
-    dataset = models.ForeignKey(FrameDataset, models.PROTECT, db_column="frameDatasetId")
-    assoc_labelset = models.ForeignKey(LabelDataset, models.PROTECT, db_column="assocLabelsetId")
+    dataset = models.ForeignKey(FrameDataset, models.DO_NOTHING, db_column="frameDatasetId")
+    assoc_labelset = models.ForeignKey(LabelDataset, models.DO_NOTHING, db_column="assocLabelsetId")
     t_one_worker_blacklist = JSONField(null=True, blank=True, db_column='tOneWorkerBlacklistJSON')
     name = models.CharField(null=True, blank=True, max_length=255)
     description = models.TextField(null=True, blank=True)
@@ -517,7 +517,7 @@ class HITset(models.Model):
     t_two_total_cost = models.CharField(null=True, blank=True, max_length=255, db_column='tTwoTotalCost')
     total_duration = models.IntegerField(null=True, blank=True, db_column='totalDuration')
     total_cost = models.CharField(null=True, blank=True, max_length=255, db_column='totalCost')
-    question_XML = models.ForeignKey(QuestionXML, models.PROTECT, db_column="questionXMLid")
+    question_XML = models.ForeignKey(QuestionXML, models.DO_NOTHING, db_column="questionXMLid")
     t_one_metadata = JSONField(null=True, blank=True, db_column='tOneMetadataJSON')
     t_two_metadata = JSONField(null=True, blank=True, db_column='tTwoMetadataJSON')
 
@@ -548,16 +548,16 @@ class OperationClass(models.Model):
 class OperationClassesSupportedLabelClass(models.Model):
     class Meta:
         db_table = 'OperationClassesSupportedLabelClasses'
-    operation_class = models.ForeignKey(OperationClass, models.PROTECT, db_column='operationClassId')
-    label_class = models.ForeignKey(LabelClass, models.PROTECT, db_column='labelClassId')
+    operation_class = models.ForeignKey(OperationClass, models.DO_NOTHING, db_column='operationClassId')
+    label_class = models.ForeignKey(LabelClass, models.DO_NOTHING, db_column='labelClassId')
 
 
 class OperationInstance(models.Model):
     class Meta:
         db_table = 'OperationInstances'
     id = models.BigAutoField(primary_key=True)
-    frame_dataset = models.ForeignKey(FrameDataset, models.PROTECT, db_column="frameDatasetId")
-    operation_class = models.ForeignKey(OperationClass, models.PROTECT, db_column="operationClassId")
+    frame_dataset = models.ForeignKey(FrameDataset, models.DO_NOTHING, db_column="frameDatasetId")
+    operation_class = models.ForeignKey(OperationClass, models.DO_NOTHING, db_column="operationClassId")
     parameters = JSONField(null=True, blank=True, db_column='parametersJSON')
     ignore_OoB = models.BooleanField(null=True, blank=True, db_column='ignoreOoB')
     fill_type = models.CharField(null=True, blank=True, max_length=255, db_column='fillType')
@@ -576,15 +576,15 @@ class RelevantData(models.Model):
     class Meta:
         db_table = 'RelevantData'
     id = models.BigAutoField(primary_key=True)
-    device_instance = models.ForeignKey(DeviceInstance, models.PROTECT, db_column="deviceInstanceId")
-    project = models.ForeignKey(Project, models.PROTECT, db_column="projectId")
-    edge_node = models.ForeignKey(EdgeNode, models.PROTECT, db_column="edgeNodeId")
-    feature_model = models.ForeignKey(FeatureModel, models.PROTECT, db_column="featureModelId")
+    device_instance = models.ForeignKey(DeviceInstance, models.DO_NOTHING, db_column="deviceInstanceId")
+    project = models.ForeignKey(Project, models.DO_NOTHING, db_column="projectId")
+    edge_node = models.ForeignKey(EdgeNode, models.DO_NOTHING, db_column="edgeNodeId")
+    feature_model = models.ForeignKey(FeatureModel, models.DO_NOTHING, db_column="featureModelId")
     sensor_GPS_lat = models.DecimalField(null=True, blank=True, max_digits=16, decimal_places=2, db_column='sensorGpsLat')
     sensor_GPS_long = models.DecimalField(null=True, blank=True, max_digits=16, decimal_places=2, db_column='sensorGpsLong')
     rel_data_type = models.CharField(null=True, blank=True, max_length=255, db_column='relDataType')
     value = models.IntegerField(null=True, blank=True)
-    object_model = models.ForeignKey(ObjectModel, models.PROTECT, db_column="objectModelId")
+    object_model = models.ForeignKey(ObjectModel, models.DO_NOTHING, db_column="objectModelId")
     location_x = models.DecimalField(null=True, blank=True, max_digits=16, decimal_places=2, db_column='locationX')
     location_y = models.DecimalField(null=True, blank=True, max_digits=16, decimal_places=2, db_column='locationY')
     location_z = models.DecimalField(null=True, blank=True, max_digits=16, decimal_places=2, db_column='locationZ')
@@ -592,7 +592,7 @@ class RelevantData(models.Model):
     orient_phi = models.DecimalField(null=True, blank=True, max_digits=16, decimal_places=2, db_column='orientPhi')
     timestamp = models.DateTimeField(null=True, blank=True)
     is_tagged_data = models.BooleanField(null=True, blank=True, db_column='isTaggedData')
-    tagged_data = models.ForeignKey(FrameDataset, models.PROTECT, db_column="taggedDataId")
+    tagged_data = models.ForeignKey(FrameDataset, models.DO_NOTHING, db_column="taggedDataId")
     parameters = JSONField(null=True, blank=True, db_column='parametersJSON')
 
 
@@ -602,7 +602,7 @@ class Frame(models.Model):
     id = models.BigAutoField(primary_key=True)
     frame_file = models.CharField(null=True, blank=True, max_length=255, db_column='frameFile')
     timestamp = models.DateTimeField(null=True, blank=True)
-    frame_dataset = models.ForeignKey(FrameDataset, models.PROTECT, db_column="frameDatasetId")
+    frame_dataset = models.ForeignKey(FrameDataset, models.DO_NOTHING, db_column="frameDatasetId")
     is_validation = models.BooleanField(null=True, blank=True, db_column='isValidation')
 
 
@@ -611,9 +611,9 @@ class LabelData(models.Model):
         db_table = 'LabelData'
     id = models.BigAutoField(primary_key=True)
     data_proper = models.IntegerField(null=True, blank=True, db_column='dataProper')
-    label_dataset = models.ForeignKey(LabelDataset, models.PROTECT, db_column="labelDatasetId")
+    label_dataset = models.ForeignKey(LabelDataset, models.DO_NOTHING, db_column="labelDatasetId")
     is_void = models.BooleanField(null=True, blank=True, db_column='isVoid')
-    parent_frame = models.ForeignKey(Frame, models.PROTECT, db_column="parentFrame")
+    parent_frame = models.ForeignKey(Frame, models.DO_NOTHING, db_column="parentFrame")
     t_one_HIT_id = models.CharField(null=True, blank=True, max_length=255, db_column='tOneHITid')
     t_two_HIT_id = models.CharField(null=True, blank=True, max_length=255, db_column='tTwoHITid')
 
@@ -643,10 +643,10 @@ class DetectedObjects(models.Model):
     class Meta:
         db_table = 'DetectedObjects'
     id = models.BigAutoField(primary_key=True)
-    edge_node = models.ForeignKey(EdgeNode, models.PROTECT, db_column="edgeNodeId")
+    edge_node = models.ForeignKey(EdgeNode, models.DO_NOTHING, db_column="edgeNodeId")
     object_type = models.CharField(null=True, blank=True, max_length=3, db_column='objectType')
     created_dt = models.DateTimeField(null=True, blank=True, auto_now_add=True)
-    file = models.ForeignKey(FileStorage, models.PROTECT, db_column='fileId')
+    file = models.ForeignKey(FileStorage, models.DO_NOTHING, db_column='fileId')
     parameters = JSONField(null=True, blank=True, db_column='parametersJSON')
 
 
@@ -655,7 +655,7 @@ class EventsHistory(models.Model):
         db_table = 'EventsHistory'
     id = models.BigAutoField(primary_key=True)
     created_dt = models.DateTimeField(null=True, blank=True, auto_now_add=True)
-    edge_node = models.ForeignKey(EdgeNode, models.PROTECT, db_column="edgeNodeId")
+    edge_node = models.ForeignKey(EdgeNode, models.DO_NOTHING, db_column="edgeNodeId")
     event_type = models.CharField(null=True, blank=True, max_length=3, db_column='eventType')
     verification_result = models.CharField(null=True, blank=True, max_length=3, db_column='verificationResult')
     parameters = JSONField(null=True, blank=True, db_column='parametersJSON')
@@ -665,7 +665,7 @@ class DetectionsSummary(models.Model):
     class Meta:
         db_table = 'DetectionsSummary'
     id = models.BigAutoField(primary_key=True)
-    edge_node = models.ForeignKey(EdgeNode, models.PROTECT, db_column="edgeNodeId")
+    edge_node = models.ForeignKey(EdgeNode, models.DO_NOTHING, db_column="edgeNodeId")
     observation_date = models.DateField(null=True, blank=True, db_column='observationDate')
     parameters = JSONField(null=True, blank=True, db_column='parametersJSON')
 
@@ -674,6 +674,6 @@ class RoadConditions(models.Model):
     class Meta:
         db_table = 'RoadConditions'
     id = models.BigAutoField(primary_key=True)
-    edge_node = models.ForeignKey(EdgeNode, models.PROTECT, db_column="edgeNodeId")
+    edge_node = models.ForeignKey(EdgeNode, models.DO_NOTHING, db_column="edgeNodeId")
     created_dt = models.DateTimeField(null=True, blank=True, auto_now_add=True)
     parameters = JSONField(null=True, blank=True, db_column='parametersJSON')
