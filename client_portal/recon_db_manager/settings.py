@@ -27,6 +27,7 @@ DEBUG = True
 
 # Application definition
 
+
 INSTALLED_APPS = [
     'recon_db_manager'
 ]

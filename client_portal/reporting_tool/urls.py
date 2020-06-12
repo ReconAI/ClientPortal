@@ -13,9 +13,16 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf.urls import url
 from django.contrib import admin
 from django.urls import path
+from django.urls import include
+from .views import signup, profile, activate
 
 urlpatterns = [
+    path('', include('django.contrib.auth.urls')),
+    path('signup', signup),
+    path('profile', profile, name='profile'),
     path('admin/', admin.site.urls),
+    url(r'^activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', activate, name='activate'),
 ]

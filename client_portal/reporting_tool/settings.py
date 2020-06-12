@@ -36,7 +36,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'reporting_tool'
+    'reporting_tool',
+    'recon_db_manager'
 ]
 
 MIDDLEWARE = [
@@ -49,12 +50,14 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 ROOT_URLCONF = 'reporting_tool.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['{}/{}'.format(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -67,21 +70,26 @@ TEMPLATES = [
     },
 ]
 
+AUTH_USER_MODEL = 'reporting_tool.User'
+
+
 WSGI_APPLICATION = 'reporting_tool.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
+RECON_AI_CONNECTION_NAME = 'recon_ai_db'
+
 DATABASES = {
     'default': {
-        'ENGINE': '{}.{}'.format('django.db.backends', os.environ.get('DJANGO_DB_ENGINE', 'sqlite3')),
-        'NAME': os.environ.get('DJANGO_DB_NAME', ''),
-        'USER': os.environ.get('DJANGO_DB_USER', ''),
-        'PASSWORD': os.environ.get('DJANGO_DB_PASSWORD', ''),
-        'HOST': os.environ.get('DJANGO_DB_HOST', ''),
-        'PORT': os.environ.get('DJANGO_DB_PORT', '')
+        'ENGINE': '{}.{}'.format('django.db.backends', os.environ.get('CLIENT_PORTAL_DB_ENGINE', 'sqlite3')),
+        'NAME': os.environ.get('CLIENT_PORTAL_DB_NAME', ''),
+        'USER': os.environ.get('CLIENT_PORTAL_DB_USER', ''),
+        'PASSWORD': os.environ.get('CLIENT_PORTAL_DB_PASSWORD', ''),
+        'HOST': os.environ.get('CLIENT_PORTAL_DB_HOST', ''),
+        'PORT': os.environ.get('CLIENT_PORTAL_DB_PORT', '')
     },
-    'recon_ai': {
+    RECON_AI_CONNECTION_NAME: {
         'ENGINE': '{}.{}'.format('django.db.backends', os.environ.get('RECON_AI_DB_ENGINE', 'sqlite3')),
         'NAME': os.environ.get('RECON_AI_DB_NAME', ''),
         'USER': os.environ.get('RECON_AI_DB_USER', ''),
@@ -110,6 +118,11 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', '')
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', '')
+AWS_IAM_USER_GROUP = os.environ.get('AWS_IAM_USER_GROUP', '')
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
