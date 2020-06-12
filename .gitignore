@@ -1,5 +1,7 @@
 venv
 .idea
+wiki
+recon-ai.iml
 client-portal.iml
 client_portal/local
 .env-reporting

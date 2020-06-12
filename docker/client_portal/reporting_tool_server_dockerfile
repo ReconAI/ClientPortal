@@ -10,8 +10,7 @@ WORKDIR /client_portal
 COPY requirements.txt requirements.txt
 RUN python -m pip install -r requirements.txt
 
-COPY reporting_tool/reporting_tool reporting_tool
-COPY reporting_tool/manage.py manage.py
+COPY client_portal ./
 COPY docker/check_db_readiness.sh check_db_readiness.sh
 COPY docker/run_django_server.sh run_django_server.sh
 
