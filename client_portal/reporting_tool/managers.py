@@ -1,6 +1,7 @@
 """
 Defines managers to manipulate data form diverse sources
 """
+from abc import abstractmethod
 from typing import Dict, List
 
 import boto3
@@ -110,7 +111,66 @@ class UserManager(UserManagerBase):
                              **extra_fields)
 
 
-class IaMUserManager:
+class AbstractIaMUserManager:
+    """
+    Interface for user iam manager
+    """
+
+    @abstractmethod
+    def get(self, username: str):
+        """
+        Gets user from the service
+
+        :type: str
+        """
+
+    @abstractmethod
+    def create(self, username: str, **kwargs: dict):
+        """
+        Creates a user within IaM
+
+        :type username: str
+        :type kwargs: dict
+        """
+
+    @abstractmethod
+    def update(self, username: str, **kwargs: dict):
+        """
+        Updates a user within IaM
+
+        :type username: str
+        :type kwargs: dict
+        """
+
+    @abstractmethod
+    def delete(self, username: str):
+        """
+        Removes user from IaM. It's required to remove user from any
+        group beforehand
+
+        :type username: str
+        """
+
+    @abstractmethod
+    def add_user_to_group(self, username: str, group_name: str):
+        """
+        Attach user to group
+
+        :type username: str
+        :type group_name: str
+        """
+
+    @abstractmethod
+    def remove_user_from_group(self, username: str, group_name: str):
+        """
+        Removes user from group
+
+        :type username: str
+        :type group_name: str
+        """
+
+
+class IaMUserManager(AbstractIaMUserManager):
     """
     Manages data from IaM service
     """
@@ -202,3 +262,57 @@ class IaMUserManager:
         """
         return [{'Key': key, 'Value': str(value)} for key, value in
                 kwargs.items()]
+
+
+class DummyIaMUserManager(AbstractIaMUserManager):
+    """
+    Implementation of dummy iam user manager.
+    Doesn't send anything. Use it within local/testing environment.
+    """
+
+    def get(self, username: str):
+        """
+        Gets user from the service
+
+        :type: str
+        """
+
+    def create(self, username: str, **kwargs: dict):
+        """
+        Creates a user within IaM
+
+        :type username: str
+        :type kwargs: dict
+        """
+
+    def update(self, username: str, **kwargs: dict):
+        """
+        Updates a user within IaM
+
+        :type username: str
+        :type kwargs: dict
+        """
+
+    def delete(self, username: str):
+        """
+        Removes user from IaM. It's required to remove user from any
+        group beforehand
+
+        :type username: str
+        """
+
+    def add_user_to_group(self, username: str, group_name: str):
+        """
+        Attach user to group
+
+        :type username: str
+        :type group_name: str
+        """
+
+    def remove_user_from_group(self, username: str, group_name: str):
+        """
+        Removes user from group
+
+        :type username: str
+        :type group_name: str
+        """

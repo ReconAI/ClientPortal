@@ -2,36 +2,36 @@
 Http handlers are located here
 """
 
-from django.contrib.auth import login
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMultiAlternatives
 from django.db.transaction import atomic
-from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.http import HttpResponse, JsonResponse
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
+from rest_framework.views import APIView
 
 from .forms import SignupForm
 from .models import User
+from .serializers import UserSerializer
 from .tokens import TokenGenerator
 
 
-@atomic(using='default')
-@atomic(using='recon_ai_db')
-def signup(request: Request) -> HttpResponse:
-    """
-    User signup http handler
+class SignupView(APIView):
+    @atomic(using='default')
+    @atomic(using='recon_ai_db')
+    def post(self, request: Request, *arg, **kwargs) -> HttpResponse:
+        """
+        User signup http handler
 
-    :type request: Request
+        :type request: Request
 
-    :rtype: HttpResponse
-    """
-    form = SignupForm()
+        :rtype: HttpResponse
+        """
+        form = SignupForm(request.data)
 
-    if request.method == 'POST':
-        form = SignupForm(request.POST)
         if form.is_valid():
             user = form.save()
 
@@ -48,46 +48,63 @@ def signup(request: Request) -> HttpResponse:
                 to=[form.cleaned_data.get('email')]
             ).send()
 
-            return redirect('/',
-                            message='Please confirm your email '
-                                    'address to complete the registration')
+            return JsonResponse({
+                'message': 'Please confirm your email address '
+                           'to complete the registration'
+            })
 
-    return render(request, 'signup.html', {'form': form})
+        return JsonResponse(form.errors)
 
 
-def profile(request: Request) -> HttpResponse:
+class ActivateView(APIView):
     """
-    User profile page
-
-    :type request: Request
-
-    :rtype: HttpResponse
+    Perofrms activation of user's profile
     """
-    return render(request, 'profile.html', {'user': request.user})
+
+    @staticmethod
+    @atomic(using='default')
+    @atomic(using='recon_ai_db')
+    def get(request: Request, uidb64: str, token: str) -> HttpResponse:
+        """
+        User account activation
+
+        :type request: Request
+        :type uidb64: str
+        :type token: str
+
+        :rtype: HttpResponse
+        """
+        try:
+            uid = force_text(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+        if user is not None and TokenGenerator().check_token(user, token):
+            user.is_active = True
+            user.save()
+
+            return JsonResponse({
+                'message': 'Activated'
+            })
+
+        return JsonResponse({
+            'message': 'Activation link is invalid!'
+        }, status=403)
 
 
-@atomic(using='default')
-@atomic(using='recon_ai_db')
-def activate(request: Request, uidb64: str, token: str) -> HttpResponse:
+class CurrentUserProfileView(APIView):
     """
-    User account activation
-
-    :type request: Request
-    :type uidb64: str
-    :type token: str
-
-    :rtype: HttpResponse
+    Returns user's data
     """
-    try:
-        uid = force_text(urlsafe_base64_decode(uidb64))
-        user = User.objects.get(pk=uid)
-    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
-        user = None
-    if user is not None and TokenGenerator().check_token(user, token):
-        user.is_active = True
-        user.save()
-        login(request, user)
+    permission_classes = (IsAuthenticated,)
 
-        return redirect('profile')
+    @staticmethod
+    def get(request: Request, *args, **kwargs) -> JsonResponse:
+        """
+        :type request: Request
 
-    return HttpResponse('Activation link is invalid!')
+        :rtype: JsonResponse
+        """
+        serializer = UserSerializer(request.user)
+
+        return JsonResponse(serializer.data)

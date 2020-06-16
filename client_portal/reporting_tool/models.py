@@ -1,7 +1,8 @@
 """
 Reporting tool models are located here
 """
-
+import binascii
+import os
 import unicodedata
 from typing import Tuple
 
@@ -12,6 +13,7 @@ from django.db import models, router
 from django.db.models.deletion import Collector
 from django.db.transaction import atomic
 from django.utils.crypto import salted_hmac
+from django.utils.translation import gettext_lazy as _
 
 from recon_db_manager.models import CommonUser, Organization
 from reporting_tool.managers import UserManager
@@ -202,6 +204,31 @@ class UserGroup(models.Model):
     id = models.BigAutoField(primary_key=True)
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
     user_id = models.IntegerField(unique=True, db_column='userId')
+
+
+class Token(models.Model):
+    """
+    The default authorization token model.
+    """
+    key = models.CharField(_("Key"), max_length=40, primary_key=True)
+    user_id = models.IntegerField(_("User"), db_column='user_id')
+    created = models.DateTimeField(_("Created"), auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if not self.key:
+            self.key = self.generate_key()
+        return super().save(*args, **kwargs)
+
+    @staticmethod
+    def generate_key():
+        return binascii.hexlify(os.urandom(20)).decode()
+
+    def __str__(self):
+        return self.key
+
+    @property
+    def user(self) -> User:
+        return User.objects.get(pk=self.user_id)
 
 
 class Role:

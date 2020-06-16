@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
     'reporting_tool',
     'recon_db_manager'
 ]
@@ -69,6 +70,12 @@ TEMPLATES = [
         },
     },
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'reporting_tool.authentication.TokenAuthentication',
+    ],
+}
 
 AUTH_USER_MODEL = 'reporting_tool.User'
 
@@ -119,6 +126,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AWS_IAM_USER_MANAGER = os.environ.get('AWS_IAM_SYNC_MANAGER', 'reporting_tool.managers.DummyIaMUserManager')
 AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', '')
 AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', '')
 AWS_IAM_USER_GROUP = os.environ.get('AWS_IAM_USER_GROUP', '')

@@ -17,12 +17,15 @@ from django.conf.urls import url
 from django.contrib import admin
 from django.urls import path
 from django.urls import include
-from .views import signup, profile, activate
+from rest_framework.authtoken.views import obtain_auth_token
+
+from .views import SignupView, ActivateView, CurrentUserProfileView
 
 urlpatterns = [
     path('', include('django.contrib.auth.urls')),
-    path('signup', signup),
-    path('profile', profile, name='profile'),
+    path('signup', SignupView.as_view(), name='signup'),
+    path('profile', CurrentUserProfileView.as_view(), name='profile'),
     path('admin/', admin.site.urls),
-    url(r'^activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', activate, name='activate'),
+    url(r'^activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', ActivateView.as_view(), name='activate'),
+    path('api-token-auth', obtain_auth_token, name='api_token_auth'),
 ]
