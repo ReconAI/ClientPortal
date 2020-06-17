@@ -172,6 +172,10 @@ class User(CommonUser, PermissionsMixin):
         """
         return self.username
 
+    @property
+    def user_group(self) -> 'UserGroup':
+        return Group.objects.filter(usergroup__user_id=self.pk).get()
+
     @atomic(using='default')
     @atomic(using='recon_ai_db')
     def delete(self, using: str = None,
@@ -186,8 +190,8 @@ class User(CommonUser, PermissionsMixin):
         """
         using = using or router.db_for_write(self.__class__, instance=self)
         assert self.pk is not None, (
-            "%s object can't be deleted because its %s(pk) is set to None." %
-            (self._meta.object_name, self._meta.pk.attname)
+                "%s object can't be deleted because its %s(pk) is set to None." %
+                (self._meta.object_name, self._meta.pk.attname)
         )
 
         collector = Collector(using=using)

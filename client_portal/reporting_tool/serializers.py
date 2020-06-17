@@ -1,7 +1,18 @@
 """
 Modules defines models serializers
 """
+from django.contrib.auth.models import Group
 from rest_framework import serializers
+
+from reporting_tool.models import User
+
+
+class GroupSerializer(serializers.Serializer):
+    name = serializers.CharField()
+
+    class Meta:
+        model = Group
+        fields = ('name',)
 
 
 class UserSerializer(serializers.Serializer):
@@ -9,8 +20,6 @@ class UserSerializer(serializers.Serializer):
     Serializes user data
     """
     id = serializers.IntegerField()
-    # organization = models.ForeignKey(Organization
-    # models.DO_NOTHING, db_column='organizationId')
     firstname = serializers.CharField(max_length=200)
     lastname = serializers.CharField(max_length=200)
     address = serializers.CharField(max_length=200)
@@ -19,3 +28,8 @@ class UserSerializer(serializers.Serializer):
     created_dt = serializers.DateTimeField()
     user_level = serializers.CharField(max_length=3)
     is_active = serializers.BooleanField()
+    user_group = GroupSerializer()
+
+    class Meta:
+        model = User
+
