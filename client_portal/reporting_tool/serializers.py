@@ -8,7 +8,7 @@ from reporting_tool.models import User
 
 
 class GroupSerializer(serializers.Serializer):
-    name = serializers.CharField()
+    name = serializers.CharField(max_length=255)
 
     class Meta:
         model = Group
@@ -20,10 +20,11 @@ class UserSerializer(serializers.Serializer):
     Serializes user data
     """
     id = serializers.IntegerField()
-    firstname = serializers.CharField(max_length=200)
-    lastname = serializers.CharField(max_length=200)
-    address = serializers.CharField(max_length=200)
-    phone = serializers.CharField(max_length=200)
+    firstname = serializers.CharField(max_length=255)
+    lastname = serializers.CharField(max_length=255)
+    username = serializers.CharField(max_length=255)
+    address = serializers.CharField(max_length=255)
+    phone = serializers.CharField(max_length=255)
     email = serializers.EmailField()
     created_dt = serializers.DateTimeField()
     user_level = serializers.CharField(max_length=3)
