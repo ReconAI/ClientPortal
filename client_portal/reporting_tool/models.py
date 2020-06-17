@@ -220,14 +220,23 @@ class Token(models.Model):
         return super().save(*args, **kwargs)
 
     @staticmethod
-    def generate_key():
+    def generate_key() -> str:
+        """
+        :rtype: str
+        """
         return binascii.hexlify(os.urandom(20)).decode()
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """
+        :rtype: str
+        """
         return self.key
 
     @property
     def user(self) -> User:
+        """
+        :rtype: User
+        """
         return User.objects.get(pk=self.user_id)
 
 

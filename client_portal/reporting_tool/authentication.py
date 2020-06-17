@@ -1,3 +1,7 @@
+"""
+Custom authentication mechanisms
+"""
+
 from django.utils.translation import gettext_lazy as _
 from rest_framework import exceptions
 from rest_framework.authentication import \
@@ -7,6 +11,9 @@ from reporting_tool.models import Token
 
 
 class TokenAuthentication(TokenAuthenticationBase):
+    """
+    Authenticate user by token provided
+    """
     model = Token
 
     def authenticate_credentials(self, key):

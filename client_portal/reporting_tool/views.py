@@ -9,20 +9,27 @@ from django.http import HttpResponse, JsonResponse
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from rest_framework.authtoken.views import \
+    ObtainAuthToken as ObtainAuthTokenBase
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.views import APIView
 
 from .forms import SignupForm
-from .models import User
+from .models import User, Token
 from .serializers import UserSerializer
 from .tokens import TokenGenerator
 
 
 class SignupView(APIView):
+    """
+    Signs user up
+    """
+
+    @staticmethod
     @atomic(using='default')
     @atomic(using='recon_ai_db')
-    def post(self, request: Request, *arg, **kwargs) -> HttpResponse:
+    def post(request: Request, *arg, **kwargs) -> HttpResponse:
         """
         User signup http handler
 
@@ -108,3 +115,24 @@ class CurrentUserProfileView(APIView):
         serializer = UserSerializer(request.user)
 
         return JsonResponse(serializer.data)
+
+
+class ObtainAuthToken(ObtainAuthTokenBase):
+    """
+    Returns user token by credential provided
+    """
+
+    def post(self, request: Request, *args, **kwargs) -> JsonResponse:
+        """
+        :type request: Request
+        :type args: list
+        :type kwargs: dict
+
+        :rtype: JsonResponse
+        """
+        serializer = self.serializer_class(data=request.data,
+                                           context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, _ = Token.objects.get_or_create(user_id=user.pk)
+        return JsonResponse({'token': token.key})

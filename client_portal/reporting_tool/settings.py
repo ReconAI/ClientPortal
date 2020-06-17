@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'reporting_tool',
-    'recon_db_manager'
+    'recon_db_manager',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
@@ -79,7 +80,6 @@ REST_FRAMEWORK = {
 
 AUTH_USER_MODEL = 'reporting_tool.User'
 
-
 WSGI_APPLICATION = 'reporting_tool.wsgi.application'
 
 # Database
@@ -89,7 +89,9 @@ RECON_AI_CONNECTION_NAME = 'recon_ai_db'
 
 DATABASES = {
     'default': {
-        'ENGINE': '{}.{}'.format('django.db.backends', os.environ.get('CLIENT_PORTAL_DB_ENGINE', 'sqlite3')),
+        'ENGINE': '{}.{}'.format('django.db.backends',
+                                 os.environ.get('CLIENT_PORTAL_DB_ENGINE',
+                                                'sqlite3')),
         'NAME': os.environ.get('CLIENT_PORTAL_DB_NAME', ''),
         'USER': os.environ.get('CLIENT_PORTAL_DB_USER', ''),
         'PASSWORD': os.environ.get('CLIENT_PORTAL_DB_PASSWORD', ''),
@@ -97,7 +99,9 @@ DATABASES = {
         'PORT': os.environ.get('CLIENT_PORTAL_DB_PORT', '')
     },
     RECON_AI_CONNECTION_NAME: {
-        'ENGINE': '{}.{}'.format('django.db.backends', os.environ.get('RECON_AI_DB_ENGINE', 'sqlite3')),
+        'ENGINE': '{}.{}'.format('django.db.backends',
+                                 os.environ.get('RECON_AI_DB_ENGINE',
+                                                'sqlite3')),
         'NAME': os.environ.get('RECON_AI_DB_NAME', ''),
         'USER': os.environ.get('RECON_AI_DB_USER', ''),
         'PASSWORD': os.environ.get('RECON_AI_DB_PASSWORD', ''),
@@ -126,11 +130,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AWS_IAM_USER_MANAGER = os.environ.get('AWS_IAM_SYNC_MANAGER', 'reporting_tool.managers.DummyIaMUserManager')
+AWS_IAM_USER_MANAGER = os.environ.get('AWS_IAM_SYNC_MANAGER',
+                                      'reporting_tool.managers.DummyIaMUserManager')
 AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', '')
 AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', '')
 AWS_IAM_USER_GROUP = os.environ.get('AWS_IAM_USER_GROUP', '')
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
