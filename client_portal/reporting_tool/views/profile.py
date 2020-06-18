@@ -13,7 +13,9 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.cache import never_cache
 from django.views.generic.edit import FormMixin
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
+from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.authtoken.views import \
     ObtainAuthToken as ObtainAuthTokenBase
 from rest_framework.permissions import IsAuthenticated
@@ -35,7 +37,7 @@ class PreSignupValidationView(APIView):
     @staticmethod
     def post(request: Request, *arg, **kwargs) -> JsonResponse:
         """
-        User signup http handler
+        User signup pre singup validation
 
         :type request: Request
 
@@ -140,8 +142,15 @@ class CurrentUserProfileView(APIView):
     permission_classes = (IsAuthenticated,)
 
     @staticmethod
+    @swagger_auto_schema(
+        responses={
+            status.HTTP_200_OK: UserSerializer
+        }
+    )
     def get(request: Request, *args, **kwargs) -> JsonResponse:
         """
+        Current user data
+
         :type request: Request
 
         :rtype: JsonResponse
@@ -158,8 +167,16 @@ class ObtainAuthToken(ObtainAuthTokenBase):
     Returns user token by credential provided
     """
 
+    @swagger_auto_schema(
+        request_body=AuthTokenSerializer
+    )
     def post(self, request: Request, *args, **kwargs) -> JsonResponse:
         """
+        User token retrieval
+
+        # User token retrieval
+        ---
+        ###
         :type request: Request
         :type args: list
         :type kwargs: dict
@@ -168,15 +185,19 @@ class ObtainAuthToken(ObtainAuthTokenBase):
         """
         serializer = self.serializer_class(data=request.data,
                                            context={'request': request})
-        serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']
-        token, _ = Token.objects.get_or_create(user_id=user.pk)
+        if serializer.is_valid():
+            user = serializer.validated_data['user']
+            token, _ = Token.objects.get_or_create(user_id=user.pk)
+
+            return JsonResponse({
+                'data': {
+                    'token': token.key
+                }
+            })
 
         return JsonResponse({
-            'data': {
-                'token': token.key
-            }
-        })
+            'errors': serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LogoutView(APIView):
@@ -188,6 +209,8 @@ class LogoutView(APIView):
     @staticmethod
     def get(request: Request, *args, **kwargs) -> JsonResponse:
         """
+        Logout HTTP handler
+
         :type request: Request
         :type args: tuple
         :type kwargs: dict
@@ -209,6 +232,8 @@ class ResetPassword(APIView, FormMixin):
 
     def post(self, request: Request, *args, **kwargs) -> JsonResponse:
         """
+        Password reset request
+
         :type request: Request
         :type args: tuple
         :type kwargs: dict
@@ -247,6 +272,8 @@ class PasswordResetConfirmView(APIView, FormMixin):
     @atomic(using=settings.RECON_AI_CONNECTION_NAME)
     def post(self, request: Request, *args, **kwargs) -> JsonResponse:
         """
+        Password reset form
+
         :type request: Request
         :type args: tuple
         :type kwargs: dict
