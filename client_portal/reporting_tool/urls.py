@@ -21,7 +21,8 @@ from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 
 from .views.profile import SignupView, ActivateView, CurrentUserProfileView, \
-    ObtainAuthToken, LogoutView, ResetPassword, PasswordResetConfirmView
+    ObtainAuthToken, LogoutView, ResetPassword, PasswordResetConfirmView, \
+    PreSignupValidationView
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -38,6 +39,7 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('signup', SignupView.as_view(), name='signup'),
+    path('pre-signup', PreSignupValidationView.as_view(), name='pre-signup'),
     url(
         r'^activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
         ActivateView.as_view(), name='activate'),

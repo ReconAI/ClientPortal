@@ -5,7 +5,7 @@ from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMultiAlternatives
 from django.db.transaction import atomic
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from django.template.loader import render_to_string
 from django.utils.decorators import method_decorator
 from django.utils.encoding import force_bytes, force_text
@@ -20,10 +20,37 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.views import APIView
 
-from reporting_tool.forms import SignupForm, PasswordResetForm, SetPasswordForm
+from reporting_tool.forms import SignupForm, PasswordResetForm, \
+    SetPasswordForm, PreSignupForm
 from reporting_tool.models import User, Token
 from reporting_tool.serializers import UserSerializer
 from reporting_tool.tokens import TokenGenerator
+
+
+class PreSignupValidationView(APIView):
+    """
+    Performs pre signup validation
+    """
+
+    @staticmethod
+    def post(request: Request, *arg, **kwargs) -> JsonResponse:
+        """
+        User signup http handler
+
+        :type request: Request
+
+        :rtype: JsonResponse
+        """
+        form = PreSignupForm(request.data)
+
+        if form.is_valid():
+            return JsonResponse({
+                'message': _('Data is valid')
+            })
+
+        return JsonResponse({
+            'errors': form.errors
+        }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 
 class SignupView(APIView):
@@ -34,13 +61,13 @@ class SignupView(APIView):
     @staticmethod
     @atomic(using='default')
     @atomic(using='recon_ai_db')
-    def post(request: Request, *arg, **kwargs) -> HttpResponse:
+    def post(request: Request, *arg, **kwargs) -> JsonResponse:
         """
         User signup http handler
 
         :type request: Request
 
-        :rtype: HttpResponse
+        :rtype: JsonResponse
         """
         form = SignupForm(request.data)
 
@@ -78,7 +105,7 @@ class ActivateView(APIView):
     @staticmethod
     @atomic(using='default')
     @atomic(using='recon_ai_db')
-    def get(request: Request, uidb64: str, token: str) -> HttpResponse:
+    def get(request: Request, uidb64: str, token: str) -> JsonResponse:
         """
         User account activation
 
@@ -86,7 +113,7 @@ class ActivateView(APIView):
         :type uidb64: str
         :type token: str
 
-        :rtype: HttpResponse
+        :rtype: JsonResponse
         """
         try:
             uid = force_text(urlsafe_base64_decode(uidb64))
