@@ -101,4 +101,3 @@ class ReconDBRouter(DBRouter):
         'recon_db_manager',
         'authtoken'
     ]
-

@@ -2,20 +2,42 @@
 Modules defines models serializers
 """
 from django.contrib.auth.models import Group
+from django.db.models import Model
 from rest_framework import serializers
 
 from reporting_tool.models import User
 
 
-class GroupSerializer(serializers.Serializer):
+class ReadOnlySerializer(serializers.Serializer):
+    """
+    Serializer doesn't let write
+    """
+    def update(self, instance: Model, validated_data: dict):
+        """
+        :type instance: Model
+        :type validated_data: dict
+        """
+    def create(self, validated_data: dict):
+        """
+        :type validated_data: dict
+        """
+
+
+class GroupSerializer(ReadOnlySerializer):
+    """
+    Serializes user group data
+    """
     name = serializers.CharField(max_length=255)
 
     class Meta:
+        """
+        Group is serializer's model
+        """
         model = Group
         fields = ('name',)
 
 
-class UserSerializer(serializers.Serializer):
+class UserSerializer(ReadOnlySerializer):
     """
     Serializes user data
     """
@@ -32,5 +54,7 @@ class UserSerializer(serializers.Serializer):
     user_group = GroupSerializer()
 
     class Meta:
+        """
+        User is serializer's model
+        """
         model = User
-

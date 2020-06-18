@@ -16,34 +16,39 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from django.urls import path
-from django.urls import include
-
-from .views import SignupView, ActivateView, CurrentUserProfileView, ObtainAuthToken
-
-from rest_framework import permissions
-from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+from drf_yasg.views import get_schema_view
+from rest_framework import permissions
+
+from .views.profile import SignupView, ActivateView, CurrentUserProfileView, \
+    ObtainAuthToken, LogoutView, ResetPassword, PasswordResetConfirmView
 
 schema_view = get_schema_view(
-   openapi.Info(
-      title="Snippets API",
-      default_version='v1',
-      description="Test description",
-      terms_of_service="https://www.google.com/policies/terms/",
-      contact=openapi.Contact(email="contact@snippets.local"),
-      license=openapi.License(name="BSD License"),
-   ),
-   public=True,
-   permission_classes=(permissions.AllowAny,),
+    openapi.Info(
+        title="Snippets API",
+        default_version='v1',
+        description="Test description",
+        terms_of_service="https://www.google.com/policies/terms/",
+        contact=openapi.Contact(email="contact@snippets.local"),
+        license=openapi.License(name="BSD License"),
+    ),
+    public=True,
+    permission_classes=(permissions.AllowAny,),
 )
 
 urlpatterns = [
-    path('', include('django.contrib.auth.urls')),
     path('signup', SignupView.as_view(), name='signup'),
-    path('profile', CurrentUserProfileView.as_view(), name='profile'),
-    path('admin/', admin.site.urls),
-    url(r'^activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', ActivateView.as_view(), name='activate'),
+    url(
+        r'^activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
+        ActivateView.as_view(), name='activate'),
     path('api-token-auth', ObtainAuthToken.as_view(), name='api_token_auth'),
+    path('profile', CurrentUserProfileView.as_view(), name='profile'),
+    path('logout', LogoutView.as_view(), name='logout'),
+
+    path('reset_password', ResetPassword.as_view(), name='password_reset'),
+    path('reset', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+
+    path('admin/', admin.site.urls),
 
     url(r'^swagger(?P<format>\.json|\.yaml)$',
         schema_view.without_ui(cache_timeout=0), name='schema-json'),

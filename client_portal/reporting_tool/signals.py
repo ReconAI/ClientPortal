@@ -21,11 +21,9 @@ def sync_iam_user(instance: User, created: bool, **kwargs):
     :type kwargs: dict
     """
     if created:
-        return get_iam_user_manager().create(username=instance.username,
-                                             **UserSerializer(instance).data)
+        return get_iam_user_manager().create(**UserSerializer(instance).data)
 
-    return get_iam_user_manager().update(username=instance.username,
-                                         **UserSerializer(instance).data)
+    return get_iam_user_manager().update(**UserSerializer(instance).data)
 
 
 @receiver(post_delete, sender=User)
