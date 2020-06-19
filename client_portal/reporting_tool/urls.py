@@ -13,6 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
 from django.conf.urls import url
 from django.contrib import admin
 from django.urls import path
@@ -20,22 +21,9 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 
-from .views.profile import SignupView, ActivateView, CurrentUserProfileView, \
+from .views.accounts import SignupView, ActivateView, CurrentUserProfileView, \
     ObtainAuthToken, LogoutView, ResetPassword, PasswordResetConfirmView, \
     PreSignupValidationView
-
-schema_view = get_schema_view(
-    openapi.Info(
-        title="Snippets API",
-        default_version='v1',
-        description="Test description",
-        terms_of_service="https://www.google.com/policies/terms/",
-        contact=openapi.Contact(email="contact@snippets.local"),
-        license=openapi.License(name="BSD License"),
-    ),
-    public=True,
-    permission_classes=(permissions.AllowAny,),
-)
 
 urlpatterns = [
     path('signup', SignupView.as_view(), name='signup'),
@@ -48,14 +36,31 @@ urlpatterns = [
     path('logout', LogoutView.as_view(), name='logout'),
 
     path('reset_password', ResetPassword.as_view(), name='password_reset'),
-    path('reset', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('reset', PasswordResetConfirmView.as_view(),
+         name='password_reset_confirm'),
 
     path('admin/', admin.site.urls),
-
-    url(r'^swagger(?P<format>\.json|\.yaml)$',
-        schema_view.without_ui(cache_timeout=0), name='schema-json'),
-    url(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0),
-        name='schema-swagger-ui'),
-    url(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0),
-        name='schema-redoc'),
 ]
+
+if settings.DEBUG:
+    schema_view = get_schema_view(
+        openapi.Info(
+            title="Snippets API",
+            default_version='v1',
+            description="Test description",
+            terms_of_service="https://www.google.com/policies/terms/",
+            contact=openapi.Contact(email="contact@snippets.local"),
+            license=openapi.License(name="BSD License"),
+        ),
+        public=True,
+        permission_classes=(permissions.AllowAny,),
+    )
+
+    urlpatterns.extend([
+        url(r'^swagger(?P<format>\.json|\.yaml)$',
+            schema_view.without_ui(cache_timeout=0), name='schema-json'),
+        url(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0),
+            name='schema-swagger-ui'),
+        url(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0),
+            name='schema-redoc'),
+    ])

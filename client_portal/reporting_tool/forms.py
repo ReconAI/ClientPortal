@@ -45,17 +45,16 @@ class SignupForm(PreSignupForm):
     SignupForm with the next behavior:
         - when user signs up, he/she is attached to the ADMIN user group
     """
-    email = forms.EmailField(
-        label=_("Email"),
-        required=True,
-    )
+    email = forms.EmailField(label=_("Email"))
+    firstname = forms.CharField(label=_("First name"))
+    lastname = forms.CharField(label=_("Last name"))
 
     class Meta:
         """
         Fields username, email are required.
         """
         model = User
-        fields = ('username', 'email')
+        fields = ('username', 'email', 'firstname', 'lastname', 'password')
         field_classes = {'username': UsernameField}
 
     def save(self, commit: bool = True) -> User:
@@ -66,17 +65,14 @@ class SignupForm(PreSignupForm):
 
         :rtype: User
         """
-        user = super().save(commit=False)
-
-        password = self.cleaned_data["password1"]
+        data = self.cleaned_data
+        self.cleaned_data["password"] = data.pop("password1")
+        data.pop('password2')
 
         # fixme replace with newly created organization
         organization = Organization.objects.first()
 
-        return self._meta.model.objects.create_admin(user.username,
-                                                     organization,
-                                                     self.data.get('email'),
-                                                     password)
+        return self._meta.model.objects.create_admin(organization, **data)
 
 
 class PasswordResetForm(PasswordResetFormBase):
@@ -150,7 +146,7 @@ class SetPasswordForm(forms.Form):
                     self.cleaned_data.get('uidb64')).decode()
                 self.__user = user_model.objects.get(pk=uid)
             except (TypeError, ValueError,
-                    OverflowError, user_model.DoesNotExist):
+                    OverflowError, ObjectDoesNotExist):
                 raise ValidationError(_('No user found'))
 
         return self.__user

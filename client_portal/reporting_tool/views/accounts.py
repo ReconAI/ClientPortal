@@ -3,6 +3,7 @@ Http handlers for user related operations
 """
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import EmailMultiAlternatives
 from django.db.transaction import atomic
 from django.http import JsonResponse
@@ -120,7 +121,7 @@ class ActivateView(APIView):
         try:
             uid = force_text(urlsafe_base64_decode(uidb64))
             user = User.objects.get(pk=uid)
-        except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        except(TypeError, ValueError, OverflowError, ObjectDoesNotExist):
             user = None
         if user is not None and TokenGenerator().check_token(user, token):
             user.is_active = True

@@ -4,8 +4,9 @@ Reporting tool models are located here
 import binascii
 import os
 import unicodedata
-from typing import Tuple
+from typing import Tuple, Optional, Iterable
 
+from django.conf import settings
 from django.contrib.auth.hashers import make_password, check_password, \
     is_password_usable
 from django.contrib.auth.models import Group
@@ -13,10 +14,11 @@ from django.db import models, router
 from django.db.models.deletion import Collector
 from django.db.transaction import atomic
 from django.utils.crypto import salted_hmac
+from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
 
 from recon_db_manager.models import CommonUser, Organization
-from reporting_tool.managers import UserManager
+from reporting_tool.managers import UserManager, AbstractIaMUserManager
 from reporting_tool.permissions import PermissionsMixin
 
 
@@ -36,6 +38,8 @@ class User(CommonUser, PermissionsMixin):
     # be passed to password_changed() after the model is saved.
     _password = None
 
+    __iam = None
+
     class Meta:
         """
         User model's Meta class specification
@@ -47,7 +51,20 @@ class User(CommonUser, PermissionsMixin):
     objects = UserManager()
 
     def __str__(self) -> str:
-        return str.capitalize(self.username)
+        """
+        :rtype: str
+        """
+        return self.username
+
+    @property
+    def iam(self) -> AbstractIaMUserManager:
+        """
+        :rtype: AbstractIaMUserManager
+        """
+        if self.__iam is None:
+            self.__iam = import_string(settings.AWS_IAM_USER_MANAGER)(self)
+
+        return self.__iam
 
     @property
     def is_anonymous(self) -> bool:
@@ -221,10 +238,18 @@ class Token(models.Model):
     user_id = models.IntegerField(_("User"), db_column='user_id')
     created = models.DateTimeField(_("Created"), auto_now_add=True)
 
-    def save(self, *args, **kwargs):
+    def save(self, force_insert: bool = False, force_update: bool = False,
+             using: str = None, update_fields: Optional[Iterable] = None):
+        """
+        :type force_insert: bool
+        :type force_update: bool
+        :type using: str
+        :type update_fields: Optional[Iterable]
+        """
         if not self.key:
             self.key = self.generate_key()
-        return super().save(*args, **kwargs)
+
+        return super().save(force_insert, force_update, using, update_fields)
 
     @staticmethod
     def generate_key() -> str:
