@@ -22,7 +22,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'jq)oglowie!vb8rz3h+zo(bc(*!_ops)7#5dbbe&88cc#^-(1-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True') not in ['False', '0']
 
 ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOSTS'), '127.0.0.1']
 
@@ -36,8 +36,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
     'reporting_tool',
-    'recon_db_manager'
+    'recon_db_manager',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
@@ -70,8 +72,14 @@ TEMPLATES = [
     },
 ]
 
-AUTH_USER_MODEL = 'reporting_tool.User'
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'reporting_tool.authentication.TokenAuthentication',
+    ],
+    'EXCEPTION_HANDLER': 'reporting_tool.exception_handlers.exception_handler'
+}
 
+AUTH_USER_MODEL = 'reporting_tool.User'
 
 WSGI_APPLICATION = 'reporting_tool.wsgi.application'
 
@@ -82,7 +90,9 @@ RECON_AI_CONNECTION_NAME = 'recon_ai_db'
 
 DATABASES = {
     'default': {
-        'ENGINE': '{}.{}'.format('django.db.backends', os.environ.get('CLIENT_PORTAL_DB_ENGINE', 'sqlite3')),
+        'ENGINE': '{}.{}'.format('django.db.backends',
+                                 os.environ.get('CLIENT_PORTAL_DB_ENGINE',
+                                                'sqlite3')),
         'NAME': os.environ.get('CLIENT_PORTAL_DB_NAME', ''),
         'USER': os.environ.get('CLIENT_PORTAL_DB_USER', ''),
         'PASSWORD': os.environ.get('CLIENT_PORTAL_DB_PASSWORD', ''),
@@ -90,7 +100,9 @@ DATABASES = {
         'PORT': os.environ.get('CLIENT_PORTAL_DB_PORT', '')
     },
     RECON_AI_CONNECTION_NAME: {
-        'ENGINE': '{}.{}'.format('django.db.backends', os.environ.get('RECON_AI_DB_ENGINE', 'sqlite3')),
+        'ENGINE': '{}.{}'.format('django.db.backends',
+                                 os.environ.get('RECON_AI_DB_ENGINE',
+                                                'sqlite3')),
         'NAME': os.environ.get('RECON_AI_DB_NAME', ''),
         'USER': os.environ.get('RECON_AI_DB_USER', ''),
         'PASSWORD': os.environ.get('RECON_AI_DB_PASSWORD', ''),
@@ -119,10 +131,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AWS_IAM_USER_MANAGER = os.environ.get('AWS_IAM_SYNC_MANAGER',
+                                      'reporting_tool.managers.DummyIaMUserManager')
 AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', '')
 AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', '')
 AWS_IAM_USER_GROUP = os.environ.get('AWS_IAM_USER_GROUP', '')
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/

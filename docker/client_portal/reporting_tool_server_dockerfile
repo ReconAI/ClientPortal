@@ -16,4 +16,4 @@ COPY docker/run_django_server.sh run_django_server.sh
 
 EXPOSE 8000
 
-ENTRYPOINT ["sh", "run_django_server.sh"]
+ENTRYPOINT ["bash", "run_django_server.sh"]

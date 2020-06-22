@@ -98,6 +98,6 @@ class ReconDBRouter(DBRouter):
         'logentry'
     ]
     prohibit_migration_app_labels = [
-        'recon_db_manager'
+        'recon_db_manager',
+        'authtoken'
     ]
-

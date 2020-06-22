@@ -4,7 +4,7 @@ wiki
 recon-ai.iml
 client-portal.iml
 client_portal/local
-.env-reporting
+.env*
 data
 docker/app.mk
 *.iml
