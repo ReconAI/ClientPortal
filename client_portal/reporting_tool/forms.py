@@ -99,19 +99,65 @@ class PasswordResetForm(PasswordResetFormBase):
         return email
 
 
-class SetPasswordForm(forms.Form):
+class CheckResetPasswordTokenForm(forms.Form):
+    """
+    Checks wheter provided password reset token is valid
+    """
+
+    _token_generator = default_token_generator
+
+    uidb64 = forms.CharField()
+    token = forms.CharField()
+
+    def __init__(self, *args, **kwargs):
+        """
+        :type args: list
+        :type kwargs: dict
+        """
+        self._user = None
+
+        super().__init__(*args, **kwargs)
+
+    @property
+    def user(self) -> User:
+        """
+        :rtype: User
+        """
+        if self._user is None:
+            try:
+                user_model = get_user_model()
+
+                uid = urlsafe_base64_decode(
+                    self.cleaned_data.get('uidb64')).decode()
+                self._user = user_model.objects.get(pk=uid)
+            except (TypeError, ValueError,
+                    OverflowError, ObjectDoesNotExist):
+                raise ValidationError(_('No user found'))
+
+        return self._user
+
+    def clean_token(self) -> str:
+        """
+        :rtype: str
+        """
+        token = self.cleaned_data.get('token')
+
+        if not self._token_generator.check_token(self.user, token):
+            raise forms.ValidationError(_('Token is invalid'))
+
+        return token
+
+
+class SetPasswordForm(CheckResetPasswordTokenForm):
     """
     A form that lets a user change set their password without entering the old
     password
     """
-    token_generator = default_token_generator
 
     error_messages = {
         'password_mismatch': _('The two password fields didn’t match.'),
     }
 
-    uidb64 = forms.CharField()
-    token = forms.CharField()
     new_password1 = forms.CharField(
         label=_("New password"),
         widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}),
@@ -123,33 +169,6 @@ class SetPasswordForm(forms.Form):
         strip=False,
         widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}),
     )
-
-    def __init__(self, *args, **kwargs):
-        """
-        :type args: list
-        :type kwargs: dict
-        """
-        self.__user = None
-
-        super().__init__(*args, **kwargs)
-
-    @property
-    def user(self) -> User:
-        """
-        :rtype: User
-        """
-        if self.__user is None:
-            try:
-                user_model = get_user_model()
-
-                uid = urlsafe_base64_decode(
-                    self.cleaned_data.get('uidb64')).decode()
-                self.__user = user_model.objects.get(pk=uid)
-            except (TypeError, ValueError,
-                    OverflowError, ObjectDoesNotExist):
-                raise ValidationError(_('No user found'))
-
-        return self.__user
 
     def clean_new_password2(self) -> str:
         """
@@ -167,17 +186,6 @@ class SetPasswordForm(forms.Form):
 
         return password2
 
-    def clean_token(self) -> str:
-        """
-        :rtype: str
-        """
-        token = self.cleaned_data.get('token')
-
-        if not self.token_generator.check_token(self.user, token):
-            raise forms.ValidationError(_('Token is invalid'))
-
-        return token
-
     def save(self, commit: bool = True) -> User:
         """
         :type commit: bool
@@ -185,9 +193,9 @@ class SetPasswordForm(forms.Form):
         :rtype: User
         """
         password = self.cleaned_data["new_password1"]
-        self.__user.set_password(password)
+        self._user.set_password(password)
 
         if commit:
-            self.__user.save()
+            self._user.save()
 
-        return self.__user
+        return self._user

@@ -24,7 +24,7 @@ from rest_framework.request import Request
 from rest_framework.views import APIView
 
 from reporting_tool.forms import SignupForm, PasswordResetForm, \
-    SetPasswordForm, PreSignupForm
+    SetPasswordForm, PreSignupForm, CheckResetPasswordTokenForm
 from reporting_tool.models import User, Token
 from reporting_tool.serializers import UserSerializer
 from reporting_tool.tokens import TokenGenerator
@@ -263,6 +263,49 @@ class ResetPassword(APIView, FormMixin):
         }
 
 
+class CheckResetPasswordTokenView(APIView, FormMixin):
+    """
+    Checks whether provided password reset token is valid
+    """
+
+    form_class = CheckResetPasswordTokenForm
+
+    @method_decorator(never_cache)
+    def post(self, *args, **kwargs) -> JsonResponse:
+        """
+        Check password reset token
+
+        :type args: tuple
+        :type kwargs: dict
+
+        :rtype: JsonResponse
+        """
+        form = self.get_form()
+
+        if form.is_valid():
+            return JsonResponse({
+                'msg': _('Token is valid')
+            }, status=status.HTTP_200_OK)
+
+        return JsonResponse({
+            'errors': form.errors
+        }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+    def get_form_kwargs(self) -> dict:
+        """
+        :type: dict
+        """
+        return {
+            'data': self.request.data
+        }
+
+    def get_initial(self) -> dict:
+        """
+        :type: dict
+        """
+        return {}
+
+
 class PasswordResetConfirmView(APIView, FormMixin):
     """
     Password reset confirmation
@@ -271,11 +314,10 @@ class PasswordResetConfirmView(APIView, FormMixin):
 
     @method_decorator(never_cache)
     @atomic(using=settings.RECON_AI_CONNECTION_NAME)
-    def post(self, request: Request, *args, **kwargs) -> JsonResponse:
+    def post(self, *args, **kwargs) -> JsonResponse:
         """
         Password reset form
 
-        :type request: Request
         :type args: tuple
         :type kwargs: dict
 

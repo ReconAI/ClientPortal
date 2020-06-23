@@ -23,7 +23,7 @@ from rest_framework import permissions
 
 from .views.accounts import SignupView, ActivateView, CurrentUserProfileView, \
     ObtainAuthToken, LogoutView, ResetPassword, PasswordResetConfirmView, \
-    PreSignupValidationView
+    PreSignupValidationView, CheckResetPasswordTokenView
 
 urlpatterns = [
     path('signup', SignupView.as_view(), name='signup'),
@@ -35,9 +35,11 @@ urlpatterns = [
     path('profile', CurrentUserProfileView.as_view(), name='profile'),
     path('logout', LogoutView.as_view(), name='logout'),
 
-    path('reset_password', ResetPassword.as_view(), name='password_reset'),
+    path('reset-password', ResetPassword.as_view(), name='password_reset'),
     path('reset', PasswordResetConfirmView.as_view(),
          name='password_reset_confirm'),
+    path('check-reset-password-token', CheckResetPasswordTokenView.as_view(),
+         name='check_reset_password_token'),
 
     path('admin/', admin.site.urls),
 ]
