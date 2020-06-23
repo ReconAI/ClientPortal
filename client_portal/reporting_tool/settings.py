@@ -50,6 +50,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'reporting_tool.middlewares.HTTPLogMiddleware'
 ]
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -154,3 +155,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STORAGE_ROOT = '{}/{}/'.format(BASE_DIR, 'data')
+
+# Enable/Disable http requests service data capturing
+LOG_HTTP = os.environ.get('LOG_HTTP', 'False') in ['True', '1']
+
+# Export http log aws bucket and key accordingly
+AWS_EXPORT_HTTP_LOG_BUCKET = os.environ.get('AWS_EXPORT_HTTP_LOG_BUCKET')
+AWS_EXPORT_HTTP_LOG_KEY = os.environ.get('AWS_EXPORT_HTTP_LOG_KEY')

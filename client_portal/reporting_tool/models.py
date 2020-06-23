@@ -54,7 +54,7 @@ class User(CommonUser, PermissionsMixin):
         """
         :rtype: str
         """
-        return self.username
+        return str(self.username)
 
     @property
     def iam(self) -> AbstractIaMUserManager:
