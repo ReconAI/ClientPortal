@@ -52,7 +52,14 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.{}.EmailBackend'.format(
+    os.environ.get('EMAIL_BACKEND', 'console')  # console, dummy, firebased, locmem, smtp
+)
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
+EMAIL_PORT = os.environ.get('EMAIL_PORT')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS')
 
 ROOT_URLCONF = 'reporting_tool.urls'
 
@@ -155,4 +162,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-CLIENT_APP_SHEMA_HOST_PORT = os.environ.get('CLIENT_APP_SHEMA_HOST_PORT') # like http://127.0.0.1:8000
+CLIENT_APP_SHEMA_HOST_PORT = os.environ.get(
+    'CLIENT_APP_SHEMA_HOST_PORT')  # like http://127.0.0.1:8000
