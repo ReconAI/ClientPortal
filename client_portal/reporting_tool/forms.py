@@ -3,15 +3,23 @@ Set of forms made use of within applicatoin
 """
 
 from django import forms
-from django.contrib.auth import get_user_model, password_validation
+from django.conf import settings
+from django.contrib.auth import (
+    get_user_model, password_validation,
+)
 from django.contrib.auth.forms import UserCreationForm, UsernameField, \
     PasswordResetForm as PasswordResetFormBase
 from django.contrib.auth.tokens import default_token_generator
+from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_decode
+from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import gettext_lazy as _
 
+from reporting_tool.frontend.router import Router
 from reporting_tool.models import Organization, User
+from reporting_tool.tokens import TokenGenerator
 
 
 class PreSignupForm(UserCreationForm):
@@ -54,7 +62,7 @@ class SignupForm(PreSignupForm):
         Fields username, email are required.
         """
         model = User
-        fields = ('username', 'email', 'firstname', 'lastname', 'password')
+        fields = ('username', 'email', 'firstname', 'lastname')
         field_classes = {'username': UsernameField}
 
     def save(self, commit: bool = True) -> User:
@@ -80,6 +88,7 @@ class PasswordResetForm(PasswordResetFormBase):
     Password reset form implementation.
     On reset password user gets the link to password reset form
     """
+
     # fixme customize reset password link in accordance with client server
 
     def clean_email(self) -> dict:
@@ -98,43 +107,78 @@ class PasswordResetForm(PasswordResetFormBase):
 
         return email
 
+    def save(self, domain_override=None,
+             subject_template_name='registration/password_reset_subject.txt',
+             email_template_name='registration/password_reset_email.html',
+             use_https=False, token_generator=default_token_generator,
+             from_email=None, request=None, html_email_template_name=None,
+             extra_email_context=None):
 
-class CheckResetPasswordTokenForm(forms.Form):
-    """
-    Checks wheter provided password reset token is valid
-    """
-
-    _token_generator = default_token_generator
-
-    uidb64 = forms.CharField()
-    token = forms.CharField()
-
-    def __init__(self, *args, **kwargs):
         """
-        :type args: list
-        :type kwargs: dict
+        Generate a one-use only link for resetting password and send it to the
+        user.
         """
-        self._user = None
+        email = self.cleaned_data["email"]
+        email_field_name = get_user_model().get_email_field_name()
 
-        super().__init__(*args, **kwargs)
+        for user in self.get_users(email):
+            site_name = domain_override
+            if not site_name:
+                current_site = get_current_site(request)
+                site_name = current_site.name
+
+            user_email = getattr(user, email_field_name)
+
+            context = {
+                'email': user_email,
+                'site_name': site_name,
+                'reset_password_link':
+                    self.__get_password_reset_link(user, token_generator),
+                'user': user,
+                **(extra_email_context or {}),
+            }
+
+            self.send_mail(
+                subject_template_name, email_template_name, context,
+                from_email,
+                user_email, html_email_template_name=html_email_template_name,
+            )
+
+    @staticmethod
+    def __get_password_reset_link(user: User, token_generator) -> str:
+        return Router(
+            settings.CLIENT_APP_SHEMA_HOST_PORT
+        ).reverse_full(
+            'reset_password',
+            args=(
+                urlsafe_base64_encode(force_bytes(user.pk)),
+                token_generator.make_token(user)
+            )
+        )
+
+
+class CheckUserTokenForm(forms.Form):
+    """
+    Check up activation token form
+    """
+    uidb64 = forms.CharField(min_length=1)
+    token = forms.CharField(min_length=2, max_length=33)
 
     @property
     def user(self) -> User:
         """
         :rtype: User
         """
-        if self._user is None:
-            try:
-                user_model = get_user_model()
+        try:
+            user_model = get_user_model()
 
-                uid = urlsafe_base64_decode(
-                    self.cleaned_data.get('uidb64')).decode()
-                self._user = user_model.objects.get(pk=uid)
-            except (TypeError, ValueError,
-                    OverflowError, ObjectDoesNotExist):
-                raise ValidationError(_('No user found'))
+            uidb64 = self.cleaned_data.get('uidb64')
 
-        return self._user
+            uid = urlsafe_base64_decode(uidb64).decode()
+            return user_model.objects.get(pk=uid)
+        except (TypeError, ValueError,
+                OverflowError, ObjectDoesNotExist):
+            raise ValidationError(_('No user found'))
 
     def clean_token(self) -> str:
         """
@@ -146,6 +190,19 @@ class CheckResetPasswordTokenForm(forms.Form):
             raise forms.ValidationError(_('Token is invalid'))
 
         return token
+
+    @property
+    def _token_generator(self):
+        """
+        :return: token generator should be returned
+        """
+        return default_token_generator
+
+
+class CheckResetPasswordTokenForm(CheckUserTokenForm):
+    """
+    Checks wheter provided password reset token is valid
+    """
 
 
 class SetPasswordForm(CheckResetPasswordTokenForm):
@@ -193,9 +250,31 @@ class SetPasswordForm(CheckResetPasswordTokenForm):
         :rtype: User
         """
         password = self.cleaned_data["new_password1"]
-        self._user.set_password(password)
+        user = self.user
+        user.set_password(password)
 
         if commit:
-            self._user.save()
+            user.save()
 
-        return self._user
+        return user
+
+
+class UserActivationForm(CheckUserTokenForm):
+    """
+    Activates user if token is valid
+    """
+    @property
+    def _token_generator(self) -> TokenGenerator:
+        """
+        :rtype: TokenGenerator
+        """
+        return TokenGenerator()
+
+    def save(self) -> User:
+        """
+        :rtype: User
+        """
+        user = self.user
+
+        user.is_active = True
+        return user.save()

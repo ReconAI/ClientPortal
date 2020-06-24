@@ -20,6 +20,7 @@ from django.utils.translation import gettext_lazy as _
 from recon_db_manager.models import CommonUser, Organization
 from reporting_tool.managers import UserManager, AbstractIaMUserManager
 from reporting_tool.permissions import PermissionsMixin
+from reporting_tool.settings import RECON_AI_CONNECTION_NAME
 
 
 class User(CommonUser, PermissionsMixin):
@@ -54,7 +55,7 @@ class User(CommonUser, PermissionsMixin):
         """
         :rtype: str
         """
-        return self.username
+        return str(self.username)
 
     @property
     def iam(self) -> AbstractIaMUserManager:
@@ -197,7 +198,7 @@ class User(CommonUser, PermissionsMixin):
         return Group.objects.filter(usergroup__user_id=self.pk).get()
 
     @atomic(using='default')
-    @atomic(using='recon_ai_db')
+    @atomic(using=RECON_AI_CONNECTION_NAME)
     def delete(self, using: str = None,
                keep_parents: bool = False) -> Tuple[int, dict]:
         """
@@ -217,6 +218,7 @@ class User(CommonUser, PermissionsMixin):
         collector = Collector(using=using)
         collector.collect([self], collect_related=False,
                           keep_parents=keep_parents)
+
         return collector.delete()
 
 

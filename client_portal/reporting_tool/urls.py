@@ -28,9 +28,7 @@ from .views.accounts import SignupView, ActivateView, CurrentUserProfileView, \
 urlpatterns = [
     path('signup', SignupView.as_view(), name='signup'),
     path('pre-signup', PreSignupValidationView.as_view(), name='pre-signup'),
-    url(
-        r'^activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
-        ActivateView.as_view(), name='activate'),
+    path('activate', ActivateView.as_view(), name='activate'),
     path('api-token-auth', ObtainAuthToken.as_view(), name='api_token_auth'),
     path('profile', CurrentUserProfileView.as_view(), name='profile'),
     path('logout', LogoutView.as_view(), name='logout'),

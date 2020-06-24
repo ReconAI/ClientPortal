@@ -2,15 +2,13 @@
 Http handlers for user related operations
 """
 from django.conf import settings
-from django.contrib.sites.shortcuts import get_current_site
-from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import EmailMultiAlternatives
 from django.db.transaction import atomic
 from django.http import JsonResponse
 from django.template.loader import render_to_string
 from django.utils.decorators import method_decorator
-from django.utils.encoding import force_bytes, force_text
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.cache import never_cache
 from django.views.generic.edit import FormMixin
@@ -24,9 +22,12 @@ from rest_framework.request import Request
 from rest_framework.views import APIView
 
 from reporting_tool.forms import SignupForm, PasswordResetForm, \
-    SetPasswordForm, PreSignupForm, CheckResetPasswordTokenForm
-from reporting_tool.models import User, Token
+    SetPasswordForm, PreSignupForm, CheckResetPasswordTokenForm, \
+    UserActivationForm
+from reporting_tool.frontend.router import Router
+from reporting_tool.models import Token
 from reporting_tool.serializers import UserSerializer
+from reporting_tool.settings import RECON_AI_CONNECTION_NAME
 from reporting_tool.tokens import TokenGenerator
 
 
@@ -63,7 +64,7 @@ class SignupView(APIView):
 
     @staticmethod
     @atomic(using='default')
-    @atomic(using='recon_ai_db')
+    @atomic(using=RECON_AI_CONNECTION_NAME)
     def post(request: Request, *arg, **kwargs) -> JsonResponse:
         """
         User signup http handler
@@ -79,9 +80,15 @@ class SignupView(APIView):
 
             message = render_to_string('emails/acc_active_email.html', {
                 'user': user,
-                'domain': get_current_site(request).domain,
-                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                'token': TokenGenerator().make_token(user),
+                'activation_link': Router(
+                    settings.CLIENT_APP_SHEMA_HOST_PORT
+                ).reverse_full(
+                    'activate',
+                    args=(
+                        urlsafe_base64_encode(force_bytes(user.pk)),
+                        TokenGenerator().make_token(user)
+                    )
+                )
             })
 
             EmailMultiAlternatives(
@@ -100,40 +107,42 @@ class SignupView(APIView):
         }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 
-class ActivateView(APIView):
+class ActivateView(APIView, FormMixin):
     """
     Perofrms activation of user's profile
     """
 
-    @staticmethod
+    form_class = UserActivationForm
+
     @atomic(using='default')
-    @atomic(using='recon_ai_db')
-    def get(request: Request, uidb64: str, token: str) -> JsonResponse:
+    @atomic(using=RECON_AI_CONNECTION_NAME)
+    def post(self, *args, **kwargs) -> JsonResponse:
         """
         User account activation
 
-        :type request: Request
-        :type uidb64: str
-        :type token: str
 
         :rtype: JsonResponse
         """
-        try:
-            uid = force_text(urlsafe_base64_decode(uidb64))
-            user = User.objects.get(pk=uid)
-        except(TypeError, ValueError, OverflowError, ObjectDoesNotExist):
-            user = None
-        if user is not None and TokenGenerator().check_token(user, token):
-            user.is_active = True
-            user.save()
+        form = self.get_form()
+
+        if form.is_valid():
+            form.save()
 
             return JsonResponse({
                 'message': _('Activated')
             })
 
         return JsonResponse({
-            'errors': _('Activation link is invalid')
+            'errors': form.errors
         }, status=status.HTTP_400_BAD_REQUEST)
+
+    def get_form_kwargs(self) -> dict:
+        """
+        :rtype: dict
+        """
+        return {
+            'data': self.request.data
+        }
 
 
 class CurrentUserProfileView(APIView):
