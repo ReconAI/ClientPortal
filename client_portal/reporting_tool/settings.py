@@ -154,3 +154,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+CLIENT_APP_SHEMA_HOST_PORT = os.environ.get('CLIENT_APP_SHEMA_HOST_PORT') # like http://127.0.0.1:8000

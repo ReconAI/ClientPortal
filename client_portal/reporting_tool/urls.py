@@ -23,21 +23,21 @@ from rest_framework import permissions
 
 from .views.accounts import SignupView, ActivateView, CurrentUserProfileView, \
     ObtainAuthToken, LogoutView, ResetPassword, PasswordResetConfirmView, \
-    PreSignupValidationView
+    PreSignupValidationView, CheckResetPasswordTokenView
 
 urlpatterns = [
     path('signup', SignupView.as_view(), name='signup'),
     path('pre-signup', PreSignupValidationView.as_view(), name='pre-signup'),
-    url(
-        r'^activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
-        ActivateView.as_view(), name='activate'),
+    path('activate', ActivateView.as_view(), name='activate'),
     path('api-token-auth', ObtainAuthToken.as_view(), name='api_token_auth'),
     path('profile', CurrentUserProfileView.as_view(), name='profile'),
     path('logout', LogoutView.as_view(), name='logout'),
 
-    path('reset_password', ResetPassword.as_view(), name='password_reset'),
+    path('reset-password', ResetPassword.as_view(), name='password_reset'),
     path('reset', PasswordResetConfirmView.as_view(),
          name='password_reset_confirm'),
+    path('check-reset-password-token', CheckResetPasswordTokenView.as_view(),
+         name='check_reset_password_token'),
 
     path('admin/', admin.site.urls),
 ]
