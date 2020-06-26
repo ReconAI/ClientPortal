@@ -1,0 +1,6 @@
+<recon-sign-in-form
+  [loadingStatus]="loadingStatus$ | async"
+  [isSignUp]="true"
+  [validationError]="preSignUpError$ | async"
+  (submitData$)="clickSubmit($event)"
+></recon-sign-in-form>

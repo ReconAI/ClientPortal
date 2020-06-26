@@ -1,0 +1,12 @@
+<div *ngIf="isGlobalLoading; else isInitApp" class="loader-container">
+  <mat-icon>
+    <mat-spinner color="primary" diameter="70"></mat-spinner>
+  </mat-icon>
+</div>
+<ng-template #isInitApp>
+  <recon-header></recon-header>
+  <div class="router-outlet-wrapper">
+    <h3>{{ title }}</h3>
+    <router-outlet></router-outlet>
+  </div>
+</ng-template>

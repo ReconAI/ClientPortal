@@ -1,0 +1,80 @@
+<form
+  [formGroup]="signInForm"
+  [ngClass]="{
+    'sign-in-form': !isSignUp,
+    'sign-up-form': isSignUp
+  }"
+  (ngSubmit)="onSubmit()"
+>
+  <div class="field-container">
+    <mat-error *ngIf="validationError">{{ validationError }}</mat-error>
+    <mat-form-field appearance="standard">
+      <mat-label>Login</mat-label>
+      <input
+        matInput
+        placeholder="Input login"
+        type="text"
+        formControlName="login"
+        required
+        autofocus
+        autocomplete="on"
+        id="login"
+      />
+      <mat-icon matSuffix [matTooltip]="loginTooltipText" *ngIf="isSignUp">
+        help_outline
+      </mat-icon>
+    </mat-form-field>
+  </div>
+  <div class="field-container">
+    <mat-form-field appearance="standard">
+      <mat-label>Password</mat-label>
+      <input
+        matInput
+        placeholder="Input password"
+        [type]="hide ? 'password' : 'text'"
+        formControlName="password1"
+        autocomplete="on"
+        required
+        id="password1"
+      />
+      <mat-icon
+        matSuffix
+        (click)="!isSignUp && (hide = !hide)"
+        [matTooltip]="isSignUp ? passwordTooltipText : null"
+        matTooltipClass="tooltip-error"
+      >
+        {{ !isSignUp ? visibilityIcon : "help_outline" }}
+      </mat-icon>
+    </mat-form-field>
+  </div>
+  <div class="field-container" *ngIf="isSignUp">
+    <mat-form-field appearance="standard">
+      <mat-label>Confirm password</mat-label>
+      <input
+        matInput
+        placeholder="Confirm password"
+        [type]="hide ? 'password' : 'text'"
+        formControlName="password2"
+        autocomplete="on"
+        required
+        id="password2"
+      />
+      <mat-icon matSuffix (click)="hide = !hide">
+        {{ visibilityIcon }}
+      </mat-icon>
+    </mat-form-field>
+  </div>
+  <div class="forgot-password-container" *ngIf="!isSignUp">
+    <p mat-dialog-close (click)="openForgotPasswordDialog()">Forgot password</p>
+  </div>
+  <button
+    mat-raised-button
+    color="primary"
+    [disabled]="loadingStatus || !signInForm.valid"
+  >
+    <mat-icon *ngIf="loadingStatus; else elseBlock">
+      <mat-spinner color="primary" diameter="20"></mat-spinner>
+    </mat-icon>
+    <ng-template #elseBlock>{{ isSignUp ? "Sign Up" : "Sign In" }}</ng-template>
+  </button>
+</form>

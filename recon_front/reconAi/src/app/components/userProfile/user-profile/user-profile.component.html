@@ -1,0 +1,145 @@
+<form [formGroup]="profileForm">
+  <div class="form-container">
+    <p>ORGANIZATION INFORMATION</p>
+    <div class="block-container" formGroupName="organization">
+      <div>
+        <recon-form-input
+          label="Country"
+          placeholder="Country"
+          formControlName="country"
+          [showRequiredSymbol]="true"
+        ></recon-form-input>
+      </div>
+      <div>
+        <recon-form-input
+          label="City"
+          placeholder="City"
+          formControlName="city"
+          [showRequiredSymbol]="true"
+        ></recon-form-input>
+      </div>
+      <div>
+        <recon-form-input
+          label="Company"
+          placeholder="Company"
+          formControlName="company"
+          [showRequiredSymbol]="true"
+        ></recon-form-input>
+      </div>
+      <div>
+        <recon-form-input
+          label="Phone"
+          placeholder="Phone"
+          formControlName="phone"
+          [showRequiredSymbol]="true"
+        ></recon-form-input>
+      </div>
+      <div>
+        <recon-form-input
+          label="Contact person"
+          placeholder="Contact person"
+          formControlName="contact"
+          [showRequiredSymbol]="true"
+        ></recon-form-input>
+      </div>
+      <div>
+        <recon-form-input
+          label="Email"
+          placeholder="Email"
+          formControlName="email"
+          [showRequiredSymbol]="true"
+        ></recon-form-input>
+      </div>
+      <div>
+        <recon-form-input
+          label="Address"
+          placeholder="Address"
+          formControlName="address"
+          [showRequiredSymbol]="true"
+        ></recon-form-input>
+      </div>
+      <div>
+        <recon-form-input
+          label="VAT (ID)"
+          placeholder="VAT (ID)"
+          formControlName="vat"
+          [showRequiredSymbol]="true"
+        ></recon-form-input>
+      </div>
+    </div>
+    <p>USER INFORMATION</p>
+    <div class="block-container" formGroupName="user">
+      <div>
+        <recon-form-input
+          label="Company"
+          placeholder="Company"
+          formControlName="company"
+          [showRequiredSymbol]="true"
+        ></recon-form-input>
+      </div>
+      <div>
+        <recon-form-input
+          label="Phone"
+          placeholder="Phone"
+          formControlName="phone"
+          [showRequiredSymbol]="true"
+        ></recon-form-input>
+      </div>
+      <div>
+        <recon-form-input
+          label="Contact person"
+          placeholder="Contact person"
+          formControlName="contact"
+          [showRequiredSymbol]="true"
+        ></recon-form-input>
+      </div>
+      <div>
+        <recon-form-input
+          label="Email"
+          placeholder="Email"
+          formControlName="email"
+          [showRequiredSymbol]="true"
+        ></recon-form-input>
+      </div>
+    </div>
+    <p>PAYMENT INFORMATION</p>
+    <div class="block-container" formGroupName="payment">
+      <div>
+        <recon-form-input
+          label="Invoicing address"
+          placeholder="Invoicing address"
+          formControlName="invoicingAddress"
+          [showRequiredSymbol]="true"
+        ></recon-form-input>
+      </div>
+      <div>
+        <recon-form-input
+          label="Phone"
+          placeholder="Phone"
+          formControlName="phone"
+          [showRequiredSymbol]="true"
+        ></recon-form-input>
+      </div>
+      <div>
+        <recon-form-input
+          label="Contact person"
+          placeholder="Contact person"
+          formControlName="contact"
+          [showRequiredSymbol]="true"
+        ></recon-form-input>
+      </div>
+      <div>
+        <recon-form-input
+          label="Email for invoicing"
+          placeholder="Email for invoicing"
+          formControlName="email"
+          [showRequiredSymbol]="true"
+        ></recon-form-input>
+      </div>
+    </div>
+    <div class="bottom-container">
+      <button mat-raised-button color="primary">SAVE</button>
+      <span>*I approve terms of services and GDPR</span>
+    </div>
+  </div>
+</form>
