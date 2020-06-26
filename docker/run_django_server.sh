@@ -5,4 +5,5 @@ bash check_db_readiness.sh -t "${WAIT_FOR_DB_TIMEOUT}" "${CLIENT_PORTAL_DB_HOST}
 bash check_db_readiness.sh -t "${WAIT_FOR_DB_TIMEOUT}" "${RECON_AI_DB_HOST}:${RECON_AI_DB_PORT}" -- echo "${RECON_AI_DB_NAME} DB IS READY" || { echo "${RECON_AI_DB_NAME} DB IS DOWN"; exit 1; }
 
 python manage.py migrate --settings=reporting_tool.settings
+python manage.py migrate --settings=recon_db_manager.settings
 python manage.py runserver 0.0.0.0:8000
