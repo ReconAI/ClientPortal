@@ -253,7 +253,7 @@ class ObtainAuthToken(ObtainAuthTokenBase):
                                            context={'request': request})
         if serializer.is_valid():
             user = serializer.validated_data['user']
-            user_token, _ = Token.objects.get_or_create(user_id=user.pk)
+            user_token, created = Token.objects.get_or_create(user_id=user.pk)
 
             return JsonResponse({
                 'data': {
@@ -262,7 +262,9 @@ class ObtainAuthToken(ObtainAuthTokenBase):
             }, status=status.HTTP_201_CREATED)
 
         return JsonResponse({
-            'errors': serializer.errors
+            'errors': _('Sorry, the information you entered '
+                        'does not match what we have on file. '
+                        'Please try again')
         }, status=status.HTTP_400_BAD_REQUEST)
 
 
