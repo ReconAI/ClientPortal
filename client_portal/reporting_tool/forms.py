@@ -29,6 +29,10 @@ class PreSignupForm(UserCreationForm):
     """
     username = UsernameField
 
+    error_messages = {
+        'password_mismatch': _('Passwords do not match'),
+    }
+
     class Meta:
         """
         Fields username, email are required.
@@ -213,19 +217,17 @@ class SetPasswordForm(CheckResetPasswordTokenForm):
     """
 
     error_messages = {
-        'password_mismatch': _('The two password fields didn’t match.'),
+        'password_mismatch': _('Passwords do not match'),
     }
 
     new_password1 = forms.CharField(
         label=_("New password"),
         widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}),
-        strip=False,
-        help_text=password_validation.password_validators_help_text_html(),
+        strip=False
     )
     new_password2 = forms.CharField(
         label=_("New password confirmation"),
-        strip=False,
-        widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}),
+        strip=False
     )
 
     def clean_new_password2(self) -> str:

@@ -4,7 +4,7 @@ Reporting tool models are located here
 import binascii
 import os
 import unicodedata
-from typing import Tuple, Optional, Iterable
+from typing import Tuple, Optional, Iterable, Type
 
 from django.conf import settings
 from django.contrib.auth.hashers import make_password, check_password, \
@@ -211,8 +211,8 @@ class User(CommonUser, PermissionsMixin):
         """
         using = using or router.db_for_write(self.__class__, instance=self)
         assert self.pk is not None, (
-            "%s object can't be deleted because its %s(pk) is set to None." %
-            (self._meta.object_name, self._meta.pk.attname)
+                "%s object can't be deleted because its %s(pk) is set to None." %
+                (self._meta.object_name, self._meta.pk.attname)
         )
 
         collector = Collector(using=using)
@@ -220,6 +220,25 @@ class User(CommonUser, PermissionsMixin):
                           keep_parents=keep_parents)
 
         return collector.delete()
+
+    def unique_error_message(self, model_class: Type['User'],
+                             unique_check: tuple) -> str:
+        """
+        :type model_class: Type['User']
+        :type unique_check: tuple
+
+        :rtype: str
+        """
+        try:
+            attribute_name = unique_check[0]
+            aliases = {
+                'username': 'login'
+            }
+            alias = aliases.get(attribute_name, attribute_name)
+        except (IndexError, AttributeError):
+            alias = 'data'
+
+        return _('{} you entered is not available'.format(alias.capitalize()))
 
 
 class UserGroup(models.Model):
