@@ -136,6 +136,18 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
+    {
+        'NAME': 'reporting_tool.validators.TwoLowercasesPasswordValidator',
+    },
+    {
+        'NAME': 'reporting_tool.validators.TwoUppercasesPasswordValidator',
+    },
+    {
+        'NAME': 'reporting_tool.validators.TwoNumbersPasswordValidator',
+    },
+    {
+        'NAME': 'reporting_tool.validators.SpecialCharacterPasswordValidator',
+    },
 ]
 
 AWS_IAM_USER_MANAGER = os.environ.get('AWS_IAM_SYNC_MANAGER',

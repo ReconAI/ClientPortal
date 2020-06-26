@@ -11,11 +11,12 @@ from django.contrib.auth.forms import UserCreationForm, UsernameField, \
     PasswordResetForm as PasswordResetFormBase
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_decode
 from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import gettext_lazy as _
+from rest_framework.exceptions import ParseError, NotFound
 
 from reporting_tool.frontend.router import Router
 from reporting_tool.models import Organization, User
@@ -26,6 +27,7 @@ class PreSignupForm(UserCreationForm):
     """
     Performs inital validation before signing a user up
     """
+    username = UsernameField
 
     class Meta:
         """
@@ -33,7 +35,6 @@ class PreSignupForm(UserCreationForm):
         """
         model = User
         fields = ('username',)
-        field_classes = {'username': UsernameField}
 
     def clean(self) -> dict:
         """
@@ -63,7 +64,6 @@ class SignupForm(PreSignupForm):
         """
         model = User
         fields = ('username', 'email', 'firstname', 'lastname')
-        field_classes = {'username': UsernameField}
 
     def save(self, commit: bool = True) -> User:
         """
@@ -103,7 +103,7 @@ class PasswordResetForm(PasswordResetFormBase):
         try:
             get_user_model().objects.get(email=email)
         except ObjectDoesNotExist:
-            raise ValidationError(_("No user found"))
+            raise NotFound(_("No user found"))
 
         return email
 
@@ -176,9 +176,10 @@ class CheckUserTokenForm(forms.Form):
 
             uid = urlsafe_base64_decode(uidb64).decode()
             return user_model.objects.get(pk=uid)
-        except (TypeError, ValueError,
-                OverflowError, ObjectDoesNotExist):
-            raise ValidationError(_('No user found'))
+        except (AttributeError, TypeError, ValueError, OverflowError):
+            raise ParseError('Request data is invalid')
+        except ObjectDoesNotExist:
+            raise NotFound(_('No user found'))
 
     def clean_token(self) -> str:
         """
