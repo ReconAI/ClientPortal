@@ -1,11 +1,27 @@
 """
 Modules defines models serializers
 """
+from typing import Type
+
 from django.contrib.auth.models import Group
 from django.db.models import Model
+from django.forms import ModelForm
+from drf_braces.serializers.form_serializer import FormSerializer
 from rest_framework import serializers
 
 from reporting_tool.models import User
+
+
+def form_to_formserializer(form: Type[ModelForm]):
+    meta_class = type('Meta', (), {
+        'form': form
+    })
+
+    form_serializer = type('Serializer', (FormSerializer, ), {
+        'Meta': meta_class
+    })
+
+    return form_serializer
 
 
 class ReadOnlySerializer(serializers.Serializer):
