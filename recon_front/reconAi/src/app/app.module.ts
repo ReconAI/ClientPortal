@@ -37,6 +37,9 @@ import { UserProfileComponent } from './components/userProfile/user-profile/user
 import { RegistrationSuccessComponent } from './components/registration/registration-success/registration-success.component';
 import { ForgotPasswordComponent } from './components/login-modal/forgot-password/forgot-password.component';
 import { ActivationComponent } from './components/activation/activation/activation.component';
+import { PreResetPasswordComponent } from './components/login-modal/pre-reset-password/pre-reset-password.component';
+import { PreResetPasswordContainer } from './components/login-modal/pre-reset-password/pre-reset-password.container';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -56,6 +59,8 @@ import { ActivationComponent } from './components/activation/activation/activati
     ForgotPasswordComponent,
     ForgotPasswordContainer,
     ActivationComponent,
+    PreResetPasswordComponent,
+    PreResetPasswordContainer,
   ],
   imports: [
     BrowserModule,

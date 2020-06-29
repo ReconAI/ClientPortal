@@ -1,3 +1,4 @@
+import { PreResetPasswordContainer } from './../pre-reset-password/pre-reset-password.container';
 import { ForgotPasswordContainer } from './../forgot-password/forgot-password.container';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { LoginUserFormInterface } from './../../../store/user/user.server.helpers';
@@ -55,7 +56,7 @@ export class SignInFormComponent implements OnInit, OnDestroy {
   }
 
   openForgotPasswordDialog() {
-    this.dialogRef = this.dialog.open(ForgotPasswordContainer, {
+    this.dialogRef = this.dialog.open(PreResetPasswordContainer, {
       width: '460px',
       height: '270px',
     });

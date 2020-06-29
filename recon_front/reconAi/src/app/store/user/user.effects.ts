@@ -167,6 +167,8 @@ export class UserEffects {
       switchMap((email: PreResetPasswordRequestInterface) =>
         this.httpClient.post('/authApi/reset-password', email).pipe(
           map(() => {
+            // check if we need it
+            this.store.dispatch(preResetResetPasswordErrorAction());
             return preResetPasswordSucceededAction();
           }),
           catchError((error) =>

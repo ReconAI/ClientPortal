@@ -38,3 +38,8 @@ export const selectResetPasswordLoadingStatus = createSelector(
   selectLoaders,
   (loaders: LoadersState): boolean => loaders.resetPassword
 );
+
+export const selectPreResetPasswordLoadingStatus = createSelector(
+  selectLoaders,
+  (loaders: LoadersState): boolean => loaders.preResetPassword
+);
