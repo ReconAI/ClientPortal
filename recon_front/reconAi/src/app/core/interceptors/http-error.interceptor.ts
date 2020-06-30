@@ -18,7 +18,14 @@ export class HttpErrorInterceptor implements HttpInterceptor {
   readonly verticalPosition = 'top';
   readonly horizontalPosition = 'center';
   readonly defaultErrorMessage = 'Server error';
-  readonly errorsToNotShowMessage = ['/authApi/profile'];
+  readonly errorsToNotShowMessage = [
+    '/authApi/profile',
+    // forms
+    '/authApi/reset-password',
+    '/authApi/api-token-auth',
+    '/authApi/pre-signup',
+    '/authApi/reset',
+  ];
 
   createErrorServerMessage(error: HttpErrorResponse): string {
     const { errors } = error?.error;
@@ -49,10 +56,8 @@ export class HttpErrorInterceptor implements HttpInterceptor {
       duration: this.durationInSeconds * 1000,
       verticalPosition: this.verticalPosition,
       horizontalPosition: this.horizontalPosition,
+      panelClass: ['recon-snackbar'],
     });
-    // this.snackBar.openFromComponent(PizzaPartyComponent, {
-    //   duration: this.durationInSeconds * 1000,
-    // });
   }
 
   intercept(

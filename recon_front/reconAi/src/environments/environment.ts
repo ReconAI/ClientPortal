@@ -2,8 +2,7 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 declare const $ENV: Env;
-
-console.log($ENV.RECON_API_URL, 'SERVER');
+console.log($ENV.RECON_API_URL || 'http://127.0.0.1:8080/', 'SERVER');
 export const environment = {
   production: false,
   apiUrl: $ENV.RECON_API_URL,

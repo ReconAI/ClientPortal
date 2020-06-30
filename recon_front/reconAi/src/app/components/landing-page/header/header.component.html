@@ -1,15 +1,17 @@
 <mat-toolbar>
-  <div>
+  <div class="menu-container">
+    <img src="assets/logo.svg" alt="logo" />
     <nav>
-      <a routerLink="/reporting">Report </a>
+      <a routerLink="/reporting">Reporting </a>
       <a>Streaming</a>
-      <a routerLink="/catalog">Catalog</a>
+      <a>Filtering</a>
+      <a>Order portal</a>
       <!-- reduce count of alike reconCheckUserRolePriority -->
-      <a *reconCheckUserRolePriority="userRolePriorities.ADMIN_ROLE">Devices</a>
+      <!-- <a *reconCheckUserRolePriority="userRolePriorities.ADMIN_ROLE">Devices</a>
       <a *reconCheckUserRolePriority="userRolePriorities.ADMIN_ROLE">Alarms</a>
       <a *reconCheckUserRolePriority="userRolePriorities.CLIENT_ROLE"
         >User settings</a
-      >
+      > -->
       <a>New Feature </a>
     </nav>
   </div>

@@ -1,3 +1,4 @@
+import { HttpSuccessInterceptor } from './core/interceptors/http-success/http-success.interceptor';
 import { RegistrationSuccessHumanComponent } from './components/registration/registration-success/registration-success-human.component';
 import { SignUpEffects } from './store/signUp/signUp.effects';
 import { HttpReqFormatInterceptor } from './core/interceptors/http-req-format/http-req-format.interceptor';
@@ -90,6 +91,9 @@ import { ResetPasswordModalContainer } from './components/reset-password-page/re
     { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true },
     // get data from data field of response
     { provide: HTTP_INTERCEPTORS, useClass: HttpReqFormatInterceptor, multi: true },
+    // order is important!
+    // show green success snackbars
+    { provide: HTTP_INTERCEPTORS, useClass: HttpSuccessInterceptor, multi: true },
     // for modals
     { provide: MatDialogRef, useValue: {} },
     { provide: MAT_DIALOG_DATA, useValue: {} },
