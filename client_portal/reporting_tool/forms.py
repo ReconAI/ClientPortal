@@ -1,6 +1,7 @@
 """
 Set of forms made use of within applicatoin
 """
+from typing import Dict, List, Tuple
 
 from django import forms
 from django.conf import settings
@@ -12,6 +13,7 @@ from django.contrib.auth.forms import UserCreationForm, UsernameField, \
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ObjectDoesNotExist
+from django.forms import ModelForm
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_decode
 from django.utils.http import urlsafe_base64_encode
@@ -53,7 +55,7 @@ class PreSignupForm(UserCreationForm):
         return cleaned_data
 
 
-class SignupForm(PreSignupForm):
+class UserForm(PreSignupForm):
     """
     SignupForm with the next behavior:
         - when user signs up, he/she is attached to the ADMIN user group
@@ -61,13 +63,27 @@ class SignupForm(PreSignupForm):
     email = forms.EmailField(label=_("Email"))
     firstname = forms.CharField(label=_("First name"))
     lastname = forms.CharField(label=_("Last name"))
+    address = forms.CharField(label=_("Address"))
+    phone = forms.CharField(label=_("Phone number"))
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.__organization = None
 
     class Meta:
         """
         Fields username, email are required.
         """
         model = User
-        fields = ('username', 'email', 'firstname', 'lastname')
+        fields = (
+            'username', 'email', 'firstname', 'lastname', 'address', 'phone')
+
+    def set_organization(self, organization: Organization):
+        """
+        :type organization: Organization
+        """
+        self.__organization = organization
 
     def save(self, commit: bool = True) -> User:
         """
@@ -81,10 +97,82 @@ class SignupForm(PreSignupForm):
         self.cleaned_data["password"] = data.pop("password1")
         data.pop('password2')
 
-        # fixme replace with newly created organization
-        organization = Organization.objects.first()
+        return self._meta.model.objects.create_admin(self.__organization,
+                                                     **data)
 
-        return self._meta.model.objects.create_admin(organization, **data)
+
+class OrganizationForm(ModelForm):
+    """
+    Organization model form
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for _, field in self.fields.items():
+            field.required = True
+
+    class Meta:
+        """
+        All fields apart from id should be editable
+        """
+        model = Organization
+        fields = (
+            "name", "vat", "main_firstname", "main_lastname", "main_address",
+            "main_phone", "main_email", "inv_firstname", "inv_lastname",
+            "inv_address", "inv_phone", "inv_email"
+        )
+
+
+class SignupForm:
+    """
+    Signup form is a combination of Userform and Organizationform
+    """
+    user_form_class = UserForm
+    organization_form_class = OrganizationForm
+
+    def __init__(self, data: dict):
+        """
+        :type data: dict
+        """
+        self.__user_form = UserForm(data)
+        self.__organization_form = OrganizationForm(data)
+
+    def is_valid(self) -> bool:
+        """
+        Both forms should be valid to have the form data correct
+
+        :rtype: bool
+        """
+        return (
+            self.__organization_form.is_valid()
+            and self.__user_form.is_valid()
+        )
+
+    @property
+    def errors(self) -> Dict[str, List[str]]:
+        """
+        :rtype: Dict[str, List[str]]
+        """
+        return {
+            **self.__user_form.errors,
+            **self.__organization_form.errors
+        }
+
+    def save(self) -> Tuple[User, Organization]:
+        """
+        Wser with only just created organization will be inserted.
+
+        :rtype: Tuple[User, Organization]
+        """
+        organization = self.__organization_form.save()
+
+        self.__user_form.set_organization(organization)
+
+        return (
+            self.__user_form.save(),
+            organization
+        )
 
 
 class PasswordResetForm(PasswordResetFormBase):
@@ -92,8 +180,6 @@ class PasswordResetForm(PasswordResetFormBase):
     Password reset form implementation.
     On reset password user gets the link to password reset form
     """
-
-    # fixme customize reset password link in accordance with client server
 
     def clean_email(self) -> dict:
         """
@@ -266,6 +352,7 @@ class UserActivationForm(CheckUserTokenForm):
     """
     Activates user if token is valid
     """
+
     @property
     def _token_generator(self) -> TokenGenerator:
         """

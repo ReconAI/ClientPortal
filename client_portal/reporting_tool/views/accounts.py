@@ -25,11 +25,12 @@ from rest_framework.views import APIView
 
 from reporting_tool.forms import SignupForm, PasswordResetForm, \
     SetPasswordForm, CheckResetPasswordTokenForm, PreSignupForm, \
-    UserActivationForm
+    UserActivationForm, OrganizationForm, UserForm
 from reporting_tool.frontend.router import Router
 from reporting_tool.models import Token
 from reporting_tool.permissions import IsNotAuthenticated
-from reporting_tool.serializers import UserSerializer, form_to_formserializer
+from reporting_tool.serializers import UserSerializer, \
+    form_to_formserializer, forms_to_formserializer
 from reporting_tool.settings import RECON_AI_CONNECTION_NAME
 from reporting_tool.swagger.responses import get_responses, token, http400, \
     http405, http403, http401
@@ -86,7 +87,7 @@ class SignupView(APIView):
     @atomic(using='default')
     @atomic(using=RECON_AI_CONNECTION_NAME)
     @swagger_auto_schema(
-        request_body=form_to_formserializer(form_class),
+        request_body=forms_to_formserializer(UserForm, OrganizationForm),
         responses=get_responses(status.HTTP_201_CREATED,
                                 status.HTTP_400_BAD_REQUEST,
                                 status.HTTP_403_FORBIDDEN,
@@ -108,7 +109,7 @@ class SignupView(APIView):
         form = self.form_class(request.data)
 
         if form.is_valid():
-            user = form.save()
+            user, organization = form.save()
 
             message = render_to_string('emails/account_activation.html', {
                 'user': user,
@@ -126,7 +127,7 @@ class SignupView(APIView):
             EmailMultiAlternatives(
                 _('Activate your account'),
                 message,
-                to=[form.cleaned_data.get('email')]
+                to=[user.email]
             ).send()
 
             return JsonResponse({

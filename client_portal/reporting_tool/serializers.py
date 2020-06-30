@@ -1,18 +1,26 @@
 """
 Modules defines models serializers
 """
-from typing import Type
+from typing import Type, List, Union
 
 from django.contrib.auth.models import Group
 from django.db.models import Model
-from django.forms import ModelForm
+from django.forms import Form
 from drf_braces.serializers.form_serializer import FormSerializer
 from rest_framework import serializers
 
 from reporting_tool.models import User
 
 
-def form_to_formserializer(form: Type[ModelForm]):
+def form_to_formserializer(
+        form: Union[Type[Form], type]) -> Union[Type[FormSerializer], type]:
+    """
+    Converts form to serializer
+
+    :type form: Type[Form]
+
+    :rtype: Union[Type[FormSerializer], type]
+    """
     meta_class = type('Meta', (), {
         'form': form
     })
@@ -22,6 +30,27 @@ def form_to_formserializer(form: Type[ModelForm]):
     })
 
     return form_serializer
+
+
+def forms_to_formserializer(
+        *forms: List[Type[Form]]) -> Union[Type[FormSerializer], type]:
+    """
+    Combines multiple forms into seriallizer
+
+    :type forms: List[Type[Form]]
+
+    :rtype: Union[Type[FormSerializer], type]
+    """
+
+    fields = {}
+
+    for form in forms:
+        fields = {
+            **fields,
+            **getattr(form, 'all_base_fields', form.base_fields)
+        }
+
+    return form_to_formserializer(type('Form', (Form, ), {**fields}))
 
 
 class ReadOnlySerializer(serializers.Serializer):
