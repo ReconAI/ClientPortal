@@ -1,11 +1,12 @@
 """
 Stores classes describing access logic
 """
+from urllib.request import Request
 
 from django.contrib import auth
+from rest_framework.permissions import BasePermission
 
 
-# A few helper functions for common logic between User and AnonymousUser.
 def _user_get_permissions(user, obj, from_name):
     permissions = set()
     name = 'get_%s_permissions' % from_name
@@ -66,3 +67,16 @@ class PermissionsMixin:
         """
         # Active superusers have all permissions.
         return self.is_superuser
+
+
+class IsNotAuthenticated(BasePermission):
+    """
+    Allows access only to non authenticated users.
+    """
+
+    def has_permission(self, request: Request, view) -> bool:
+        return (
+            not request.user
+            or request.user.is_anonymous
+            or not request.user.is_authenticated
+        )
