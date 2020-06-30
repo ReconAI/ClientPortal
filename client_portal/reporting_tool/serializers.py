@@ -1,7 +1,7 @@
 """
 Modules defines models serializers
 """
-from typing import Type
+from typing import Type, List
 
 from django.contrib.auth.models import Group
 from django.db.models import Model
@@ -57,6 +57,11 @@ class UserSerializer(ReadOnlySerializer):
     """
     Serializes user data
     """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.__user_groups = None
+
     id = serializers.IntegerField()
     firstname = serializers.CharField(max_length=255)
     lastname = serializers.CharField(max_length=255)
@@ -68,6 +73,16 @@ class UserSerializer(ReadOnlySerializer):
     user_level = serializers.CharField(max_length=3)
     is_active = serializers.BooleanField()
     user_group = GroupSerializer()
+
+    def to_representation(self, instance: List[User]):
+        a = super().to_representation(instance)
+        # response_dict = dict()
+        # response_dict[instance.section_id] = {
+        #     'actions': ActionsSerializer(instance.actions.all(),
+        #                                  many=True).data,
+        #     'risks': RiskSerializer(instance.risks.all(), many=True).data
+        # }
+        return a
 
     class Meta:
         """

@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'reporting_tool',
     'recon_db_manager',
     'drf_yasg',
+    'django_seed'
 ]
 
 MIDDLEWARE = [
@@ -84,7 +85,9 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'reporting_tool.authentication.TokenAuthentication',
     ],
-    'EXCEPTION_HANDLER': 'reporting_tool.exception_handlers.exception_handler'
+    'EXCEPTION_HANDLER': 'reporting_tool.exception_handlers.exception_handler',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10
 }
 
 AUTH_USER_MODEL = 'reporting_tool.User'
@@ -177,3 +180,26 @@ STATIC_URL = '/static/'
 
 CLIENT_APP_SHEMA_HOST_PORT = os.environ.get(
     'CLIENT_APP_SHEMA_HOST_PORT')  # like http://127.0.0.1:8000
+
+
+LOGGING = {
+    'version': 1,
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        }
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+        }
+    },
+    'loggers': {
+        'django.db.backends': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+        }
+    }
+}

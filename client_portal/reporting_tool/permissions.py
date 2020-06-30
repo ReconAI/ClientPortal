@@ -80,3 +80,8 @@ class IsNotAuthenticated(BasePermission):
             or request.user.is_anonymous
             or not request.user.is_authenticated
         )
+
+
+class IsCompanyAdmin(BasePermission):
+    def has_permission(self, request: Request, view) -> bool:
+        return request.user.is_admin
