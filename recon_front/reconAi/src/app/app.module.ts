@@ -1,4 +1,3 @@
-import { ForgotPasswordContainer } from './components/login-modal/forgot-password/forgot-password.container';
 import { RegistrationSuccessHumanComponent } from './components/registration/registration-success/registration-success-human.component';
 import { SignUpEffects } from './store/signUp/signUp.effects';
 import { HttpReqFormatInterceptor } from './core/interceptors/http-req-format/http-req-format.interceptor';
@@ -35,10 +34,12 @@ import { SignUpFormContainer } from './components/login-modal/sign-in-form/sign-
 import { RegistrationComponent } from './components/registration/registration/registration.component';
 import { UserProfileComponent } from './components/userProfile/user-profile/user-profile.component';
 import { RegistrationSuccessComponent } from './components/registration/registration-success/registration-success.component';
-import { ForgotPasswordComponent } from './components/login-modal/forgot-password/forgot-password.component';
 import { ActivationComponent } from './components/activation/activation/activation.component';
 import { PreResetPasswordComponent } from './components/login-modal/pre-reset-password/pre-reset-password.component';
 import { PreResetPasswordContainer } from './components/login-modal/pre-reset-password/pre-reset-password.container';
+import { ResetPasswordPageComponent } from './components/reset-password-page/reset-password-page.component';
+import { ResetPasswordModalComponent } from './components/reset-password-page/reset-password-modal/reset-password-modal.component';
+import { ResetPasswordModalContainer } from './components/reset-password-page/reset-password-modal/reset-password-modal.container';
 
 @NgModule({
   declarations: [
@@ -56,11 +57,12 @@ import { PreResetPasswordContainer } from './components/login-modal/pre-reset-pa
     UserProfileComponent,
     RegistrationSuccessComponent,
     RegistrationSuccessHumanComponent,
-    ForgotPasswordComponent,
-    ForgotPasswordContainer,
     ActivationComponent,
     PreResetPasswordComponent,
     PreResetPasswordContainer,
+    ResetPasswordPageComponent,
+    ResetPasswordModalComponent,
+    ResetPasswordModalContainer,
   ],
   imports: [
     BrowserModule,

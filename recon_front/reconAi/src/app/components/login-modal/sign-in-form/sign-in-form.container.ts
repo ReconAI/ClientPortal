@@ -3,6 +3,8 @@ import { tap } from 'rxjs/operators';
 import {
   loginUserSucceededAction,
   resetLoginUserErrorAction,
+  preResetPasswordSucceededAction,
+  preResetPasswordErrorAction,
 } from './../../../store/user/user.actions';
 import { ofType } from '@ngrx/effects';
 import { selectLoginLoadingStatus } from './../../../store/loaders/loaders.selectors';
@@ -19,7 +21,8 @@ import { loginUserRequestedAction } from 'app/store/user';
 })
 export class SignInFormContainer implements OnInit, OnDestroy {
   constructor(
-    private store: Store<AppState> // it's used to close our modal when it's need to do
+    private store: Store<AppState>, // it's used to close our modal when it's need to do
+    private actionsSubject: ActionsSubject
   ) {}
 
   loadingStatus$: Observable<boolean> = this.store.pipe(
@@ -28,6 +31,10 @@ export class SignInFormContainer implements OnInit, OnDestroy {
 
   loginError$: Observable<string> = this.store.pipe(
     select(selectLoginErrorsStatus)
+  );
+
+  closeModal$ = this.actionsSubject.pipe(
+    ofType(preResetPasswordSucceededAction),
   );
 
   ngOnInit(): void {}

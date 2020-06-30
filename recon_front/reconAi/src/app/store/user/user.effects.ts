@@ -1,3 +1,4 @@
+import { ResetPasswordWithMetaInterface } from 'app/constants/types/resetPassword';
 import { generalTransformFormError } from './../../core/helpers/generalFormsErrorsTransformation';
 import {
   setLoginLoadingStatusAction,
@@ -16,6 +17,7 @@ import {
   transformLoginUserForm,
   transformErrorsToDisplay,
   PreResetPasswordRequestInterface,
+  transformResetPasswordFormToRequest,
 } from './user.server.helpers';
 import {
   UserActionTypes,
@@ -186,7 +188,6 @@ export class UserEffects {
     )
   );
 
-  // isn't checked yet
   resetPassword$: Observable<Action> = createEffect(() =>
     this.actions$.pipe(
       ofType(UserActionTypes.RESET_PASSWORD_REQUESTED),
@@ -197,23 +198,28 @@ export class UserEffects {
           })
         );
       }),
-      switchMap(() =>
-        this.httpClient.get('/authApi/reset-password').pipe(
-          map(() => {
-            return resetPasswordSucceededAction();
-          }),
-          catchError((error) => of(resetPasswordErrorAction())),
-          finalize(() => {
-            this.store.dispatch(
-              setResetPasswordLoadingStatusAction({
-                status: false,
-              })
-            );
-          })
-        )
-      )
+      switchMap((credentials: ResetPasswordWithMetaInterface) => {
+        return this.httpClient
+          .post(
+            '/authApi/reset',
+            transformResetPasswordFormToRequest(credentials)
+          )
+          .pipe(
+            map(() => {
+              return resetPasswordSucceededAction();
+            }),
+            catchError((error) =>
+              of(resetPasswordErrorAction(generalTransformFormError(error)))
+            ),
+            finalize(() => {
+              this.store.dispatch(
+                setResetPasswordLoadingStatusAction({
+                  status: false,
+                })
+              );
+            })
+          );
+      })
     )
   );
-
-  // preResetPassword$: Observable<Action> = createEffect()
 }

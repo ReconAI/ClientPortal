@@ -44,3 +44,8 @@ export const selectPreResetPasswordError = createSelector(
   selectUser,
   (user: UserState): string => user.errors?.preResetPassword || ''
 );
+
+export const selectResetPasswordError = createSelector(
+  selectUser,
+  (user: UserState): string => user.errors?.resetPassword || ''
+);

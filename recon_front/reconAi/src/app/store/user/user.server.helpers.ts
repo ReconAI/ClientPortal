@@ -1,3 +1,4 @@
+import { ResetPasswordWithMetaInterface } from 'app/constants/types/resetPassword';
 import { getUserPriorityByRole } from './../../core/helpers/priorities';
 import { FormServerErrorInterface } from './../../constants/types/requests';
 import { UserRolesPriorities } from 'app/constants/types';
@@ -6,7 +7,6 @@ import {
   DEFAULT_USER_ROLE_PRIORITY,
   UserRoleTypes,
 } from './../../constants/types/user';
-import { UserState } from './user.reducer';
 import { HttpErrorResponse } from '@angular/common/http';
 
 export interface UserResponse {
@@ -73,7 +73,6 @@ export const transformLoginUserForm = ({
   username: login,
   password: password1,
 });
-
 export const transformErrorsToDisplay = (
   error: HttpErrorResponse
 ): FormServerErrorInterface | null => {
@@ -92,7 +91,25 @@ export const transformErrorsToDisplay = (
   return null;
 };
 
-
 export interface PreResetPasswordRequestInterface {
   email: string;
 }
+
+export interface ResetPasswordReqestInterface {
+  token: string;
+  uidb64: string;
+  new_password1: string;
+  new_password2: string;
+}
+
+export const transformResetPasswordFormToRequest = ({
+  uidb64,
+  token,
+  password1,
+  password2,
+}: ResetPasswordWithMetaInterface): ResetPasswordReqestInterface => ({
+  token,
+  uidb64,
+  new_password1: password1,
+  new_password2: password2,
+});

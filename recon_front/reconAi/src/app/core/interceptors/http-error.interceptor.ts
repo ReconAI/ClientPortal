@@ -18,8 +18,7 @@ export class HttpErrorInterceptor implements HttpInterceptor {
   readonly verticalPosition = 'top';
   readonly horizontalPosition = 'center';
   readonly defaultErrorMessage = 'Server error';
-  // readonly errorsToNotShowMessage = ['/authApi/profile'];
-  readonly errorsToNotShowMessage = [];
+  readonly errorsToNotShowMessage = ['/authApi/profile'];
 
   createErrorServerMessage(error: HttpErrorResponse): string {
     const { errors } = error?.error;

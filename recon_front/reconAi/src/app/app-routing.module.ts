@@ -1,3 +1,4 @@
+import { ResetPasswordPageComponent } from './components/reset-password-page/reset-password-page.component';
 import { ActivationComponent } from './components/activation/activation/activation.component';
 import { RegistrationSuccessComponent } from './components/registration/registration-success/registration-success.component';
 import { NotAuthGuard } from './core/guards/not-auth-guard/not-auth.guard';
@@ -6,9 +7,7 @@ import { AuthGuard } from './guards/auth.guard';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { LandingPageComponent } from './components/landing-page/landing-page.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
-import { AppComponent } from './app.component';
 
 const routes: Routes = [
   {
@@ -46,12 +45,16 @@ const routes: Routes = [
     component: ActivationComponent,
   },
   {
+    path: 'reset/:uidb/:token',
+    component: ResetPasswordPageComponent,
+  },
+  {
     path: '**',
     component: PageNotFoundComponent,
     data: {
       title: 'Not found',
     },
-  }, // Wildcard route for a 404 page
+  },
 ];
 
 @NgModule({

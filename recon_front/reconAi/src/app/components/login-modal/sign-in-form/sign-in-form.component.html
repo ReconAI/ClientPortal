@@ -31,7 +31,7 @@
       <input
         matInput
         placeholder="Input password"
-        [type]="hide ? 'password' : 'text'"
+        type="password"
         formControlName="password1"
         autocomplete="on"
         required
@@ -39,11 +39,11 @@
       />
       <mat-icon
         matSuffix
-        (click)="!isSignUp && (hide = !hide)"
         [matTooltip]="isSignUp ? passwordTooltipText : null"
-        matTooltipClass="tooltip-error"
+        matTooltipClass="tooltip-prelined"
+        *ngIf="isSignUp"
       >
-        {{ !isSignUp ? visibilityIcon : "help_outline" }}
+        help_outline
       </mat-icon>
     </mat-form-field>
   </div>
@@ -53,15 +53,12 @@
       <input
         matInput
         placeholder="Confirm password"
-        [type]="hide ? 'password' : 'text'"
+        type="password"
         formControlName="password2"
         autocomplete="on"
         required
         id="password2"
       />
-      <mat-icon matSuffix (click)="hide = !hide">
-        {{ visibilityIcon }}
-      </mat-icon>
     </mat-form-field>
   </div>
   <div class="forgot-password-container" *ngIf="!isSignUp">

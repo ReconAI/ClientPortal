@@ -1,6 +1,11 @@
 import { FormServerErrorInterface } from './../../constants/types/requests';
-import { LoginUserFormInterface, UserTransformationResponse, PreResetPasswordRequestInterface } from './user.server.helpers';
+import {
+  LoginUserFormInterface,
+  UserTransformationResponse,
+  PreResetPasswordRequestInterface,
+} from './user.server.helpers';
 import { createAction, props } from '@ngrx/store';
+import { ResetPasswordWithMetaInterface } from 'app/constants/types/resetPassword';
 
 export enum UserActionTypes {
   LOAD_CURRENT_USER_REQUESTED = '[User] Load Current User Requested',
@@ -60,7 +65,7 @@ export const loginUserErrorAction = createAction(
 );
 
 export const resetLoginUserErrorAction = createAction(
-  UserActionTypes.RESET_LOGIN_USER_ERROR,
+  UserActionTypes.RESET_LOGIN_USER_ERROR
 );
 
 export const logoutUserRequestedAction = createAction(
@@ -75,10 +80,9 @@ export const logoutUserErrorAction = createAction(
   UserActionTypes.LOGOUT_USER_ERROR
 );
 
-
 export const preResetPasswordRequestedAction = createAction(
   UserActionTypes.PRE_RESET_PASSWORD_REQUESTED,
-  props<PreResetPasswordRequestInterface>(),
+  props<PreResetPasswordRequestInterface>()
 );
 
 export const preResetPasswordSucceededAction = createAction(
@@ -91,12 +95,12 @@ export const preResetPasswordErrorAction = createAction(
 );
 
 export const preResetResetPasswordErrorAction = createAction(
-  UserActionTypes.PRE_RESET_RESET_PASSWORD_ERROR,
+  UserActionTypes.PRE_RESET_RESET_PASSWORD_ERROR
 );
 
-
 export const resetPasswordRequestedAction = createAction(
-  UserActionTypes.RESET_PASSWORD_REQUESTED
+  UserActionTypes.RESET_PASSWORD_REQUESTED,
+  props<ResetPasswordWithMetaInterface>()
 );
 
 export const resetPasswordSucceededAction = createAction(
@@ -105,9 +109,9 @@ export const resetPasswordSucceededAction = createAction(
 
 export const resetPasswordErrorAction = createAction(
   UserActionTypes.RESET_PASSWORD_ERROR,
+  props<FormServerErrorInterface>()
 );
 
 export const resetResetPasswordErrorAction = createAction(
-  UserActionTypes.RESET_RESET_PASSWORD_ERROR,
+  UserActionTypes.RESET_RESET_PASSWORD_ERROR
 );
-

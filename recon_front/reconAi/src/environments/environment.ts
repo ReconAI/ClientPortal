@@ -3,10 +3,10 @@
 // The list of file replacements can be found in `angular.json`.
 declare const $ENV: Env;
 
-console.log($ENV.RECON_API_URL || '127.0.0.1:8080', 'SERVER');
+console.log($ENV.RECON_API_URL, 'SERVER');
 export const environment = {
   production: false,
-  apiUrl: $ENV.RECON_API_URL || '127.0.0.1:8080',
+  apiUrl: $ENV.RECON_API_URL,
 };
 
 /*
