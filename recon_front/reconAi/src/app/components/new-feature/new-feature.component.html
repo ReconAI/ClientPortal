@@ -1,0 +1,24 @@
+<div class="new-feature-container">
+  <form [formGroup]="newFeatureForm">
+    <recon-form-input
+      label="Please include description of the problem and current process here"
+      formControlName="description"
+      fieldType="textarea"
+    ></recon-form-input>
+    <recon-form-input
+      label="Attach sensor feed link"
+      formControlName="feedLink"
+    ></recon-form-input>
+    <label for="file-upload" class="custom-file-upload">
+      Custom Upload
+    </label>
+    <input
+      (change)="onFilesChange($event)"
+      id="file-upload"
+      type="file"
+      multiple
+    />
+  </form>
+  {{ jsonValue }}
+  {{ fileNamesToShow }}
+</div>

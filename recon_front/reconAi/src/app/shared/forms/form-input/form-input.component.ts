@@ -33,6 +33,8 @@ export class FormInputComponent implements ControlValueAccessor, OnInit {
   @Input() errorMessages: { [key: string]: string } = {};
   @Input() disabled = false;
   @Input() showRequiredSymbol = false;
+  // add types
+  @Input() fieldType = 'text';
   @Output() changeVal = new EventEmitter<any>();
 
   onChange = (value: any) => {};

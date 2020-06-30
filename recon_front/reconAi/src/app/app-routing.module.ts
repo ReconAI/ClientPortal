@@ -1,3 +1,5 @@
+import { NewFeatureContainer } from './components/new-feature/new-feature.container';
+import { NewFeatureComponent } from './components/new-feature/new-feature.component';
 import { ResetPasswordPageComponent } from './components/reset-password-page/reset-password-page.component';
 import { ActivationComponent } from './components/activation/activation/activation.component';
 import { RegistrationSuccessComponent } from './components/registration/registration-success/registration-success.component';
@@ -39,6 +41,14 @@ const routes: Routes = [
         component: RegistrationSuccessComponent,
       },
     ],
+  },
+  {
+    path: 'new-feature',
+    // canActivate: [AuthGuard],
+    data: {
+      title: 'Request new feature',
+    },
+    component: NewFeatureContainer
   },
   {
     path: 'activate/:uidb/:token',
