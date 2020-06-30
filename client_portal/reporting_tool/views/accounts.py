@@ -110,7 +110,7 @@ class SignupView(APIView):
         if form.is_valid():
             user = form.save()
 
-            message = render_to_string('emails/acc_active_email.html', {
+            message = render_to_string('emails/account_activation.html', {
                 'user': user,
                 'activation_link': Router(
                     settings.CLIENT_APP_SHEMA_HOST_PORT
@@ -344,7 +344,7 @@ class ResetPassword(APIView, FormMixin):
 
         if form.is_valid():
             form.save(request=request,
-                      email_template_name='emails/password_reset_email.html')
+                      email_template_name='emails/password_reset.html')
             return JsonResponse({
                 'message': _('Password is reset')
             })
@@ -398,7 +398,7 @@ class CheckResetPasswordTokenView(APIView, FormMixin):
 
         if form.is_valid():
             return JsonResponse({
-                'msg': _('Token is valid')
+                'message': _('Token is valid')
             }, status=status.HTTP_200_OK)
 
         return JsonResponse({
@@ -459,7 +459,7 @@ class PasswordResetConfirmView(APIView, FormMixin):
             form.save()
 
             return JsonResponse({
-                'msg': _('Password is changed')
+                'message': _('Password is changed')
             }, status=status.HTTP_200_OK)
 
         return JsonResponse({
