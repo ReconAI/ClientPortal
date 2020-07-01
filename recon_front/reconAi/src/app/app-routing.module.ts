@@ -36,6 +36,7 @@ const routes: Routes = [
       },
       {
         path: 'success',
+        canActivate: [RegistrationGuard],
         // TO DO
         // CHECK GUARD RIGHT AFTER USER SIGNED UP
         component: RegistrationSuccessComponent,
