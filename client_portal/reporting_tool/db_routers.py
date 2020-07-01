@@ -6,7 +6,7 @@ from typing import Optional, Type
 from django.conf import settings
 from django.db.models import Model
 
-from reporting_tool.models import User
+from reporting_tool.models import User, UserGroup, Token
 
 
 class DBRouter:
@@ -91,7 +91,9 @@ class ReconDBRouter(DBRouter):
         'recon_db_manager': settings.RECON_AI_CONNECTION_NAME
     }
     models_routers = {
-        User: settings.RECON_AI_CONNECTION_NAME
+        User: settings.RECON_AI_CONNECTION_NAME,
+        UserGroup: 'default',
+        Token: 'default',
     }
 
     prohibit_migration_model_names = [

@@ -33,7 +33,7 @@ from reporting_tool.serializers import UserSerializer, \
     form_to_formserializer, forms_to_formserializer
 from reporting_tool.settings import RECON_AI_CONNECTION_NAME
 from reporting_tool.swagger.responses import get_responses, token, http400, \
-    http405, http403, http401
+    http405, http403, http401, data_serializer
 from reporting_tool.tokens import TokenGenerator
 
 
@@ -191,7 +191,7 @@ class CurrentUserProfileView(APIView):
     @staticmethod
     @swagger_auto_schema(
         responses={
-            status.HTTP_200_OK: UserSerializer,
+            status.HTTP_200_OK: data_serializer(UserSerializer),
             status.HTTP_401_UNAUTHORIZED: http401(),
             status.HTTP_405_METHOD_NOT_ALLOWED: http405()
         },

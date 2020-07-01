@@ -95,7 +95,7 @@ class SpecialCharacterPasswordValidator:
 
         :raise: ValidationError
         """
-        if not re.match(r'.*[\-/*.=]', password):
+        if not re.match(r'.*[\-/*+.=!?]', password):
             raise ValidationError(
                 self.get_help_text()
             )
@@ -105,4 +105,4 @@ class SpecialCharacterPasswordValidator:
         """
         :rtype: str
         """
-        return _('At least one character should be -/*+.=')
+        return _('At least one character should be -/*+.=!?')
