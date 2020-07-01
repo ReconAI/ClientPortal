@@ -1,4 +1,4 @@
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -8,28 +8,39 @@ import { Component, OnInit } from '@angular/core';
 })
 export class NewFeatureComponent implements OnInit {
   constructor(private fb: FormBuilder) {}
+  readonly maxCountOfFiles = 20;
   newFeatureForm: FormGroup;
-  fileNames: string[];
 
   get jsonValue(): string {
     return JSON.stringify(this.newFeatureForm.value);
   }
 
-  get fileNamesToShow(): string {
-    console.log(this?.fileNames?.length, 'FILE NAMES');
-    return 'this?.fileNames?.join(\' \')';
+  get files() {
+    return this?.newFeatureForm?.get('files') as FormArray;
   }
 
   onFilesChange(event): void {
-    this.fileNames = event?.target?.files || [];
-    console.log(event?.target?.files, 'FILES CHANGES');
+    const newFiles = event?.target?.files;
+    if (newFiles?.length) {
+      for (
+        let i = 0;
+        i < Math.min(this.maxCountOfFiles, newFiles.length);
+        i++
+      ) {
+        this.files.push(this.fb.control(newFiles[i]));
+      }
+    }
   }
 
   ngOnInit(): void {
     this.newFeatureForm = this.fb.group({
       description: [null, Validators.required],
-      feedLink: [null, Validators.required],
-      filesToUpload: ['', Validators.required],
+      feedLink: [null],
+      files: this.fb.array([]),
     });
+  }
+
+  removeFile(i: number) {
+    this.files.removeAt(i);
   }
 }

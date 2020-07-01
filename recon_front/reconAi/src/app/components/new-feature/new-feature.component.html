@@ -10,7 +10,10 @@
       formControlName="feedLink"
     ></recon-form-input>
     <label for="file-upload" class="custom-file-upload">
-      Custom Upload
+      <object data="../../../assets/icons/clip.svg" width="20" height="17">
+        Your browser does not support SVG
+      </object>
+      ATTACH FILE
     </label>
     <input
       (change)="onFilesChange($event)"
@@ -18,7 +21,20 @@
       type="file"
       multiple
     />
+    <span class="hint-attach">*Attach CAD draving, sensor or other files</span>
+    <div
+      formArrayName="files"
+      *ngFor="let file of files.controls; let i = index"
+      class="files-container"
+    >
+      <div [formGroupName]="i" class="file-name-container">
+        <mat-icon>insert_drive_file</mat-icon>
+        {{ file?.value?.name }}
+        <span (click)="removeFile(i)">&times;</span>
+      </div>
+    </div>
+    <div class="button-container">
+      <button mat-raised-button color="primary" [disabled]="!newFeatureForm.valid">POST REQUEST</button>
+    </div>
   </form>
-  {{ jsonValue }}
-  {{ fileNamesToShow }}
 </div>

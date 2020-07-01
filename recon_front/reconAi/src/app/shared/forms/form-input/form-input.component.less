@@ -4,7 +4,8 @@
 .field-container {
     width: 100%;
 
-    textarea.recon-input, input.recon-input {
+    textarea.recon-input,
+    input.recon-input {
         width: 100%;
         padding: 12px 20px;
         margin: 10px 0;
@@ -20,6 +21,10 @@
         &.recon-input-invalid {
             border-color: @recon-error-input-border;
         }
+    }
+
+    textarea.recon-input {
+        min-height: 170px;
     }
 
 
