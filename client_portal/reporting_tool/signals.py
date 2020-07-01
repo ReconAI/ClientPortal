@@ -3,7 +3,7 @@ Application signals are defined here
 """
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
-from reporting_tool.models import User, UserGroup
+from reporting_tool.models import User, UserGroup, Token
 
 
 @receiver(post_save, sender=User)
@@ -42,3 +42,15 @@ def delete_usergroup(instance: User, **kwargs):
     :type kwargs: dict
     """
     return UserGroup.objects.filter(user_id=instance.pk).delete()
+
+
+@receiver(post_delete, sender=User)
+def delete_token(instance: User, **kwargs):
+    """
+    Since user's table is located in external db it's emulation of
+    CASCADE deletion
+
+    :type instance: User
+    :type kwargs: dict
+    """
+    return Token.objects.filter(user_id=instance.pk).delete()

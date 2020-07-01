@@ -1,3 +1,4 @@
+from django.db.models.query import QuerySet
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 
@@ -10,4 +11,15 @@ class UserList(ListAPIView):
     permission_classes = (IsAuthenticated, IsCompanyAdmin)
 
     serializer_class = UserSerializer
-    queryset = User.objects.all()
+
+    queryset = User.objects.prefetch_related('usergroup__group').all()
+
+    def filter_queryset(self, queryset: QuerySet) -> QuerySet:
+        """
+        :type queryset: QuerySet
+
+        :rtype: QuerySet
+        """
+        return queryset.filter(
+            organization_id=self.request.user.organization_id
+        )
