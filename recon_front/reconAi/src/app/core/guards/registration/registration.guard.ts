@@ -27,7 +27,6 @@ export class RegistrationGuard implements CanActivate {
     | UrlTree {
     return this.store.pipe(
       select(selectExistencePreSignUp),
-      tap((res) => console.log(res, 'RES'))
     );
   }
 }

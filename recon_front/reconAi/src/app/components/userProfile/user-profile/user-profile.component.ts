@@ -64,7 +64,5 @@ export class UserProfileComponent implements OnInit {
 
   onSubmit(): void {
     this.sendUserInfo$.emit(this.profileForm.value);
-
-    console.log(this.profileForm.value);
   }
 }
