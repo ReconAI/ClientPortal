@@ -53,7 +53,7 @@ def forms_to_formserializer(
     return form_to_formserializer(type('Form', (Form, ), {**fields}))
 
 
-class ReadOnlySerializer(serializers.Serializer):
+class ReadOnlySerializer(serializers.ModelSerializer):
     """
     Serializer doesn't let write
     """
@@ -86,20 +86,16 @@ class UserSerializer(ReadOnlySerializer):
     """
     Serializes user data
     """
-    id = serializers.IntegerField()
-    firstname = serializers.CharField(max_length=255)
-    lastname = serializers.CharField(max_length=255)
-    username = serializers.CharField(max_length=255)
-    address = serializers.CharField(max_length=255)
-    phone = serializers.CharField(max_length=255)
-    email = serializers.EmailField()
-    created_dt = serializers.DateTimeField()
-    user_level = serializers.CharField(max_length=3)
-    is_active = serializers.BooleanField()
-    user_group = GroupSerializer()
+
+    group = GroupSerializer()
 
     class Meta:
         """
         User is serializer's model
         """
         model = User
+        fields = [
+            'id', 'firstname', 'lastname', 'username', 'address',
+            'phone', 'email', 'created_dt', 'user_level', 'is_active',
+            'group',
+        ]

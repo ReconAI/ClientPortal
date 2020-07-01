@@ -2,11 +2,12 @@
 Contains generic answers peculiar to the application acceptable for swagger
 """
 
-from typing import List, Dict
+from typing import List, Dict, Type, Union
 
 from drf_yasg import openapi
 from drf_yasg.openapi import TYPE_OBJECT, TYPE_STRING
 from rest_framework import status
+from rest_framework.serializers import Serializer
 
 
 def _generic_success_message(message: str) -> openapi.Schema:
@@ -157,6 +158,24 @@ def token() -> openapi.Schema:
             )
         }
     ))
+
+
+def data_serializer(
+        serializer: Type['Serializer']) -> Union[type, Type[Serializer]]:
+    """
+    Converts serializer to common response format
+
+    :type serializer: Type['Serializer']
+
+    :rtype: Type[Serializer]
+    """
+    return type(
+        'Serializer',
+        (Serializer, ),
+        {
+            'data': serializer()
+        }
+    )
 
 
 _relations = {
