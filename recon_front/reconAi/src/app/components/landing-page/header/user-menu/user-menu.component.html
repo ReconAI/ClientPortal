@@ -1,0 +1,25 @@
+<div *ngIf="userPriority >= userRolePriorities.CLIENT_ROLE; else elseBlock">
+  <button mat-button [matMenuTriggerFor]="menu" #trigger="matMenuTrigger">
+    <mat-icon aria-hidden="false" aria-label="person" class="person_icon"
+      >person_outline</mat-icon
+    >
+    <span>{{userName}}</span>
+    <!-- <span>{{userRole}}</span> -->
+    <mat-icon aria-hidden="false" aria-label="person">{{
+      trigger.menuOpen ? "keyboard_arrow_up" : "keyboard_arrow_down"
+    }}</mat-icon>
+  </button>
+  <mat-menu #menu="matMenu" xPosition="before">
+    <button mat-menu-item>Profile</button>
+    <mat-divider></mat-divider>
+    <button mat-menu-item (click)="logout()">Log Out</button>
+  </mat-menu>
+</div>
+<ng-template #elseBlock>
+  <button mat-button (click)="openDialog()">
+    <mat-icon aria-hidden="false" aria-label="person" class="person_icon"
+      >person_outline</mat-icon
+    >
+    <span class="sign-in-label">Sign In</span>
+  </button>
+</ng-template>

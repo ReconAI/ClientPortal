@@ -1,0 +1,68 @@
+/* You can add global styles to this file, and also import other style files */
+@import "./variables.less";
+
+body {
+  font-family: Roboto, Arial, sans-serif;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 19px;
+  margin: 0;
+
+  button[color="primary"].mat-raised-button {
+    box-shadow: none;
+    border-radius: 0;
+    min-width: 140px;
+    min-height: 45px;
+  }
+}
+
+html,
+body {
+  height: 100%;
+}
+
+
+
+
+// scroll styles
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: @recon-primary-green;
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(@recon-primary-green, 0.80);
+}
+
+// used for tooltips to show \n symbols
+.tooltip-prelined {
+  white-space: pre-line;
+}
+
+.mat-error {
+  font-size: 13px;
+  text-align: center;
+}
+
+// it's used for modal headers
+h3.recon-modal-title {
+  font-weight: bold;
+}
+
+
+.recon-snackbar.mat-snack-bar-container {
+  color: white;
+  border-radius: 0;
+}
+
+.success-snackbar {
+  background-color: @recon-primary-green;
+}
