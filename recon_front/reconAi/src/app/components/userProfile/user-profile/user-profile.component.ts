@@ -1,5 +1,14 @@
 import { Validators, FormBuilder } from '@angular/forms';
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewEncapsulation,
+  Input,
+  Output,
+  EventEmitter,
+} from '@angular/core';
+import { UserProfileFormInterface } from 'app/constants/types';
+import { FormServerErrorInterface } from 'app/constants/types/requests';
 
 @Component({
   selector: 'recon-user-profile',
@@ -8,34 +17,54 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
   encapsulation: ViewEncapsulation.None,
 })
 export class UserProfileComponent implements OnInit {
+  @Input() loading = false;
+  @Input() errors: FormServerErrorInterface;
+  @Output() sendUserInfo$ = new EventEmitter<UserProfileFormInterface>();
+
   // TO DO
   // CHECK GUARD
   profileForm = this.fb.group({
     organization: this.fb.group({
-      country: ['Belarus', Validators.required],
-      city: ['Lida', Validators.required],
-      company: ['HQSoftware', Validators.required],
-      phone: ['+375292304825', Validators.required],
-      contact: ['Alex', Validators.required],
-      email: ['test@gmail.com', Validators.required],
-      address: ['Varshavskaya street, 47', Validators.required],
-      vat: ['7sadkd123adfsadsf2341', Validators.required],
+      name: ['', Validators.required],
+      phone: ['', Validators.required],
+      email: ['', Validators.required],
+      address: ['', Validators.required],
+      vat: ['', Validators.required],
     }),
     user: this.fb.group({
-      company: ['hqsoftware', Validators.required],
-      contact: ['Alex', Validators.required],
-      phone: ['+3789451231', Validators.required],
-      email: ['aadereiko@gmail.com', Validators.required],
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
+      address: ['', Validators.required],
+      phone: ['', Validators.required],
+      email: ['', Validators.required],
     }),
-    payment: this.fb.group({
-      invoicingAddress: ['Varshavskaya street, 47', Validators.required],
-      phone: ['+375515481254', Validators.required],
-      contact: ['Andrei', Validators.required],
-      email: ['mama@otlichinka.ru', Validators.required],
-    })
+    invoicing: this.fb.group({
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
+      address: ['', Validators.required],
+      phone: ['', Validators.required],
+      email: ['', Validators.required],
+    }),
   });
+
+  get validationErrors(): string {
+    return (
+      (this.errors &&
+        Object.keys(this.errors)?.reduce(
+          (final, key) => `${final}\n${key}: ${this.errors[key]}`,
+          ''
+        )) ||
+      ''
+    );
+  }
 
   constructor(private fb: FormBuilder) {}
 
   ngOnInit(): void {}
+
+  onSubmit(): void {
+    this.sendUserInfo$.emit(this.profileForm.value);
+
+    console.log(this.profileForm.value);
+  }
 }

@@ -32,7 +32,7 @@ import { LoginModalComponent } from './components/login-modal/login-modal.compon
 import { SignInFormComponent } from './components/login-modal/sign-in-form/sign-in-form.component';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { SignUpFormContainer } from './components/login-modal/sign-in-form/sign-up-form.container';
-import { RegistrationComponent } from './components/registration/registration/registration.component';
+import { RegistrationContainer } from './components/registration/registration/registration.container';
 import { UserProfileComponent } from './components/userProfile/user-profile/user-profile.component';
 import { RegistrationSuccessComponent } from './components/registration/registration-success/registration-success.component';
 import { ActivationComponent } from './components/activation/activation/activation.component';
@@ -54,7 +54,7 @@ import { ResetPasswordModalContainer } from './components/reset-password-page/re
     SignInFormComponent,
     SignInFormContainer,
     SignUpFormContainer,
-    RegistrationComponent,
+    RegistrationContainer,
     UserProfileComponent,
     RegistrationSuccessComponent,
     RegistrationSuccessHumanComponent,
@@ -90,10 +90,18 @@ import { ResetPasswordModalContainer } from './components/reset-password-page/re
     // show errors
     { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true },
     // get data from data field of response
-    { provide: HTTP_INTERCEPTORS, useClass: HttpReqFormatInterceptor, multi: true },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HttpReqFormatInterceptor,
+      multi: true,
+    },
     // order is important!
     // show green success snackbars
-    { provide: HTTP_INTERCEPTORS, useClass: HttpSuccessInterceptor, multi: true },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HttpSuccessInterceptor,
+      multi: true,
+    },
     // for modals
     { provide: MatDialogRef, useValue: {} },
     { provide: MAT_DIALOG_DATA, useValue: {} },

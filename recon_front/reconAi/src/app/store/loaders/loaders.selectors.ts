@@ -29,6 +29,11 @@ export const selectPreSignUpLoadingStatus = createSelector(
   (loaders: LoadersState): boolean => loaders.preSignUp
 );
 
+export const selectSignUpLoadingStatus = createSelector(
+  selectLoaders,
+  (loaders: LoadersState): boolean => loaders.signUp
+);
+
 export const selectActivationLoadingStatus = createSelector(
   selectLoaders,
   (loaders: LoadersState): boolean => loaders.userActivation

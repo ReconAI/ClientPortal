@@ -5,31 +5,35 @@ import { Store, select } from '@ngrx/store';
 import { Injectable } from '@angular/core';
 import {
   CanActivate,
+  CanActivateChild,
   ActivatedRouteSnapshot,
   RouterStateSnapshot,
   UrlTree,
 } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
-export class NotAuthGuard implements CanActivate {
+export class NotAuthGuard implements CanActivate, CanActivateChild {
   constructor(private store: Store<AppState>) {}
 
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ):
-    | Observable<boolean | UrlTree>
-    | Promise<boolean | UrlTree>
-    | boolean
-    | UrlTree {
+  ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | UrlTree {
     return this.store.pipe(
       select(selectIsNotAuthenticated),
-      filter((isAuth) => isAuth !== null)
-
+      filter((isAuth) => isAuth !== null),
+      take(1)
       // check it later
     );
+  }
+
+  canActivateChild(
+    next: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot
+  ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | UrlTree {
+    return this.canActivate(next, state);
   }
 }

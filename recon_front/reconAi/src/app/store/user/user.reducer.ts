@@ -17,6 +17,7 @@ import {
   resetResetPasswordErrorAction,
   preResetPasswordErrorAction,
   preResetResetPasswordErrorAction,
+  logoutUserSucceededAction,
 } from './user.actions';
 
 export interface UserErrorsInterface {
@@ -90,7 +91,6 @@ const resetLoginUserErrorReducer = (state: UserState): UserState => ({
   },
 });
 
-
 const preResetPasswordErrorReducer = (
   state: UserState,
   { general }: (Action & FormServerErrorInterface) | null
@@ -109,7 +109,6 @@ const preResetResetPasswordErrorReducer = (state: UserState): UserState => ({
     preResetPassword: userErrorsInit.preResetPassword,
   },
 });
-
 
 const resetPasswordErrorReducer = (
   state: UserState,
@@ -130,6 +129,11 @@ const resetResetPasswordErrorReducer = (state: UserState): UserState => ({
   },
 });
 
+const logoutUserSucceededReducer = (state: UserState): UserState => ({
+  ...state,
+  isAuthenticated: false,
+});
+
 const userReducer = createReducer(
   initialState,
   on(loadCurrentUserSucceededAction, loadCurrentUserSucceededReducer),
@@ -141,6 +145,7 @@ const userReducer = createReducer(
   on(preResetResetPasswordErrorAction, preResetResetPasswordErrorReducer),
   on(resetPasswordErrorAction, resetPasswordErrorReducer),
   on(resetResetPasswordErrorAction, resetResetPasswordErrorReducer),
+  on(logoutUserSucceededAction, logoutUserSucceededReducer)
 );
 
 export function reducer(state: UserState | undefined, action: Action) {

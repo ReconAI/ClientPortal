@@ -1,21 +1,28 @@
+import { generalTransformFormErrorToObject } from './../../core/helpers/generalFormsErrorsTransformation';
+import { UserProfileFormInterface } from './../../constants/types/user';
 import { ActivationInterface } from './../../constants/types/activation';
 import { Router } from '@angular/router';
 import {
   setPreSignUpLoadingStatusAction,
   setActivationLoadingStatusAction,
+  setSignUpLoadingStatusAction,
 } from './../loaders/loaders.actions';
 import { Action, Store } from '@ngrx/store';
 import {
   transformPreSignUpUserForm,
   transformErrorPreSignUp,
+  transformSignUpFormToRequest,
+  signUpRelationsFormAnsServerFields,
 } from './signUp.server.helpers';
 import {
   SignUpActionTypes,
   preSignUpUserSucceededAction,
   preSignUpUserErrorAction,
+  signUpUserErrorAction,
   setPreSignUpInfoAction,
   activationSucceededAction,
   activationErrorAction,
+  signUpUserSucceededAction,
 } from './signUp.actions';
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
@@ -27,9 +34,11 @@ import {
   finalize,
   tap,
   delay,
+  withLatestFrom,
 } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { AppState } from '../reducers';
+import { generalTransformFormErrorToString } from 'app/core/helpers/generalFormsErrorsTransformation';
 
 @Injectable()
 export class SignUpEffects {
@@ -57,10 +66,8 @@ export class SignUpEffects {
             // check type
             map(() => {
               this.store.dispatch(setPreSignUpInfoAction(user));
-              return preSignUpUserSucceededAction();
-            }),
-            tap(() => {
               this.router.navigate(['/registration']);
+              return preSignUpUserSucceededAction();
             }),
             catchError((error) => {
               return of(
@@ -83,7 +90,7 @@ export class SignUpEffects {
     this.actions$.pipe(
       ofType(SignUpActionTypes.ACTIVATION_REQUESTED),
       switchMap((activation: ActivationInterface) =>
-        this.httpClient.post('/authApi/activate', activation).pipe(
+        this.httpClient.put('/authApi/activate', activation).pipe(
           // check type
           map(() => activationSucceededAction()),
           catchError((error) => {
@@ -91,6 +98,58 @@ export class SignUpEffects {
           })
         )
       )
+    )
+  );
+
+  signUpUser$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType(SignUpActionTypes.SIGN_UP_USER_REQUESTED),
+      tap(() => {
+        this.store.dispatch(
+          setSignUpLoadingStatusAction({
+            status: true,
+          })
+        );
+      }),
+      withLatestFrom(this.store),
+      switchMap(([user, store]) => {
+        const { password1, password2, username } = store.signUp;
+        return this.httpClient
+          .post(
+            '/authApi/signup',
+            transformSignUpFormToRequest({
+              ...(user as UserProfileFormInterface),
+              password1,
+              password2,
+              username,
+            })
+          )
+          .pipe(
+            // check type
+            // clean the reducer state out
+            map(() => signUpUserSucceededAction()),
+            tap(() => {
+              this.router.navigate(['/registration/success']);
+            }),
+            catchError((error) => {
+              return of(
+                signUpUserErrorAction(
+                  generalTransformFormErrorToObject(
+                    error,
+                    signUpRelationsFormAnsServerFields
+                  )
+                )
+              );
+            }),
+            finalize(() => {
+              this.store.dispatch(
+                setSignUpLoadingStatusAction({
+                  status: false,
+                })
+              );
+            })
+          );
+      })
     )
   );
 }
