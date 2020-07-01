@@ -1,0 +1,35 @@
+@import "../../../../variables.less";
+
+.mat-toolbar {
+    background-color: @recon-background-color;
+    display: flex;
+    justify-content: space-around;
+
+    .menu-container {
+        display: flex;
+        align-items: center;
+
+        img {
+            margin: 5px;
+        }
+    }
+    
+    a {
+        text-decoration: none;
+        font-size: 16px;
+        color: @recon-gray;
+        font-weight: normal;
+        margin-left: 15px;
+
+        cursor: pointer;
+
+        &:hover {
+            color: black;
+        }
+    }
+
+}
+
+.mat-divider {
+    color: #F9F9F9;
+}

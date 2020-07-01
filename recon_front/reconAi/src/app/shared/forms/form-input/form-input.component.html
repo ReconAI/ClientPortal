@@ -1,0 +1,14 @@
+<div class="field-container">
+  <label [for]="uniqueId">{{ label }} </label>
+  <span class="required" *ngIf="showRequiredSymbol">*</span>
+  <input
+    [id]="uniqueId"
+    [value]="value"
+    class="recon-input"
+    [ngClass]="{ 'recon-input-invalid': hasErrors }"
+    [placeholder]="placeholder"
+    [disabled]="disabled"
+    (input)="onChange($event.target.value)"
+    (blur)="onTouched()"
+  />
+</div>

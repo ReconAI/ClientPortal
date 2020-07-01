@@ -1,0 +1,22 @@
+<mat-toolbar>
+  <div class="menu-container">
+    <img src="assets/logo.svg" alt="logo" />
+    <nav>
+      <a routerLink="/reporting">Reporting </a>
+      <a>Streaming</a>
+      <a>Filtering</a>
+      <a>Order portal</a>
+      <!-- reduce count of alike reconCheckUserRolePriority -->
+      <!-- <a *reconCheckUserRolePriority="userRolePriorities.ADMIN_ROLE">Devices</a>
+      <a *reconCheckUserRolePriority="userRolePriorities.ADMIN_ROLE">Alarms</a>
+      <a *reconCheckUserRolePriority="userRolePriorities.CLIENT_ROLE"
+        >User settings</a
+      > -->
+      <a>New Feature </a>
+    </nav>
+  </div>
+  <div>
+    <recon-user-menu-container></recon-user-menu-container>
+  </div>
+</mat-toolbar>
+<mat-divider></mat-divider>

@@ -1,0 +1,14 @@
+FROM node:12.18.1-alpine3.12
+
+CMD mkdir /reporting_tool
+WORKDIR /reporting_tool
+
+COPY recon_front/reconAi ./
+
+RUN npm install
+RUN npm install -g @angular/cli
+RUN ng build
+
+EXPOSE 4200
+
+CMD ng serve --host 0.0.0.0 --port 4200
