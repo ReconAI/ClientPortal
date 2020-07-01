@@ -7,6 +7,7 @@ export enum LoadersActionTypes {
   SET_LOGIN_LOADING_STATUS = '[Loaders] Set Login Loading Status',
   SET_LOGOUT_LOADING_STATUS = '[Loaders] Set Logout Loading Status',
   SET_PRE_SIGN_UP_LOADING_STATUS = '[Loaders] Set Pre Sign Up Loading Status',
+  SET_SIGN_UP_LOADING_STATUS = '[Loaders] Set Sign Up Loading Status',
   SET_ACTIVATION_LOADING_STATUS = '[Loaders] Set Activation Loading Status',
   SET_PRE_RESET_PASSWORD_LOADING_STATUS = '[Loaders] Set Pre Reset Password Loading Status',
   SET_RESET_PASSWORD_LOADING_STATUS = '[Loaders] Set Reset Password Loading Status',
@@ -38,6 +39,11 @@ export const setLogoutLoadingStatusAction = createAction(
 
 export const setPreSignUpLoadingStatusAction = createAction(
   LoadersActionTypes.SET_PRE_SIGN_UP_LOADING_STATUS,
+  props<LoaderInterface>()
+);
+
+export const setSignUpLoadingStatusAction = createAction(
+  LoadersActionTypes.SET_SIGN_UP_LOADING_STATUS,
   props<LoaderInterface>()
 );
 

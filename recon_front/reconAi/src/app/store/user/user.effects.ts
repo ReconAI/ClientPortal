@@ -1,5 +1,6 @@
+import { Router } from '@angular/router';
 import { ResetPasswordWithMetaInterface } from 'app/constants/types/resetPassword';
-import { generalTransformFormError } from './../../core/helpers/generalFormsErrorsTransformation';
+import { generalTransformFormErrorToString } from './../../core/helpers/generalFormsErrorsTransformation';
 import {
   setLoginLoadingStatusAction,
   setCurrentUserLoadingStatusAction,
@@ -56,6 +57,7 @@ export class UserEffects {
     private actions$: Actions,
     private httpClient: HttpClient,
     private store: Store<AppState>,
+    private router: Router,
     private localStorageService: LocalStorageService
   ) {}
 
@@ -111,6 +113,9 @@ export class UserEffects {
               // this.store.dispatch(resetLoginUserErrorAction());
               return loginUserSucceededAction();
             }),
+            tap(() => {
+              this.router.navigate(['/']);
+            }),
             catchError((error: HttpErrorResponse) => {
               return of(loginUserErrorAction(transformErrorsToDisplay(error)));
             }),
@@ -137,7 +142,7 @@ export class UserEffects {
         );
       }),
       switchMap(() =>
-        this.httpClient.get('/authApi/logout').pipe(
+        this.httpClient.put('/authApi/logout', {}).pipe(
           map(() => {
             this.localStorageService.removeAuthToken();
             this.store.dispatch(resetCurrentUserAction());
@@ -174,7 +179,11 @@ export class UserEffects {
             return preResetPasswordSucceededAction();
           }),
           catchError((error) =>
-            of(preResetPasswordErrorAction(generalTransformFormError(error)))
+            of(
+              preResetPasswordErrorAction(
+                generalTransformFormErrorToString(error)
+              )
+            )
           ),
           finalize(() => {
             this.store.dispatch(
@@ -200,7 +209,7 @@ export class UserEffects {
       }),
       switchMap((credentials: ResetPasswordWithMetaInterface) => {
         return this.httpClient
-          .post(
+          .put(
             '/authApi/reset',
             transformResetPasswordFormToRequest(credentials)
           )
@@ -209,7 +218,11 @@ export class UserEffects {
               return resetPasswordSucceededAction();
             }),
             catchError((error) =>
-              of(resetPasswordErrorAction(generalTransformFormError(error)))
+              of(
+                resetPasswordErrorAction(
+                  generalTransformFormErrorToString(error)
+                )
+              )
             ),
             finalize(() => {
               this.store.dispatch(

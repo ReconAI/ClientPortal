@@ -20,10 +20,12 @@ export class HttpErrorInterceptor implements HttpInterceptor {
   readonly defaultErrorMessage = 'Server error';
   readonly errorsToNotShowMessage = [
     '/authApi/profile',
+
     // forms
     '/authApi/reset-password',
     '/authApi/api-token-auth',
     '/authApi/pre-signup',
+    '/authApi/signup',
     '/authApi/reset',
   ];
 

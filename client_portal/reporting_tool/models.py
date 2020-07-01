@@ -4,7 +4,7 @@ Reporting tool models are located here
 import binascii
 import os
 import unicodedata
-from typing import Tuple, Optional, Iterable
+from typing import Tuple, Optional, Iterable, Type
 
 from django.conf import settings
 from django.contrib.auth.hashers import make_password, check_password, \
@@ -84,13 +84,29 @@ class User(CommonUser, PermissionsMixin):
         return None
 
     @property
+    def group(self) -> Group:
+        """
+        :rtype: Group
+        """
+        return self.usergroup.group
+
+    @property
     def is_superuser(self) -> bool:
         """
         User is counted as superuser when his role is SUPER_ADMIN
+
         :rtype: bool
         """
-        return UserGroup.objects.select_related('group').get(
-            user_id=self.id).group.name == Role.SUPER_ADMIN
+        return self.group.name == Role.SUPER_ADMIN
+
+    @property
+    def is_admin(self) -> bool:
+        """
+        User is counted as company admin when his role is SUPER_ADMIN
+
+        :rtype: bool
+        """
+        return self.group.name == Role.ADMIN
 
     @property
     def is_staff(self) -> bool:
@@ -190,13 +206,6 @@ class User(CommonUser, PermissionsMixin):
         """
         return self.username
 
-    @property
-    def user_group(self) -> 'UserGroup':
-        """
-        :rtype: UserGroup
-        """
-        return Group.objects.filter(usergroup__user_id=self.pk).get()
-
     @atomic(using='default')
     @atomic(using=RECON_AI_CONNECTION_NAME)
     def delete(self, using: str = None,
@@ -221,6 +230,25 @@ class User(CommonUser, PermissionsMixin):
 
         return collector.delete()
 
+    def unique_error_message(self, model_class: Type['User'],
+                             unique_check: tuple) -> str:
+        """
+        :type model_class: Type['User']
+        :type unique_check: tuple
+
+        :rtype: str
+        """
+        try:
+            attribute_name = unique_check[0]
+            aliases = {
+                'username': 'login'
+            }
+            alias = aliases.get(attribute_name, attribute_name)
+        except (IndexError, AttributeError):
+            alias = 'data'
+
+        return _('{} you entered is not available'.format(alias.capitalize()))
+
 
 class UserGroup(models.Model):
     """
@@ -229,7 +257,7 @@ class UserGroup(models.Model):
     """
     id = models.BigAutoField(primary_key=True)
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
-    user_id = models.IntegerField(unique=True, db_column='userId')
+    user = models.OneToOneField(User, models.CASCADE, db_column='user_id', null=True, db_constraint=False)
 
 
 class Token(models.Model):
@@ -237,8 +265,8 @@ class Token(models.Model):
     The default authorization token model.
     """
     key = models.CharField(_("Key"), max_length=40, primary_key=True)
-    user_id = models.IntegerField(_("User"), db_column='user_id')
     created = models.DateTimeField(_("Created"), auto_now_add=True)
+    user = models.OneToOneField(User, models.CASCADE, db_column='user_id', related_name='token', null=True, db_constraint=False)
 
     def save(self, force_insert: bool = False, force_update: bool = False,
              using: str = None, update_fields: Optional[Iterable] = None):
@@ -265,13 +293,6 @@ class Token(models.Model):
         :rtype: str
         """
         return self.key
-
-    @property
-    def user(self) -> User:
-        """
-        :rtype: User
-        """
-        return User.objects.get(pk=self.user_id)
 
 
 class Role:

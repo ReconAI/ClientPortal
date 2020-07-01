@@ -1,10 +1,11 @@
 import { NewFeatureContainer } from './components/new-feature/new-feature.container';
 import { NewFeatureComponent } from './components/new-feature/new-feature.component';
+import { RegistrationGuard } from './core/guards/registration/registration.guard';
 import { ResetPasswordPageComponent } from './components/reset-password-page/reset-password-page.component';
 import { ActivationComponent } from './components/activation/activation/activation.component';
 import { RegistrationSuccessComponent } from './components/registration/registration-success/registration-success.component';
 import { NotAuthGuard } from './core/guards/not-auth-guard/not-auth.guard';
-import { RegistrationComponent } from './components/registration/registration/registration.component';
+import { RegistrationContainer } from './components/registration/registration/registration.container';
 import { AuthGuard } from './guards/auth.guard';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
@@ -23,19 +24,21 @@ const routes: Routes = [
   },
   {
     path: 'registration',
+    canActivate: [NotAuthGuard],
     data: {
       title: 'Registration',
     },
     children: [
       {
         path: '',
+        canActivate: [RegistrationGuard],
         // TO DO
         // CHECK GUARD RIGHT AFTER USER SIGNED UP
-        canActivate: [NotAuthGuard],
-        component: RegistrationComponent,
+        component: RegistrationContainer,
       },
       {
         path: 'success',
+        canActivate: [RegistrationGuard],
         // TO DO
         // CHECK GUARD RIGHT AFTER USER SIGNED UP
         component: RegistrationSuccessComponent,

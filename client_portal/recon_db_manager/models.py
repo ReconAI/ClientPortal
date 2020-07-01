@@ -20,12 +20,12 @@ class Organization(models.Model):
     main_lastname = models.CharField(null=True, blank=True, max_length=255)
     main_address = models.CharField(null=True, blank=True, max_length=255)
     main_phone = models.CharField(null=True, blank=True, max_length=255)
-    main_email = models.CharField(null=True, blank=True, max_length=255)
+    main_email = models.EmailField(null=True, blank=True, max_length=255)
     inv_firstname = models.CharField(null=True, blank=True, max_length=255)
     inv_lastname = models.CharField(null=True, blank=True, max_length=255)
     inv_address = models.CharField(null=True, blank=True, max_length=255)
     inv_phone = models.CharField(null=True, blank=True, max_length=255)
-    inv_email = models.CharField(null=True, blank=True, max_length=255)
+    inv_email = models.EmailField(null=True, blank=True, max_length=255)
 
     class Meta:
         """

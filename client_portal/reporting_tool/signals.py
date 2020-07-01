@@ -41,4 +41,16 @@ def delete_usergroup(instance: User, **kwargs):
     :type instance: User
     :type kwargs: dict
     """
-    return UserGroup.objects.filter(user_id=instance.pk).delete()
+    return instance.usergroup.delete()
+
+
+@receiver(post_delete, sender=User)
+def delete_token(instance: User, **kwargs):
+    """
+    Since user's table is located in external db it's emulation of
+    CASCADE deletion
+
+    :type instance: User
+    :type kwargs: dict
+    """
+    return instance.token.delete()
