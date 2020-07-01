@@ -18,7 +18,7 @@ export interface UserResponse {
   email: string;
   user_level: number;
   is_active: boolean;
-  user_group: {
+  group: {
     name: UserRoleTypes;
   };
   username: string;
@@ -41,8 +41,8 @@ export const transformUserResponse = (
   response: UserResponse
 ): UserTransformationResponse => ({
   isAuthenticated: null,
-  role: response?.user_group?.name || DEFAULT_USER_ROLE,
-  rolePriority: getUserPriorityByRole(response?.user_group?.name),
+  role: response?.group?.name || DEFAULT_USER_ROLE,
+  rolePriority: getUserPriorityByRole(response?.group?.name),
   firstName: response.firstname,
   lastName: response.lastname,
   address: response.address,
