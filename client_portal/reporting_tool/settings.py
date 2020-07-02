@@ -85,7 +85,7 @@ REST_FRAMEWORK = {
         'reporting_tool.authentication.TokenAuthentication',
     ],
     'EXCEPTION_HANDLER': 'reporting_tool.exception_handlers.exception_handler',
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'DEFAULT_PAGINATION_CLASS': 'reporting_tool.pagination.PageNumberPagination',
     'PAGE_SIZE': 3
 }
 
