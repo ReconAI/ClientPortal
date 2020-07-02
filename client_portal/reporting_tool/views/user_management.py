@@ -3,12 +3,12 @@ from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 
 from reporting_tool.models import User
-from reporting_tool.permissions import IsCompanyAdmin
+from reporting_tool.permissions import IsCompanyAdmin, IsActive
 from reporting_tool.serializers import UserSerializer
 
 
 class UserList(ListAPIView):
-    permission_classes = (IsAuthenticated, IsCompanyAdmin)
+    permission_classes = (IsAuthenticated, IsActive, IsCompanyAdmin)
 
     serializer_class = UserSerializer
 

@@ -82,6 +82,11 @@ class IsNotAuthenticated(BasePermission):
         )
 
 
+class IsActive(BasePermission):
+    def has_permission(self, request: Request, view) -> bool:
+        return request.user.is_active
+
+
 class IsCompanyAdmin(BasePermission):
     def has_permission(self, request: Request, view) -> bool:
         return request.user.is_admin

@@ -89,6 +89,13 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 3
 }
 
+SWAGGER_SETTINGS = {
+    'DEFAULT_PAGINATOR_INSPECTORS': [
+        'reporting_tool.swagger.inspectors.DjangoRestResponsePagination',
+        'drf_yasg.inspectors.CoreAPICompatInspector',
+    ],
+}
+
 AUTH_USER_MODEL = 'reporting_tool.User'
 
 WSGI_APPLICATION = 'reporting_tool.wsgi.application'
