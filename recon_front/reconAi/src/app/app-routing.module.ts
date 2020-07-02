@@ -21,6 +21,15 @@ const routes: Routes = [
       import('./catalog/catalog.module').then((m) => m.CatalogModule),
   },
   {
+    path: 'users',
+    canActivate: [AuthGuard],
+    data: {
+      title: 'Users',
+    },
+    loadChildren: () =>
+      import('./users/users.module').then((m) => m.UsersModule),
+  },
+  {
     path: 'registration',
     canActivate: [NotAuthGuard],
     data: {

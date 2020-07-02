@@ -14,7 +14,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatTooltipModule } from '@angular/material/tooltip';
-
+import { MatTableModule } from '@angular/material/table';
 @NgModule({
   imports: [
     CommonModule,
@@ -31,6 +31,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatSnackBarModule,
     MatGridListModule,
     MatTooltipModule,
+    MatTableModule,
   ],
   exports: [
     MatToolbarModule,
@@ -46,6 +47,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatSnackBarModule,
     MatGridListModule,
     MatTooltipModule,
+    MatTableModule,
   ],
   providers: [],
 })
