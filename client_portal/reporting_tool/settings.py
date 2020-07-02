@@ -39,8 +39,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'reporting_tool',
     'recon_db_manager',
-    'drf_yasg',
-    'django_seed'
+    'drf_yasg'
 ]
 
 MIDDLEWARE = [

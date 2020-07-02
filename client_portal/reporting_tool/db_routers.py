@@ -20,6 +20,8 @@ class DBRouter:
     prohibit_migration_app_labels = []
     prohibit_migration_model_names = []
 
+    allow_relation_map = {}
+
     def db_for_read(self, model: Type[Model], **hints: dict) -> Optional[str]:
         """
         All reads related to recon ai db models should be directed
@@ -36,6 +38,17 @@ class DBRouter:
         app_label = model._meta.app_label
         if app_label in self.app_label_routers:
             return self.app_label_routers.get(app_label)
+
+        return None
+
+    def allow_relation(self, obj1: Model, obj2: Model) -> Optional[bool]:
+        obj1_class = obj1.__class__
+        obj2_class = obj2.__class__
+
+        if self.__is_relation_allowed(obj1_class,
+                                      obj2_class) or self.__is_relation_allowed(
+                obj2_class, obj1_class):
+            return True
 
         return None
 
@@ -81,6 +94,10 @@ class DBRouter:
 
         return None
 
+    def __is_relation_allowed(self, cls1: Type[Model],
+                              cls2: Type[Model]) -> bool:
+        return cls1 in self.allow_relation_map.get(cls2, [])
+
 
 class ReconDBRouter(DBRouter):
     """
@@ -103,3 +120,7 @@ class ReconDBRouter(DBRouter):
         'recon_db_manager',
         'authtoken'
     ]
+
+    allow_relation_map = {
+        User: [UserGroup, Token]
+    }
