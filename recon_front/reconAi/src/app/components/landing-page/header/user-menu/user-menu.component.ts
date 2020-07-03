@@ -17,7 +17,6 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
   selector: 'recon-user-menu',
   templateUrl: './user-menu.component.html',
   styleUrls: ['./user-menu.component.less'],
-  encapsulation: ViewEncapsulation.None,
 })
 export class UserMenuComponent implements OnInit, OnDestroy {
   readonly userRolePriorities = UserRolesPriorities;
