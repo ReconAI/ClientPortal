@@ -14,23 +14,7 @@ export class CrudTableComponent implements OnInit {
   @Input() isWithActions = true;
 
   constructor() {}
-
-  // pagination config
-  readonly pageSize = 5;
-  readonly countShownPages = 3;
-  currentPage = 1;
-  pagesCount: number;
-  totalCount: number;
-  shownPages: number[] = [];
-
   columnsIds: string[] = [];
-
-  selectPage(page: number): void {
-    if (this.currentPage !== page) {
-      this.currentPage = page;
-      this.shownPages = this.calculatePaginationPages();
-    }
-  }
 
   // types
   // TO DO: add ngTemplateOutlet supporting if we need it
@@ -43,30 +27,7 @@ export class CrudTableComponent implements OnInit {
     return element[column.id];
   }
 
-  calculatePaginationPages(): number[] {
-    if (this.currentPage < this.countShownPages) {
-      return Array(Math.min(this.pagesCount, this.countShownPages))
-        .fill(0)
-        .map((_, i) => i + 1);
-    }
-
-    if (this.currentPage <= this.pagesCount - this.countShownPages) {
-      const middleElement = Math.floor(this.countShownPages / 2);
-      return Array(this.countShownPages)
-        .fill(0)
-        .map((_, i) => i - middleElement + this.currentPage);
-    }
-
-    return Array(this.countShownPages)
-      .fill(0)
-      .map((_, i) => this.pagesCount - this.countShownPages + i + 1);
-  }
-
   ngOnInit(): void {
-    this.totalCount = this.data.length;
-    this.pagesCount = Math.ceil(this.data.length / this.pageSize);
-    this.shownPages = this.calculatePaginationPages();
-
     this.columnsIds = this.columns.map(({ id }) => id);
 
     // add actions to update and delete

@@ -1,1 +1,9 @@
-<p>pagination works!</p>
+<div>
+  <span
+    [class]="{ chosen: currentPage === elem }"
+    (click)="selectPage(elem)"
+    *ngFor="let elem of shownPages"
+  >
+    {{ elem }}
+  </span>
+</div>

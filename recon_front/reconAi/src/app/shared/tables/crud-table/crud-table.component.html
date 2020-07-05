@@ -45,15 +45,7 @@
 
   <ng-container matColumnDef="pagination">
     <mat-footer-cell *matFooterCellDef>
-      <div>
-        <span
-          [class]="{ chosen: currentPage === elem }"
-          (click)="selectPage(elem)"
-          *ngFor="let elem of shownPages"
-        >
-          {{ elem }}
-        </span>
-      </div>
+      <recon-pagination [totalCount]="100"></recon-pagination>
     </mat-footer-cell>
   </ng-container>
 
@@ -67,6 +59,5 @@
   ></mat-row>
   <mat-footer-row
     *matFooterRowDef="['pagination']"
-    class="recon-paginator"
   ></mat-footer-row>
 </mat-table>

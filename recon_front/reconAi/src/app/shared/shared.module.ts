@@ -9,7 +9,7 @@ import { CrudTableComponent } from './tables/crud-table/crud-table.component';
 @NgModule({
   declarations: [FormInputComponent, PaginationComponent, CrudTableComponent],
   imports: [MaterialModule, ReactiveFormsModule, FormsModule, CommonModule], // check work around
-  exports: [FormInputComponent, PaginationComponent, CrudTableComponent], // remove pagination
+  exports: [FormInputComponent, CrudTableComponent], // remove pagination
   providers: [],
 })
 export class SharedModule {}
