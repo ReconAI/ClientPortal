@@ -5,10 +5,22 @@
       formControlName="description"
       fieldType="textarea"
     ></recon-form-input>
-    <recon-form-input
-      label="Attach sensor feed link"
-      formControlName="feedLink"
-    ></recon-form-input>
+    <ng-container
+      *ngFor="let link of feedLinks.controls; let i = index"
+      formArrayName="feedLinks"
+    >
+      <recon-form-input
+        [label]="i === 0 ? 'Attach sensor feed link' : ''"
+        [formControlName]="i"
+        [isWithCloseIcon]="true"
+        (clickIcon)="removeLink(i)"
+      ></recon-form-input>
+    </ng-container>
+
+    <div class="add-link-container">
+      <span (click)="addLink()">+ Add link...</span>
+    </div>
+
     <label for="file-upload" class="custom-file-upload">
       <object data="../../../assets/icons/clip.svg" width="20" height="17">
         Your browser does not support SVG
@@ -34,7 +46,13 @@
       </div>
     </div>
     <div class="button-container">
-      <button mat-raised-button color="primary" [disabled]="!newFeatureForm.valid">POST REQUEST</button>
+      <button
+        mat-raised-button
+        color="primary"
+        [disabled]="!newFeatureForm.valid"
+      >
+        POST REQUEST
+      </button>
     </div>
   </form>
 </div>

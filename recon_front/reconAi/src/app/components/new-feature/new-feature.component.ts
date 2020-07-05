@@ -19,6 +19,10 @@ export class NewFeatureComponent implements OnInit {
     return this?.newFeatureForm?.get('files') as FormArray;
   }
 
+  get feedLinks() {
+    return this?.newFeatureForm?.get('feedLinks') as FormArray;
+  }
+
   onFilesChange(event): void {
     const newFiles = event?.target?.files;
     if (newFiles?.length) {
@@ -35,9 +39,17 @@ export class NewFeatureComponent implements OnInit {
   ngOnInit(): void {
     this.newFeatureForm = this.fb.group({
       description: [null, Validators.required],
-      feedLink: [null],
+      feedLinks: this.fb.array([this.fb.control('')]),
       files: this.fb.array([]),
     });
+  }
+
+  addLink(): void {
+    this.feedLinks.push(this.fb.control(''));
+  }
+
+  removeLink(i: number): void {
+    this.feedLinks.removeAt(i);
   }
 
   removeFile(i: number) {
