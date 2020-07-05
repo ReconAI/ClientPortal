@@ -28,7 +28,7 @@ from reporting_tool.forms import SignupForm, PasswordResetForm, \
     UserActivationForm, OrganizationForm, UserForm
 from reporting_tool.frontend.router import Router
 from reporting_tool.models import Token
-from reporting_tool.permissions import IsNotAuthenticated
+from reporting_tool.permissions import IsNotAuthenticated, IsActive
 from reporting_tool.serializers import UserSerializer, \
     form_to_formserializer, forms_to_formserializer
 from reporting_tool.settings import RECON_AI_CONNECTION_NAME
@@ -186,7 +186,7 @@ class CurrentUserProfileView(APIView):
     """
     Returns user's data
     """
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsActive)
 
     @staticmethod
     @swagger_auto_schema(
@@ -273,7 +273,7 @@ class LogoutView(APIView):
     """
     Performs user logout
     """
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsActive)
 
     @staticmethod
     @swagger_auto_schema(
