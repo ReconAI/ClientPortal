@@ -8,7 +8,7 @@ from django.conf import settings
 from django.contrib.auth import (
     get_user_model, password_validation,
 )
-from django.contrib.auth.forms import UserCreationForm, UsernameField, \
+from django.contrib.auth.forms import UserCreationForm, \
     PasswordResetForm as PasswordResetFormBase
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
@@ -29,7 +29,11 @@ class PreSignupForm(UserCreationForm):
     """
     Performs inital validation before signing a user up
     """
-    username = UsernameField
+    username = forms.CharField(
+        label=_("Username"),
+        min_length=2,
+        error_messages={'min_length': _('Incorrect login.')}
+    )
 
     error_messages = {
         'password_mismatch': _('Passwords do not match'),
@@ -225,6 +229,7 @@ class PasswordResetForm(PasswordResetFormBase):
                 'reset_password_link':
                     self.__get_password_reset_link(user, token_generator),
                 'user': user,
+                'app_name': settings.APP_NAME,
                 **(extra_email_context or {}),
             }
 
@@ -278,7 +283,7 @@ class CheckUserTokenForm(forms.Form):
         token = self.cleaned_data.get('token')
 
         if not self._token_generator.check_token(self.user, token):
-            raise forms.ValidationError(_('Token is invalid'))
+            raise forms.ValidationError(_('Token is invalid.'))
 
         return token
 
@@ -303,7 +308,7 @@ class SetPasswordForm(CheckResetPasswordTokenForm):
     """
 
     error_messages = {
-        'password_mismatch': _('Passwords do not match'),
+        'password_mismatch': _('Passwords do not match.'),
     }
 
     new_password1 = forms.CharField(

@@ -1,5 +1,10 @@
-{% autoescape off %}
-Hi {{ user.username }},
-Please click on the link to confirm your registration,
+{% load i18n %}{% autoescape off %}
+
+{% trans "Hi" %} {{ user.username }},
+{% trans "Please click on the link to confirm your registration," %}
 {{ activation_link }}
+
+{% trans "Thanks for using our site!" %}
+{% blocktrans %}The {{ app_name }} portal team{% endblocktrans %}
+
 {% endautoescape %}
