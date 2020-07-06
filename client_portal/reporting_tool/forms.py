@@ -73,11 +73,12 @@ class UserForm(PreSignupForm):
 
     class Meta:
         """
-        Fields username, email are required.
+        All the fields are required.
         """
         model = User
         fields = (
-            'username', 'email', 'firstname', 'lastname', 'address', 'phone')
+            'username', 'email', 'firstname', 'lastname', 'address', 'phone'
+        )
 
     def set_organization(self, organization: Organization):
         """

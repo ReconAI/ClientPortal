@@ -1,13 +1,14 @@
+from django.contrib.auth import get_user_model
 from django.db.models.query import QuerySet
+from django.http import JsonResponse
 from django.utils.decorators import method_decorator
-from drf_yasg import openapi
-from drf_yasg.openapi import Parameter, IN_HEADER
 from drf_yasg.utils import swagger_auto_schema
+from requests import Request
 from rest_framework import status
-from rest_framework.generics import RetrieveUpdateDestroyAPIView, ListCreateAPIView
+from rest_framework.generics import RetrieveUpdateDestroyAPIView, \
+    ListCreateAPIView
 from rest_framework.permissions import IsAuthenticated
 
-from reporting_tool.models import User
 from reporting_tool.permissions import IsCompanyAdmin, IsActive
 from reporting_tool.serializers import UserSerializer
 from reporting_tool.swagger.headers import token_header
@@ -35,7 +36,7 @@ class UserList(ListCreateAPIView):
 
     serializer_class = UserSerializer
 
-    queryset = User.objects.prefetch_related('usergroup__group').all()
+    queryset = get_user_model().objects.prefetch_related('usergroup__group').all()
 
     def filter_queryset(self, queryset: QuerySet) -> QuerySet:
         """
@@ -83,7 +84,7 @@ class UserItem(RetrieveUpdateDestroyAPIView):
 
     serializer_class = UserSerializer
 
-    queryset = User.objects.prefetch_related('usergroup__group')
+    queryset = get_user_model().objects.prefetch_related('usergroup__group')
 
     def filter_queryset(self, queryset: QuerySet) -> QuerySet:
         """
