@@ -2,7 +2,10 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { AppState } from 'app/store/reducers';
-import { resetSignUpAction } from 'app/store/signUp';
+import {
+  resetSignUpAction,
+  setIsSuccessSignUpOpenableStatusAction,
+} from 'app/store/signUp';
 
 @Component({
   selector: 'recon-registration-success',
@@ -14,7 +17,11 @@ export class RegistrationSuccessComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {}
   ngOnDestroy(): void {
-    this.store.dispatch(resetSignUpAction());
+    this.store.dispatch(
+      setIsSuccessSignUpOpenableStatusAction({
+        status: false,
+      })
+    );
   }
 
   goOrderClick(): void {

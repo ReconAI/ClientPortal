@@ -22,6 +22,8 @@ import {
   activationSucceededAction,
   activationErrorAction,
   signUpUserSucceededAction,
+  setIsSuccessSignUpOpenableStatusAction,
+  resetSignUpAction,
 } from './signUp.actions';
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
@@ -130,6 +132,12 @@ export class SignUpEffects {
             // clean the reducer state out
             map(() => signUpUserSucceededAction()),
             tap(() => {
+              this.store.dispatch(resetSignUpAction());
+              this.store.dispatch(
+                setIsSuccessSignUpOpenableStatusAction({
+                  status: true,
+                })
+              );
               this.router.navigate(['/registration/success']);
             }),
             catchError((error) => {
