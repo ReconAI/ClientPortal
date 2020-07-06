@@ -33,6 +33,11 @@ export class ManagementComponent implements OnInit {
       id: 'email',
     },
     {
+      header: 'Date of creation',
+      id: 'createdDT',
+      width: '10%',
+    },
+    {
       header: 'Role',
       id: 'role',
       width: '7%',
@@ -41,7 +46,6 @@ export class ManagementComponent implements OnInit {
       header: 'Active/Inactive',
       id: 'isActive',
       width: '8%',
-
       render: (elem): string => (elem.isActive ? 'Active' : 'Not active'),
     },
   ];

@@ -3,6 +3,7 @@ export interface UserInterface {
   lastName: string;
   phone: string;
   email: string;
-  role: string; // change
+  role: string;
   isActive: boolean;
+  createdDT: string;
 }

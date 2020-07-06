@@ -11,7 +11,6 @@ export class CrudTableComponent implements OnInit {
   @Input() pageSize = 3;
   @Input() totalCount = 0;
 
-  // type
   @Input() columns: CrudTableColumn[] = [];
   @Input() isWithActions = true;
 

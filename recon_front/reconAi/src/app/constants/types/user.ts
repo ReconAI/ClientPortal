@@ -70,6 +70,7 @@ export interface ServerUserInterface {
   email: string;
   user_level: number;
   is_active: boolean;
+  created_dt: string;
   group: {
     name: UserRoleTypes;
   };
