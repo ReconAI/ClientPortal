@@ -16,7 +16,6 @@ import {
   transformUserResponse,
   ServerLoginUserResponseInterface,
   transformLoginUserForm,
-  transformErrorsToDisplay,
   PreResetPasswordRequestInterface,
   transformResetPasswordFormToRequest,
 } from './user.server.helpers';
@@ -117,7 +116,7 @@ export class UserEffects {
               this.router.navigate(['/']);
             }),
             catchError((error: HttpErrorResponse) => {
-              return of(loginUserErrorAction(transformErrorsToDisplay(error)));
+              return of(loginUserErrorAction(generalTransformFormErrorToString(error)));
             }),
             finalize(() => {
               this.store.dispatch(

@@ -22,8 +22,8 @@ export class HttpErrorInterceptor implements HttpInterceptor {
     '/authApi/profile',
 
     // forms
-    '/authApi/reset-password',
     '/authApi/api-token-auth',
+    '/authApi/reset-password',
     '/authApi/pre-signup',
     '/authApi/signup',
     '/authApi/reset',
@@ -66,10 +66,6 @@ export class HttpErrorInterceptor implements HttpInterceptor {
     request: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
-    if (this.errorsToNotShowMessage.includes(request?.url)) {
-      return next.handle(request);
-    }
-
     return next.handle(request).pipe(
       // retry(1),
       catchError((error: HttpErrorResponse) => {
@@ -78,15 +74,22 @@ export class HttpErrorInterceptor implements HttpInterceptor {
         if (error.error instanceof ErrorEvent) {
           // client-side error
           errorMessage = `Error: ${error.error.message}`;
-        } else {
+        } else if (
+          Math.floor(error.status / 100) === 5 ||
+          !this.errorsToNotShowMessage.includes(request?.url)
+        ) {
           // server-side error
           errorMessage = this.createErrorServerMessage(error);
           // errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
         }
-        this.openSnackBar(errorMessage);
-        if (!environment.production) {
-          console.error(errorMessage);
+        if (errorMessage) {
+          this.openSnackBar(errorMessage);
+
+          if (!environment.production) {
+            console.error(errorMessage);
+          }
         }
+
         return throwError(error);
       })
     );

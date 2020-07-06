@@ -35,6 +35,7 @@ export class SignInFormContainer implements OnInit, OnDestroy {
 
   closeModal$ = this.actionsSubject.pipe(
     ofType(preResetPasswordSucceededAction),
+    tap(() => 'im here, email')
   );
 
   ngOnInit(): void {}

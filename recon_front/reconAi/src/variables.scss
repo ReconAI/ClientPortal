@@ -36,6 +36,11 @@ $fontConfig: (
   input: mat-typography-level(inherit, 1.125, 400, 'Roboto', 1.5px)
 );
 
+// material doesnt provide by default
+textarea {
+  font-family: 'Roboto';
+}
+
 // Foreground Elements
 
 // Light Theme Text

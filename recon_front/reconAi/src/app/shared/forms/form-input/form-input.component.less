@@ -4,7 +4,9 @@
 .field-container {
     width: 100%;
 
-    input.recon-input {
+    textarea.recon-input,
+    input.recon-input,
+    .close-icon-container {
         width: 100%;
         padding: 12px 20px;
         margin: 10px 0;
@@ -20,6 +22,29 @@
         &.recon-input-invalid {
             border-color: @recon-error-input-border;
         }
+    }
+
+    .input-container {
+        display: flex;
+    }
+
+    .close-icon-container {
+        background-color: white;
+        border-left: none;
+        width: 30px;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+
+        span {
+            font-size: 25px;
+        }
+    }
+
+    textarea.recon-input {
+        min-height: 170px;
     }
 
 
