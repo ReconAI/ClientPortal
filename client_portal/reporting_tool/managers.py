@@ -78,6 +78,10 @@ class UserManager(UserManagerBase):
         """
         from reporting_tool.models import Role
 
+        extra_fields.update({
+            'is_active': True
+        })
+
         return self.__create(Organization.root(), Role.SUPER_ADMIN,
                              **extra_fields)
 
