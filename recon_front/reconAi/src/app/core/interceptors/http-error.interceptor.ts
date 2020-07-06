@@ -22,6 +22,7 @@ export class HttpErrorInterceptor implements HttpInterceptor {
     '/authApi/profile',
 
     // forms
+    '/authApi/api-token-auth',
     '/authApi/reset-password',
     '/authApi/pre-signup',
     '/authApi/signup',
