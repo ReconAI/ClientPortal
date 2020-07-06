@@ -9,17 +9,20 @@ export const generalTransformFormErrorToString = (
 ): FormServerErrorInterface | null => {
   const errors = error?.error?.errors;
 
-  if (error.status === 400 || error.status === 422) {
-    if (errors) {
+  if (errors) {
+    if (error.status === 400 || error.status === 422) {
       return {
         general: Object.keys(errors).reduce(
           (finalError, key) => (finalError += `${errors[key].join(' ')}`),
           ''
         ),
       };
+    } else if (error.status === 404) {
+      return {
+        general: errors,
+      };
     }
   }
-
   return null;
 };
 
