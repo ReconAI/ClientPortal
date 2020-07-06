@@ -24,7 +24,7 @@ from rest_framework import permissions
 from .views.accounts import SignupView, ActivateView, CurrentUserProfileView, \
     ObtainAuthToken, LogoutView, ResetPassword, PasswordResetConfirmView, \
     PreSignupValidationView, CheckResetPasswordTokenView
-from .views.user_management import UserList
+from .views.user_management import UserList, UserItem
 
 urlpatterns = [
     path('signup', SignupView.as_view(), name='signup'),
@@ -41,6 +41,7 @@ urlpatterns = [
          name='check_reset_password_token'),
 
     path('users', UserList.as_view(), name='users.list'),
+    path('users/<int:pk>', UserItem.as_view(), name='users.item'),
 
     path('admin/', admin.site.urls),
 ]

@@ -32,6 +32,7 @@ from reporting_tool.permissions import IsNotAuthenticated, IsActive
 from reporting_tool.serializers import UserSerializer, \
     form_to_formserializer, forms_to_formserializer
 from reporting_tool.settings import RECON_AI_CONNECTION_NAME
+from reporting_tool.swagger.headers import token_header
 from reporting_tool.swagger.responses import get_responses, token, http400, \
     http405, http403, http401, data_serializer
 from reporting_tool.tokens import TokenGenerator
@@ -199,10 +200,7 @@ class CurrentUserProfileView(APIView):
         operation_summary="Current user data",
         operation_description='Returns current user data',
         manual_parameters=[
-            Parameter(
-                'Authorization', IN_HEADER,
-                'Token', required=True, type=openapi.TYPE_STRING
-            )
+            token_header()
         ]
     )
     def get(request: Request, *args, **kwargs) -> JsonResponse:
@@ -287,10 +285,7 @@ class LogoutView(APIView):
         operation_summary="Logs user out",
         operation_description='Logs user out deleting his auth token',
         manual_parameters=[
-            Parameter(
-                'Authorization', IN_HEADER,
-                'Token', required=True, type=openapi.TYPE_STRING
-            )
+            token_header()
         ]
     )
     def put(request: Request, *args, **kwargs) -> JsonResponse:
