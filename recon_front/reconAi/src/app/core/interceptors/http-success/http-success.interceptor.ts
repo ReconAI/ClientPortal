@@ -13,9 +13,9 @@ import { Observable } from 'rxjs';
 @Injectable()
 export class HttpSuccessInterceptor implements HttpInterceptor {
   constructor(private snackBar: MatSnackBar) {}
-  readonly durationInSeconds = 3;
+  readonly durationInSeconds = 100;
   readonly verticalPosition = 'top';
-  readonly horizontalPosition = 'center';
+  readonly horizontalPosition = 'right';
 
   createSuccessServerMessage(response: HttpResponse<any>): string {
     return response?.body?.message || '';
