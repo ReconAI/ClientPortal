@@ -13,9 +13,7 @@ import { Observable } from 'rxjs';
 @Injectable()
 export class HttpSuccessInterceptor implements HttpInterceptor {
   constructor(private snackBar: MatSnackBar) {}
-  readonly durationInSeconds = 100;
-  readonly verticalPosition = 'top';
-  readonly horizontalPosition = 'right';
+  readonly durationInSeconds = 3;
 
   createSuccessServerMessage(response: HttpResponse<any>): string {
     return response?.body?.message || '';
@@ -24,8 +22,6 @@ export class HttpSuccessInterceptor implements HttpInterceptor {
   openSnackBar(text: string) {
     this.snackBar.open(text, null, {
       duration: this.durationInSeconds * 1000,
-      verticalPosition: this.verticalPosition,
-      horizontalPosition: this.horizontalPosition,
       panelClass: ['recon-snackbar', 'success-snackbar'],
     });
   }
