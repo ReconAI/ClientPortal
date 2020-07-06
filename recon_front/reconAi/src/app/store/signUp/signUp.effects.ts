@@ -10,7 +10,6 @@ import {
 import { Action, Store } from '@ngrx/store';
 import {
   transformPreSignUpUserForm,
-  transformErrorPreSignUp,
   transformSignUpFormToRequest,
   signUpRelationsFormAnsServerFields,
 } from './signUp.server.helpers';
@@ -71,7 +70,9 @@ export class SignUpEffects {
             }),
             catchError((error) => {
               return of(
-                preSignUpUserErrorAction(transformErrorPreSignUp(error))
+                preSignUpUserErrorAction(
+                  generalTransformFormErrorToString(error)
+                )
               );
             }),
             finalize(() => {

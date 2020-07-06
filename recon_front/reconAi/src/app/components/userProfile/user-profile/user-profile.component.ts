@@ -14,7 +14,6 @@ import { FormServerErrorInterface } from 'app/constants/types/requests';
   selector: 'recon-user-profile',
   templateUrl: './user-profile.component.html',
   styleUrls: ['./user-profile.component.less'],
-  encapsulation: ViewEncapsulation.None,
 })
 export class UserProfileComponent implements OnInit {
   @Input() loading = false;

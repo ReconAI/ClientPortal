@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { AppState } from 'app/store/reducers';
@@ -9,10 +10,14 @@ import { resetSignUpAction } from 'app/store/signUp';
   styleUrls: ['./registration-success.component.less'],
 })
 export class RegistrationSuccessComponent implements OnInit, OnDestroy {
-  constructor(private store: Store<AppState>) {}
+  constructor(private store: Store<AppState>, private router: Router) {}
 
   ngOnInit(): void {}
   ngOnDestroy(): void {
     this.store.dispatch(resetSignUpAction());
+  }
+
+  goOrderClick(): void {
+    this.router.navigate(['/']);
   }
 }
