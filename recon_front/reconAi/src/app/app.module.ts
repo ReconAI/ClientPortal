@@ -1,3 +1,4 @@
+import { UsersEffects } from './store/users/users.effects';
 import { HttpSuccessInterceptor } from './core/interceptors/http-success/http-success.interceptor';
 import { RegistrationSuccessHumanComponent } from './components/registration/registration-success/registration-success-human.component';
 import { SignUpEffects } from './store/signUp/signUp.effects';
@@ -82,7 +83,7 @@ import { ResetPasswordModalContainer } from './components/reset-password-page/re
     CoreModule,
     SharedModule, // remove later
     StoreRouterConnectingModule.forRoot(),
-    EffectsModule.forRoot([UserEffects, SignUpEffects]),
+    EffectsModule.forRoot([UserEffects, SignUpEffects, UsersEffects]),
   ],
   providers: [
     // token and headers
