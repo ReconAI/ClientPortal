@@ -33,7 +33,11 @@ export class FormInputComponent implements ControlValueAccessor, OnInit {
   @Input() errorMessages: { [key: string]: string } = {};
   @Input() disabled = false;
   @Input() showRequiredSymbol = false;
+  @Input() isWithCloseIcon = false;
+  // add types
+  @Input() fieldType: 'text' | 'textarea' = 'text';
   @Output() changeVal = new EventEmitter<any>();
+  @Output() clickIcon = new EventEmitter<any>();
 
   onChange = (value: any) => {};
   onTouched = () => {};
@@ -63,6 +67,10 @@ export class FormInputComponent implements ControlValueAccessor, OnInit {
       this.controlDir.control.touched &&
       this.controlDir.control.errors
     );
+  }
+
+  pressIcon(): void {
+    this.clickIcon.emit();
   }
 
   ngOnInit() {

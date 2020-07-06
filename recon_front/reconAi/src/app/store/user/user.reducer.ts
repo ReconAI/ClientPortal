@@ -63,7 +63,11 @@ export const initialState: UserState = {
 const loadCurrentUserSucceededReducer = (
   state: UserState,
   { type, ...user }: Action & UserTransformationResponse
-): UserState => ({ ...state, ...user, isAuthenticated: true });
+): UserState => ({
+  ...state,
+  ...user,
+  isAuthenticated: user.rolePriority > UserRolesPriorities.UNAUTHORIZED_ROLE,
+});
 
 const resetCurrentUserReducer = (state: UserState): UserState => initialState;
 
