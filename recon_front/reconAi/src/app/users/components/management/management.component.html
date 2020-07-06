@@ -1,1 +1,7 @@
-<recon-crud-table [data]="data" [columns]="columns"></recon-crud-table>
+<recon-crud-table
+  [data]="data"
+  [columns]="columns"
+  [pageSize]="pageSize"
+  [totalCount]="totalCount"
+  (changePage$)="loadData($event)"
+></recon-crud-table>

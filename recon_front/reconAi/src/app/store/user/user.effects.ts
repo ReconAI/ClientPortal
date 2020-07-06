@@ -12,7 +12,6 @@ import {
 import { LocalStorageService } from './../../core/services/localStorage/local-storage.service';
 import { Action, Store } from '@ngrx/store';
 import {
-  UserResponse,
   transformUserResponse,
   ServerLoginUserResponseInterface,
   transformLoginUserForm,
@@ -50,6 +49,7 @@ import {
 } from 'rxjs/operators';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { AppState } from '../reducers';
+import { ServerUserInterface } from 'app/constants/types';
 
 @Injectable()
 export class UserEffects {
@@ -72,7 +72,7 @@ export class UserEffects {
         );
       }),
       switchMap(() =>
-        this.httpClient.get<UserResponse>('/authApi/profile').pipe(
+        this.httpClient.get<ServerUserInterface>('/api/profile').pipe(
           map((user) =>
             loadCurrentUserSucceededAction(transformUserResponse(user))
           ),
@@ -102,7 +102,7 @@ export class UserEffects {
       switchMap((data) =>
         this.httpClient
           .post<ServerLoginUserResponseInterface>(
-            '/authApi/api-token-auth',
+            '/api/api-token-auth',
             transformLoginUserForm(data)
           )
           .pipe(
@@ -142,7 +142,7 @@ export class UserEffects {
         );
       }),
       switchMap(() =>
-        this.httpClient.put('/authApi/logout', {}).pipe(
+        this.httpClient.put('/api/logout', {}).pipe(
           map(() => {
             this.localStorageService.removeAuthToken();
             this.store.dispatch(resetCurrentUserAction());
@@ -172,7 +172,7 @@ export class UserEffects {
         );
       }),
       switchMap((email: PreResetPasswordRequestInterface) =>
-        this.httpClient.post('/authApi/reset-password', email).pipe(
+        this.httpClient.post('/api/reset-password', email).pipe(
           map(() => {
             // check if we need it
             this.store.dispatch(preResetResetPasswordErrorAction());
@@ -209,10 +209,7 @@ export class UserEffects {
       }),
       switchMap((credentials: ResetPasswordWithMetaInterface) => {
         return this.httpClient
-          .put(
-            '/authApi/reset',
-            transformResetPasswordFormToRequest(credentials)
-          )
+          .put('/api/reset', transformResetPasswordFormToRequest(credentials))
           .pipe(
             map(() => {
               return resetPasswordSucceededAction();

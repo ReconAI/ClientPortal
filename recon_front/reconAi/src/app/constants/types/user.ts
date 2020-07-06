@@ -32,10 +32,6 @@ export type UserRoleTypes =
   | DEVELOPER_TYPE_ROLE
   | SUPER_ADMIN_TYPE_ROLE
   | UNAUTHORIZED_TYPE_ROLE;
-export interface User {
-  // isAuthenticated: boolean;
-  // role: UserRoleTypes;
-}
 
 export const DEFAULT_USER_ROLE: UserRoleTypes = UNAUTHORIZED_ROLE;
 export const DEFAULT_USER_ROLE_PRIORITY: UserRolesPriorities =
@@ -63,4 +59,19 @@ export interface UserProfileFormInterface {
     phone: string;
     email: string;
   };
+}
+
+export interface ServerUserInterface {
+  id: number;
+  firstname: string;
+  lastname: string;
+  address: string;
+  phone: string;
+  email: string;
+  user_level: number;
+  is_active: boolean;
+  group: {
+    name: UserRoleTypes;
+  };
+  username: string;
 }

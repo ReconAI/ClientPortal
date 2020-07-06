@@ -6,24 +6,9 @@ import {
   DEFAULT_USER_ROLE,
   DEFAULT_USER_ROLE_PRIORITY,
   UserRoleTypes,
+  ServerUserInterface,
 } from './../../constants/types/user';
 import { HttpErrorResponse } from '@angular/common/http';
-
-export interface UserResponse {
-  id: number;
-  firstname: string;
-  lastname: string;
-  address: string;
-  phone: string;
-  email: string;
-  user_level: number;
-  is_active: boolean;
-  group: {
-    name: UserRoleTypes;
-  };
-  username: string;
-}
-
 export interface UserTransformationResponse {
   isAuthenticated: boolean;
   role: UserRoleTypes | null;
@@ -38,7 +23,7 @@ export interface UserTransformationResponse {
 }
 
 export const transformUserResponse = (
-  response: UserResponse
+  response: ServerUserInterface
 ): UserTransformationResponse => ({
   isAuthenticated: null,
   role: response?.group?.name || DEFAULT_USER_ROLE,

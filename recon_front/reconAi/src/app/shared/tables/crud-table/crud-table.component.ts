@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 import { CrudTableColumn } from 'app/shared/types';
 
 @Component({
@@ -8,11 +8,14 @@ import { CrudTableColumn } from 'app/shared/types';
 })
 export class CrudTableComponent implements OnInit {
   @Input() data = [];
+  @Input() pageSize = 3;
+  @Input() totalCount = 0;
 
   // type
   @Input() columns: CrudTableColumn[] = [];
   @Input() isWithActions = true;
 
+  @Output() changePage$ = new EventEmitter<number>();
   constructor() {}
   columnsIds: string[] = [];
 
@@ -25,6 +28,10 @@ export class CrudTableComponent implements OnInit {
     }
 
     return element[column.id];
+  }
+
+  changePage(page: number) {
+    this.changePage$.emit(page);
   }
 
   ngOnInit(): void {

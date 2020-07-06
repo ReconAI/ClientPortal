@@ -1,1 +1,7 @@
-<recon-management [data]="users"> </recon-management>
+<recon-management
+  [data]="users$ | async"
+  [totalCount]="totalCount$ | async"
+  [pageSize]="pageSize$ | async"
+  (loadData$)="loadUsers($event)"
+>
+</recon-management>

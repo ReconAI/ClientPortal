@@ -61,7 +61,7 @@ export class SignUpEffects {
       }),
       switchMap((user) =>
         this.httpClient
-          .post('/authApi/pre-signup', transformPreSignUpUserForm(user))
+          .post('/api/pre-signup', transformPreSignUpUserForm(user))
           .pipe(
             // check type
             map(() => {
@@ -90,7 +90,7 @@ export class SignUpEffects {
     this.actions$.pipe(
       ofType(SignUpActionTypes.ACTIVATION_REQUESTED),
       switchMap((activation: ActivationInterface) =>
-        this.httpClient.put('/authApi/activate', activation).pipe(
+        this.httpClient.put('/api/activate', activation).pipe(
           // check type
           map(() => activationSucceededAction()),
           catchError((error) => {
@@ -116,7 +116,7 @@ export class SignUpEffects {
         const { password1, password2, username } = store.signUp;
         return this.httpClient
           .post(
-            '/authApi/signup',
+            '/api/signup',
             transformSignUpFormToRequest({
               ...(user as UserProfileFormInterface),
               password1,

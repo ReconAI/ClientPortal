@@ -1,29 +1,45 @@
-import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  EventEmitter,
+  Output,
+  DoCheck,
+  SimpleChanges,
+  OnChanges,
+} from '@angular/core';
 
 @Component({
   selector: 'recon-pagination',
   templateUrl: './pagination.component.html',
   styleUrls: ['./pagination.component.less'],
 })
-export class PaginationComponent implements OnInit {
+export class PaginationComponent implements OnInit, OnChanges {
   constructor() {}
   @Input() totalCount: number;
-  @Output() changePage = new EventEmitter<number>();
+  @Output() changePage$ = new EventEmitter<number>();
 
-  readonly pageSize = 5;
+  @Input() pageSize;
   readonly countShownPages = 3;
   currentPage = 1;
   pagesCount: number;
   shownPages: number[] = [];
 
   ngOnInit(): void {
-    this.pagesCount = Math.ceil(this.totalCount / this.pageSize);
+    this.pagesCount = Math.ceil(this.totalCount / this.pageSize || 1);
     this.shownPages = this.calculatePaginationPages();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.totalCount || changes.shownPages) {
+      this.pagesCount = Math.ceil(this.totalCount / this.pageSize || 1);
+      this.shownPages = this.calculatePaginationPages();
+    }
   }
 
   selectPage(page: number): void {
     if (this.currentPage !== page) {
-      this.changePage.emit(page);
+      this.changePage$.emit(page);
       this.currentPage = page;
       this.shownPages = this.calculatePaginationPages();
     }
@@ -42,7 +58,7 @@ export class PaginationComponent implements OnInit {
         .fill(0)
         .map((_, i) => i - middleElement + this.currentPage);
     }
-    // bug 
+    // bug
     return Array(this.countShownPages)
       .fill(0)
       .map((_, i) => this.pagesCount - this.countShownPages + i + 1);

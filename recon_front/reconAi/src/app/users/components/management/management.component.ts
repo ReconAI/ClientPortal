@@ -1,5 +1,5 @@
 import { UserInterface } from './../../constants/types/user';
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 
 @Component({
   selector: 'recon-management',
@@ -8,6 +8,11 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class ManagementComponent implements OnInit {
   @Input() data: UserInterface[] = [];
+  @Input() totalCount: number;
+  @Input() currentPage: number;
+  @Input() pageSize: number;
+
+  @Output() loadData$ = new EventEmitter<number>();
 
   readonly columns = [
     {
@@ -42,4 +47,8 @@ export class ManagementComponent implements OnInit {
   ];
 
   ngOnInit(): void {}
+
+  loadData(page: number): void {
+    this.loadData$.emit(page);
+  }
 }

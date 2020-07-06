@@ -11,7 +11,7 @@ import { Observable } from 'rxjs';
 @Injectable()
 export class HeadersInterceptor implements HttpInterceptor {
   readonly AUTH_HEADER = 'Authorization';
-  readonly urlsWithoutToken = ['/authApi/api-token-auth', 'authApi/signup', 'authApi/reset-password'];
+  readonly urlsWithoutToken = ['/api/api-token-auth', 'authApi/signup', 'authApi/reset-password'];
 
   constructor(private localStorageService: LocalStorageService) {}
 

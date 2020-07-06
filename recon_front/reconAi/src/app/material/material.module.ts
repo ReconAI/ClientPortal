@@ -15,6 +15,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTableModule } from '@angular/material/table';
+import { MatCardModule } from '@angular/material/card';
 @NgModule({
   imports: [
     CommonModule,
@@ -32,6 +33,7 @@ import { MatTableModule } from '@angular/material/table';
     MatGridListModule,
     MatTooltipModule,
     MatTableModule,
+    MatCardModule,
   ],
   exports: [
     MatToolbarModule,
@@ -48,6 +50,7 @@ import { MatTableModule } from '@angular/material/table';
     MatGridListModule,
     MatTooltipModule,
     MatTableModule,
+    MatCardModule,
   ],
   providers: [],
 })

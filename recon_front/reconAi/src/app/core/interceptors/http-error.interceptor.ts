@@ -19,13 +19,13 @@ export class HttpErrorInterceptor implements HttpInterceptor {
   readonly horizontalPosition = 'center';
   readonly defaultErrorMessage = 'Server error';
   readonly errorsToNotShowMessage = [
-    '/authApi/profile',
+    '/api/profile',
 
     // forms
-    '/authApi/reset-password',
-    '/authApi/pre-signup',
-    '/authApi/signup',
-    '/authApi/reset',
+    '/api/reset-password',
+    '/api/pre-signup',
+    '/api/signup',
+    '/api/reset',
   ];
 
   createErrorServerMessage(error: HttpErrorResponse): string {

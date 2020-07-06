@@ -1,4 +1,4 @@
-import { UsersListRequestInterface } from './users.server.helpers';
+import { UsersListRequestInterface,  StoreUsersListInterface } from './users.server.helpers';
 import { createAction, props } from '@ngrx/store';
 export enum UsersActionTypes {
   LOAD_USERS_LIST_REQUESTED = '[Users] Load Users Requested',
@@ -6,7 +6,16 @@ export enum UsersActionTypes {
   LOAD_USERS_LIST_ERROR = '[Users] Load Users Error',
 }
 
-export const loadUsersListRequested = createAction(
+export const loadUsersListRequestedAction = createAction(
   UsersActionTypes.LOAD_USERS_LIST_REQUESTED,
   props<UsersListRequestInterface>()
+);
+
+export const loadUsersListSucceededAction = createAction(
+  UsersActionTypes.LOAD_USERS_LIST_SUCCEEDED,
+  props<StoreUsersListInterface>()
+);
+
+export const loadUsersListErrorAction = createAction(
+  UsersActionTypes.LOAD_USERS_LIST_ERROR
 );
