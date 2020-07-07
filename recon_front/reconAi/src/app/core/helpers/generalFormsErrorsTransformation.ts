@@ -19,7 +19,7 @@ export const generalTransformFormErrorToString = (
       }
       return {
         general: Object.keys(errors).reduce(
-          (finalError, key) => (finalError += ` ${errors[key].join(' ')} `),
+          (finalError, key) => (finalError += ` ${errors[key].join('\n')}\n`),
           ''
         ),
       };
