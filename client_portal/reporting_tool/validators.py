@@ -30,7 +30,7 @@ class TwoLowercasesPasswordValidator:
         """
         :rtype: str
         """
-        return _('At least two characters should be lowercased')
+        return _('At least two characters should be lowercased.')
 
 
 class TwoUppercasesPasswordValidator:
@@ -55,7 +55,7 @@ class TwoUppercasesPasswordValidator:
         """
         :rtype: str
         """
-        return _('At least two characters should be uppercased')
+        return _('At least two characters should be uppercased.')
 
 
 class TwoNumbersPasswordValidator:
@@ -80,7 +80,7 @@ class TwoNumbersPasswordValidator:
         """
         :rtype: str
         """
-        return _('At least two characters should be number')
+        return _('At least two characters should be number.')
 
 
 class SpecialCharacterPasswordValidator:
@@ -105,4 +105,4 @@ class SpecialCharacterPasswordValidator:
         """
         :rtype: str
         """
-        return _('At least one character should be -/*+.=!?')
+        return _('At least one character should be -/*+.=!?.')
