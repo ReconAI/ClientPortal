@@ -44,6 +44,8 @@ export interface UserProfileFormInterface {
     email: string;
     address: string;
     vat: string;
+    firstName: string;
+    lastName: string;
   };
   user: {
     firstName: string;

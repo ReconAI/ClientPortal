@@ -42,6 +42,8 @@ import { PreResetPasswordContainer } from './components/login-modal/pre-reset-pa
 import { ResetPasswordPageComponent } from './components/reset-password-page/reset-password-page.component';
 import { ResetPasswordModalComponent } from './components/reset-password-page/reset-password-modal/reset-password-modal.component';
 import { ResetPasswordModalContainer } from './components/reset-password-page/reset-password-modal/reset-password-modal.container';
+import { NewFeatureComponent } from './components/new-feature/new-feature.component';
+import { NewFeatureContainer } from './components/new-feature/new-feature.container';
 
 @NgModule({
   declarations: [
@@ -65,6 +67,8 @@ import { ResetPasswordModalContainer } from './components/reset-password-page/re
     ResetPasswordPageComponent,
     ResetPasswordModalComponent,
     ResetPasswordModalContainer,
+    NewFeatureComponent,
+    NewFeatureContainer,
   ],
   imports: [
     BrowserModule,

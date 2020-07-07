@@ -58,24 +58,6 @@ export const transformLoginUserForm = ({
   username: login,
   password: password1,
 });
-export const transformErrorsToDisplay = (
-  error: HttpErrorResponse
-): FormServerErrorInterface | null => {
-  const errors = error?.error?.errors;
-
-  if (error.status === 400 || error.status === 422) {
-    if (errors) {
-      if (errors.non_field_errors) {
-        return {
-          general: errors.non_field_errors.join(' '),
-        };
-      }
-    }
-  }
-
-  return null;
-};
-
 export interface PreResetPasswordRequestInterface {
   email: string;
 }

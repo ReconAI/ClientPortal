@@ -1,3 +1,4 @@
+import { MatInput } from '@angular/material/input';
 import { LOGIN_RULES_TOOLTIP } from './../../../constants/labels/login';
 import { PASSWORD_RULES_TOOLTIP } from './../../../constants/labels/password';
 import { Observable, Subscription } from 'rxjs';
@@ -11,6 +12,8 @@ import {
   EventEmitter,
   Input,
   OnDestroy,
+  ViewChild,
+  AfterViewInit,
 } from '@angular/core';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 
@@ -19,7 +22,7 @@ import { FormBuilder, Validators, FormGroup } from '@angular/forms';
   templateUrl: './sign-in-form.component.html',
   styleUrls: ['./sign-in-form.component.less'],
 })
-export class SignInFormComponent implements OnInit, OnDestroy {
+export class SignInFormComponent implements OnInit, OnDestroy, AfterViewInit {
   // rename
   @Input() loadingStatus = false;
   @Input() isSignUp: boolean;
@@ -30,14 +33,14 @@ export class SignInFormComponent implements OnInit, OnDestroy {
   @Output() submitData$ = new EventEmitter<LoginUserFormInterface>(); // check type
   signInForm: FormGroup;
   dialogRef: MatDialogRef<any>; // check type
-  readonly loginTooltipText =  LOGIN_RULES_TOOLTIP;
+
+  // @ViewChild('myLogin') loginItem:;
+
+  readonly loginTooltipText = LOGIN_RULES_TOOLTIP;
   readonly passwordTooltipText = PASSWORD_RULES_TOOLTIP;
 
   hide = true;
-  constructor(
-    private fb: FormBuilder,
-    public dialog: MatDialog,
-  ) {}
+  constructor(private fb: FormBuilder, public dialog: MatDialog) {}
 
   ngOnInit(): void {
     this.signInForm = this.buildFormGroup();
@@ -79,4 +82,6 @@ export class SignInFormComponent implements OnInit, OnDestroy {
   onSubmit() {
     this.submitData$.emit(this.signInForm.value);
   }
+
+  ngAfterViewInit() {}
 }

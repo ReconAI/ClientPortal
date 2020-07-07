@@ -10,7 +10,6 @@ import {
 import { Action, Store } from '@ngrx/store';
 import {
   transformPreSignUpUserForm,
-  transformErrorPreSignUp,
   transformSignUpFormToRequest,
   signUpRelationsFormAnsServerFields,
 } from './signUp.server.helpers';
@@ -23,6 +22,8 @@ import {
   activationSucceededAction,
   activationErrorAction,
   signUpUserSucceededAction,
+  setIsSuccessSignUpOpenableStatusAction,
+  resetSignUpAction,
 } from './signUp.actions';
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
@@ -71,7 +72,9 @@ export class SignUpEffects {
             }),
             catchError((error) => {
               return of(
-                preSignUpUserErrorAction(transformErrorPreSignUp(error))
+                preSignUpUserErrorAction(
+                  generalTransformFormErrorToString(error)
+                )
               );
             }),
             finalize(() => {
@@ -129,6 +132,12 @@ export class SignUpEffects {
             // clean the reducer state out
             map(() => signUpUserSucceededAction()),
             tap(() => {
+              this.store.dispatch(resetSignUpAction());
+              this.store.dispatch(
+                setIsSuccessSignUpOpenableStatusAction({
+                  status: true,
+                })
+              );
               this.router.navigate(['/registration/success']);
             }),
             catchError((error) => {

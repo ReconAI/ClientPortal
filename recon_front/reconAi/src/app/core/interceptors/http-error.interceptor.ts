@@ -15,8 +15,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class HttpErrorInterceptor implements HttpInterceptor {
   constructor(private snackBar: MatSnackBar) {}
   readonly durationInSeconds = 3;
-  readonly verticalPosition = 'top';
-  readonly horizontalPosition = 'center';
   readonly defaultErrorMessage = 'Server error';
   readonly errorsToNotShowMessage = [
     '/api/profile',
@@ -26,6 +24,7 @@ export class HttpErrorInterceptor implements HttpInterceptor {
     '/api/pre-signup',
     '/api/signup',
     '/api/reset',
+    '/api/api-token-auth',
   ];
 
   createErrorServerMessage(error: HttpErrorResponse): string {
@@ -55,8 +54,6 @@ export class HttpErrorInterceptor implements HttpInterceptor {
   openSnackBar(text = this.defaultErrorMessage) {
     this.snackBar.open(text, null, {
       duration: this.durationInSeconds * 1000,
-      verticalPosition: this.verticalPosition,
-      horizontalPosition: this.horizontalPosition,
       panelClass: ['recon-snackbar'],
     });
   }

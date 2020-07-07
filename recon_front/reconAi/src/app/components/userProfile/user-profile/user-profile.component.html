@@ -5,6 +5,22 @@
     <div class="block-container" formGroupName="organization">
       <div>
         <recon-form-input
+          label="Contact person first name"
+          placeholder="Contact person first name"
+          formControlName="firstName"
+          [showRequiredSymbol]="true"
+        ></recon-form-input>
+      </div>
+      <div>
+        <recon-form-input
+          label="Contact person last name"
+          placeholder="Contact person last name"
+          formControlName="lastName"
+          [showRequiredSymbol]="true"
+        ></recon-form-input>
+      </div>
+      <div>
+        <recon-form-input
           label="Name"
           placeholder="Name"
           formControlName="name"

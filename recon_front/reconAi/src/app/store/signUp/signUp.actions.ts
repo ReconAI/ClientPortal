@@ -1,5 +1,8 @@
 import { ActivationInterface } from './../../constants/types/activation';
-import { FormServerErrorInterface, ObjectFormErrorInterface } from './../../constants/types/requests';
+import {
+  FormServerErrorInterface,
+  ObjectFormErrorInterface,
+} from './../../constants/types/requests';
 import { PreSignUpInterface } from './signUp.server.helpers';
 import { SignUpState } from './signUp.reducer';
 import { createAction, props } from '@ngrx/store';
@@ -21,6 +24,7 @@ export enum SignUpActionTypes {
   ACTIVATION_SUCCEEDED = '[Sign Up] Activation Succeeded',
   ACTIVATION_ERROR = '[Sign Up] Activation Error',
 
+  SET_IS_SIGN_UP_OPENABLE_STATUS = '[Sign Up] Set Sign Up Openable Status',
   RESET_SIGN_UP = '[Sign Up] Reset',
 }
 
@@ -30,12 +34,12 @@ export const signUpUserRequestedAction = createAction(
 );
 
 export const signUpUserSucceededAction = createAction(
-  SignUpActionTypes.SIGN_UP_USER_SUCCEEDED,
+  SignUpActionTypes.SIGN_UP_USER_SUCCEEDED
 );
 
 export const signUpUserErrorAction = createAction(
   SignUpActionTypes.SIGN_UP_USER_ERROR,
-  props<ObjectFormErrorInterface>(),
+  props<ObjectFormErrorInterface>()
 );
 
 export const resetSignUpUserErrorAction = createAction(
@@ -78,7 +82,13 @@ export const activationErrorAction = createAction(
   SignUpActionTypes.ACTIVATION_ERROR
 );
 
+export const resetSignUpAction = createAction(SignUpActionTypes.RESET_SIGN_UP);
 
-export const resetSignUpAction = createAction(
-  SignUpActionTypes.RESET_SIGN_UP
+export interface IsSuccessSignUpOpenableActionInterface {
+  status: boolean;
+}
+
+export const setIsSuccessSignUpOpenableStatusAction = createAction(
+  SignUpActionTypes.SET_IS_SIGN_UP_OPENABLE_STATUS,
+  props<IsSuccessSignUpOpenableActionInterface>()
 );

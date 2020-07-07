@@ -8,11 +8,17 @@ body {
   line-height: 19px;
   margin: 0;
 
+  background-image: url("assets/Union.svg");
+  background-repeat: no-repeat;
+  background-position: right bottom;
+  background-attachment: fixed;
+
   button[color="primary"].mat-raised-button {
     box-shadow: none;
     border-radius: 0;
     min-width: 140px;
     min-height: 45px;
+    text-transform: uppercase;
   }
 }
 
@@ -33,13 +39,13 @@ body {
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: @recon-primary-green;
+  background: #A7A7A7;
   border-radius: 10px;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(@recon-primary-green, 0.80);
+  background: rgba(#A7A7A7, 0.80);
 }
 
 // used for tooltips to show \n symbols
@@ -50,17 +56,30 @@ body {
 .mat-error {
   font-size: 13px;
   text-align: center;
+  white-space: pre-line;
 }
 
 // it's used for modal headers
-h3.recon-modal-title {
-  font-weight: bold;
+div.recon-modal-title {
+  display: flex;
+  justify-content: space-between;
+
+  h3 {
+    font-weight: bold;
+  }
+
+  .mat-icon {
+    cursor: pointer;
+  }
 }
 
 
 .recon-snackbar.mat-snack-bar-container {
   color: white;
   border-radius: 0;
+  position: absolute;
+  right: 25px;
+  top: 50px;
 }
 
 .success-snackbar {

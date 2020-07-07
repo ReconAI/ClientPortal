@@ -342,7 +342,8 @@ class ResetPassword(APIView, FormMixin):
             form.save(request=request,
                       email_template_name='emails/password_reset.html')
             return JsonResponse({
-                'message': _('Password is reset')
+                'message': _('Instructions for resetting your password have'
+                             ' been sent to your email')
             })
 
         return JsonResponse({
@@ -455,7 +456,7 @@ class PasswordResetConfirmView(APIView, FormMixin):
             form.save()
 
             return JsonResponse({
-                'message': _('Password is changed')
+                'message': _('New password was updated successfully')
             }, status=status.HTTP_200_OK)
 
         return JsonResponse({

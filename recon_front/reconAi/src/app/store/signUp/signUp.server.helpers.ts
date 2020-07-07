@@ -23,26 +23,6 @@ export const transformPreSignUpUserForm = ({
   password1,
   password2,
 });
-
-export const transformErrorPreSignUp = (
-  error: HttpErrorResponse
-): FormServerErrorInterface | null => {
-  const errors = error?.error?.errors;
-
-  if (error.status === 400 || error.status === 422) {
-    if (errors) {
-      return {
-        general: Object.keys(errors).reduce(
-          (finalError, key) => (finalError += `${errors[key].join(' ')}`),
-          ''
-        ),
-      };
-    }
-  }
-
-  return null;
-};
-
 export interface SignUpRequestInterface {
   username: string;
   email: string;
@@ -79,8 +59,8 @@ export const transformSignUpFormToRequest = (
   password2: user.password2,
   name: user.organization.name,
   vat: user.organization.vat,
-  main_firstname: user.user.firstName,
-  main_lastname: user.user.lastName,
+  main_firstname: user.organization.firstName,
+  main_lastname: user.organization.lastName,
   main_address: user.organization.address,
   main_phone: user.organization.phone,
   main_email: user.organization.email,
@@ -102,8 +82,8 @@ export const signUpRelationsFormAnsServerFields = {
   password2: 'Confirmation password',
   name: 'Organization name',
   vat: 'Organization VAT',
-  main_firstname: ' ',
-  main_lastname: ' ',
+  main_firstname: 'Contact person first name',
+  main_lastname: 'Contact person last name',
   main_address: 'Organization address',
   main_phone: 'Organization phone',
   main_email: 'Organization email',
