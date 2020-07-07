@@ -6,6 +6,7 @@ import {
   DEFAULT_USER_ROLE,
   DEFAULT_USER_ROLE_PRIORITY,
   UserRoleTypes,
+  DEFAULT_AUTHORIZED_USER_ROLE,
 } from './../../constants/types/user';
 import { HttpErrorResponse } from '@angular/common/http';
 
@@ -41,7 +42,7 @@ export const transformUserResponse = (
   response: UserResponse
 ): UserTransformationResponse => ({
   isAuthenticated: null,
-  role: response?.group?.name || DEFAULT_USER_ROLE,
+  role: response?.group?.name || DEFAULT_AUTHORIZED_USER_ROLE,
   rolePriority: getUserPriorityByRole(response?.group?.name),
   firstName: response.firstname,
   lastName: response.lastname,
