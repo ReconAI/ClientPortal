@@ -41,3 +41,8 @@ export const selectExistencePreSignUp = createSelector(
   (signUp: SignUpState): boolean =>
     !!(signUp.password1 && signUp.password2 && signUp.username)
 );
+
+export const selectIsSuccessSignUpOpenable = createSelector(
+  selectSignUp,
+  (signUp: SignUpState): boolean => signUp.isPossibleToOpenSignUp
+);

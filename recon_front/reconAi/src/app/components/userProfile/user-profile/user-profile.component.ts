@@ -14,7 +14,6 @@ import { FormServerErrorInterface } from 'app/constants/types/requests';
   selector: 'recon-user-profile',
   templateUrl: './user-profile.component.html',
   styleUrls: ['./user-profile.component.less'],
-  encapsulation: ViewEncapsulation.None,
 })
 export class UserProfileComponent implements OnInit {
   @Input() loading = false;
@@ -25,6 +24,8 @@ export class UserProfileComponent implements OnInit {
   // CHECK GUARD
   profileForm = this.fb.group({
     organization: this.fb.group({
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
       name: ['', Validators.required],
       phone: ['', Validators.required],
       email: ['', Validators.required],

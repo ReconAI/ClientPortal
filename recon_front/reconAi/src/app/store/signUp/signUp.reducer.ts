@@ -12,6 +12,8 @@ import {
   signUpUserErrorAction,
   resetSignUpUserErrorAction,
   resetSignUpAction,
+  IsSuccessSignUpOpenableActionInterface,
+  setIsSuccessSignUpOpenableStatusAction,
 } from './signUp.actions';
 
 interface SignUpErrors {
@@ -27,6 +29,7 @@ export interface SignUpState {
   username: string;
   password1: string;
   password2: string;
+  isPossibleToOpenSignUp: boolean;
   errors: SignUpErrors;
 }
 
@@ -34,6 +37,7 @@ export const initialState: SignUpState = {
   username: null,
   password1: null,
   password2: null,
+  isPossibleToOpenSignUp: false,
   errors: initialSignUpErrors,
 };
 
@@ -85,6 +89,14 @@ const resetSignUpUserErrorReducer = (state: SignUpState): SignUpState => ({
   },
 });
 
+const setIsSuccessSignUpOpenableStatusReducer = (
+  state: SignUpState,
+  { status }: Action & IsSuccessSignUpOpenableActionInterface
+): SignUpState => ({
+  ...state,
+  isPossibleToOpenSignUp: status,
+});
+
 const resetSignUpReducer = (): SignUpState => initialState;
 
 const signUpReducer = createReducer(
@@ -94,7 +106,8 @@ const signUpReducer = createReducer(
   on(resetPreSignUpUserErrorAction, resetPreSignUpUserErrorReducer),
   on(signUpUserErrorAction, signUpUserErrorReducer),
   on(resetSignUpUserErrorAction, resetSignUpUserErrorReducer),
-  on(resetSignUpAction, resetSignUpReducer)
+  on(resetSignUpAction, resetSignUpReducer),
+  on(setIsSuccessSignUpOpenableStatusAction, setIsSuccessSignUpOpenableStatusReducer),
 );
 
 export function reducer(state: SignUpState | undefined, action: Action) {

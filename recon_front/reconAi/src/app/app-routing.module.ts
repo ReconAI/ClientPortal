@@ -1,5 +1,5 @@
+import { SuccessSignUpGuard } from './core/guards/successSignUp/success-sign-up.guard';
 import { NewFeatureContainer } from './components/new-feature/new-feature.container';
-import { NewFeatureComponent } from './components/new-feature/new-feature.component';
 import { RegistrationGuard } from './core/guards/registration/registration.guard';
 import { ResetPasswordPageComponent } from './components/reset-password-page/reset-password-page.component';
 import { ActivationComponent } from './components/activation/activation/activation.component';
@@ -26,21 +26,17 @@ const routes: Routes = [
     path: 'registration',
     canActivate: [NotAuthGuard],
     data: {
-      title: 'Registration',
+      title: 'Organization registration',
     },
     children: [
       {
         path: '',
         canActivate: [RegistrationGuard],
-        // TO DO
-        // CHECK GUARD RIGHT AFTER USER SIGNED UP
         component: RegistrationContainer,
       },
       {
         path: 'success',
-        canActivate: [RegistrationGuard],
-        // TO DO
-        // CHECK GUARD RIGHT AFTER USER SIGNED UP
+        canActivate: [SuccessSignUpGuard],
         component: RegistrationSuccessComponent,
       },
     ],

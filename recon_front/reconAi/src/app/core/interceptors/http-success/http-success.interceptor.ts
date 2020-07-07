@@ -14,8 +14,6 @@ import { Observable } from 'rxjs';
 export class HttpSuccessInterceptor implements HttpInterceptor {
   constructor(private snackBar: MatSnackBar) {}
   readonly durationInSeconds = 3;
-  readonly verticalPosition = 'top';
-  readonly horizontalPosition = 'center';
 
   createSuccessServerMessage(response: HttpResponse<any>): string {
     return response?.body?.message || '';
@@ -24,8 +22,6 @@ export class HttpSuccessInterceptor implements HttpInterceptor {
   openSnackBar(text: string) {
     this.snackBar.open(text, null, {
       duration: this.durationInSeconds * 1000,
-      verticalPosition: this.verticalPosition,
-      horizontalPosition: this.horizontalPosition,
       panelClass: ['recon-snackbar', 'success-snackbar'],
     });
   }
