@@ -197,7 +197,7 @@ class PasswordResetForm(PasswordResetFormBase):
         try:
             get_user_model().objects.get(email=email)
         except ObjectDoesNotExist:
-            raise NotFound(_("No user found"))
+            raise NotFound(_("No such email"))
 
         return email
 

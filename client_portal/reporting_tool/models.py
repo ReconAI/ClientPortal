@@ -257,7 +257,8 @@ class UserGroup(models.Model):
     """
     id = models.BigAutoField(primary_key=True)
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
-    user = models.OneToOneField(User, models.CASCADE, db_column='user_id', null=True, db_constraint=False)
+    user = models.OneToOneField(User, models.CASCADE, db_column='user_id',
+                                null=True, db_constraint=False)
 
 
 class Token(models.Model):
@@ -266,7 +267,9 @@ class Token(models.Model):
     """
     key = models.CharField(_("Key"), max_length=40, primary_key=True)
     created = models.DateTimeField(_("Created"), auto_now_add=True)
-    user = models.OneToOneField(User, models.CASCADE, db_column='user_id', related_name='token', null=True, db_constraint=False)
+    user = models.OneToOneField(User, models.CASCADE, db_column='user_id',
+                                related_name='token', null=True,
+                                db_constraint=False)
 
     def save(self, force_insert: bool = False, force_update: bool = False,
              using: str = None, update_fields: Optional[Iterable] = None):
