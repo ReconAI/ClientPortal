@@ -2,9 +2,11 @@
 Http handlers for user related operations
 """
 from django.conf import settings
+from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMultiAlternatives
 from django.db.transaction import atomic
 from django.http import JsonResponse
+from django.template import loader
 from django.template.loader import render_to_string
 from django.utils.decorators import method_decorator
 from django.utils.encoding import force_bytes
@@ -21,6 +23,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.views import APIView
 
+from recon_db_manager.models import User
 from reporting_tool.forms import SignupForm, PasswordResetForm, \
     SetPasswordForm, CheckResetPasswordTokenForm, PreSignupForm, \
     UserActivationForm, OrganizationForm, UserForm
@@ -110,24 +113,7 @@ class SignupView(APIView):
         if form.is_valid():
             user, organization = form.save()
 
-            message = render_to_string('emails/account_activation.html', {
-                'user': user,
-                'activation_link': Router(
-                    settings.CLIENT_APP_SHEMA_HOST_PORT
-                ).reverse_full(
-                    'activate',
-                    args=(
-                        urlsafe_base64_encode(force_bytes(user.pk)),
-                        TokenGenerator().make_token(user)
-                    )
-                )
-            })
-
-            EmailMultiAlternatives(
-                _('Activate your account'),
-                message,
-                to=[user.email]
-            ).send()
+            self.__send_activation_mail(request, user)
 
             return JsonResponse({
                 'message': _('Please confirm your email address '
@@ -137,6 +123,34 @@ class SignupView(APIView):
         return JsonResponse({
             'errors': form.errors
         }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+    @staticmethod
+    def __send_activation_mail(request: Request, user: User):
+        message = render_to_string('emails/account_activation.html', {
+            'user': user,
+            'activation_link': Router(
+                settings.CLIENT_APP_SHEMA_HOST_PORT
+            ).reverse_full(
+                'activate',
+                args=(
+                    urlsafe_base64_encode(force_bytes(user.pk)),
+                    TokenGenerator().make_token(user)
+                )
+            )
+        })
+
+        subject = loader.render_to_string(
+            'emails/account_activation_subject.txt',
+            {
+                'site_name': get_current_site(request)
+            }
+        )
+
+        EmailMultiAlternatives(
+            ''.join(subject.splitlines()),
+            message,
+            to=[user.email]
+        ).send()
 
 
 class ActivateView(APIView):
