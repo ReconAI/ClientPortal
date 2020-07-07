@@ -10,6 +10,7 @@ from django.contrib.auth import (
 )
 from django.contrib.auth.forms import UserCreationForm, \
     PasswordResetForm as PasswordResetFormBase
+from django.contrib.auth.models import Group
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ObjectDoesNotExist
@@ -18,10 +19,10 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_decode
 from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import gettext_lazy as _
-from rest_framework.exceptions import ParseError, NotFound
+from rest_framework.exceptions import ParseError, NotFound, ValidationError
 
 from reporting_tool.frontend.router import Router
-from reporting_tool.models import Organization, User
+from reporting_tool.models import Organization, User, Role
 from reporting_tool.tokens import TokenGenerator
 
 
@@ -77,11 +78,12 @@ class UserForm(PreSignupForm):
 
     class Meta:
         """
-        Fields username, email are required.
+        All the fields are required.
         """
         model = User
         fields = (
-            'username', 'email', 'firstname', 'lastname', 'address', 'phone')
+            'username', 'email', 'firstname', 'lastname', 'address', 'phone'
+        )
 
     def set_organization(self, organization: Organization):
         """
@@ -126,6 +128,47 @@ class OrganizationForm(ModelForm):
             "main_phone", "main_email", "inv_firstname", "inv_lastname",
             "inv_address", "inv_phone", "inv_email"
         )
+
+
+class UserEditForm(ModelForm):
+    username = forms.CharField(
+        label=_("Username"),
+        min_length=2,
+        error_messages={'min_length': _('Incorrect login.')}
+    )
+    firstname = forms.CharField(label=_("First name"))
+    lastname = forms.CharField(label=_("Last name"))
+    address = forms.CharField(label=_("Address"))
+    phone = forms.CharField(label=_("Phone number"))
+    role = forms.CharField(label=_("User role"))
+
+    class Meta:
+        """
+        All fields apart from id should be editable
+        """
+        model = User
+        fields = (
+            "username", "firstname", "lastname", "address", "phone"
+        )
+
+    def clean_role(self):
+        role = self.data["role"]
+
+        if role not in (Role.ADMIN, Role.DEVELOPER, Role.CLIENT):
+            raise forms.ValidationError('Invalid role')
+
+        try:
+            return Group.objects.get(name=role)
+        except ObjectDoesNotExist:
+            raise forms.ValidationError('Invalid role')
+
+    def save(self, commit=True):
+        saved = super().save()
+
+        self.instance.usergroup.group = self.cleaned_data.get('role')
+        self.instance.usergroup.save()
+
+        return saved
 
 
 class SignupForm:
