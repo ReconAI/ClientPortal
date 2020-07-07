@@ -41,6 +41,9 @@ export const DEFAULT_USER_ROLE: UserRoleTypes = UNAUTHORIZED_ROLE;
 export const DEFAULT_USER_ROLE_PRIORITY: UserRolesPriorities =
   UserRolesPriorities.UNAUTHORIZED_ROLE;
 
+export const DEFAULT_AUTHORIZED_USER_ROLE: UserRoleTypes = CLIENT_ROLE;
+export const DEFAULT_AUTHORIZED_USER_ROLE_PRIORITY: UserRolesPriorities = UserRolesPriorities.CLIENT_ROLE;
+
 export interface UserProfileFormInterface {
   organization: {
     name: string;
@@ -48,6 +51,8 @@ export interface UserProfileFormInterface {
     email: string;
     address: string;
     vat: string;
+    firstName: string;
+    lastName: string;
   };
   user: {
     firstName: string;
