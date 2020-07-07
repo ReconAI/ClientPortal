@@ -24,6 +24,8 @@ export class UserProfileComponent implements OnInit {
   // CHECK GUARD
   profileForm = this.fb.group({
     organization: this.fb.group({
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
       name: ['', Validators.required],
       phone: ['', Validators.required],
       email: ['', Validators.required],

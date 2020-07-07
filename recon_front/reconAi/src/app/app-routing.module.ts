@@ -26,7 +26,7 @@ const routes: Routes = [
     path: 'registration',
     canActivate: [NotAuthGuard],
     data: {
-      title: 'Registration',
+      title: 'Organization registration',
     },
     children: [
       {
