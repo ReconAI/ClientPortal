@@ -116,7 +116,9 @@ export class UserEffects {
               this.router.navigate(['/']);
             }),
             catchError((error: HttpErrorResponse) => {
-              return of(loginUserErrorAction(generalTransformFormErrorToString(error)));
+              return of(
+                loginUserErrorAction(generalTransformFormErrorToString(error))
+              );
             }),
             finalize(() => {
               this.store.dispatch(
@@ -146,6 +148,9 @@ export class UserEffects {
             this.localStorageService.removeAuthToken();
             this.store.dispatch(resetCurrentUserAction());
             return logoutUserSucceededAction();
+          }),
+          tap(() => {
+            this.router.navigate(['/']);
           }),
           catchError((error) => of(logoutUserErrorAction())),
           finalize(() => {

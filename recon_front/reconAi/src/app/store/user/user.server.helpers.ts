@@ -1,12 +1,12 @@
 import { ResetPasswordWithMetaInterface } from 'app/constants/types/resetPassword';
 import { getUserPriorityByRole } from './../../core/helpers/priorities';
 import { FormServerErrorInterface } from './../../constants/types/requests';
-import { UserRolesPriorities } from 'app/constants/types';
+import { UserRolesPriorities, ServerUserInterface } from 'app/constants/types';
 import {
   DEFAULT_USER_ROLE,
   DEFAULT_USER_ROLE_PRIORITY,
   UserRoleTypes,
-  ServerUserInterface,
+  DEFAULT_AUTHORIZED_USER_ROLE,
 } from './../../constants/types/user';
 import { HttpErrorResponse } from '@angular/common/http';
 export interface UserTransformationResponse {
@@ -26,7 +26,7 @@ export const transformUserResponse = (
   response: ServerUserInterface
 ): UserTransformationResponse => ({
   isAuthenticated: null,
-  role: response?.group?.name || DEFAULT_USER_ROLE,
+  role: response?.group?.name || DEFAULT_AUTHORIZED_USER_ROLE,
   rolePriority: getUserPriorityByRole(response?.group?.name),
   firstName: response.firstname,
   lastName: response.lastname,

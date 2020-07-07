@@ -2,6 +2,7 @@
   <form [formGroup]="newFeatureForm">
     <recon-form-input
       label="Please include description of the problem and current process here"
+      [showRequiredSymbol]="true"
       formControlName="description"
       fieldType="textarea"
     ></recon-form-input>
