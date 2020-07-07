@@ -3,7 +3,8 @@ Application signals are defined here
 """
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
-from reporting_tool.models import User, UserGroup
+
+from reporting_tool.models import User
 
 
 @receiver(post_save, sender=User)
