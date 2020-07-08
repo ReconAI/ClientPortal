@@ -1,7 +1,6 @@
 """
 Contains forms associated with user management procedures
 """
-
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
 from django.forms import ModelForm
@@ -10,12 +9,37 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.text import slugify
 from requests import Request
 
-from reporting_tool.forms.accounts import UserForm
+from reporting_tool.forms.accounts import UserForm, \
+    UserEditForm as ProfileEditForm
 from reporting_tool.forms.utils import CheckUserTokenForm, RoleFieldMixin, \
     SendEmailMixin
 from reporting_tool.frontend.router import Router
 from reporting_tool.models import User, UserGroup
 from reporting_tool.tokens import InvitationTokenGenerator
+
+
+class UserEditForm(ProfileEditForm, RoleFieldMixin):
+    """
+    Validate data coming to change user's data
+    """
+    role = RoleFieldMixin.role
+
+    class Meta:
+        """
+        All fields apart from id should be editable
+        """
+        model = User
+        fields = (
+            "username", "firstname", "lastname", "address", "phone"
+        )
+
+    def save(self, commit=True):
+        saved = super().save()
+
+        self.instance.usergroup.group = self.cleaned_data.get('role')
+        self.instance.usergroup.save()
+
+        return saved
 
 
 class UserInvitationForm(ModelForm, RoleFieldMixin, SendEmailMixin):

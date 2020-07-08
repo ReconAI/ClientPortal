@@ -1,13 +1,15 @@
 """
 Http handlers for user related operations
 """
+from typing import Union
+
 from django.conf import settings
 from django.db.transaction import atomic
+from django.forms import BaseForm
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.cache import never_cache
-from django.views.generic.edit import FormMixin
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.authtoken.serializers import AuthTokenSerializer
@@ -17,9 +19,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.views import APIView
 
-from reporting_tool.forms.accounts import PreSignupForm, SignupForm,\
+from reporting_tool.forms.accounts import PreSignupForm, SignupForm, \
     UserForm, UserActivationForm, PasswordResetForm, \
-    CheckResetPasswordTokenForm, SetPasswordForm
+    CheckResetPasswordTokenForm, SetPasswordForm, UserEditForm, \
+    UserAndOrganizationEditForm
 from reporting_tool.forms.organization import OrganizationForm
 from reporting_tool.models import Token
 from reporting_tool.permissions import IsNotAuthenticated, IsActive
@@ -30,7 +33,7 @@ from reporting_tool.swagger.headers import token_header
 from reporting_tool.swagger.responses import get_responses, token, http400, \
     http405, http403, http401, data_serializer
 from reporting_tool.tokens import PasswordResetTokenGenerator
-from reporting_tool.views.utils import CheckTokenMixin
+from reporting_tool.views.utils import CheckTokenMixin, FormMixin
 
 
 class PreSignupValidationView(APIView):
@@ -72,7 +75,7 @@ class PreSignupValidationView(APIView):
         }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 
-class SignupView(APIView):
+class SignupView(APIView, FormMixin):
     """
     Signs user up
     """
@@ -102,22 +105,14 @@ class SignupView(APIView):
 
         :rtype: JsonResponse
         """
-        form = self.form_class(request.data)
-
-        if form.is_valid():
-            form.save(request)
-
-            return JsonResponse({
-                'message': _('Please confirm your email address '
-                             'to complete the registration')
-            }, status=status.HTTP_201_CREATED)
-
-        return JsonResponse({
-            'errors': form.errors
-        }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        return self.save_or_error(
+            _('Please confirm your email '
+              'address to complete the registration'),
+            success_status=status.HTTP_201_CREATED
+        )
 
 
-class ActivateView(APIView):
+class ActivateView(APIView, FormMixin):
     """
     Perofrms activation of user's profile
     """
@@ -145,25 +140,19 @@ class ActivateView(APIView):
 
         :rtype: JsonResponse
         """
-        form = self.form_class(request.data)
 
-        if form.is_valid():
-            form.save()
-
-            return JsonResponse({
-                'message': _('Activated')
-            })
-
-        return JsonResponse({
-            'errors': form.errors
-        }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        return self.save_or_error(
+            _('Activated')
+        )
 
 
-class CurrentUserProfileView(APIView):
+class CurrentUserProfileView(APIView, FormMixin):
     """
     Returns user's data
     """
     permission_classes = (IsAuthenticated, IsActive)
+
+    form_class = UserEditForm
 
     @staticmethod
     @swagger_auto_schema(
@@ -192,6 +181,53 @@ class CurrentUserProfileView(APIView):
         return JsonResponse({
             'data': serializer.data
         })
+
+    @swagger_auto_schema(
+        responses=get_responses(status.HTTP_200_OK,
+                                status.HTTP_400_BAD_REQUEST,
+                                status.HTTP_401_UNAUTHORIZED,
+                                status.HTTP_403_FORBIDDEN,
+                                status.HTTP_404_NOT_FOUND,
+                                status.HTTP_405_METHOD_NOT_ALLOWED,
+                                status.HTTP_422_UNPROCESSABLE_ENTITY),
+        request_body=forms_to_formserializer(UserEditForm, OrganizationForm),
+        tags=['Accounts'],
+        operation_summary="Current user data modification",
+        operation_description='Modifies current user data.'
+                              'If it is an admin organization data sholud be '
+                              'provided as well.',
+        manual_parameters=[
+            token_header()
+        ]
+    )
+    def patch(self, request: Request, *args, **kwargs) -> JsonResponse:
+        """
+        :type request: Request
+
+        :rtype: JsonResponse
+        """
+        form = self.__get_update_form(request)
+
+        return self.save_or_error(
+            _('Data is modified'),
+            form=form
+        )
+
+    def __get_update_form(self,
+                          request: Request) -> Union[BaseForm, SignupForm]:
+        """
+        :type request: Request
+
+        :rtype: Union[BaseForm, SignupForm]
+        """
+        if request.user.is_admin:
+            return UserAndOrganizationEditForm(
+                data=self.request.data,
+                user=self.request.user,
+                organization=self.request.user.organization
+            )
+
+        return self.form_class(instance=request.user, data=self.request.data)
 
 
 class ObtainAuthToken(ObtainAuthTokenBase):
@@ -312,21 +348,13 @@ class ResetPassword(APIView, FormMixin):
 
         :rtype: JsonResponse
         """
-        form = self.get_form()
-
-        if form.is_valid():
-            form.save(request=request,
-                      email_template_name='emails/password_reset.html',
-                      token_generator=PasswordResetTokenGenerator()
-                      )
-            return JsonResponse({
-                'message': _('Instructions for resetting your password have'
-                             ' been sent to your email')
-            })
-
-        return JsonResponse({
-            'errors': form.errors
-        }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        return self.save_or_error(
+            _('Instructions for resetting your password '
+              'have been sent to your email'),
+            request=request,
+            email_template_name='emails/password_reset.html',
+            token_generator=PasswordResetTokenGenerator()
+        )
 
 
 class CheckResetPasswordTokenView(APIView, FormMixin, CheckTokenMixin):
@@ -397,15 +425,6 @@ class PasswordResetConfirmView(APIView, FormMixin):
 
         :rtype: JsonResponse
         """
-        form = self.get_form()
-
-        if form.is_valid():
-            form.save()
-
-            return JsonResponse({
-                'message': _('New password was updated successfully')
-            }, status=status.HTTP_200_OK)
-
-        return JsonResponse({
-            'errors': form.errors
-        }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        return self.save_or_error(
+            _('New password was updated successfully')
+        )
