@@ -3,6 +3,7 @@ Module with custom validators
 """
 
 import re
+from typing import Iterable
 
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
@@ -106,3 +107,32 @@ class SpecialCharacterPasswordValidator:
         :rtype: str
         """
         return _('At least one character should be -/*+.=!?.')
+
+
+class InSetValidator:
+    """
+    Validate whether the password is alphanumeric.
+    """
+    __message = _('Provided option is out of acceptable set.')
+    __code = 'invalid_option'
+
+    def __init__(self, options: Iterable, message=None, code=None):
+        self.__options = options
+
+        if message is not None:
+            self.__message = message
+        if code is not None:
+            self.__code = code
+
+    def __call__(self, value):
+        if not self.__is_value_valid(value):
+            raise ValidationError(
+                self.__message,
+                code=self.__code
+            )
+
+    def __is_value_valid(self, value):
+        return (
+            value in self.__options
+            or str(value) in [str(option) for option in self.__options]
+        )

@@ -1,9 +1,11 @@
 """
 Application signals are defined here
 """
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
-from reporting_tool.models import User, UserGroup, Token
+
+from reporting_tool.models import User
 
 
 @receiver(post_save, sender=User)
@@ -41,7 +43,10 @@ def delete_usergroup(instance: User, **kwargs):
     :type instance: User
     :type kwargs: dict
     """
-    return instance.usergroup.delete()
+    try:
+        return instance.usergroup.delete()
+    except ObjectDoesNotExist:
+        return True
 
 
 @receiver(post_delete, sender=User)
@@ -53,4 +58,7 @@ def delete_token(instance: User, **kwargs):
     :type instance: User
     :type kwargs: dict
     """
-    return instance.token.delete()
+    try:
+        return instance.token.delete()
+    except ObjectDoesNotExist:
+        return True
