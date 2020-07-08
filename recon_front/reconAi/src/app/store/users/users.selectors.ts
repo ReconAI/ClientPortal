@@ -1,7 +1,7 @@
 import { createSelector } from '@ngrx/store';
 
 import { AppState } from './../reducers/index';
-import { UsersState } from './users.reducer';
+import { UsersState, UsersErrors } from './users.reducer';
 import { UserInterface } from '../../users/constants/types';
 import {
   UserProfileFormInterface,
@@ -159,4 +159,14 @@ export const selectUserProfileInvoicingLastName = createSelector(
 export const selectWhetherUserProfileFound = createSelector(
   selectUserProfile,
   (user: UserProfileFormInterface): boolean => !!user
+);
+
+const selectUsersError = createSelector(
+  selectUsers,
+  (users: UsersState): UsersErrors => users?.errors || null
+);
+
+export const selectAddUserError = createSelector(
+  selectUsersError,
+  (errors: UsersErrors): string => errors.addUser
 );

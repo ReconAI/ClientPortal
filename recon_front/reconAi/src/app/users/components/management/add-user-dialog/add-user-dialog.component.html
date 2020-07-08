@@ -3,6 +3,9 @@
   <mat-icon [mat-dialog-close]="true">close</mat-icon>
 </div>
 <form [formGroup]="newUserForm" (ngSubmit)="submitAddUser()">
+  <mat-error *ngIf="validationError">
+    {{ validationError }}
+  </mat-error>
   <mat-form-field>
     <mat-label>First name</mat-label>
     <input
@@ -51,8 +54,11 @@
     mat-raised-button
     color="primary"
     type="submit"
-    [disabled]="!newUserForm.valid"
+    [disabled]="isLoading || !newUserForm.valid"
   >
-    ADD
+    <mat-icon *ngIf="isLoading; else loaded">
+      <mat-spinner color="primary" diameter="20"></mat-spinner>
+    </mat-icon>
+    <ng-template #loaded>ADD</ng-template>
   </button>
 </form>

@@ -1,4 +1,7 @@
-import { UserInterface } from './../../users/constants/types/user';
+import {
+  UserInterface,
+  AddUserInterface,
+} from './../../users/constants/types/user';
 import {
   ServerUserInterface,
   ServerUserOrganizationInterface,
@@ -96,3 +99,20 @@ export const calculatePageAfterDelete = (
 
   return currentPage > 1 ? currentPage - 1 : 1;
 };
+
+interface AddUserServerInterface {
+  firstname: string;
+  lastname: string;
+  email: string;
+  role: string;
+}
+
+export const transformAddUserToServer = ({
+  firstName,
+  lastName,
+  ...rest
+}: AddUserInterface): AddUserServerInterface => ({
+  firstname: firstName,
+  lastname: lastName,
+  ...rest,
+});

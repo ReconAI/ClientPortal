@@ -5,6 +5,8 @@ import {
 } from './users.server.helpers';
 import { createAction, props } from '@ngrx/store';
 import { UserProfileFormInterface } from 'app/constants/types';
+import { AddUserInterface } from 'app/users/constants';
+import { FormServerErrorInterface } from 'app/constants/types/requests';
 export enum UsersActionTypes {
   LOAD_USERS_LIST_REQUESTED = '[Users] Load Users Requested',
   LOAD_USERS_LIST_SUCCEEDED = '[Users] Load Users Succeeded',
@@ -18,6 +20,11 @@ export enum UsersActionTypes {
   DELETE_USER_REQUESTED = '[Users] Delete User Requested',
   DELETE_USER_SUCCEEDED = '[Users] Delete User Succeeded',
   DELETE_USER_ERROR = '[Users] Delete User Error',
+
+  ADD_USER_REQUESTED = '[Users] Add User Requested',
+  ADD_USER_SUCCEEDED = '[Users] Add User Succeeded',
+  ADD_USER_ERROR = '[Users] Add User Error',
+  RESET_ADD_USER_ERROR = '[Users] Reset Add User Error',
 }
 
 export const loadUsersListRequestedAction = createAction(
@@ -63,4 +70,22 @@ export const deleteUserSucceededAction = createAction(
 
 export const deleteUserErrorAction = createAction(
   UsersActionTypes.DELETE_USER_ERROR
+);
+
+export const addUserRequestedAction = createAction(
+  UsersActionTypes.ADD_USER_REQUESTED,
+  props<AddUserInterface>()
+);
+
+export const addUserSucceededAction = createAction(
+  UsersActionTypes.ADD_USER_SUCCEEDED
+);
+
+export const addUserErrorAction = createAction(
+  UsersActionTypes.ADD_USER_ERROR,
+  props<FormServerErrorInterface>()
+);
+
+export const resetAddUserErrorAction = createAction(
+  UsersActionTypes.RESET_ADD_USER_ERROR
 );

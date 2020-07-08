@@ -1,6 +1,6 @@
 import { AddUserInterface } from './../../../constants/types/user';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Component, OnInit, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output, Input } from '@angular/core';
 import { SERVER_USER_ROLES } from 'app/constants/types';
 
 @Component({
@@ -9,6 +9,8 @@ import { SERVER_USER_ROLES } from 'app/constants/types';
   styleUrls: ['./add-user-dialog.component.less'],
 })
 export class AddUserDialogComponent implements OnInit {
+  @Input() isLoading = false;
+  @Input() validationError: string;
   @Output() submitAddUser$ = new EventEmitter<AddUserInterface>();
   constructor(private fb: FormBuilder) {}
   newUserForm: FormGroup;

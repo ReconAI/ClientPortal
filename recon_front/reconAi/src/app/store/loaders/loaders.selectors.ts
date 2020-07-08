@@ -63,3 +63,8 @@ export const selectDeleteUserLoadingStatus = createSelector(
   selectLoaders,
   (loaders: LoadersState): boolean => loaders.deleteUser
 );
+
+export const selectAddUserLoadingStatus = createSelector(
+  selectLoaders,
+  (loaders: LoadersState): boolean => loaders.addUser
+);

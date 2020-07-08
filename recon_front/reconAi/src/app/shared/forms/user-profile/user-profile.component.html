@@ -156,10 +156,10 @@
         type="submit"
         [disabled]="disabledButton || loading || !profileForm.valid"
       >
-        <mat-icon *ngIf="loading; else elseBlock">
+        <mat-icon *ngIf="loading; else loaded">
           <mat-spinner color="primary" diameter="20"></mat-spinner>
         </mat-icon>
-        <ng-template #elseBlock>SAVE</ng-template>
+        <ng-template #loaded>SAVE</ng-template>
       </button>
       <span *ngIf="showTerms">*I approve terms of services and GDPR</span>
     </div>

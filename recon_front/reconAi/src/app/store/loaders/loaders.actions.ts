@@ -14,6 +14,7 @@ export enum LoadersActionTypes {
   SET_USER_LIST_LOADING_STATUS = '[Loaders] Set User List Loading Status',
   SET_USER_PROFILE_LOADING_STATUS = '[Loaders] Set User Profile Loading Status',
   SET_DELETE_USER_LOADING_STATUS = '[Loaders] Set Delete User Loading Status',
+  SET_ADD_USER_LOADING_STATUS = '[Loaders] Set Add User Loading Status',
 }
 
 export interface LoaderInterface {
@@ -76,6 +77,11 @@ export const setUserProfileLoadingStatusAction = createAction(
 );
 
 export const setDeleteUserLoadingStatusAction = createAction(
+  LoadersActionTypes.SET_DELETE_USER_LOADING_STATUS,
+  props<LoaderInterface>()
+);
+
+export const setAddUserLoadingStatusAction = createAction(
   LoadersActionTypes.SET_DELETE_USER_LOADING_STATUS,
   props<LoaderInterface>()
 );

@@ -1,3 +1,4 @@
+import { generalTransformFormErrorToString } from 'app/core/helpers/generalFormsErrorsTransformation';
 import {
   UsersListResponseInterface,
   transformUsersListResponseFromServer,
@@ -6,6 +7,7 @@ import {
   transformUserProfileResponseFromServer,
   ServerUserProfileInterface,
   calculatePageAfterDelete,
+  transformAddUserToServer,
 } from './users.server.helpers';
 import {
   UsersActionTypes,
@@ -16,6 +18,8 @@ import {
   deleteUserSucceededAction,
   deleteUserErrorAction,
   loadUsersListRequestedAction,
+  addUserSucceededAction,
+  addUserErrorAction,
 } from './users.actions';
 import { Router } from '@angular/router';
 import { Action, Store, select } from '@ngrx/store';
@@ -36,8 +40,10 @@ import {
   setUserListLoadingStatusAction,
   setUserProfileLoadingStatusAction,
   setDeleteUserLoadingStatusAction,
+  setAddUserLoadingStatusAction,
 } from '../loaders';
 import { selectUsersList, selectUsersMetaCurrentPage } from './users.selectors';
+import { AddUserInterface } from 'app/users/constants';
 
 @Injectable()
 export class UsersEffects {
@@ -152,6 +158,36 @@ export class UsersEffects {
           finalize(() => {
             this.store.dispatch(
               setDeleteUserLoadingStatusAction({
+                status: false,
+              })
+            );
+          })
+        )
+      )
+    )
+  );
+
+  addUser$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action & AddUserInterface>(UsersActionTypes.ADD_USER_REQUESTED),
+      tap(() => {
+        this.store.dispatch(
+          setAddUserLoadingStatusAction({
+            status: true,
+          })
+        );
+      }),
+      switchMap((user) =>
+        this.httpClient.post('/api/users', transformAddUserToServer(user)).pipe(
+          map(() => addUserSucceededAction()),
+          catchError((error) => {
+            return of(
+              addUserErrorAction(generalTransformFormErrorToString(error))
+            );
+          }),
+          finalize(() => {
+            this.store.dispatch(
+              setAddUserLoadingStatusAction({
                 status: false,
               })
             );
