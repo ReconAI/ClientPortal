@@ -1,0 +1,51 @@
+@import "../../../../variables.less";
+
+
+.field-container {
+    width: 100%;
+
+    textarea.recon-input,
+    input.recon-input,
+    .close-icon-container {
+        width: 100%;
+        padding: 12px 20px;
+        margin: 10px 0;
+        border: 1px solid @recon-border-input;
+        background-color: @recon-background-input;
+        box-sizing: border-box;
+
+        &:focus {
+            outline: none;
+            border: 1px solid @recon-black;
+        }
+
+        &.recon-input-invalid {
+            border-color: @recon-error-input-border;
+        }
+    }
+
+    .input-container {
+        display: flex;
+    }
+
+    .close-icon-container {
+        background-color: white;
+        border-left: none;
+        width: 30px;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+
+        span {
+            font-size: 25px;
+        }
+    }
+
+    textarea.recon-input {
+        min-height: 170px;
+    }
+
+
+}

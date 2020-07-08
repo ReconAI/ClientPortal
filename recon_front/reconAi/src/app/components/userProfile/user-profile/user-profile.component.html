@@ -1,0 +1,165 @@
+<form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+  <mat-error *ngIf="errors">Validation errors: {{ validationErrors }}</mat-error>
+  <div class="form-container">
+    <p>ORGANIZATION INFORMATION</p>
+    <div class="block-container" formGroupName="organization">
+      <div>
+        <recon-form-input
+          label="Contact person first name"
+          placeholder="Contact person first name"
+          formControlName="firstName"
+          [showRequiredSymbol]="true"
+        ></recon-form-input>
+      </div>
+      <div>
+        <recon-form-input
+          label="Contact person last name"
+          placeholder="Contact person last name"
+          formControlName="lastName"
+          [showRequiredSymbol]="true"
+        ></recon-form-input>
+      </div>
+      <div>
+        <recon-form-input
+          label="Organization name"
+          placeholder="Name"
+          formControlName="name"
+          [showRequiredSymbol]="true"
+        ></recon-form-input>
+      </div>
+      <div>
+        <recon-form-input
+          label="Address"
+          placeholder="Address"
+          formControlName="address"
+          [showRequiredSymbol]="true"
+        ></recon-form-input>
+      </div>
+      <div>
+        <recon-form-input
+          label="Phone"
+          placeholder="Phone"
+          formControlName="phone"
+          [showRequiredSymbol]="true"
+        ></recon-form-input>
+      </div>
+      <div>
+        <recon-form-input
+          label="VAT (ID)"
+          placeholder="VAT (ID)"
+          formControlName="vat"
+          [showRequiredSymbol]="true"
+        ></recon-form-input>
+      </div>
+      <div>
+        <recon-form-input
+          label="Email"
+          placeholder="Email"
+          formControlName="email"
+          [showRequiredSymbol]="true"
+        ></recon-form-input>
+      </div>
+    </div>
+    <p>INVOICING INFORMATION</p>
+    <div class="block-container" formGroupName="invoicing">
+      <div>
+        <recon-form-input
+          label="Invoicing first name"
+          placeholder="Invoicing first name"
+          formControlName="firstName"
+          [showRequiredSymbol]="true"
+        ></recon-form-input>
+      </div>
+      <div>
+        <recon-form-input
+          label="Invoicing last name"
+          placeholder="Invoicing last name"
+          formControlName="lastName"
+          [showRequiredSymbol]="true"
+        ></recon-form-input>
+      </div>
+      <div>
+        <recon-form-input
+          label="Email for invoicing"
+          placeholder="Email for invoicing"
+          formControlName="email"
+          [showRequiredSymbol]="true"
+        ></recon-form-input>
+      </div>
+      <div>
+        <recon-form-input
+          label="Invoicing address"
+          placeholder="Invoicing address"
+          formControlName="address"
+          [showRequiredSymbol]="true"
+        ></recon-form-input>
+      </div>
+      <div>
+        <recon-form-input
+          label="Invoicing phone"
+          placeholder="Invoicing phone"
+          formControlName="phone"
+          [showRequiredSymbol]="true"
+        ></recon-form-input>
+      </div>
+    </div>
+    <p>USER INFORMATION</p>
+    <div class="block-container" formGroupName="user">
+      <div>
+        <recon-form-input
+          label="First name"
+          placeholder="First name"
+          formControlName="firstName"
+          [showRequiredSymbol]="true"
+        ></recon-form-input>
+      </div>
+      <div>
+        <recon-form-input
+          label="Last name"
+          placeholder="Last name"
+          formControlName="lastName"
+          [showRequiredSymbol]="true"
+        ></recon-form-input>
+      </div>
+      <div>
+        <recon-form-input
+          label="Address"
+          placeholder="Address"
+          formControlName="address"
+          [showRequiredSymbol]="true"
+        ></recon-form-input>
+      </div>
+      <div>
+        <recon-form-input
+          label="Email"
+          placeholder="Email"
+          formControlName="email"
+          [showRequiredSymbol]="true"
+        ></recon-form-input>
+      </div>
+      <div>
+        <recon-form-input
+          label="Phone"
+          placeholder="Phone"
+          formControlName="phone"
+          [showRequiredSymbol]="true"
+        ></recon-form-input>
+      </div>
+    </div>
+
+    <div class="bottom-container">
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [disabled]="loading || !profileForm.valid"
+      >
+        <mat-icon *ngIf="loading; else elseBlock">
+          <mat-spinner color="primary" diameter="20"></mat-spinner>
+        </mat-icon>
+        <ng-template #elseBlock>SAVE</ng-template>
+      </button>
+      <span>*I approve terms of services and GDPR</span>
+    </div>
+  </div>
+</form>

@@ -6,6 +6,7 @@ variables:
    - docker login -u gitlab-ci-token -p ${CI_JOB_TOKEN} ${CI_REGISTRY}
    # WEIRD: Converting file environment variables from secure Gitlab
    - ENV_FILE='.env-reporting' && echo "$ENV" > "$ENV_FILE" && ENV="$ENV_FILE"
+   - ENV_FILE='.env-reporting-front' && echo "$ENV_FRONT" > "$ENV_FILE" && ENV_FRONT="$ENV_FILE"
    - ENV_FILE='.env-db_recon_ai_db' && echo "$ENV_DB_AI" > "$ENV_FILE" && ENV_DB_AI="$ENV_FILE"
    - ENV_FILE='.env-db_client_portal_db' && echo "$ENV_DB_PORTAL" > "$ENV_FILE" && ENV_DB_PORTAL="$ENV_FILE"
 
@@ -15,8 +16,10 @@ variables:
   variables:
     ROOT_PATH: /srv/recon
     PUBLIC_PORT: 8080
+    PUBLIC_PORT_FRONT: 8081
     DOCKER_NETWORK: recon
     ENV: $env_reporting
+    ENV_FRONT: $env_reporting_front
     ENV_DB_AI: $env_db_recon_ai_db
     ENV_DB_PORTAL: $env_db_client_portal_db
   only:
@@ -32,8 +35,10 @@ variables:
   variables:
     ROOT_PATH: /srv/recon
     PUBLIC_PORT: 8080
+    PUBLIC_PORT_FRONT: 8081
     DOCKER_NETWORK: recon
     ENV: $env_reporting
+    ENV_FRONT: $env_reporting_front
     ENV_DB_AI: $env_db_recon_ai_db
     ENV_DB_PORTAL: $env_db_client_portal_db
   only:
@@ -53,18 +58,21 @@ stages:
   script:
   - docker build -f docker/client_portal/reporting_tool_server_dockerfile -t ${CI_REGISTRY}/${NAMESPACE}/reporting_tool:${CI_COMMIT_REF_SLUG} . || { echo "Image failed to build"; exit 1; }
   - docker push ${CI_REGISTRY}/${NAMESPACE}/reporting_tool:${CI_COMMIT_REF_SLUG} || { echo "Image failed to push"; exit 1; }
+  - docker build -f docker/client_portal/reporting_tool_client_dockerfile -t ${CI_REGISTRY}/${NAMESPACE}/reporting_tool_front:${CI_COMMIT_REF_SLUG} . || { echo "Image failed to build"; exit 1; }
+  - docker push ${CI_REGISTRY}/${NAMESPACE}/reporting_tool_front:${CI_COMMIT_REF_SLUG} || { echo "Image failed to push"; exit 1; }
 
 .deploy: &deploy
   stage: deploy
   extends:
   - .expand_env
   script:
-  - docker rm -f recon_ai_db client_portal_db reporting_tool || echo "Almost safe to ignore, containers failed to remove";
+  - docker rm -f recon_ai_db client_portal_db reporting_tool reporting_tool_front || echo "Almost safe to ignore, containers failed to remove";
   - docker network rm ${DOCKER_NETWORK} || echo "Almost safe to ignore, netwoirk failed to remove";
   - docker network create ${DOCKER_NETWORK} || echo "Almost safe to ignore, netwoirk failed to create";
-  - docker run --restart=always -d                        --network ${DOCKER_NETWORK} --env-file ${ENV_DB_AI}     -v ${ROOT_PATH}/recon_ai_db:/var/lib/postgresql/data      --name recon_ai_db postgres:12.3-alpine                                                || { echo "Database failed to start"; exit 1; }
-  - docker run --restart=always -d                        --network ${DOCKER_NETWORK} --env-file ${ENV_DB_PORTAL} -v ${ROOT_PATH}/client_portal_db:/var/lib/postgresql/data --name client_portal_db postgres:12.3-alpine                                           || { echo "Database failed to start"; exit 1; }
-  - docker run --restart=always -d -p ${PUBLIC_PORT}:8000 --network ${DOCKER_NETWORK} --env-file ${ENV}                                                                     --name reporting_tool ${CI_REGISTRY}/${NAMESPACE}/reporting_tool:${CI_COMMIT_REF_SLUG} || { echo "Reporting tool failed to start"; exit 1; }
+  - docker run --restart=always -d                              --network ${DOCKER_NETWORK} --env-file ${ENV_DB_AI}     -v ${ROOT_PATH}/recon_ai_db:/var/lib/postgresql/data      --name recon_ai_db postgres:12.3-alpine                                                || { echo "Database failed to start"; exit 1; }
+  - docker run --restart=always -d                              --network ${DOCKER_NETWORK} --env-file ${ENV_DB_PORTAL} -v ${ROOT_PATH}/client_portal_db:/var/lib/postgresql/data --name client_portal_db postgres:12.3-alpine                                           || { echo "Database failed to start"; exit 1; }
+  - docker run --restart=always -d -p ${PUBLIC_PORT}:8000       --network ${DOCKER_NETWORK} --env-file ${ENV}                                                                     --name reporting_tool ${CI_REGISTRY}/${NAMESPACE}/reporting_tool:${CI_COMMIT_REF_SLUG} || { echo "Reporting tool failed to start"; exit 1; }
+  - docker run --restart=always -d -p ${PUBLIC_PORT_FRONT}:4200 --network ${DOCKER_NETWORK} --env-file ${ENV_FRONT}                                                               --name reporting_tool_front ${CI_REGISTRY}/${NAMESPACE}/reporting_tool_front:${CI_COMMIT_REF_SLUG} || { echo "Reporting tool front failed to start"; exit 1; }
 
 build_dev:
   extends:

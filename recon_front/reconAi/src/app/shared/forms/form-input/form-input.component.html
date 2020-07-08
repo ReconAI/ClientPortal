@@ -1,0 +1,38 @@
+<div class="field-container" [ngSwitch]="fieldType">
+  <label [for]="uniqueId">{{ label }} </label>
+  <span class="required" *ngIf="showRequiredSymbol">*</span>
+  <ng-container *ngSwitchCase="'text'">
+    <div class="input-container">
+      <input
+        [id]="uniqueId"
+        [value]="value"
+        class="recon-input"
+        [ngClass]="{
+          'recon-input-invalid': hasErrors
+        }"
+        [placeholder]="placeholder"
+        [disabled]="disabled"
+        (input)="onChange($event.target.value)"
+        (blur)="onTouched()"
+      />
+      <div
+        class="close-icon-container"
+        *ngIf="isWithCloseIcon"
+        (click)="pressIcon()"
+      >
+        <span>&times;</span>
+      </div>
+    </div>
+  </ng-container>
+  <textarea
+    *ngSwitchCase="'textarea'"
+    [id]="uniqueId"
+    [value]="value"
+    class="recon-input"
+    [ngClass]="{ 'recon-input-invalid': hasErrors }"
+    [placeholder]="placeholder"
+    [disabled]="disabled"
+    (input)="onChange($event.target.value)"
+    (blur)="onTouched()"
+  ></textarea>
+</div>

@@ -26,6 +26,8 @@ DEBUG = os.environ.get('DEBUG', 'True') not in ['False', '0']
 
 ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOSTS'), '127.0.0.1']
 
+APP_NAME = 'Recon AI'
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -39,7 +41,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'reporting_tool',
     'recon_db_manager',
-    'drf_yasg',
+    'drf_yasg'
 ]
 
 MIDDLEWARE = [
@@ -53,7 +55,15 @@ MIDDLEWARE = [
     'reporting_tool.middlewares.HTTPLogMiddleware'
 ]
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.{}.EmailBackend'.format(
+    os.environ.get('EMAIL_BACKEND', 'console')  # console, dummy, firebased, locmem, smtp
+)
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
+EMAIL_PORT = os.environ.get('EMAIL_PORT')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
 
 ROOT_URLCONF = 'reporting_tool.urls'
 
@@ -77,7 +87,16 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'reporting_tool.authentication.TokenAuthentication',
     ],
-    'EXCEPTION_HANDLER': 'reporting_tool.exception_handlers.exception_handler'
+    'EXCEPTION_HANDLER': 'reporting_tool.exception_handlers.exception_handler',
+    'DEFAULT_PAGINATION_CLASS': 'reporting_tool.pagination.PageNumberPagination',
+    'PAGE_SIZE': 3
+}
+
+SWAGGER_SETTINGS = {
+    'DEFAULT_PAGINATOR_INSPECTORS': [
+        'reporting_tool.swagger.inspectors.DjangoRestResponsePagination',
+        'drf_yasg.inspectors.CoreAPICompatInspector',
+    ],
 }
 
 AUTH_USER_MODEL = 'reporting_tool.User'
@@ -130,6 +149,18 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
+    {
+        'NAME': 'reporting_tool.validators.TwoLowercasesPasswordValidator',
+    },
+    {
+        'NAME': 'reporting_tool.validators.TwoUppercasesPasswordValidator',
+    },
+    {
+        'NAME': 'reporting_tool.validators.TwoNumbersPasswordValidator',
+    },
+    {
+        'NAME': 'reporting_tool.validators.SpecialCharacterPasswordValidator',
+    },
 ]
 
 AWS_IAM_USER_MANAGER = os.environ.get('AWS_IAM_SYNC_MANAGER',
@@ -163,3 +194,29 @@ LOG_HTTP = os.environ.get('LOG_HTTP', 'False') in ['True', '1']
 # Export http log aws bucket and key accordingly
 AWS_EXPORT_HTTP_LOG_BUCKET = os.environ.get('AWS_EXPORT_HTTP_LOG_BUCKET')
 AWS_EXPORT_HTTP_LOG_KEY = os.environ.get('AWS_EXPORT_HTTP_LOG_KEY')
+
+CLIENT_APP_SHEMA_HOST_PORT = os.environ.get(
+    'CLIENT_APP_SHEMA_HOST_PORT')  # like http://127.0.0.1:8000
+
+
+LOGGING = {
+    'version': 1,
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        }
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+        }
+    },
+    'loggers': {
+        'django.db.backends': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+        }
+    }
+}

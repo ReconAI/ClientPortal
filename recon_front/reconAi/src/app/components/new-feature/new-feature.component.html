@@ -1,0 +1,59 @@
+<div class="new-feature-container">
+  <form [formGroup]="newFeatureForm">
+    <recon-form-input
+      label="Please include description of the problem and current process here"
+      [showRequiredSymbol]="true"
+      formControlName="description"
+      fieldType="textarea"
+    ></recon-form-input>
+    <ng-container
+      *ngFor="let link of feedLinks.controls; let i = index"
+      formArrayName="feedLinks"
+    >
+      <recon-form-input
+        [label]="i === 0 ? 'Attach sensor feed link' : ''"
+        [formControlName]="i"
+        [isWithCloseIcon]="true"
+        (clickIcon)="removeLink(i)"
+      ></recon-form-input>
+    </ng-container>
+
+    <div class="add-link-container">
+      <span (click)="addLink()">+ Add link...</span>
+    </div>
+
+    <label for="file-upload" class="custom-file-upload">
+      <object data="../../../assets/icons/clip.svg" width="20" height="17">
+        Your browser does not support SVG
+      </object>
+      ATTACH FILE
+    </label>
+    <input
+      (change)="onFilesChange($event)"
+      id="file-upload"
+      type="file"
+      multiple
+    />
+    <span class="hint-attach">*Attach CAD draving, sensor or other files</span>
+    <div
+      formArrayName="files"
+      *ngFor="let file of files.controls; let i = index"
+      class="files-container"
+    >
+      <div [formGroupName]="i" class="file-name-container">
+        <mat-icon>insert_drive_file</mat-icon>
+        {{ file?.value?.name }}
+        <span (click)="removeFile(i)">&times;</span>
+      </div>
+    </div>
+    <div class="button-container">
+      <button
+        mat-raised-button
+        color="primary"
+        [disabled]="!newFeatureForm.valid"
+      >
+        POST REQUEST
+      </button>
+    </div>
+  </form>
+</div>

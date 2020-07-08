@@ -20,12 +20,12 @@ class Organization(models.Model):
     main_lastname = models.CharField(null=True, blank=True, max_length=255)
     main_address = models.CharField(null=True, blank=True, max_length=255)
     main_phone = models.CharField(null=True, blank=True, max_length=255)
-    main_email = models.CharField(null=True, blank=True, max_length=255)
+    main_email = models.EmailField(null=True, blank=True, max_length=255)
     inv_firstname = models.CharField(null=True, blank=True, max_length=255)
     inv_lastname = models.CharField(null=True, blank=True, max_length=255)
     inv_address = models.CharField(null=True, blank=True, max_length=255)
     inv_phone = models.CharField(null=True, blank=True, max_length=255)
-    inv_email = models.CharField(null=True, blank=True, max_length=255)
+    inv_email = models.EmailField(null=True, blank=True, max_length=255)
 
     class Meta:
         """
@@ -52,7 +52,7 @@ class CommonUser(models.Model):
     lastname = models.CharField(null=True, blank=True, max_length=255)
     address = models.CharField(null=True, blank=True, max_length=255)
     phone = models.CharField(null=True, blank=True, max_length=255)
-    email = models.CharField(max_length=255, unique=True)
+    email = models.EmailField(max_length=255, unique=True)
     created_dt = models.DateTimeField(null=True, blank=True, auto_now_add=True)
     username = models.CharField(max_length=255, unique=True)
     password = models.CharField(null=True, blank=True, max_length=255)
