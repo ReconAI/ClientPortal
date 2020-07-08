@@ -1,0 +1,13 @@
+{% load i18n %}{% autoescape off %}
+{% trans "Hi " %}{{ user.firstname }} {{ user.lastname }},
+{% trans "You are invited to join " %}{{ site_name }}.
+{% trans "To proceed, follow the link:" %}
+{% block reset_link %}
+{{ invitation_link }}
+{% endblock %}
+{% trans 'Your Login is:' %} {{ user.get_username }}
+
+{% trans "Thanks for using our site!" %}
+{% blocktrans %}The {{ app_name }} portal team{% endblocktrans %}
+
+{% endautoescape %}

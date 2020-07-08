@@ -4,20 +4,27 @@ from django.db.transaction import atomic
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+from django.views.decorators.cache import never_cache
+from django.views.generic.edit import FormMixin
 from drf_yasg.utils import swagger_auto_schema
+from requests import Request
 from rest_framework import status
 from rest_framework.generics import RetrieveUpdateDestroyAPIView, \
     ListCreateAPIView
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
 
-from reporting_tool.forms import UserEditForm
-from reporting_tool.permissions import IsCompanyAdmin, IsActive
+from reporting_tool.forms.accounts import UserEditForm
+from reporting_tool.forms.user_management import UserInvitationForm, \
+    FollowInvitationForm, CheckUserInvitationTokenForm
+from reporting_tool.permissions import IsCompanyAdmin, IsActive, \
+    IsNotAuthenticated
 from reporting_tool.serializers import UserSerializer, \
     form_to_formserializer, UserOrganizationSerializer
 from reporting_tool.settings import RECON_AI_CONNECTION_NAME
 from reporting_tool.swagger.headers import token_header
-from reporting_tool.swagger.responses import data_serializer, http401, http405, \
-    http404, http403, http200
+from reporting_tool.swagger.responses import data_serializer, http401,\
+    http405, http404, http403, http200, get_responses
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
@@ -35,12 +42,32 @@ from reporting_tool.swagger.responses import data_serializer, http401, http405, 
         token_header(),
     ]
 ))
+@method_decorator(name='post', decorator=swagger_auto_schema(
+    responses=get_responses(
+        status.HTTP_201_CREATED,
+        status.HTTP_401_UNAUTHORIZED,
+        status.HTTP_404_NOT_FOUND,
+        status.HTTP_403_FORBIDDEN,
+        status.HTTP_405_METHOD_NOT_ALLOWED,
+        status.HTTP_422_UNPROCESSABLE_ENTITY
+    ),
+    request_body=form_to_formserializer(UserInvitationForm),
+    tags=['User Management'],
+    operation_summary="Invites a user",
+    operation_description='Admin invites user to join the application',
+    manual_parameters=[
+        token_header(),
+    ]
+))
 class UserList(ListCreateAPIView):
     permission_classes = (IsAuthenticated, IsActive, IsCompanyAdmin)
 
     serializer_class = UserSerializer
 
-    queryset = get_user_model().objects.prefetch_related('usergroup__group').all()
+    queryset = get_user_model().objects.prefetch_related(
+        'usergroup__group').all()
+
+    form_class = UserInvitationForm
 
     def filter_queryset(self, queryset: QuerySet) -> QuerySet:
         """
@@ -51,6 +78,22 @@ class UserList(ListCreateAPIView):
         return queryset.filter(
             organization_id=self.request.user.organization_id
         )
+
+    @atomic(using='default')
+    @atomic(using=RECON_AI_CONNECTION_NAME)
+    def create(self, request: Request, *args, **kwargs) -> JsonResponse:
+        form = self.form_class(request.user.organization_id, data=request.data)
+
+        if form.is_valid():
+            form.save(request)
+
+            return JsonResponse({
+                'message': 'User is invited'
+            }, status=status.HTTP_201_CREATED)
+
+        return JsonResponse({
+            'data': form.errors
+        }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
@@ -137,7 +180,10 @@ class UserItem(RetrieveUpdateDestroyAPIView):
     @atomic(using='default')
     @atomic(using=RECON_AI_CONNECTION_NAME)
     def update(self, request, *args, **kwargs) -> JsonResponse:
-        form = self.form_class(request.data, instance=self.get_object())
+        form = self.form_class(
+            request.data,
+            instance=self.get_object()
+        )
 
         if form.is_valid():
             form.save()
@@ -156,3 +202,90 @@ class UserItem(RetrieveUpdateDestroyAPIView):
         return JsonResponse({
             'data': UserOrganizationSerializer(instance).data
         })
+
+
+class InvitationView(APIView, FormMixin):
+    """
+    Checks whether provided password reset token is valid
+    """
+    permission_classes = (IsNotAuthenticated,)
+
+    form_class = FollowInvitationForm
+
+    @swagger_auto_schema(
+        responses=get_responses(
+            status.HTTP_200_OK,
+            status.HTTP_400_BAD_REQUEST,
+            status.HTTP_404_NOT_FOUND,
+            status.HTTP_403_FORBIDDEN,
+            status.HTTP_405_METHOD_NOT_ALLOWED
+        ),
+        request_body=form_to_formserializer(CheckUserInvitationTokenForm),
+        tags=['User Management'],
+        operation_summary='Checks user invitation token',
+        operation_description='Checks whether '
+                              'user invitation token is still valid',
+    )
+    @method_decorator(never_cache)
+    def post(self, *args, **kwargs) -> JsonResponse:
+        """
+        Check password reset token
+
+        :type args: tuple
+        :type kwargs: dict
+
+        :rtype: JsonResponse
+        """
+        form = self.get_form(form_class=CheckUserInvitationTokenForm)
+
+        if form.is_valid():
+            return JsonResponse({
+                'message': _('Token is valid')
+            }, status=status.HTTP_200_OK)
+
+        return JsonResponse({
+            'errors': form.errors
+        }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+    @swagger_auto_schema(
+        responses=get_responses(
+            status.HTTP_200_OK,
+            status.HTTP_400_BAD_REQUEST,
+            status.HTTP_404_NOT_FOUND,
+            status.HTTP_403_FORBIDDEN,
+            status.HTTP_405_METHOD_NOT_ALLOWED
+        ),
+        request_body=form_to_formserializer(FollowInvitationForm),
+        tags=['User Management'],
+        operation_summary='Register by invitation',
+        operation_description='Checks whether user invitation '
+                              'token is still valid and registers the user',
+    )
+    @method_decorator(never_cache)
+    def patch(self, *args, **kwargs):
+        form = self.get_form()
+
+        if form.is_valid():
+            form.save()
+
+            return JsonResponse({
+                'message': _('Token is valid')
+            }, status=status.HTTP_200_OK)
+
+        return JsonResponse({
+            'errors': form.errors
+        }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+    def get_form_kwargs(self) -> dict:
+        """
+        :type: dict
+        """
+        return {
+            'data': self.request.data
+        }
+
+    def get_initial(self) -> dict:
+        """
+        :type: dict
+        """
+        return {}
