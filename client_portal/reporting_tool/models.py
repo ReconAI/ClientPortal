@@ -91,15 +91,6 @@ class User(CommonUser, PermissionsMixin):
         return self.usergroup.group
 
     @property
-    def is_superuser(self) -> bool:
-        """
-        User is counted as superuser when his role is SUPER_ADMIN
-
-        :rtype: bool
-        """
-        return self.group.name == Role.SUPER_ADMIN
-
-    @property
     def is_admin(self) -> bool:
         """
         User is counted as company admin when his role is SUPER_ADMIN
@@ -107,6 +98,15 @@ class User(CommonUser, PermissionsMixin):
         :rtype: bool
         """
         return self.group.name == Role.ADMIN
+
+    @property
+    def is_superuser(self) -> bool:
+        """
+        User is counted as superuser when his role is SUPER_ADMIN
+
+        :rtype: bool
+        """
+        return self.group.name == Role.SUPER_ADMIN
 
     @property
     def is_staff(self) -> bool:

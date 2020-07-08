@@ -22,8 +22,7 @@ from requests import Request
 from rest_framework.exceptions import NotFound
 
 from reporting_tool.forms.organization import OrganizationForm
-from reporting_tool.forms.utils import CheckUserTokenForm, RoleFieldMixin, \
-    SendEmailMixin
+from reporting_tool.forms.utils import CheckUserTokenForm, SendEmailMixin
 from reporting_tool.frontend.router import Router
 from reporting_tool.models import Organization, User
 from reporting_tool.tokens import AccountActivationTokenGenerator
@@ -109,37 +108,24 @@ class UserForm(PreSignupForm):
                                                      **data)
 
 
-class UserEditForm(ModelForm, RoleFieldMixin):
+class UserEditForm(ModelForm):
     """
-    Validate data coming to change user's data
+    User edit data form
     """
     username = forms.CharField(
         label=_("Username"),
         min_length=2,
         error_messages={'min_length': _('Incorrect login.')}
     )
-    firstname = forms.CharField(label=_("First name"))
-    lastname = forms.CharField(label=_("Last name"))
-    address = forms.CharField(label=_("Address"))
-    phone = forms.CharField(label=_("Phone number"))
-    role = RoleFieldMixin.role
 
     class Meta:
         """
-        All fields apart from id should be editable
+        Solely username, firstname, lastname, address, phone are editable
         """
-        model = User
+        model = get_user_model()
         fields = (
             "username", "firstname", "lastname", "address", "phone"
         )
-
-    def save(self, commit=True):
-        saved = super().save()
-
-        self.instance.usergroup.group = self.cleaned_data.get('role')
-        self.instance.usergroup.save()
-
-        return saved
 
 
 class SignupForm(SendEmailMixin):
@@ -149,12 +135,15 @@ class SignupForm(SendEmailMixin):
     user_form_class = UserForm
     organization_form_class = OrganizationForm
 
-    def __init__(self, data: dict):
+    def __init__(self, data: dict, user=None, organization=None):
         """
         :type data: dict
         """
-        self.__user_form = UserForm(data)
-        self.__organization_form = OrganizationForm(data)
+        self._user_form = self.user_form_class(data, instance=user)
+        self._organization_form = self.organization_form_class(
+            data,
+            instance=organization
+        )
 
     def is_valid(self) -> bool:
         """
@@ -163,8 +152,8 @@ class SignupForm(SendEmailMixin):
         :rtype: bool
         """
         return (
-            self.__organization_form.is_valid()
-            and self.__user_form.is_valid()
+            self._organization_form.is_valid()
+            and self._user_form.is_valid()
         )
 
     @property
@@ -173,23 +162,21 @@ class SignupForm(SendEmailMixin):
         :rtype: Dict[str, List[str]]
         """
         return {
-            **self.__user_form.errors,
-            **self.__organization_form.errors
+            **self._user_form.errors,
+            **self._organization_form.errors
         }
 
     def save(self, request: Request) -> Tuple[User, Organization]:
         """
-        Wser with only just created organization will be inserted.
+        User with only just created organization will be inserted.
 
         :rtype: Tuple[User, Organization]
         """
-        organization = self.__organization_form.save()
+        organization = self._organization_form.save()
 
-        self.__user_form.set_organization(organization)
+        self._user_form.set_organization(organization)
 
-        user = self.__user_form.save()
-
-        self.__send_activation_mail(request, user)
+        user = self._user_form.save()
 
         self.send_mail(
             user.email,
@@ -224,6 +211,26 @@ class SignupForm(SendEmailMixin):
                 )
             )
         }
+
+
+class UserAndOrganizationEditForm(SignupForm):
+    """
+    Modifies user and organization data at once.
+    """
+
+    user_form_class = UserEditForm
+    organization_form_class = OrganizationForm
+
+    def save(self, request: Request) -> Tuple[User, Organization]:
+        """
+        User and associated organization update
+
+        :rtype: Tuple[User, Organization]
+        """
+        return (
+            self._user_form.save(),
+            self._organization_form.save()
+        )
 
 
 class PasswordResetForm(PasswordResetFormBase):

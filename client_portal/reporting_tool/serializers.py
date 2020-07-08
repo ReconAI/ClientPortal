@@ -5,7 +5,7 @@ from typing import Type, List, Union
 
 from django.contrib.auth.models import Group
 from django.db.models import Model
-from django.forms import Form
+from django.forms import Form, BaseForm
 from drf_braces.serializers.form_serializer import FormSerializer
 from rest_framework import serializers
 
@@ -13,12 +13,12 @@ from recon_db_manager.models import Organization
 from reporting_tool.models import User
 
 
-def form_to_formserializer(
-        form: Union[Type[Form], type]) -> Union[Type[FormSerializer], type]:
+def form_to_formserializer(form: Union[Type[BaseForm], type]) \
+        -> Union[Type[FormSerializer], type]:
     """
     Converts form to serializer
 
-    :type form: Type[Form]
+    :type form: Type[BaseForm]
 
     :rtype: Union[Type[FormSerializer], type]
     """
@@ -34,11 +34,11 @@ def form_to_formserializer(
 
 
 def forms_to_formserializer(
-        *forms: List[Type[Form]]) -> Union[Type[FormSerializer], type]:
+        *forms: List[Type[BaseForm]]) -> Union[Type[FormSerializer], type]:
     """
     Combines multiple forms into seriallizer
 
-    :type forms: List[Type[Form]]
+    :type forms: List[Type[BaseForm]]
 
     :rtype: Union[Type[FormSerializer], type]
     """

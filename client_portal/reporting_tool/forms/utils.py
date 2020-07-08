@@ -12,6 +12,7 @@ from django.template import loader
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_decode
 from django.utils.translation import gettext_lazy as _
+from requests import Request
 from rest_framework.exceptions import ParseError, NotFound
 
 from reporting_tool.models import User
@@ -68,11 +69,15 @@ class SendEmailMixin:
         ).send()
 
     @abstractmethod
-    def get_email_context(self, *args, **kwargs) -> dict:
+    def get_email_context(self, request: Request, user: User) -> dict:
         """
         Email context for template loader
+
+        :type request: Request
+        :type user: User
+
+        :rtype: dict
         """
-        pass
 
 
 class CheckUserTokenForm(forms.Form):
