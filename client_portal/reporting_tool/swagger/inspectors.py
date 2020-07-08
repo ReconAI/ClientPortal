@@ -1,3 +1,6 @@
+"""
+Custom swagger inspections
+"""
 from collections import OrderedDict
 
 from drf_yasg import openapi
@@ -8,6 +11,9 @@ from rest_framework.pagination import LimitOffsetPagination, \
 
 
 class DjangoRestResponsePagination(DjangoRestResponsePaginationBase):
+    """
+    Custom pagination inspector
+    """
     def get_paginated_response(self, paginator, response_schema):
         assert response_schema.type == openapi.TYPE_ARRAY, "array return " \
                                                            "expected for " \

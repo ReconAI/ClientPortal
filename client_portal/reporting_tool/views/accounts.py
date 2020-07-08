@@ -328,14 +328,6 @@ class ResetPassword(APIView, FormMixin):
             'errors': form.errors
         }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
-    def get_form_kwargs(self) -> dict:
-        """
-        :rtype: dict
-        """
-        return {
-            'data': self.request.data
-        }
-
 
 class CheckResetPasswordTokenView(APIView, FormMixin, CheckTokenMixin):
     """
@@ -370,14 +362,6 @@ class CheckResetPasswordTokenView(APIView, FormMixin, CheckTokenMixin):
         :rtype: JsonResponse
         """
         return self.check_token()
-
-    def get_form_kwargs(self) -> dict:
-        """
-        :type: dict
-        """
-        return {
-            'data': self.request.data
-        }
 
 
 class PasswordResetConfirmView(APIView, FormMixin):
@@ -425,17 +409,3 @@ class PasswordResetConfirmView(APIView, FormMixin):
         return JsonResponse({
             'errors': form.errors
         }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-
-    def get_form_kwargs(self) -> dict:
-        """
-        :type: dict
-        """
-        return {
-            'data': self.request.data
-        }
-
-    def get_initial(self) -> dict:
-        """
-        :type: dict
-        """
-        return {}

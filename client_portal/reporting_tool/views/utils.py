@@ -4,7 +4,10 @@ Contains views helpers
 
 from django.http import JsonResponse
 from django.utils.translation import gettext_lazy as _
+from django.views.generic.edit import FormMixin as FormMixinBase
 from rest_framework import status
+
+from reporting_tool.serializers import UserSerializer
 
 
 class CheckTokenMixin:
@@ -24,9 +27,20 @@ class CheckTokenMixin:
 
         if form.is_valid():
             return JsonResponse({
-                'message': _('Token is valid')
+                'message': _('Token is valid'),
+                'data': UserSerializer(form.user).data
             }, status=status.HTTP_200_OK)
 
         return JsonResponse({
             'errors': form.errors
         }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+
+class FormMixin(FormMixinBase):
+    def get_form_kwargs(self) -> dict:
+        """
+        :type: dict
+        """
+        return {
+            'data': self.request.data
+        }

@@ -45,22 +45,30 @@ class CheckUserTokenForm(forms.Form):
     uidb64 = forms.CharField(min_length=1)
     token = forms.CharField(min_length=2, max_length=33)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.__token_user = None
+
     @property
     def user(self) -> User:
         """
         :rtype: User
         """
-        try:
-            user_model = get_user_model()
+        if self.__token_user is None:
+            try:
+                user_model = get_user_model()
 
-            uidb64 = self.data.get('uidb64')
+                uidb64 = self.data.get('uidb64')
 
-            uid = urlsafe_base64_decode(uidb64).decode()
-            return user_model.objects.get(pk=uid)
-        except (AttributeError, TypeError, ValueError, OverflowError):
-            raise ParseError('Request data is invalid')
-        except ObjectDoesNotExist:
-            raise NotFound(_('No user found'))
+                uid = urlsafe_base64_decode(uidb64).decode()
+                self.__token_user = user_model.objects.get(pk=uid)
+            except (AttributeError, TypeError, ValueError, OverflowError):
+                raise ParseError('Request data is invalid')
+            except ObjectDoesNotExist:
+                raise NotFound(_('No user found'))
+
+        return self.__token_user
 
     def clean_token(self) -> str:
         """
