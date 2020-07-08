@@ -1,5 +1,7 @@
 <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
-  <mat-error *ngIf="errors">Validation errors: {{ validationErrors }}</mat-error>
+  <mat-error *ngIf="errors"
+    >Validation errors: {{ validationErrors }}</mat-error
+  >
   <div class="form-container">
     <p>ORGANIZATION INFORMATION</p>
     <div class="block-container" formGroupName="organization">
@@ -152,7 +154,7 @@
         mat-raised-button
         color="primary"
         type="submit"
-        [disabled]="loading || !profileForm.valid"
+        [disabled]="disabledButton || loading || !profileForm.valid"
       >
         <mat-icon *ngIf="loading; else elseBlock">
           <mat-spinner color="primary" diameter="20"></mat-spinner>

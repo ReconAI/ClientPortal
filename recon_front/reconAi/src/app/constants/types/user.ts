@@ -38,36 +38,43 @@ export const DEFAULT_USER_ROLE_PRIORITY: UserRolesPriorities =
   UserRolesPriorities.UNAUTHORIZED_ROLE;
 
 export const DEFAULT_AUTHORIZED_USER_ROLE: UserRoleTypes = CLIENT_ROLE;
-export const DEFAULT_AUTHORIZED_USER_ROLE_PRIORITY: UserRolesPriorities = UserRolesPriorities.CLIENT_ROLE;
+export const DEFAULT_AUTHORIZED_USER_ROLE_PRIORITY: UserRolesPriorities =
+  UserRolesPriorities.CLIENT_ROLE;
+
+export interface UserProfileFormOrganizationInterface {
+  name: string;
+  phone: string;
+  email: string;
+  address: string;
+  vat: string;
+  firstName: string;
+  lastName: string;
+}
+
+export interface UserProfileFormUserInterface {
+  firstName: string;
+  lastName: string;
+  address: string;
+  phone: string;
+  email: string;
+}
+
+export interface UserProfileFormInvoicingInterface {
+  firstName: string;
+  lastName: string;
+  address: string;
+  phone: string;
+  email: string;
+}
 
 export interface UserProfileFormInterface {
-  organization: {
-    name: string;
-    phone: string;
-    email: string;
-    address: string;
-    vat: string;
-    firstName: string;
-    lastName: string;
-  };
-  user: {
-    firstName: string;
-    lastName: string;
-    address: string;
-    phone: string;
-    email: string;
-  };
-  invoicing: {
-    firstName: string;
-    lastName: string;
-    address: string;
-    phone: string;
-    email: string;
-  };
+  organization: UserProfileFormOrganizationInterface;
+  user: UserProfileFormUserInterface;
+  invoicing: UserProfileFormInvoicingInterface;
 }
 
 export interface ServerUserInterface {
-  id: number;
+  id: string;
   firstname: string;
   lastname: string;
   address: string;
@@ -80,4 +87,19 @@ export interface ServerUserInterface {
     name: UserRoleTypes;
   };
   username: string;
+}
+
+export interface ServerUserOrganizationInterface {
+  name: string;
+  vat: string;
+  main_firstname: string;
+  main_lastname: string;
+  main_address: string;
+  main_phone: string;
+  main_email: string;
+  inv_firstname: string;
+  inv_lastname: string;
+  inv_address: string;
+  inv_phone: string;
+  inv_email: string;
 }

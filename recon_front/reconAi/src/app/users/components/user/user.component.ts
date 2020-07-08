@@ -1,7 +1,5 @@
-import { ActivatedRoute } from '@angular/router';
-import { Store } from '@ngrx/store';
-import { Component, OnInit } from '@angular/core';
-import { AppState } from 'app/store/reducers';
+import { FormServerErrorInterface } from 'app/constants/types/requests';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
   selector: 'recon-user',
@@ -9,14 +7,30 @@ import { AppState } from 'app/store/reducers';
   styleUrls: ['./user.component.less'],
 })
 export class UserComponent implements OnInit {
-  constructor(
-    private activatedRoute: ActivatedRoute,
-    private store: Store<AppState>
-  ) {}
+  constructor() {}
 
-  userId: string;
+  @Input() isLoading = true;
+  @Input() errors: FormServerErrorInterface;
+  @Input() isUserFound: boolean;
+  @Input() organizationName: string;
+  @Input() organizationPhone: string;
+  @Input() organizationEmail: string;
+  @Input() organizationAddress: string;
+  @Input() organizationVat: string;
+  @Input() organizationFirstName: string;
+  @Input() organizationLastName: string;
 
-  ngOnInit(): void {
-    this.userId = this.activatedRoute.snapshot.paramMap.get('id');
-  }
+  @Input() userPhone: string;
+  @Input() userEmail: string;
+  @Input() userAddress: string;
+  @Input() userFirstName: string;
+  @Input() userLastName: string;
+
+  @Input() invoicingPhone: string;
+  @Input() invoicingEmail: string;
+  @Input() invoicingAddress: string;
+  @Input() invoicingFirstName: string;
+  @Input() invoicingLastName: string;
+
+  ngOnInit(): void {}
 }

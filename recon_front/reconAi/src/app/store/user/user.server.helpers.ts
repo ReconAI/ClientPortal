@@ -1,10 +1,7 @@
 import { ResetPasswordWithMetaInterface } from 'app/constants/types/resetPassword';
 import { getUserPriorityByRole } from './../../core/helpers/priorities';
-import { FormServerErrorInterface } from './../../constants/types/requests';
 import { UserRolesPriorities, ServerUserInterface } from 'app/constants/types';
 import {
-  DEFAULT_USER_ROLE,
-  DEFAULT_USER_ROLE_PRIORITY,
   UserRoleTypes,
   DEFAULT_AUTHORIZED_USER_ROLE,
 } from './../../constants/types/user';
@@ -62,7 +59,7 @@ export interface PreResetPasswordRequestInterface {
   email: string;
 }
 
-export interface ResetPasswordReqestInterface {
+export interface ResetPasswordRequestInterface {
   token: string;
   uidb64: string;
   new_password1: string;
@@ -74,7 +71,7 @@ export const transformResetPasswordFormToRequest = ({
   token,
   password1,
   password2,
-}: ResetPasswordWithMetaInterface): ResetPasswordReqestInterface => ({
+}: ResetPasswordWithMetaInterface): ResetPasswordRequestInterface => ({
   token,
   uidb64,
   new_password1: password1,

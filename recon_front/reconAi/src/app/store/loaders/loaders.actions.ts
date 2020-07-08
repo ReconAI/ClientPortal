@@ -11,7 +11,8 @@ export enum LoadersActionTypes {
   SET_ACTIVATION_LOADING_STATUS = '[Loaders] Set Activation Loading Status',
   SET_PRE_RESET_PASSWORD_LOADING_STATUS = '[Loaders] Set Pre Reset Password Loading Status',
   SET_RESET_PASSWORD_LOADING_STATUS = '[Loaders] Set Reset Password Loading Status',
-  SET_USER_LIST_LOADING_STATUS = '[Loaders] Set User Loading Status',
+  SET_USER_LIST_LOADING_STATUS = '[Loaders] Set User List Loading Status',
+  SET_USER_PROFILE_LOADING_STATUS = '[Loaders] Set User Profile Loading Status',
 }
 
 export interface LoaderInterface {
@@ -65,5 +66,10 @@ export const setResetPasswordLoadingStatusAction = createAction(
 
 export const setUserListLoadingStatusAction = createAction(
   LoadersActionTypes.SET_USER_LIST_LOADING_STATUS,
+  props<LoaderInterface>()
+);
+
+export const setUserProfileLoadingStatusAction = createAction(
+  LoadersActionTypes.SET_USER_PROFILE_LOADING_STATUS,
   props<LoaderInterface>()
 );

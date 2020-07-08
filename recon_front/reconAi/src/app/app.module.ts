@@ -34,7 +34,6 @@ import { SignInFormComponent } from './components/login-modal/sign-in-form/sign-
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { SignUpFormContainer } from './components/login-modal/sign-in-form/sign-up-form.container';
 import { RegistrationContainer } from './components/registration/registration/registration.container';
-import { UserProfileComponent } from './components/userProfile/user-profile/user-profile.component';
 import { RegistrationSuccessComponent } from './components/registration/registration-success/registration-success.component';
 import { ActivationComponent } from './components/activation/activation/activation.component';
 import { PreResetPasswordComponent } from './components/login-modal/pre-reset-password/pre-reset-password.component';
@@ -58,7 +57,6 @@ import { NewFeatureContainer } from './components/new-feature/new-feature.contai
     SignInFormContainer,
     SignUpFormContainer,
     RegistrationContainer,
-    UserProfileComponent,
     RegistrationSuccessComponent,
     RegistrationSuccessHumanComponent,
     ActivationComponent,

@@ -6,4 +6,10 @@ export interface UserInterface {
   role: string;
   isActive: boolean;
   createdDT: string;
+  id: string;
+}
+
+export interface DeleteUserDialogInterface {
+  id: string;
+  name: string;
 }

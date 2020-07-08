@@ -1,6 +1,6 @@
 import { FormServerErrorInterface } from './../../constants/types/requests';
 import { HttpErrorResponse } from '@angular/common/http';
-import { UserProfileFormInterface } from 'app/constants/types';
+import { UserProfileFormInterface, ServerUserOrganizationInterface } from 'app/constants/types';
 
 export interface PreSignUpInterface {
   login: string;
@@ -23,7 +23,7 @@ export const transformPreSignUpUserForm = ({
   password1,
   password2,
 });
-export interface SignUpRequestInterface {
+export interface SignUpRequestInterface extends ServerUserOrganizationInterface {
   username: string;
   email: string;
   firstname: string;
@@ -32,18 +32,6 @@ export interface SignUpRequestInterface {
   phone: string;
   password1: string;
   password2: string;
-  name: string;
-  vat: string;
-  main_firstname: string;
-  main_lastname: string;
-  main_address: string;
-  main_phone: string;
-  main_email: string;
-  inv_firstname: string;
-  inv_lastname: string;
-  inv_address: string;
-  inv_phone: string;
-  inv_email: string;
 }
 
 export const transformSignUpFormToRequest = (

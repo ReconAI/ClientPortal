@@ -2,11 +2,16 @@ import {
   UsersListResponseInterface,
   transformUsersListResponseFromServer,
   UsersListRequestInterface,
+  UserProfileRequestInterface,
+  transformUserProfileResponseFromServer,
+  ServerUserProfileInterface,
 } from './users.server.helpers';
 import {
   UsersActionTypes,
   loadUsersListSucceededAction,
   loadUsersListErrorAction,
+  loadUserProfileSucceededAction,
+  loadUserProfileErrorAction,
 } from './users.actions';
 import { Router } from '@angular/router';
 import { Action, Store } from '@ngrx/store';
@@ -16,7 +21,10 @@ import { of, Observable } from 'rxjs';
 import { map, catchError, switchMap, tap, finalize } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { AppState } from '../reducers';
-import { setUserListLoadingStatusAction } from '../loaders';
+import {
+  setUserListLoadingStatusAction,
+  setUserProfileLoadingStatusAction,
+} from '../loaders';
 
 @Injectable()
 export class UsersEffects {
@@ -54,6 +62,42 @@ export class UsersEffects {
             finalize(() => {
               this.store.dispatch(
                 setUserListLoadingStatusAction({
+                  status: false,
+                })
+              );
+            })
+          )
+      )
+    )
+  );
+
+  loadUserProfile$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action & UserProfileRequestInterface>(
+        UsersActionTypes.LOAD_USER_PROFILE_REQUESTED
+      ),
+      tap(() => {
+        this.store.dispatch(
+          setUserProfileLoadingStatusAction({
+            status: true,
+          })
+        );
+      }),
+      switchMap(({ id }) =>
+        this.httpClient
+          .get<ServerUserProfileInterface>(`/api/users/${id}`)
+          .pipe(
+            map((user) =>
+              loadUserProfileSucceededAction(
+                transformUserProfileResponseFromServer(user)
+              )
+            ),
+            catchError((error) => {
+              return of(loadUserProfileErrorAction());
+            }),
+            finalize(() => {
+              this.store.dispatch(
+                setUserProfileLoadingStatusAction({
                   status: false,
                 })
               );

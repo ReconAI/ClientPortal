@@ -53,3 +53,8 @@ export const selectUsersListLoadingStatus = createSelector(
   selectLoaders,
   (loaders: LoadersState): boolean => loaders.userList
 );
+
+export const selectUserProfileLoadingStatus = createSelector(
+  selectLoaders,
+  (loaders: LoadersState): boolean => loaders.userProfile
+);

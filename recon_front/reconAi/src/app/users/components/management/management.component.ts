@@ -1,4 +1,10 @@
-import { UserInterface } from './../../constants/types/user';
+import { DeleteUserDialogComponent } from './delete-user-dialog/delete-user-dialog.component';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { Router } from '@angular/router';
+import {
+  UserInterface,
+  DeleteUserDialogInterface,
+} from './../../constants/types/user';
 import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 
 @Component({
@@ -14,6 +20,7 @@ export class ManagementComponent implements OnInit {
 
   @Output() loadData$ = new EventEmitter<number>();
 
+  dialogRef: MatDialogRef<any>;
   readonly columns = [
     {
       header: 'First name',
@@ -50,7 +57,30 @@ export class ManagementComponent implements OnInit {
     },
   ];
 
+  constructor(private router: Router, public dialog: MatDialog) {}
+
   ngOnInit(): void {}
+
+  userClick(user: UserInterface): void {
+    this.router.navigate([`/users/${user?.id}`]);
+  }
+
+  editUserClick(user: UserInterface): void {}
+
+  deleteUserClick(user: UserInterface): void {
+    this.openDeleteDialog(user);
+  }
+
+  openDeleteDialog(user: UserInterface): void {
+    this.dialogRef = this.dialog.open(DeleteUserDialogComponent, {
+      width: '440px',
+      height: '200px',
+      data: {
+        name: `${user.firstName} ${user.lastName}`,
+        id: user.id,
+      },
+    });
+  }
 
   loadData(page: number): void {
     this.loadData$.emit(page);

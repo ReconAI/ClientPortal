@@ -15,6 +15,10 @@ export class CrudTableComponent implements OnInit {
   @Input() isWithActions = true;
 
   @Output() changePage$ = new EventEmitter<number>();
+  @Output() rowClick$ = new EventEmitter<any>();
+  @Output() editClick$ = new EventEmitter<any>();
+  @Output() deleteClick$ = new EventEmitter<any>();
+
   constructor() {}
   columnsIds: string[] = [];
 
@@ -31,6 +35,23 @@ export class CrudTableComponent implements OnInit {
 
   changePage(page: number) {
     this.changePage$.emit(page);
+  }
+
+  rowClick(row) {
+    this.rowClick$.emit(row);
+  }
+
+  editClick(row) {
+    this.editClick$.emit(row);
+  }
+
+  deleteClick(row) {
+    this.deleteClick$.emit(row);
+  }
+
+  openActionsMenu(event: Event) {
+    // to remove general row click action
+    event.stopPropagation();
   }
 
   ngOnInit(): void {

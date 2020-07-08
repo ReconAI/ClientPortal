@@ -1,8 +1,7 @@
-import { UserComponent } from './components/user/user.component';
+import { UserContainer } from './components/user/user.container';
 import { ManagementContainer } from './components/management/management.container';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-
 
 const routes: Routes = [
   {
@@ -11,12 +10,12 @@ const routes: Routes = [
   },
   {
     path: ':id',
-    component: UserComponent,
-  }
+    component: UserContainer,
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class UsersRoutingModule { }
+export class UsersRoutingModule {}
