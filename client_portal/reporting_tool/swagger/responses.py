@@ -3,10 +3,10 @@ Contains generic answers peculiar to the application acceptable for swagger
 """
 
 from typing import List, Dict, Type, Union
+
 from drf_yasg import openapi
 from drf_yasg.openapi import TYPE_OBJECT, TYPE_STRING
 from rest_framework import status, serializers
-from rest_framework.fields import CharField
 from rest_framework.serializers import Serializer
 
 
@@ -178,12 +178,19 @@ def data_serializer(
     :rtype: Type[Serializer]
     """
     return _app_response({
-            'data': serializer()
-        })
+        'data': serializer()
+    })
 
 
 def data_message_serializer(
         serializer: Type['Serializer']) -> Union[type, Type[Serializer]]:
+    """
+    Converts http message and serializer to common response format
+
+    :type serializer: Type['Serializer']
+
+    :rtype: Type[Serializer]
+    """
     return _app_response({
         'data': serializer(),
         'message': serializers.CharField()

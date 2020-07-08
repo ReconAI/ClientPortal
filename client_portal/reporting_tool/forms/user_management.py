@@ -4,23 +4,21 @@ Contains forms associated with user management procedures
 
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
-from django.core.mail import EmailMultiAlternatives
 from django.forms import ModelForm
-from django.template import loader
-from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.utils.text import slugify
 from requests import Request
 
 from reporting_tool.forms.accounts import UserForm
-from reporting_tool.forms.utils import CheckUserTokenForm, RoleFieldMixin
+from reporting_tool.forms.utils import CheckUserTokenForm, RoleFieldMixin, \
+    SendEmailMixin
 from reporting_tool.frontend.router import Router
 from reporting_tool.models import User, UserGroup
 from reporting_tool.tokens import InvitationTokenGenerator
 
 
-class UserInvitationForm(ModelForm, RoleFieldMixin):
+class UserInvitationForm(ModelForm, RoleFieldMixin, SendEmailMixin):
     """
     In order to be invited all the initial data must be valid
     """
@@ -60,9 +58,37 @@ class UserInvitationForm(ModelForm, RoleFieldMixin):
         user.save()
         UserGroup.objects.create(user=user, group=role)
 
-        self.__send_invitation_mail(request, user)
+        self.send_mail(
+            user.email,
+            'emails/user_invitation_subject.txt',
+            'emails/user_invitation.html',
+            request,
+            user
+        )
 
         return user
+
+    def get_email_context(self, request: Request, user: User) -> dict:
+        """
+        :type request: Request
+        :type user: User
+
+        :rtype: dict
+        """
+        return {
+            'user': user,
+            'app_name': settings.APP_NAME,
+            'site_name': get_current_site(request),
+            'invitation_link': Router(
+                settings.CLIENT_APP_SHEMA_HOST_PORT
+            ).reverse_full(
+                'follow_invitation',
+                args=(
+                    urlsafe_base64_encode(force_bytes(user.pk)),
+                    InvitationTokenGenerator().make_token(user)
+                )
+            )
+        }
 
     @staticmethod
     def __generate_username(firstname: str, lastname: str):
@@ -78,36 +104,6 @@ class UserInvitationForm(ModelForm, RoleFieldMixin):
             return '{}{}'.format(u_username, count)
 
         return u_username
-
-    @staticmethod
-    def __send_invitation_mail(request: Request, user: User):
-        message = render_to_string('emails/user_invitation.html', {
-            'user': user,
-            'app_name': settings.APP_NAME,
-            'site_name': get_current_site(request),
-            'invitation_link': Router(
-                settings.CLIENT_APP_SHEMA_HOST_PORT
-            ).reverse_full(
-                'follow_invitation',
-                args=(
-                    urlsafe_base64_encode(force_bytes(user.pk)),
-                    InvitationTokenGenerator().make_token(user)
-                )
-            )
-        })
-
-        subject = loader.render_to_string(
-            'emails/user_invitation_subject.txt',
-            {
-                'site_name': get_current_site(request)
-            }
-        )
-
-        EmailMultiAlternatives(
-            ''.join(subject.splitlines()),
-            message,
-            to=[user.email]
-        ).send()
 
 
 class CheckUserInvitationTokenForm(CheckUserTokenForm):

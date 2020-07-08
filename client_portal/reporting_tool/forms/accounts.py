@@ -14,10 +14,7 @@ from django.contrib.auth.forms import UserCreationForm, \
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.mail import EmailMultiAlternatives
 from django.forms import ModelForm
-from django.template import loader
-from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import gettext_lazy as _
@@ -25,7 +22,8 @@ from requests import Request
 from rest_framework.exceptions import NotFound
 
 from reporting_tool.forms.organization import OrganizationForm
-from reporting_tool.forms.utils import CheckUserTokenForm, RoleFieldMixin
+from reporting_tool.forms.utils import CheckUserTokenForm, RoleFieldMixin, \
+    SendEmailMixin
 from reporting_tool.frontend.router import Router
 from reporting_tool.models import Organization, User
 from reporting_tool.tokens import AccountActivationTokenGenerator
@@ -144,7 +142,7 @@ class UserEditForm(ModelForm, RoleFieldMixin):
         return saved
 
 
-class SignupForm:
+class SignupForm(SendEmailMixin):
     """
     Signup form is a combination of Userform and Organizationform
     """
@@ -193,15 +191,29 @@ class SignupForm:
 
         self.__send_activation_mail(request, user)
 
+        self.send_mail(
+            user.email,
+            'emails/account_activation_subject.txt',
+            'emails/account_activation.html',
+            request,
+            user
+        )
+
         return (
             user,
             organization
         )
 
-    @staticmethod
-    def __send_activation_mail(request: Request, user: User):
-        message = render_to_string('emails/account_activation.html', {
+    def get_email_context(self, request: Request, user: User) -> dict:
+        """
+        Email context for template loader
+
+        :type request: Request
+        :type user: User
+        """
+        return {
             'user': user,
+            'site_name': get_current_site(request),
             'activation_link': Router(
                 settings.CLIENT_APP_SHEMA_HOST_PORT
             ).reverse_full(
@@ -211,20 +223,7 @@ class SignupForm:
                     AccountActivationTokenGenerator().make_token(user)
                 )
             )
-        })
-
-        subject = loader.render_to_string(
-            'emails/account_activation_subject.txt',
-            {
-                'site_name': get_current_site(request)
-            }
-        )
-
-        EmailMultiAlternatives(
-            ''.join(subject.splitlines()),
-            message,
-            to=[user.email]
-        ).send()
+        }
 
 
 class PasswordResetForm(PasswordResetFormBase):

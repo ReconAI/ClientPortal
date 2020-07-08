@@ -37,6 +37,10 @@ class CheckTokenMixin:
 
 
 class FormMixin(FormMixinBase):
+    """
+    Base form mixin for form views
+    """
+
     def get_form_kwargs(self) -> dict:
         """
         :type: dict
