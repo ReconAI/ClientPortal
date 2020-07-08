@@ -5,6 +5,7 @@ import {
   UserProfileRequestInterface,
   transformUserProfileResponseFromServer,
   ServerUserProfileInterface,
+  calculatePageAfterDelete,
 } from './users.server.helpers';
 import {
   UsersActionTypes,
@@ -12,19 +13,31 @@ import {
   loadUsersListErrorAction,
   loadUserProfileSucceededAction,
   loadUserProfileErrorAction,
+  deleteUserSucceededAction,
+  deleteUserErrorAction,
+  loadUsersListRequestedAction,
 } from './users.actions';
 import { Router } from '@angular/router';
-import { Action, Store } from '@ngrx/store';
+import { Action, Store, select } from '@ngrx/store';
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of, Observable } from 'rxjs';
-import { map, catchError, switchMap, tap, finalize } from 'rxjs/operators';
+import {
+  map,
+  catchError,
+  switchMap,
+  tap,
+  finalize,
+  withLatestFrom,
+} from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { AppState } from '../reducers';
 import {
   setUserListLoadingStatusAction,
   setUserProfileLoadingStatusAction,
+  setDeleteUserLoadingStatusAction,
 } from '../loaders';
+import { selectUsersList, selectUsersMetaCurrentPage } from './users.selectors';
 
 @Injectable()
 export class UsersEffects {
@@ -103,6 +116,47 @@ export class UsersEffects {
               );
             })
           )
+      )
+    )
+  );
+
+  deleteUser$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action & UserProfileRequestInterface>(
+        UsersActionTypes.DELETE_USER_REQUESTED
+      ),
+      tap(() => {
+        this.store.dispatch(
+          setDeleteUserLoadingStatusAction({
+            status: true,
+          })
+        );
+      }),
+      withLatestFrom(
+        this.store.pipe(select(selectUsersList)),
+        this.store.pipe(select(selectUsersMetaCurrentPage))
+      ),
+      switchMap(([{ id }, users, currentPage]) =>
+        this.httpClient.delete(`/api/users/${id}`).pipe(
+          map(() => {
+            this.store.dispatch(
+              loadUsersListRequestedAction({
+                page: calculatePageAfterDelete(currentPage, users.length),
+              })
+            );
+            return deleteUserSucceededAction();
+          }),
+          catchError((error) => {
+            return of(deleteUserErrorAction());
+          }),
+          finalize(() => {
+            this.store.dispatch(
+              setDeleteUserLoadingStatusAction({
+                status: false,
+              })
+            );
+          })
+        )
       )
     )
   );

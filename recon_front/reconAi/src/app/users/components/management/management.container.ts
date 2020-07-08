@@ -30,6 +30,10 @@ export class ManagementContainer implements OnInit {
     select(selectUsersMetaTotalCount)
   );
 
+  currentPage$: Observable<number> = this.store.pipe(
+    select(selectUsersMetaCurrentPage)
+  );
+
   loadUsers(page = 1): void {
     this.store.dispatch(loadUsersListRequestedAction({ page }));
   }

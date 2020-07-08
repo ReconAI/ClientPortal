@@ -1,4 +1,8 @@
-import { UsersListRequestInterface,  StoreUsersListInterface, UserProfileRequestInterface } from './users.server.helpers';
+import {
+  UsersListRequestInterface,
+  StoreUsersListInterface,
+  UserProfileRequestInterface,
+} from './users.server.helpers';
 import { createAction, props } from '@ngrx/store';
 import { UserProfileFormInterface } from 'app/constants/types';
 export enum UsersActionTypes {
@@ -10,6 +14,10 @@ export enum UsersActionTypes {
   LOAD_USER_PROFILE_SUCCEEDED = '[Users] Load User Profile Succeeded',
   LOAD_USER_PROFILE_ERROR = '[Users] Load User Profile Error',
   RESET_USER_PROFILE = '[Users] Reset User Profile',
+
+  DELETE_USER_REQUESTED = '[Users] Delete User Requested',
+  DELETE_USER_SUCCEEDED = '[Users] Delete User Succeeded',
+  DELETE_USER_ERROR = '[Users] Delete User Error',
 }
 
 export const loadUsersListRequestedAction = createAction(
@@ -37,9 +45,22 @@ export const loadUserProfileSucceededAction = createAction(
 );
 
 export const loadUserProfileErrorAction = createAction(
-  UsersActionTypes.LOAD_USER_PROFILE_ERROR,
+  UsersActionTypes.LOAD_USER_PROFILE_ERROR
 );
 
 export const resetUserProfileAction = createAction(
-  UsersActionTypes.LOAD_USER_PROFILE_ERROR,
+  UsersActionTypes.LOAD_USER_PROFILE_ERROR
+);
+
+export const deleteUserRequestedAction = createAction(
+  UsersActionTypes.DELETE_USER_REQUESTED,
+  props<UserProfileRequestInterface>()
+);
+
+export const deleteUserSucceededAction = createAction(
+  UsersActionTypes.DELETE_USER_SUCCEEDED
+);
+
+export const deleteUserErrorAction = createAction(
+  UsersActionTypes.DELETE_USER_ERROR
 );

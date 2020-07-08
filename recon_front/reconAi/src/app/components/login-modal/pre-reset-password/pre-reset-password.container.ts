@@ -1,11 +1,13 @@
-import { ModalCloseSubscriptionInterface } from './../../../constants/types/modals';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { preResetResetPasswordErrorAction } from './../../../store/user/user.actions';
+import { ofType } from '@ngrx/effects';
+import { MatDialogRef } from '@angular/material/dialog';
+import {
+  preResetResetPasswordErrorAction,
+  preResetPasswordSucceededAction,
+} from './../../../store/user/user.actions';
 import { selectPreResetPasswordLoadingStatus } from './../../../store/loaders/loaders.selectors';
-import { setPreResetPasswordLoadingStatusAction } from './../../../store/loaders/loaders.actions';
 import { selectPreResetPasswordError } from './../../../store/user/user.selectors';
 import { Observable, Subscription } from 'rxjs';
-import { Store, select } from '@ngrx/store';
+import { Store, select, ActionsSubject } from '@ngrx/store';
 import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
 import { PreResetPasswordRequestInterface } from 'app/store/user/user.server.helpers';
 import { AppState } from 'app/store/reducers';
@@ -16,6 +18,11 @@ import { preResetPasswordRequestedAction } from 'app/store/user';
   templateUrl: './pre-reset-password.container.html',
 })
 export class PreResetPasswordContainer implements OnInit, OnDestroy {
+  constructor(
+    private store: Store<AppState>,
+    private actionsSubject: ActionsSubject,
+    private dialogRef: MatDialogRef<PreResetPasswordContainer>
+  ) {}
   subscriptionToClose$: Subscription;
 
   preResetError$: Observable<string> = this.store.pipe(
@@ -26,14 +33,15 @@ export class PreResetPasswordContainer implements OnInit, OnDestroy {
     select(selectPreResetPasswordLoadingStatus)
   );
 
-  constructor(
-    private store: Store<AppState>,
-    @Inject(MAT_DIALOG_DATA) public data: ModalCloseSubscriptionInterface
-  ) {
-    this.subscriptionToClose$ = data.subscriptionToClose$;
-  }
+  closeModal$ = this.actionsSubject.pipe(
+    ofType(preResetPasswordSucceededAction)
+  );
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.subscriptionToClose$ = this.closeModal$.subscribe(() => {
+      this.dialogRef.close();
+    });
+  }
 
   ngOnDestroy(): void {
     this.store.dispatch(preResetResetPasswordErrorAction());

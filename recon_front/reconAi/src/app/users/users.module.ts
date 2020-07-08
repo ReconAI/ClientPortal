@@ -10,6 +10,7 @@ import { UsersRoutingModule } from './users-routing.module';
 import { ManagementComponent } from './components/management/management.component';
 import { UserContainer } from './components/user/user.container';
 import { DeleteUserDialogComponent } from './components/management/delete-user-dialog/delete-user-dialog.component';
+import { DeleteUserDialogContainer } from './components/management/delete-user-dialog/delete-user-dialog.container';
 
 @NgModule({
   declarations: [
@@ -18,6 +19,7 @@ import { DeleteUserDialogComponent } from './components/management/delete-user-d
     ManagementContainer,
     UserContainer,
     DeleteUserDialogComponent,
+    DeleteUserDialogContainer
   ],
   imports: [
     CommonModule,

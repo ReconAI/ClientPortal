@@ -1,3 +1,4 @@
+import { MatDialogRef } from '@angular/material/dialog';
 import {
   preSignUpUserRequestedAction,
   resetPreSignUpUserErrorAction,
@@ -15,7 +16,10 @@ import { selectPreSignUpError } from 'app/store/signUp/signUp.selectors';
   templateUrl: './sign-up-form.container.html',
 })
 export class SignUpFormContainer implements OnInit, OnDestroy {
-  constructor(private store: Store<AppState>) {}
+  constructor(
+    private store: Store<AppState>,
+    private dialogRef: MatDialogRef<SignUpFormContainer>
+  ) {}
 
   loadingStatus$: Observable<boolean> = this.store.pipe(
     select(selectPreSignUpLoadingStatus)

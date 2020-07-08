@@ -51,6 +51,7 @@
   <ng-container matColumnDef="pagination">
     <mat-footer-cell *matFooterCellDef>
       <recon-pagination
+        [currentPage]="currentPage"
         [totalCount]="totalCount"
         [pageSize]="pageSize"
         (changePage$)="changePage($event)"

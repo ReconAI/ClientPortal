@@ -10,6 +10,7 @@ export class CrudTableComponent implements OnInit {
   @Input() data = [];
   @Input() pageSize = 3;
   @Input() totalCount = 0;
+  @Input() currentPage = 0;
 
   @Input() columns: CrudTableColumn[] = [];
   @Input() isWithActions = true;

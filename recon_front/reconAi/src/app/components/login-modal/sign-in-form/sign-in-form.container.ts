@@ -12,7 +12,7 @@ import { Observable, Subscription } from 'rxjs';
 import { LoginUserFormInterface } from './../../../store/user/user.server.helpers';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AppState } from 'app/store/reducers';
-import { Store, select, ActionsSubject } from '@ngrx/store';
+import { Store, select } from '@ngrx/store';
 import { loginUserRequestedAction } from 'app/store/user';
 
 @Component({
@@ -20,10 +20,7 @@ import { loginUserRequestedAction } from 'app/store/user';
   templateUrl: './sign-in-form.container.html',
 })
 export class SignInFormContainer implements OnInit, OnDestroy {
-  constructor(
-    private store: Store<AppState>, // it's used to close our modal when it's need to do
-    private actionsSubject: ActionsSubject
-  ) {}
+  constructor(private store: Store<AppState>) {}
 
   loadingStatus$: Observable<boolean> = this.store.pipe(
     select(selectLoginLoadingStatus)
@@ -31,11 +28,6 @@ export class SignInFormContainer implements OnInit, OnDestroy {
 
   loginError$: Observable<string> = this.store.pipe(
     select(selectLoginErrorsStatus)
-  );
-
-  closeModal$ = this.actionsSubject.pipe(
-    ofType(preResetPasswordSucceededAction),
-    tap(() => 'im here, email')
   );
 
   ngOnInit(): void {}

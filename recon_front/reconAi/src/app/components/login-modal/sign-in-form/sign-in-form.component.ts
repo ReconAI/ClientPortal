@@ -22,17 +22,14 @@ import { FormBuilder, Validators, FormGroup } from '@angular/forms';
   templateUrl: './sign-in-form.component.html',
   styleUrls: ['./sign-in-form.component.less'],
 })
-export class SignInFormComponent implements OnInit, OnDestroy, AfterViewInit {
+export class SignInFormComponent implements OnInit, OnDestroy {
   // rename
   @Input() loadingStatus = false;
   @Input() isSignUp: boolean;
   @Input() validationError: string;
-  @Input() closePreResetPasswordForm$: Observable<any>; // check type
-
-  subscriptionToClosePreResetPasswordForm$: Subscription;
-  @Output() submitData$ = new EventEmitter<LoginUserFormInterface>(); // check type
+  @Output() submitData$ = new EventEmitter<LoginUserFormInterface>();
   signInForm: FormGroup;
-  dialogRef: MatDialogRef<any>; // check type
+  dialogRef: MatDialogRef<PreResetPasswordContainer>;
 
   // @ViewChild('myLogin') loginItem:;
 
@@ -44,15 +41,6 @@ export class SignInFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit(): void {
     this.signInForm = this.buildFormGroup();
-
-    // it's used for closing reset password modal
-    if (!this.isSignUp && this.closePreResetPasswordForm$) {
-      this.subscriptionToClosePreResetPasswordForm$ = this.closePreResetPasswordForm$.subscribe(
-        () => {
-          this.closeForgotPasswordDialog();
-        }
-      );
-    }
   }
 
   ngOnDestroy(): void {}
@@ -65,23 +53,14 @@ export class SignInFormComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  closeForgotPasswordDialog(): void {
-    this.dialogRef.close();
-  }
-
   openForgotPasswordDialog(): void {
     this.dialogRef = this.dialog.open(PreResetPasswordContainer, {
       width: '460px',
       height: '270px',
-      data: {
-        subscriptionToClose$: this.subscriptionToClosePreResetPasswordForm$,
-      },
     });
   }
 
   onSubmit() {
     this.submitData$.emit(this.signInForm.value);
   }
-
-  ngAfterViewInit() {}
 }

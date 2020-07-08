@@ -10,6 +10,7 @@ import {
   setSignUpLoadingStatusAction,
   setUserListLoadingStatusAction,
   setUserProfileLoadingStatusAction,
+  setDeleteUserLoadingStatusAction,
 } from './loaders.actions';
 import { createReducer, on, Action } from '@ngrx/store';
 
@@ -26,6 +27,7 @@ export interface LoadersState {
   preResetPassword: boolean;
   userList: boolean;
   userProfile: boolean;
+  deleteUser: boolean;
 }
 
 const initialState: LoadersState = {
@@ -40,6 +42,7 @@ const initialState: LoadersState = {
   preResetPassword: false,
   userList: false,
   userProfile: false,
+  deleteUser: false,
 };
 
 const setCurrentUserLoadingStatusReducer = (
@@ -92,6 +95,11 @@ const setUserProfileLoadingStatusReducer = (
   { status }: Action & LoaderInterface
 ): LoadersState => ({ ...state, userProfile: status });
 
+const setDeleteUserLoadingStatusReducer = (
+  state: LoadersState,
+  { status }: Action & LoaderInterface
+): LoadersState => ({ ...state, deleteUser: status });
+
 const loadersReducer = createReducer(
   initialState,
   on(setCurrentUserLoadingStatusAction, setCurrentUserLoadingStatusReducer),
@@ -106,7 +114,8 @@ const loadersReducer = createReducer(
     setPreResetPasswordLoadingStatusReducer
   ),
   on(setUserListLoadingStatusAction, setUserListLoadingStatusReducer),
-  on(setUserProfileLoadingStatusAction, setUserProfileLoadingStatusReducer)
+  on(setUserProfileLoadingStatusAction, setUserProfileLoadingStatusReducer),
+  on(setDeleteUserLoadingStatusAction, setDeleteUserLoadingStatusReducer)
 );
 
 export function reducer(state: LoadersState | undefined, action: Action) {

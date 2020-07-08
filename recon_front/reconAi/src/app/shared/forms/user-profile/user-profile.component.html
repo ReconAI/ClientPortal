@@ -161,7 +161,7 @@
         </mat-icon>
         <ng-template #elseBlock>SAVE</ng-template>
       </button>
-      <span>*I approve terms of services and GDPR</span>
+      <span *ngIf="showTerms">*I approve terms of services and GDPR</span>
     </div>
   </div>
 </form>

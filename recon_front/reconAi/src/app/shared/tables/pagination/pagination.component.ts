@@ -17,11 +17,12 @@ import {
 export class PaginationComponent implements OnInit, OnChanges {
   constructor() {}
   @Input() totalCount: number;
+  @Input() currentPage: number;
+
   @Output() changePage$ = new EventEmitter<number>();
 
   @Input() pageSize;
   readonly countShownPages = 3;
-  currentPage = 1;
   pagesCount: number;
   shownPages: number[] = [];
 
@@ -31,7 +32,7 @@ export class PaginationComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.totalCount || changes.shownPages) {
+    if (changes.totalCount || changes.shownPages || changes.currentPage) {
       this.pagesCount = Math.ceil(this.totalCount / this.pageSize || 1);
       this.shownPages = this.calculatePaginationPages();
     }
@@ -40,7 +41,6 @@ export class PaginationComponent implements OnInit, OnChanges {
   selectPage(page: number): void {
     if (this.currentPage !== page) {
       this.changePage$.emit(page);
-      this.currentPage = page;
       this.shownPages = this.calculatePaginationPages();
     }
   }
@@ -52,13 +52,13 @@ export class PaginationComponent implements OnInit, OnChanges {
         .map((_, i) => i + 1);
     }
 
-    if (this.currentPage <= this.pagesCount - this.countShownPages) {
+    if (this.currentPage <= this.pagesCount - this.countShownPages + 1) {
       const middleElement = Math.floor(this.countShownPages / 2);
       return Array(this.countShownPages)
         .fill(0)
         .map((_, i) => i - middleElement + this.currentPage);
     }
-    // bug
+
     return Array(this.countShownPages)
       .fill(0)
       .map((_, i) => this.pagesCount - this.countShownPages + i + 1);

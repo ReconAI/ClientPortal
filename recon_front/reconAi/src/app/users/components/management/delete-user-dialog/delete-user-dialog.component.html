@@ -3,10 +3,19 @@
   <mat-icon [mat-dialog-close]="true">close</mat-icon>
 </div>
 <span>
-  Do you want to delete <b>{{ name }}</b>?
+  Do you want to delete <b>{{ name }}</b
+  >?
 </span>
 <div class="button-container">
-  <button mat-raised-button color="primary">
-    DELETE
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="deleteClick()"
+    [disabled]="isLoading"
+  >
+    <mat-icon *ngIf="isLoading; else loaded">
+      <mat-spinner color="primary" diameter="20"></mat-spinner>
+    </mat-icon>
+    <ng-template #loaded>DELETE</ng-template>
   </button>
 </div>

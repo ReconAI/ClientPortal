@@ -18,6 +18,7 @@ import { FormServerErrorInterface } from 'app/constants/types/requests';
 export class UserProfileComponent implements OnInit {
   @Input() loading = false;
   @Input() errors: FormServerErrorInterface;
+  @Input() showTerms = false;
   // make it work
   @Input() disabledButton = false;
 

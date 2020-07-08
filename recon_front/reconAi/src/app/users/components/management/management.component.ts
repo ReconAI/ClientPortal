@@ -6,6 +6,7 @@ import {
   DeleteUserDialogInterface,
 } from './../../constants/types/user';
 import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
+import { DeleteUserDialogContainer } from './delete-user-dialog/delete-user-dialog.container';
 
 @Component({
   selector: 'recon-management',
@@ -20,7 +21,7 @@ export class ManagementComponent implements OnInit {
 
   @Output() loadData$ = new EventEmitter<number>();
 
-  dialogRef: MatDialogRef<any>;
+  dialogRef: MatDialogRef<DeleteUserDialogContainer>;
   readonly columns = [
     {
       header: 'First name',
@@ -72,7 +73,7 @@ export class ManagementComponent implements OnInit {
   }
 
   openDeleteDialog(user: UserInterface): void {
-    this.dialogRef = this.dialog.open(DeleteUserDialogComponent, {
+    this.dialogRef = this.dialog.open(DeleteUserDialogContainer, {
       width: '440px',
       height: '200px',
       data: {
