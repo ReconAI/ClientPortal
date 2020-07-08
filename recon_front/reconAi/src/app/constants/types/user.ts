@@ -103,3 +103,22 @@ export interface ServerUserOrganizationInterface {
   inv_phone: string;
   inv_email: string;
 }
+
+export const SERVER_USER_ROLES = [
+  {
+    title: 'Super admin',
+    value: 'super_admin',
+  },
+  {
+    title: 'Admin',
+    value: 'admin',
+  },
+  {
+    title: 'Developer',
+    value: 'developer',
+  },
+  {
+    title: 'Client',
+    value: 'client',
+  },
+];

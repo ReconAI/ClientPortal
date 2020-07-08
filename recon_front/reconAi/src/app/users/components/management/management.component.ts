@@ -1,12 +1,9 @@
-import { DeleteUserDialogComponent } from './delete-user-dialog/delete-user-dialog.component';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import {
-  UserInterface,
-  DeleteUserDialogInterface,
-} from './../../constants/types/user';
+import { UserInterface } from './../../constants/types/user';
 import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 import { DeleteUserDialogContainer } from './delete-user-dialog/delete-user-dialog.container';
+import { AddUserDialogContainer } from './add-user-dialog/add-user-dialog.container';
 
 @Component({
   selector: 'recon-management',
@@ -21,7 +18,6 @@ export class ManagementComponent implements OnInit {
 
   @Output() loadData$ = new EventEmitter<number>();
 
-  dialogRef: MatDialogRef<DeleteUserDialogContainer>;
   readonly columns = [
     {
       header: 'First name',
@@ -72,8 +68,15 @@ export class ManagementComponent implements OnInit {
     this.openDeleteDialog(user);
   }
 
+  openAddDialog(): void {
+    this.dialog.open(AddUserDialogContainer, {
+      width: '440px',
+      height: '450px',
+    });
+  }
+
   openDeleteDialog(user: UserInterface): void {
-    this.dialogRef = this.dialog.open(DeleteUserDialogContainer, {
+    this.dialog.open(DeleteUserDialogContainer, {
       width: '440px',
       height: '200px',
       data: {

@@ -13,3 +13,10 @@ export interface DeleteUserDialogInterface {
   id: string;
   name: string;
 }
+
+export interface AddUserInterface {
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: string;
+}

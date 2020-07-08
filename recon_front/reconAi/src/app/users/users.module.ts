@@ -1,3 +1,4 @@
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { UserComponent } from './components/user/user.component';
 import { SharedModule } from './../shared/shared.module';
@@ -11,6 +12,8 @@ import { ManagementComponent } from './components/management/management.componen
 import { UserContainer } from './components/user/user.container';
 import { DeleteUserDialogComponent } from './components/management/delete-user-dialog/delete-user-dialog.component';
 import { DeleteUserDialogContainer } from './components/management/delete-user-dialog/delete-user-dialog.container';
+import { AddUserDialogComponent } from './components/management/add-user-dialog/add-user-dialog.component';
+import { AddUserDialogContainer } from './components/management/add-user-dialog/add-user-dialog.container';
 
 @NgModule({
   declarations: [
@@ -19,9 +22,13 @@ import { DeleteUserDialogContainer } from './components/management/delete-user-d
     ManagementContainer,
     UserContainer,
     DeleteUserDialogComponent,
-    DeleteUserDialogContainer
+    DeleteUserDialogContainer,
+    AddUserDialogComponent,
+    AddUserDialogContainer,
   ],
   imports: [
+    ReactiveFormsModule,
+    FormsModule,
     CommonModule,
     MaterialModule,
     SharedModule,
