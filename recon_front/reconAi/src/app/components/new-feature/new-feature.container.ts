@@ -5,7 +5,7 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: './new-feature.container.html',
 })
 export class NewFeatureContainer implements OnInit {
-
+  // add functionality when be is ready
   constructor() { }
 
   ngOnInit(): void {
