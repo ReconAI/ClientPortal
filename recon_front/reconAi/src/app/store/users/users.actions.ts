@@ -1,3 +1,5 @@
+import { UserTransformationResponse } from './../user/user.server.helpers';
+import { ActivationInterface } from './../../constants/types/activation';
 import {
   UsersListRequestInterface,
   StoreUsersListInterface,
@@ -25,6 +27,10 @@ export enum UsersActionTypes {
   ADD_USER_SUCCEEDED = '[Users] Add User Succeeded',
   ADD_USER_ERROR = '[Users] Add User Error',
   RESET_ADD_USER_ERROR = '[Users] Reset Add User Error',
+
+  INVITE_USER_REQUESTED = '[Users] Invite User Requested',
+  INVITE_USER_SUCCEEDED = '[Users] Invite User Succeeded',
+  INVITE_USER_ERROR = '[Users] Invite User Error',
 }
 
 export const loadUsersListRequestedAction = createAction(
@@ -88,4 +94,18 @@ export const addUserErrorAction = createAction(
 
 export const resetAddUserErrorAction = createAction(
   UsersActionTypes.RESET_ADD_USER_ERROR
+);
+
+export const inviteUserRequestedAction = createAction(
+  UsersActionTypes.INVITE_USER_REQUESTED,
+  props<ActivationInterface>()
+);
+
+export const inviteUserSucceededAction = createAction(
+  UsersActionTypes.INVITE_USER_SUCCEEDED,
+  props<UserTransformationResponse>()
+);
+
+export const inviteUserErrorAction = createAction(
+  UsersActionTypes.INVITE_USER_ERROR,
 );

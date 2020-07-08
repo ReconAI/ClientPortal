@@ -5,3 +5,8 @@ export interface FormServerErrorInterface {
 export interface ObjectFormErrorInterface {
   errors: FormServerErrorInterface;
 }
+
+export interface UrlInterceptorInterface {
+  url: string;
+  method?: string;
+}

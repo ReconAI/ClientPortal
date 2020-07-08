@@ -1,3 +1,4 @@
+
 import { SuccessSignUpGuard } from './core/guards/successSignUp/success-sign-up.guard';
 import { NewFeatureContainer } from './components/new-feature/new-feature.container';
 import { RegistrationGuard } from './core/guards/registration/registration.guard';
@@ -11,6 +12,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
+import { InvitationUserComponent } from './components/invitation-user/invitation-user.component';
 
 const routes: Routes = [
   {
@@ -65,6 +67,10 @@ const routes: Routes = [
   {
     path: 'reset/:uidb/:token',
     component: ResetPasswordPageComponent,
+  },
+  {
+    path: 'invite/:uidb/:token',
+    component: InvitationUserComponent,
   },
   {
     path: '**',

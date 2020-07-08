@@ -3,7 +3,7 @@ export interface ResetPasswordInterface {
   password2: string;
 }
 
-export interface PasswordMetaInterface {
+export interface ActivationInterface {
   uidb64: string;
   token: string;
 }

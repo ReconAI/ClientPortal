@@ -1,3 +1,5 @@
+import { ServerUserInterface } from 'app/constants/types';
+import { ActivationInterface } from './../../constants/types/activation';
 import { generalTransformFormErrorToString } from 'app/core/helpers/generalFormsErrorsTransformation';
 import {
   UsersListResponseInterface,
@@ -20,6 +22,8 @@ import {
   loadUsersListRequestedAction,
   addUserSucceededAction,
   addUserErrorAction,
+  inviteUserSucceededAction,
+  inviteUserErrorAction,
 } from './users.actions';
 import { Router } from '@angular/router';
 import { Action, Store, select } from '@ngrx/store';
@@ -44,6 +48,7 @@ import {
 } from '../loaders';
 import { selectUsersList, selectUsersMetaCurrentPage } from './users.selectors';
 import { AddUserInterface } from 'app/users/constants';
+import { transformUserResponse } from '../user/user.server.helpers';
 
 @Injectable()
 export class UsersEffects {
@@ -177,9 +182,17 @@ export class UsersEffects {
           })
         );
       }),
-      switchMap((user) =>
+      withLatestFrom(this.store.pipe(select(selectUsersMetaCurrentPage))),
+      switchMap(([user, currentPage]) =>
         this.httpClient.post('/api/users', transformAddUserToServer(user)).pipe(
-          map(() => addUserSucceededAction()),
+          map(() => {
+            this.store.dispatch(
+              loadUsersListRequestedAction({
+                page: currentPage,
+              })
+            );
+            return addUserSucceededAction();
+          }),
           catchError((error) => {
             return of(
               addUserErrorAction(generalTransformFormErrorToString(error))
@@ -193,6 +206,24 @@ export class UsersEffects {
             );
           })
         )
+      )
+    )
+  );
+
+  activate$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action & ActivationInterface>(
+        UsersActionTypes.INVITE_USER_REQUESTED
+      ),
+      switchMap((activation) =>
+        this.httpClient
+          .post<ServerUserInterface>('/api/users/invitations', activation)
+          .pipe(
+            map((user) =>
+              inviteUserSucceededAction(transformUserResponse(user))
+            ),
+            catchError((error) => of(inviteUserErrorAction()))
+          )
       )
     )
   );

@@ -43,6 +43,7 @@ import { ResetPasswordModalComponent } from './components/reset-password-page/re
 import { ResetPasswordModalContainer } from './components/reset-password-page/reset-password-modal/reset-password-modal.container';
 import { NewFeatureComponent } from './components/new-feature/new-feature.component';
 import { NewFeatureContainer } from './components/new-feature/new-feature.container';
+import { InvitationUserComponent } from './components/invitation-user/invitation-user.component';
 
 @NgModule({
   declarations: [
@@ -67,6 +68,7 @@ import { NewFeatureContainer } from './components/new-feature/new-feature.contai
     ResetPasswordModalContainer,
     NewFeatureComponent,
     NewFeatureContainer,
+    InvitationUserComponent,
   ],
   imports: [
     BrowserModule,

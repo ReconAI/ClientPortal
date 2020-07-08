@@ -10,7 +10,7 @@ import {
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
   ResetPasswordInterface,
-  PasswordMetaInterface,
+  ActivationInterface,
 } from './../../../constants/types/resetPassword';
 
 import { AppState } from './../../../store/reducers/index';
@@ -25,7 +25,7 @@ export class ResetPasswordModalContainer implements OnInit, OnDestroy {
   constructor(
     private store: Store<AppState>,
     @Inject(MAT_DIALOG_DATA)
-    public data: PasswordMetaInterface,
+    public data: ActivationInterface,
     private dialogRef: MatDialogRef<ResetPasswordModalContainer>,
     private actionsSubject: ActionsSubject
   ) {}
