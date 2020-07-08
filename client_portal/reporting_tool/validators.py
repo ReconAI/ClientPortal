@@ -8,6 +8,8 @@ from typing import Iterable
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
 
+from reporting_tool.models import Role
+
 
 class TwoLowercasesPasswordValidator:
     """
@@ -136,3 +138,8 @@ class InSetValidator:
             value in self.__options
             or str(value) in [str(option) for option in self.__options]
         )
+
+
+user_role_validator = InSetValidator(
+    options=(Role.ADMIN, Role.DEVELOPER, Role.CLIENT)
+)

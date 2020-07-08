@@ -1,5 +1,10 @@
+"""
+Forms helpers are located here
+"""
+
 from django import forms
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.http import urlsafe_base64_decode
 from django.utils.translation import gettext_lazy as _
@@ -7,6 +12,30 @@ from rest_framework.exceptions import ParseError, NotFound
 
 from reporting_tool.models import User
 from reporting_tool.tokens import PasswordResetTokenGenerator
+from reporting_tool.validators import user_role_validator
+
+
+class RoleFieldMixin:
+    """
+    Describes role fields and its validation process
+    """
+
+    role = forms.CharField(label=_("User role"), validators=[
+        user_role_validator
+    ])
+
+    def clean_role(self) -> Group:
+        """
+        :rtype: Group
+
+        :raise: ValidationError
+        """
+        role = self.data["role"]
+
+        try:
+            return Group.objects.get(name=role)
+        except ObjectDoesNotExist:
+            raise forms.ValidationError(_('Invalid role'))
 
 
 class CheckUserTokenForm(forms.Form):

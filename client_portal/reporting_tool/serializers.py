@@ -84,7 +84,14 @@ class GroupSerializer(ReadOnlySerializer):
 
 
 class OrganizationSerializer(ReadOnlySerializer):
+    """
+    Represents organization as serialized data
+    """
+
     class Meta:
+        """
+        All of the fields except id are counted in
+        """
         model = Organization
         fields = (
             'name', 'vat', 'main_firstname', 'main_lastname', 'main_address',
@@ -113,6 +120,9 @@ class UserSerializer(ReadOnlySerializer):
 
 
 class UserOrganizationSerializer(UserSerializer):
+    """
+    Serialized user data extended with organization associated
+    """
     organization = OrganizationSerializer()
 
     class Meta:

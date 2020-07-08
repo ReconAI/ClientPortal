@@ -1,8 +1,9 @@
-from django import forms
+"""
+Contains forms associated with user management procedures
+"""
+
 from django.conf import settings
-from django.contrib.auth.models import Group
 from django.contrib.sites.shortcuts import get_current_site
-from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import EmailMultiAlternatives
 from django.forms import ModelForm
 from django.template import loader
@@ -10,24 +11,20 @@ from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.utils.text import slugify
-from django.utils.translation import gettext_lazy as _
 from requests import Request
 
 from reporting_tool.forms.accounts import UserForm
-from reporting_tool.forms.utils import CheckUserTokenForm
+from reporting_tool.forms.utils import CheckUserTokenForm, RoleFieldMixin
 from reporting_tool.frontend.router import Router
-from reporting_tool.models import User, Role, UserGroup
+from reporting_tool.models import User, UserGroup
 from reporting_tool.tokens import InvitationTokenGenerator
-from reporting_tool.validators import InSetValidator
 
 
-class UserInvitationForm(ModelForm):
-    role = forms.CharField(
-        label=_("User role"),
-        validators=[
-            InSetValidator(options=(Role.ADMIN, Role.DEVELOPER, Role.CLIENT))
-        ]
-    )
+class UserInvitationForm(ModelForm, RoleFieldMixin):
+    """
+    In order to be invited all the initial data must be valid
+    """
+    role = RoleFieldMixin.role
 
     def __init__(self, organization_id: int, *args, **kwargs):
         """
@@ -40,6 +37,10 @@ class UserInvitationForm(ModelForm):
         self.__organization_id = organization_id
 
     class Meta:
+        """
+        firstname, lastname, email must be filled and examined
+        username is the string compiled from first and last names
+        """
         model = User
         fields = ('firstname', 'lastname', 'email')
 
@@ -62,19 +63,6 @@ class UserInvitationForm(ModelForm):
         self.__send_invitation_mail(request, user)
 
         return user
-
-    def clean_role(self) -> Group:
-        """
-        :rtype: Group
-
-        :raise: ValidationError
-        """
-        role = self.data["role"]
-
-        try:
-            return Group.objects.get(name=role)
-        except ObjectDoesNotExist:
-            raise forms.ValidationError(_('Invalid role'))
 
     @staticmethod
     def __generate_username(firstname: str, lastname: str):
@@ -123,6 +111,10 @@ class UserInvitationForm(ModelForm):
 
 
 class CheckUserInvitationTokenForm(CheckUserTokenForm):
+    """
+    User invitation token must be check by means the form
+    """
+
     @property
     def _token_generator(self) -> InvitationTokenGenerator:
         """
@@ -132,6 +124,11 @@ class CheckUserInvitationTokenForm(CheckUserTokenForm):
 
 
 class FollowInvitationForm(UserForm, CheckUserInvitationTokenForm):
+    """
+    User invitation token
+    and incoming user credentials must be check by means the form
+    """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

@@ -42,12 +42,23 @@ class DBRouter:
         return None
 
     def allow_relation(self, obj1: Model, obj2: Model) -> Optional[bool]:
+        """
+        Checks whether relation between two models are allowed
+
+        :type obj1: Model
+        :type obj2: Model
+
+        :rtype: Optional[bool]
+        """
         obj1_class = obj1.__class__
         obj2_class = obj2.__class__
 
-        if self.__is_relation_allowed(obj1_class,
-                                      obj2_class) or self.__is_relation_allowed(
-                obj2_class, obj1_class):
+        is_relation_allowed = (
+            self.__is_relation_allowed(obj1_class, obj2_class)
+            or self.__is_relation_allowed(obj2_class, obj1_class)
+        )
+
+        if is_relation_allowed:
             return True
 
         return None
@@ -96,6 +107,13 @@ class DBRouter:
 
     def __is_relation_allowed(self, cls1: Type[Model],
                               cls2: Type[Model]) -> bool:
+        """
+        :type cls1: Type[Model]
+        :type cls2: Type[Model]
+
+        :rtype: bool
+        """
+
         return cls1 in self.allow_relation_map.get(cls2, [])
 
 
