@@ -1,3 +1,7 @@
+"""
+Seeds db by test data
+"""
+
 from django_seed import Seed
 from django_seed.exceptions import SeederCommandError
 from django_seed.management.commands.seed import Command as CommandBase
@@ -5,6 +9,9 @@ from ._utils import Seeder
 
 
 class Command(CommandBase):
+    """
+    Command describing seeding logic
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -24,7 +31,7 @@ class Command(CommandBase):
                 'The value of --number must be an integer')
 
         seeder = Seed.seeder()
-        seeder.set_take_all_existent(options['take_all_existent'])
+        seeder.set_take_all_existent(options['take_all_existent'], self.stdout)
 
         for model in self.sorted_models(app_config):
             seeder.add_entity(model, number)
@@ -33,10 +40,10 @@ class Command(CommandBase):
         generated = seeder.execute()
 
         for model, pks in generated.items():
-            for pk in pks:
+            for primary_key in pks:
                 print("Model {} generated record with primary key {}".format(
                     model.__name__,
-                    pk
+                    primary_key
                 ))
 
     def add_arguments(self, parser):

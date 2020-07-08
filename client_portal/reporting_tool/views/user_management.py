@@ -10,7 +10,6 @@ from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.cache import never_cache
-from django.views.generic.edit import FormMixin
 from drf_yasg.utils import swagger_auto_schema
 from requests import Request
 from rest_framework import status
@@ -29,8 +28,8 @@ from reporting_tool.serializers import UserSerializer, \
 from reporting_tool.settings import RECON_AI_CONNECTION_NAME
 from reporting_tool.swagger.headers import token_header
 from reporting_tool.swagger.responses import data_serializer, http401, \
-    http405, http404, http403, get_responses
-from reporting_tool.views.utils import CheckTokenMixin
+    http405, http404, http403, get_responses, data_message_serializer, http400
+from reporting_tool.views.utils import CheckTokenMixin, FormMixin
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
@@ -219,6 +218,17 @@ class UserItem(RetrieveUpdateDestroyAPIView):
             'data': UserOrganizationSerializer(instance).data
         })
 
+    @atomic(using='default')
+    @atomic(using=RECON_AI_CONNECTION_NAME)
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        self.perform_destroy(instance)
+
+        return JsonResponse({
+            'message': _('User is deleted')
+        }, status=status.HTTP_204_NO_CONTENT)
+
 
 class InvitationView(APIView, FormMixin, CheckTokenMixin):
     """
@@ -231,13 +241,13 @@ class InvitationView(APIView, FormMixin, CheckTokenMixin):
     check_token_form_class = CheckUserInvitationTokenForm
 
     @swagger_auto_schema(
-        responses=get_responses(
-            status.HTTP_200_OK,
-            status.HTTP_400_BAD_REQUEST,
-            status.HTTP_404_NOT_FOUND,
-            status.HTTP_403_FORBIDDEN,
-            status.HTTP_405_METHOD_NOT_ALLOWED
-        ),
+        responses={
+            status.HTTP_200_OK: data_message_serializer(UserSerializer),
+            status.HTTP_400_BAD_REQUEST: http400(),
+            status.HTTP_403_FORBIDDEN: http403(),
+            status.HTTP_404_NOT_FOUND: http404(),
+            status.HTTP_405_METHOD_NOT_ALLOWED: http405()
+        },
         request_body=form_to_formserializer(CheckUserInvitationTokenForm),
         tags=['User Management'],
         operation_summary='Checks user invitation token',
@@ -247,7 +257,7 @@ class InvitationView(APIView, FormMixin, CheckTokenMixin):
     @method_decorator(never_cache)
     def post(self, *args, **kwargs) -> JsonResponse:
         """
-        Check password reset token
+        Check user invitation token
 
         :type args: tuple
         :type kwargs: dict
@@ -288,11 +298,3 @@ class InvitationView(APIView, FormMixin, CheckTokenMixin):
         return JsonResponse({
             'errors': form.errors
         }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-
-    def get_form_kwargs(self) -> dict:
-        """
-        :type: dict
-        """
-        return {
-            'data': self.request.data
-        }

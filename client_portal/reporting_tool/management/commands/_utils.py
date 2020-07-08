@@ -1,8 +1,12 @@
+"""
+Seeder utils
+"""
+
 import random
 from copy import copy
-from logging import warn
 from typing import List, Dict, Type, Union, Callable
 
+from django.core.management.base import OutputWrapper
 from django.db.models import OneToOneField, ForeignKey, Model
 from django.utils.module_loading import import_string
 from django_seed.exceptions import SeederException
@@ -38,9 +42,9 @@ class Inserted:
             self.set_ids_list(ids_list[self.__related_model])
 
             return self.__related_model.objects.get(pk=self.__ids_list.pop())
-        else:
-            message = 'Field {} cannot be null'.format(self.__field)
-            raise SeederException(message)
+
+        message = 'Field {} cannot be null'.format(self.__field)
+        raise SeederException(message)
 
     def __call__(self, ids_list: List[int]) -> int:
         """
@@ -82,28 +86,37 @@ class ModelSeeder(BaseModelSeeder):
 
 
 class Seeder(BaseSeeder):
+    """
+    Custom seeder implementation
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self._take_all_existent = []
 
-    def set_take_all_existent(self, take_all_existent):
+    def set_take_all_existent(self, take_all_existent: List[str],
+                              stdout: OutputWrapper):
+        """
+        :param take_all_existent: models to take already existent entries for
+        :type take_all_existent: List[str]
+        :type stdout: OutputWrapper
+        """
         for take_all_existent_class in take_all_existent:
             try:
                 self._take_all_existent.append(
                     import_string(take_all_existent_class)
                 )
             except ImportError:
-                warn('No such class {}'.format(take_all_existent_class))
+                stdout.write(
+                    'No such class {}'.format(take_all_existent_class)
+                )
 
-    def add_entity(self, model: Type[Model], number, customFieldFormatters=None):
+    def add_entity(self, model: Type[Model], number: int,
+                   customFieldFormatters=None):
         """
-        Swaps initial seeder by custom one
-
         :type model: Type[Model]
-        :param number:
-        :param customFieldFormatters:
-        :return:
+        :type number: int
+        :param customFieldFormatters: custom field fortmatters
         """
         if not isinstance(model, ModelSeeder):
             model = ModelSeeder(model)
@@ -128,18 +141,18 @@ class Seeder(BaseSeeder):
             using = self.get_connection()
 
         inserted_entities = {}
-        for klass in self.orders:
-            if klass in self._take_all_existent:
-                inserted_entities[klass] = list(
-                    klass.objects.values_list(klass._meta.pk.name, flat=True)
+        for cls in self.orders:
+            if cls in self._take_all_existent:
+                inserted_entities[cls] = list(
+                    cls.objects.values_list(cls._meta.pk.name, flat=True)
                 )
                 continue
 
-            number = self.quantities[klass]
-            if klass not in inserted_entities:
-                inserted_entities[klass] = []
-            for i in range(0, number):
-                entity = self.entities[klass].execute(using, inserted_entities)
-                inserted_entities[klass].append(entity)
+            number = self.quantities[cls]
+            if cls not in inserted_entities:
+                inserted_entities[cls] = []
+            for _ in range(0, number):
+                entity = self.entities[cls].execute(using, inserted_entities)
+                inserted_entities[cls].append(entity)
 
         return inserted_entities
