@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'reporting_tool',
     'recon_db_manager',
-    'drf_yasg',
+    'drf_yasg'
 ]
 
 MIDDLEWARE = [
@@ -86,7 +86,16 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'reporting_tool.authentication.TokenAuthentication',
     ],
-    'EXCEPTION_HANDLER': 'reporting_tool.exception_handlers.exception_handler'
+    'EXCEPTION_HANDLER': 'reporting_tool.exception_handlers.exception_handler',
+    'DEFAULT_PAGINATION_CLASS': 'reporting_tool.pagination.PageNumberPagination',
+    'PAGE_SIZE': 3
+}
+
+SWAGGER_SETTINGS = {
+    'DEFAULT_PAGINATOR_INSPECTORS': [
+        'reporting_tool.swagger.inspectors.DjangoRestResponsePagination',
+        'drf_yasg.inspectors.CoreAPICompatInspector',
+    ],
 }
 
 AUTH_USER_MODEL = 'reporting_tool.User'
@@ -179,3 +188,26 @@ STATIC_URL = '/static/'
 
 CLIENT_APP_SHEMA_HOST_PORT = os.environ.get(
     'CLIENT_APP_SHEMA_HOST_PORT')  # like http://127.0.0.1:8000
+
+
+LOGGING = {
+    'version': 1,
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        }
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+        }
+    },
+    'loggers': {
+        'django.db.backends': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+        }
+    }
+}

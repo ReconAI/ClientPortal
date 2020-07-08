@@ -6,7 +6,7 @@ from typing import List, Dict, Type, Union
 
 from drf_yasg import openapi
 from drf_yasg.openapi import TYPE_OBJECT, TYPE_STRING
-from rest_framework import status
+from rest_framework import status, serializers
 from rest_framework.serializers import Serializer
 
 
@@ -160,6 +160,14 @@ def token() -> openapi.Schema:
     ))
 
 
+def _app_response(fields: dict) -> Union[type, Type[Serializer]]:
+    return type(
+        'Serializer',
+        (Serializer, ),
+        fields
+    )
+
+
 def data_serializer(
         serializer: Type['Serializer']) -> Union[type, Type[Serializer]]:
     """
@@ -169,13 +177,26 @@ def data_serializer(
 
     :rtype: Type[Serializer]
     """
-    return type(
-        'Serializer',
-        (Serializer, ),
-        {
-            'data': serializer()
-        }
-    )
+    return _app_response({
+        'data': serializer()
+    })
+
+
+def data_message_serializer(
+        serializer: Type['Serializer']) -> Union[type, Type[Serializer]]:
+    """
+    Converts http message and serializer to common response format
+
+    :type serializer: Type['Serializer']
+
+    :rtype: Type[Serializer]
+    """
+    return _app_response({
+        'data': serializer(),
+        'message': serializers.CharField()
+    })
+
+
 
 
 _relations = {

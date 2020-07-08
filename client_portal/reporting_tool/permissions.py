@@ -80,3 +80,31 @@ class IsNotAuthenticated(BasePermission):
             or request.user.is_anonymous
             or not request.user.is_authenticated
         )
+
+
+class IsActive(BasePermission):
+    """
+    User must be active to proceed
+    """
+    def has_permission(self, request: Request, view) -> bool:
+        """
+        :type request: Request
+        :param view:
+
+        :rtype: bool
+        """
+        return request.user.is_active
+
+
+class IsCompanyAdmin(BasePermission):
+    """
+    User must be company admin to proceed
+    """
+    def has_permission(self, request: Request, view) -> bool:
+        """
+        :type request: Request
+        :param view:
+
+        :rtype: bool
+        """
+        return request.user.is_admin

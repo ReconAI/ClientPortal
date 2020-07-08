@@ -2,20 +2,12 @@
 Http handlers for user related operations
 """
 from django.conf import settings
-from django.contrib.sites.shortcuts import get_current_site
-from django.core.mail import EmailMultiAlternatives
 from django.db.transaction import atomic
 from django.http import JsonResponse
-from django.template import loader
-from django.template.loader import render_to_string
 from django.utils.decorators import method_decorator
-from django.utils.encoding import force_bytes
-from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.cache import never_cache
 from django.views.generic.edit import FormMixin
-from drf_yasg import openapi
-from drf_yasg.openapi import Parameter, IN_HEADER
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.authtoken.serializers import AuthTokenSerializer
@@ -25,19 +17,20 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.views import APIView
 
-from recon_db_manager.models import User
-from reporting_tool.forms import SignupForm, PasswordResetForm, \
-    SetPasswordForm, CheckResetPasswordTokenForm, PreSignupForm, \
-    UserActivationForm, OrganizationForm, UserForm
-from reporting_tool.frontend.router import Router
+from reporting_tool.forms.accounts import PreSignupForm, SignupForm,\
+    UserForm, UserActivationForm, PasswordResetForm, \
+    CheckResetPasswordTokenForm, SetPasswordForm
+from reporting_tool.forms.organization import OrganizationForm
 from reporting_tool.models import Token
-from reporting_tool.permissions import IsNotAuthenticated
+from reporting_tool.permissions import IsNotAuthenticated, IsActive
 from reporting_tool.serializers import UserSerializer, \
     form_to_formserializer, forms_to_formserializer
 from reporting_tool.settings import RECON_AI_CONNECTION_NAME
+from reporting_tool.swagger.headers import token_header
 from reporting_tool.swagger.responses import get_responses, token, http400, \
     http405, http403, http401, data_serializer
-from reporting_tool.tokens import TokenGenerator
+from reporting_tool.tokens import PasswordResetTokenGenerator
+from reporting_tool.views.utils import CheckTokenMixin
 
 
 class PreSignupValidationView(APIView):
@@ -112,9 +105,7 @@ class SignupView(APIView):
         form = self.form_class(request.data)
 
         if form.is_valid():
-            user, organization = form.save()
-
-            self.__send_activation_mail(request, user)
+            form.save(request)
 
             return JsonResponse({
                 'message': _('Please confirm your email address '
@@ -124,34 +115,6 @@ class SignupView(APIView):
         return JsonResponse({
             'errors': form.errors
         }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-
-    @staticmethod
-    def __send_activation_mail(request: Request, user: User):
-        message = render_to_string('emails/account_activation.html', {
-            'user': user,
-            'activation_link': Router(
-                settings.CLIENT_APP_SHEMA_HOST_PORT
-            ).reverse_full(
-                'activate',
-                args=(
-                    urlsafe_base64_encode(force_bytes(user.pk)),
-                    TokenGenerator().make_token(user)
-                )
-            )
-        })
-
-        subject = loader.render_to_string(
-            'emails/account_activation_subject.txt',
-            {
-                'site_name': get_current_site(request)
-            }
-        )
-
-        EmailMultiAlternatives(
-            ''.join(subject.splitlines()),
-            message,
-            to=[user.email]
-        ).send()
 
 
 class ActivateView(APIView):
@@ -200,7 +163,7 @@ class CurrentUserProfileView(APIView):
     """
     Returns user's data
     """
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsActive)
 
     @staticmethod
     @swagger_auto_schema(
@@ -213,10 +176,7 @@ class CurrentUserProfileView(APIView):
         operation_summary="Current user data",
         operation_description='Returns current user data',
         manual_parameters=[
-            Parameter(
-                'Authorization', IN_HEADER,
-                'Token', required=True, type=openapi.TYPE_STRING
-            )
+            token_header()
         ]
     )
     def get(request: Request, *args, **kwargs) -> JsonResponse:
@@ -287,7 +247,7 @@ class LogoutView(APIView):
     """
     Performs user logout
     """
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsActive)
 
     @staticmethod
     @swagger_auto_schema(
@@ -301,10 +261,7 @@ class LogoutView(APIView):
         operation_summary="Logs user out",
         operation_description='Logs user out deleting his auth token',
         manual_parameters=[
-            Parameter(
-                'Authorization', IN_HEADER,
-                'Token', required=True, type=openapi.TYPE_STRING
-            )
+            token_header()
         ]
     )
     def put(request: Request, *args, **kwargs) -> JsonResponse:
@@ -359,7 +316,9 @@ class ResetPassword(APIView, FormMixin):
 
         if form.is_valid():
             form.save(request=request,
-                      email_template_name='emails/password_reset.html')
+                      email_template_name='emails/password_reset.html',
+                      token_generator=PasswordResetTokenGenerator()
+                      )
             return JsonResponse({
                 'message': _('Instructions for resetting your password have'
                              ' been sent to your email')
@@ -369,25 +328,17 @@ class ResetPassword(APIView, FormMixin):
             'errors': form.errors
         }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
-    def get_form_kwargs(self) -> dict:
-        """
-        :rtype: dict
-        """
-        return {
-            'data': self.request.data
-        }
 
-
-class CheckResetPasswordTokenView(APIView, FormMixin):
+class CheckResetPasswordTokenView(APIView, FormMixin, CheckTokenMixin):
     """
     Checks whether provided password reset token is valid
     """
     permission_classes = (IsNotAuthenticated,)
 
-    form_class = CheckResetPasswordTokenForm
+    check_token_form_class = CheckResetPasswordTokenForm
 
     @swagger_auto_schema(
-        request_body=form_to_formserializer(form_class),
+        request_body=form_to_formserializer(check_token_form_class),
         responses=get_responses(
             status.HTTP_200_OK,
             status.HTTP_400_BAD_REQUEST,
@@ -410,30 +361,7 @@ class CheckResetPasswordTokenView(APIView, FormMixin):
 
         :rtype: JsonResponse
         """
-        form = self.get_form()
-
-        if form.is_valid():
-            return JsonResponse({
-                'message': _('Token is valid')
-            }, status=status.HTTP_200_OK)
-
-        return JsonResponse({
-            'errors': form.errors
-        }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-
-    def get_form_kwargs(self) -> dict:
-        """
-        :type: dict
-        """
-        return {
-            'data': self.request.data
-        }
-
-    def get_initial(self) -> dict:
-        """
-        :type: dict
-        """
-        return {}
+        return self.check_token()
 
 
 class PasswordResetConfirmView(APIView, FormMixin):
@@ -481,17 +409,3 @@ class PasswordResetConfirmView(APIView, FormMixin):
         return JsonResponse({
             'errors': form.errors
         }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-
-    def get_form_kwargs(self) -> dict:
-        """
-        :type: dict
-        """
-        return {
-            'data': self.request.data
-        }
-
-    def get_initial(self) -> dict:
-        """
-        :type: dict
-        """
-        return {}

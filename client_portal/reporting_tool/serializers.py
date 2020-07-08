@@ -9,6 +9,7 @@ from django.forms import Form
 from drf_braces.serializers.form_serializer import FormSerializer
 from rest_framework import serializers
 
+from recon_db_manager.models import Organization
 from reporting_tool.models import User
 
 
@@ -82,6 +83,23 @@ class GroupSerializer(ReadOnlySerializer):
         fields = ('name',)
 
 
+class OrganizationSerializer(ReadOnlySerializer):
+    """
+    Represents organization as serialized data
+    """
+
+    class Meta:
+        """
+        All of the fields except id are counted in
+        """
+        model = Organization
+        fields = (
+            'name', 'vat', 'main_firstname', 'main_lastname', 'main_address',
+            'main_phone', 'main_email', 'inv_firstname', 'inv_lastname',
+            'inv_address', 'inv_phone', 'inv_email'
+        )
+
+
 class UserSerializer(ReadOnlySerializer):
     """
     Serializes user data
@@ -94,8 +112,26 @@ class UserSerializer(ReadOnlySerializer):
         User is serializer's model
         """
         model = User
-        fields = [
+        fields = (
             'id', 'firstname', 'lastname', 'username', 'address',
             'phone', 'email', 'created_dt', 'user_level', 'is_active',
             'group',
-        ]
+        )
+
+
+class UserOrganizationSerializer(UserSerializer):
+    """
+    Serialized user data extended with organization associated
+    """
+    organization = OrganizationSerializer()
+
+    class Meta:
+        """
+        User is serializer's model
+        """
+        model = User
+        fields = (
+            'id', 'firstname', 'lastname', 'username', 'address',
+            'phone', 'email', 'created_dt', 'user_level', 'is_active',
+            'group', 'organization'
+        )
