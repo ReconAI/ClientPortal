@@ -1,3 +1,8 @@
+"""
+Views associated with user management. There are actions admin can
+perform over users within admin's company.
+"""
+
 from django.contrib.auth import get_user_model
 from django.db.models.query import QuerySet
 from django.db.transaction import atomic
@@ -23,17 +28,18 @@ from reporting_tool.serializers import UserSerializer, \
     form_to_formserializer, UserOrganizationSerializer
 from reporting_tool.settings import RECON_AI_CONNECTION_NAME
 from reporting_tool.swagger.headers import token_header
-from reporting_tool.swagger.responses import data_serializer, http401,\
-    http405, http404, http403, http200, get_responses
+from reporting_tool.swagger.responses import data_serializer, http401, \
+    http405, http404, http403, get_responses
+from reporting_tool.views.utils import CheckTokenMixin
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
-    responses={
-        status.HTTP_401_UNAUTHORIZED: http401(),
-        status.HTTP_404_NOT_FOUND: http404(),
-        status.HTTP_403_FORBIDDEN: http403(),
-        status.HTTP_405_METHOD_NOT_ALLOWED: http405()
-    },
+    responses=get_responses(
+        status.HTTP_401_UNAUTHORIZED,
+        status.HTTP_404_NOT_FOUND,
+        status.HTTP_403_FORBIDDEN,
+        status.HTTP_405_METHOD_NOT_ALLOWED
+    ),
     tags=['User Management'],
     operation_summary="List with user data",
     operation_description='Returns list with user data '
@@ -44,7 +50,8 @@ from reporting_tool.swagger.responses import data_serializer, http401,\
 ))
 @method_decorator(name='post', decorator=swagger_auto_schema(
     responses=get_responses(
-        status.HTTP_201_CREATED,
+        status.HTTP_200_OK,
+        status.HTTP_400_BAD_REQUEST,
         status.HTTP_401_UNAUTHORIZED,
         status.HTTP_404_NOT_FOUND,
         status.HTTP_403_FORBIDDEN,
@@ -60,6 +67,10 @@ from reporting_tool.swagger.responses import data_serializer, http401,\
     ]
 ))
 class UserList(ListCreateAPIView):
+    """
+    Shows set of users.
+    Sends invitation to a new user.
+    """
     permission_classes = (IsAuthenticated, IsActive, IsCompanyAdmin)
 
     serializer_class = UserSerializer
@@ -92,7 +103,7 @@ class UserList(ListCreateAPIView):
             }, status=status.HTTP_201_CREATED)
 
         return JsonResponse({
-            'data': form.errors
+            'errors': form.errors
         }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 
@@ -112,13 +123,12 @@ class UserList(ListCreateAPIView):
     ]
 ))
 @method_decorator(name='delete', decorator=swagger_auto_schema(
-    responses={
-
-        status.HTTP_401_UNAUTHORIZED: http401(),
-        status.HTTP_404_NOT_FOUND: http404(),
-        status.HTTP_403_FORBIDDEN: http403(),
-        status.HTTP_405_METHOD_NOT_ALLOWED: http405()
-    },
+    responses=get_responses(
+        status.HTTP_401_UNAUTHORIZED,
+        status.HTTP_404_NOT_FOUND,
+        status.HTTP_403_FORBIDDEN,
+        status.HTTP_405_METHOD_NOT_ALLOWED
+    ),
     tags=['User Management'],
     operation_summary="Delete user",
     operation_description='Delete user within current user organization',
@@ -127,13 +137,14 @@ class UserList(ListCreateAPIView):
     ]
 ))
 @method_decorator(name='patch', decorator=swagger_auto_schema(
-    responses={
-        status.HTTP_200_OK: http200(),
-        status.HTTP_401_UNAUTHORIZED: http401(),
-        status.HTTP_404_NOT_FOUND: http404(),
-        status.HTTP_403_FORBIDDEN: http403(),
-        status.HTTP_405_METHOD_NOT_ALLOWED: http405()
-    },
+    responses=get_responses(
+        status.HTTP_200_OK,
+        status.HTTP_400_BAD_REQUEST,
+        status.HTTP_404_NOT_FOUND,
+        status.HTTP_403_FORBIDDEN,
+        status.HTTP_405_METHOD_NOT_ALLOWED,
+        status.HTTP_422_UNPROCESSABLE_ENTITY
+    ),
     request_body=form_to_formserializer(UserEditForm),
     tags=['User Management'],
     operation_summary="User data update",
@@ -143,13 +154,14 @@ class UserList(ListCreateAPIView):
     ]
 ))
 @method_decorator(name='put', decorator=swagger_auto_schema(
-    responses={
-        status.HTTP_200_OK: http200(),
-        status.HTTP_401_UNAUTHORIZED: http401(),
-        status.HTTP_404_NOT_FOUND: http404(),
-        status.HTTP_403_FORBIDDEN: http403(),
-        status.HTTP_405_METHOD_NOT_ALLOWED: http405()
-    },
+    responses=get_responses(
+        status.HTTP_200_OK,
+        status.HTTP_400_BAD_REQUEST,
+        status.HTTP_404_NOT_FOUND,
+        status.HTTP_403_FORBIDDEN,
+        status.HTTP_405_METHOD_NOT_ALLOWED,
+        status.HTTP_422_UNPROCESSABLE_ENTITY
+    ),
     request_body=form_to_formserializer(UserEditForm),
     tags=['User Management'],
     operation_summary="User data update",
@@ -159,6 +171,10 @@ class UserList(ListCreateAPIView):
     ]
 ))
 class UserItem(RetrieveUpdateDestroyAPIView):
+    """
+    Returns and updates user data.
+    Deletes a user.
+    """
     permission_classes = (IsAuthenticated, IsActive, IsCompanyAdmin)
 
     serializer_class = UserSerializer
@@ -204,13 +220,15 @@ class UserItem(RetrieveUpdateDestroyAPIView):
         })
 
 
-class InvitationView(APIView, FormMixin):
+class InvitationView(APIView, FormMixin, CheckTokenMixin):
     """
     Checks whether provided password reset token is valid
     """
     permission_classes = (IsNotAuthenticated,)
 
     form_class = FollowInvitationForm
+
+    check_token_form_class = CheckUserInvitationTokenForm
 
     @swagger_auto_schema(
         responses=get_responses(
@@ -236,16 +254,7 @@ class InvitationView(APIView, FormMixin):
 
         :rtype: JsonResponse
         """
-        form = self.get_form(form_class=CheckUserInvitationTokenForm)
-
-        if form.is_valid():
-            return JsonResponse({
-                'message': _('Token is valid')
-            }, status=status.HTTP_200_OK)
-
-        return JsonResponse({
-            'errors': form.errors
-        }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        return self.check_token()
 
     @swagger_auto_schema(
         responses=get_responses(
@@ -253,23 +262,27 @@ class InvitationView(APIView, FormMixin):
             status.HTTP_400_BAD_REQUEST,
             status.HTTP_404_NOT_FOUND,
             status.HTTP_403_FORBIDDEN,
-            status.HTTP_405_METHOD_NOT_ALLOWED
+            status.HTTP_405_METHOD_NOT_ALLOWED,
+            status.HTTP_422_UNPROCESSABLE_ENTITY
         ),
-        request_body=form_to_formserializer(FollowInvitationForm),
+        request_body=form_to_formserializer(form_class),
         tags=['User Management'],
         operation_summary='Register by invitation',
         operation_description='Checks whether user invitation '
                               'token is still valid and registers the user',
     )
     @method_decorator(never_cache)
-    def patch(self, *args, **kwargs):
+    def patch(self, *args, **kwargs) -> JsonResponse:
+        """
+        :rtype: JsonResponse
+        """
         form = self.get_form()
 
         if form.is_valid():
             form.save()
 
             return JsonResponse({
-                'message': _('Token is valid')
+                'message': _('You are successfully registered')
             }, status=status.HTTP_200_OK)
 
         return JsonResponse({
@@ -283,9 +296,3 @@ class InvitationView(APIView, FormMixin):
         return {
             'data': self.request.data
         }
-
-    def get_initial(self) -> dict:
-        """
-        :type: dict
-        """
-        return {}

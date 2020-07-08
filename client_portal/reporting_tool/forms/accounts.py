@@ -1,3 +1,7 @@
+"""
+Contains forms associated with accounts manipulations
+"""
+
 from typing import Dict, List, Tuple
 
 from django import forms
@@ -7,7 +11,6 @@ from django.contrib.auth import (
 )
 from django.contrib.auth.forms import UserCreationForm, \
     PasswordResetForm as PasswordResetFormBase
-from django.contrib.auth.models import Group
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ObjectDoesNotExist
@@ -22,11 +25,10 @@ from requests import Request
 from rest_framework.exceptions import NotFound
 
 from reporting_tool.forms.organization import OrganizationForm
-from reporting_tool.forms.utils import CheckUserTokenForm
+from reporting_tool.forms.utils import CheckUserTokenForm, RoleFieldMixin
 from reporting_tool.frontend.router import Router
-from reporting_tool.models import Organization, User, Role
+from reporting_tool.models import Organization, User
 from reporting_tool.tokens import AccountActivationTokenGenerator
-from reporting_tool.validators import InSetValidator
 
 
 class PreSignupForm(UserCreationForm):
@@ -109,7 +111,10 @@ class UserForm(PreSignupForm):
                                                      **data)
 
 
-class UserEditForm(ModelForm):
+class UserEditForm(ModelForm, RoleFieldMixin):
+    """
+    Validate data coming to change user's data
+    """
     username = forms.CharField(
         label=_("Username"),
         min_length=2,
@@ -119,12 +124,7 @@ class UserEditForm(ModelForm):
     lastname = forms.CharField(label=_("Last name"))
     address = forms.CharField(label=_("Address"))
     phone = forms.CharField(label=_("Phone number"))
-    role = forms.CharField(
-        label=_("User role"),
-        validators=[
-            InSetValidator(options=(Role.ADMIN, Role.DEVELOPER, Role.CLIENT))
-        ]
-    )
+    role = RoleFieldMixin.role
 
     class Meta:
         """
@@ -134,19 +134,6 @@ class UserEditForm(ModelForm):
         fields = (
             "username", "firstname", "lastname", "address", "phone"
         )
-
-    def clean_role(self) -> Group:
-        """
-        :rtype: Group
-
-        :raise: ValidationError
-        """
-        role = self.data["role"]
-
-        try:
-            return Group.objects.get(name=role)
-        except ObjectDoesNotExist:
-            raise forms.ValidationError(_('Invalid role'))
 
     def save(self, commit=True):
         saved = super().save()

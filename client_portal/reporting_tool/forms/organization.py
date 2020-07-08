@@ -1,3 +1,7 @@
+"""
+Contains forms associated with organization
+"""
+
 from django.forms import ModelForm
 
 from recon_db_manager.models import Organization

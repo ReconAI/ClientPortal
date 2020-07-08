@@ -10,7 +10,18 @@ from reporting_tool.models import User
 
 
 class PasswordResetTokenGenerator(PasswordResetTokenGeneratorBase):
-    def _make_hash_value(self, user, timestamp):
+    """
+    User reset password token compilation.
+    Casts user password to string.
+    """
+    def _make_hash_value(self, user: User, timestamp: datetime) -> str:
+        """
+        :type user: User
+        :type timestamp: datetime
+
+        :rtype: str
+        """
+
         login_timestamp = ''
         if user.last_login is not None:
             login_timestamp = user.last_login.replace(

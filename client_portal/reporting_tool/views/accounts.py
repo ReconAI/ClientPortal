@@ -30,6 +30,7 @@ from reporting_tool.swagger.headers import token_header
 from reporting_tool.swagger.responses import get_responses, token, http400, \
     http405, http403, http401, data_serializer
 from reporting_tool.tokens import PasswordResetTokenGenerator
+from reporting_tool.views.utils import CheckTokenMixin
 
 
 class PreSignupValidationView(APIView):
@@ -336,16 +337,16 @@ class ResetPassword(APIView, FormMixin):
         }
 
 
-class CheckResetPasswordTokenView(APIView, FormMixin):
+class CheckResetPasswordTokenView(APIView, FormMixin, CheckTokenMixin):
     """
     Checks whether provided password reset token is valid
     """
     permission_classes = (IsNotAuthenticated,)
 
-    form_class = CheckResetPasswordTokenForm
+    check_token_form_class = CheckResetPasswordTokenForm
 
     @swagger_auto_schema(
-        request_body=form_to_formserializer(form_class),
+        request_body=form_to_formserializer(check_token_form_class),
         responses=get_responses(
             status.HTTP_200_OK,
             status.HTTP_400_BAD_REQUEST,
@@ -368,16 +369,7 @@ class CheckResetPasswordTokenView(APIView, FormMixin):
 
         :rtype: JsonResponse
         """
-        form = self.get_form()
-
-        if form.is_valid():
-            return JsonResponse({
-                'message': _('Token is valid')
-            }, status=status.HTTP_200_OK)
-
-        return JsonResponse({
-            'errors': form.errors
-        }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        return self.check_token()
 
     def get_form_kwargs(self) -> dict:
         """
@@ -386,12 +378,6 @@ class CheckResetPasswordTokenView(APIView, FormMixin):
         return {
             'data': self.request.data
         }
-
-    def get_initial(self) -> dict:
-        """
-        :type: dict
-        """
-        return {}
 
 
 class PasswordResetConfirmView(APIView, FormMixin):

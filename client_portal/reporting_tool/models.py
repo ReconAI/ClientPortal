@@ -109,15 +109,6 @@ class User(CommonUser, PermissionsMixin):
         return self.group.name == Role.ADMIN
 
     @property
-    def is_admin(self) -> bool:
-        """
-        User is counted as company admin when his role is SUPER_ADMIN
-        :rtype: bool
-        """
-        return UserGroup.objects.select_related('group').get(
-            user_id=self.id).group.name == Role.ADMIN
-
-    @property
     def is_staff(self) -> bool:
         """
         :rtype: bool
