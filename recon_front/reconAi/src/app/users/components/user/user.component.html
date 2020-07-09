@@ -3,7 +3,9 @@
 </ng-container>
 <ng-container *ngIf="!isLoading && isUserFound">
   <recon-user-profile
-    [disabledButton]="true"
+    [disabledUserEmail]="true"
+    [disabledOrganization]="true"
+    [disabledInvoicing]="true"
     [organizationName]="organizationName"
     [organizationPhone]="organizationPhone"
     [organizationEmail]="organizationEmail"

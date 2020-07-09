@@ -22,6 +22,9 @@ export class UserProfileComponent implements OnInit {
   @Input() isInvitation = false;
   // make it work
   @Input() disabledButton = false;
+  @Input() disabledUserEmail = false;
+  @Input() disabledOrganization = false;
+  @Input() disabledInvoicing = false;
 
   @Input() organizationName: string;
   @Input() organizationPhone: string;
@@ -95,7 +98,7 @@ export class UserProfileComponent implements OnInit {
       address: [this.userAddress || '', Validators.required],
       phone: [this.userPhone || '', Validators.required],
       email: [
-        { value: this.userEmail || '', disabled: this.isInvitation },
+        { value: this.userEmail || '', disabled: this.disabledUserEmail },
         Validators.required,
       ],
     });
@@ -114,24 +117,113 @@ export class UserProfileComponent implements OnInit {
             user: userGroup,
             organization: this.fb.group({
               firstName: [
-                this.organizationFirstName || '',
+                {
+                  value: this.organizationFirstName || '',
+                  disabled: this.disabledOrganization,
+                },
                 Validators.required,
               ],
-              lastName: [this.organizationLastName || '', Validators.required],
-              name: [this.organizationName || '', Validators.required],
-              phone: [this.organizationPhone || '', Validators.required],
-              email: [this.organizationEmail || '', Validators.required],
-              address: [this.organizationAddress || '', Validators.required],
-              vat: [this.organizationVat || '', Validators.required],
+              lastName: [
+                {
+                  value: this.organizationLastName || '',
+                  disabled: this.disabledOrganization,
+                },
+                Validators.required,
+              ],
+              name: [
+                {
+                  value: this.organizationName || '',
+                  disabled: this.disabledOrganization,
+                },
+                Validators.required,
+              ],
+              phone: [
+                {
+                  value: this.organizationPhone || '',
+                  disabled: this.disabledOrganization,
+                },
+                Validators.required,
+              ],
+              email: [
+                {
+                  value: this.organizationEmail || '',
+                  disabled: this.disabledOrganization,
+                },
+                this.disabledInvoicing ? Validators.required : null,
+              ],
+              address: [
+                {
+                  value: this.organizationAddress || '',
+                  disabled: this.disabledOrganization,
+                },
+                Validators.required,
+              ],
+              vat: [
+                {
+                  value: this.organizationVat || '',
+                  disabled: this.disabledOrganization,
+                },
+                Validators.required,
+              ],
             }),
             invoicing: this.fb.group({
-              firstName: [this.invoicingFirstName || '', Validators.required],
-              lastName: [this.invoicingLastName || '', Validators.required],
-              address: [this.invoicingAddress || '', Validators.required],
-              phone: [this.invoicingPhone || '', Validators.required],
-              email: [this.invoicingEmail || '', Validators.required],
+              firstName: [
+                {
+                  value: this.invoicingFirstName || '',
+                  disabled: this.disabledInvoicing,
+                },
+                Validators.required,
+              ],
+              lastName: [
+                {
+                  value: this.invoicingLastName || '',
+                  disabled: this.disabledInvoicing,
+                },
+                Validators.required,
+              ],
+              address: [
+                {
+                  value: this.invoicingAddress || '',
+                  disabled: this.disabledInvoicing,
+                },
+                Validators.required,
+              ],
+              phone: [
+                {
+                  value: this.invoicingPhone || '',
+                  disabled: this.disabledInvoicing,
+                },
+                Validators.required,
+              ],
+              email: [
+                {
+                  value: this.invoicingEmail || '',
+                  disabled: this.disabledInvoicing,
+                },
+                Validators.required,
+              ],
             }),
           }
+    );
+  }
+
+  get validationStatus(): boolean {
+    // check whether there's some block and its validation if it's needed
+    // and email requirement is optional depending on disabledEmail flag
+    const isOrganizationValid =
+      this.isInvitation ||
+      this.disabledOrganization ||
+      this.profileForm.controls.organization.valid;
+    const isInvoicingValid =
+      this.isInvitation ||
+      this.disabledInvoicing ||
+      this.profileForm.controls.invoicing.valid;
+    const isUserValid = this.profileForm.controls.user.valid;
+
+    const isProfileValid =
+      !this.isInvitation || this.profileForm.controls.profile.valid;
+    return (
+      isUserValid && isInvoicingValid && isOrganizationValid && isProfileValid
     );
   }
 

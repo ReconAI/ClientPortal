@@ -192,7 +192,7 @@
         mat-raised-button
         color="primary"
         type="submit"
-        [disabled]="disabledButton || loading || !profileForm.valid"
+        [disabled]="disabledButton || !validationStatus || loading"
       >
         <mat-icon *ngIf="loading; else loaded">
           <mat-spinner color="primary" diameter="20"></mat-spinner>
