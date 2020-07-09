@@ -21,7 +21,7 @@ from rest_framework.views import APIView
 from reporting_tool.forms.user_management import UserInvitationForm, \
     FollowInvitationForm, CheckUserInvitationTokenForm, UserEditForm
 from reporting_tool.permissions import IsCompanyAdmin, IsActive, \
-    IsNotAuthenticated
+    IsNotAuthenticated, PaymentRequired
 from reporting_tool.serializers import UserSerializer, \
     form_to_formserializer, UserOrganizationSerializer
 from reporting_tool.settings import RECON_AI_CONNECTION_NAME
@@ -69,7 +69,8 @@ class UserList(ListCreateAPIView, FormMixin):
     Shows set of users.
     Sends invitation to a new user.
     """
-    permission_classes = (IsAuthenticated, IsActive, IsCompanyAdmin)
+    permission_classes = (IsAuthenticated, IsActive,
+                          IsCompanyAdmin, PaymentRequired)
 
     serializer_class = UserSerializer
 
@@ -86,7 +87,7 @@ class UserList(ListCreateAPIView, FormMixin):
         """
         return queryset.filter(
             organization_id=self.request.user.organization_id
-        )
+        ).exclude(id=self.request.user.pk)
 
     @atomic(using='default')
     @atomic(using=RECON_AI_CONNECTION_NAME)
@@ -170,7 +171,8 @@ class UserItem(RetrieveUpdateDestroyAPIView, FormMixin):
     Returns and updates user data.
     Deletes a user.
     """
-    permission_classes = (IsAuthenticated, IsActive, IsCompanyAdmin)
+    permission_classes = (IsAuthenticated, IsActive,
+                          IsCompanyAdmin, PaymentRequired)
 
     serializer_class = UserSerializer
 
@@ -186,7 +188,7 @@ class UserItem(RetrieveUpdateDestroyAPIView, FormMixin):
         """
         return queryset.filter(
             organization_id=self.request.user.organization_id
-        )
+        ).exclude(id=self.request.user.pk)
 
     @atomic(using='default')
     @atomic(using=RECON_AI_CONNECTION_NAME)

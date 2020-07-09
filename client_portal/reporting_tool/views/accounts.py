@@ -12,7 +12,6 @@ from django.utils.translation import gettext_lazy as _
 from django.views.decorators.cache import never_cache
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
-from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.authtoken.views import \
     ObtainAuthToken as ObtainAuthTokenBase
 from rest_framework.permissions import IsAuthenticated
@@ -25,9 +24,10 @@ from reporting_tool.forms.accounts import PreSignupForm, SignupForm, \
     UserAndOrganizationEditForm
 from reporting_tool.forms.organization import OrganizationForm
 from reporting_tool.models import Token
-from reporting_tool.permissions import IsNotAuthenticated, IsActive
+from reporting_tool.permissions import IsNotAuthenticated, IsActive, \
+    PaymentRequired
 from reporting_tool.serializers import UserSerializer, \
-    form_to_formserializer, forms_to_formserializer
+    form_to_formserializer, forms_to_formserializer, AuthTokenSerializer
 from reporting_tool.settings import RECON_AI_CONNECTION_NAME
 from reporting_tool.swagger.headers import token_header
 from reporting_tool.swagger.responses import get_responses, token, http400, \
@@ -108,7 +108,8 @@ class SignupView(APIView, FormMixin):
         return self.save_or_error(
             _('Please confirm your email '
               'address to complete the registration'),
-            success_status=status.HTTP_201_CREATED
+            success_status=status.HTTP_201_CREATED,
+            request=request
         )
 
 
@@ -150,7 +151,7 @@ class CurrentUserProfileView(APIView, FormMixin):
     """
     Returns user's data
     """
-    permission_classes = (IsAuthenticated, IsActive)
+    permission_classes = (IsAuthenticated, IsActive, PaymentRequired)
 
     form_class = UserEditForm
 
@@ -237,6 +238,8 @@ class ObtainAuthToken(ObtainAuthTokenBase):
 
     permission_classes = (IsNotAuthenticated,)
 
+    serializer_class = AuthTokenSerializer
+
     @swagger_auto_schema(
         request_body=AuthTokenSerializer,
         responses={
@@ -283,7 +286,7 @@ class LogoutView(APIView):
     """
     Performs user logout
     """
-    permission_classes = (IsAuthenticated, IsActive)
+    permission_classes = (IsAuthenticated, IsActive, PaymentRequired)
 
     @staticmethod
     @swagger_auto_schema(

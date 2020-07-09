@@ -1,0 +1,10 @@
+{% load i18n %}{% autoescape off %}
+{% trans "Hi " %}{{ user.firstname }} {{ user.lastname }}!
+
+{% trans "Your trial subscription is coming to an end." %}
+{% trans "We invite you to check our subscription plans out to poceed with the application." %}
+
+{% trans "Thanks for using our site!" %}
+{% blocktrans %}The {{ app_name }} portal team{% endblocktrans %}
+
+{% endautoescape %}
