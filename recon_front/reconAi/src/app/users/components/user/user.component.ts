@@ -1,12 +1,12 @@
 import { FormServerErrorInterface } from 'app/constants/types/requests';
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 
 @Component({
   selector: 'recon-user',
   templateUrl: './user.component.html',
   styleUrls: ['./user.component.less'],
 })
-export class UserComponent implements OnInit {
+export class UserComponent {
   constructor() {}
 
   @Input() isLoading = true;
@@ -31,6 +31,4 @@ export class UserComponent implements OnInit {
   @Input() invoicingAddress: string;
   @Input() invoicingFirstName: string;
   @Input() invoicingLastName: string;
-
-  ngOnInit(): void {}
 }

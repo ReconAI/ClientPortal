@@ -1,3 +1,4 @@
+import { setAppTitleAction } from './../app/app.actions';
 import { UserProfileFormInterface } from './../../constants/types/user';
 import { generalTransformFormErrorToObject } from './../../core/helpers/generalFormsErrorsTransformation';
 import {
@@ -133,6 +134,15 @@ export class UsersEffects {
                 transformUserProfileResponseFromServer(user)
               )
             ),
+            tap((user) => {
+              this.store.dispatch(
+                setAppTitleAction({
+                  title: `Profile ${user.user?.firstName || ''} ${
+                    user.user?.lastName || ''
+                  }`,
+                })
+              );
+            }),
             catchError((error) => {
               return of(loadUserProfileErrorAction());
             }),

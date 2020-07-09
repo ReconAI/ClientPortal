@@ -8,9 +8,11 @@ import * as user from '../user';
 import * as loaders from '../loaders';
 import * as signUp from '../signUp';
 import * as users from '../users';
+import * as app from '../app';
 
 import { SignUpState } from '../signUp';
 import { UsersState } from '../users';
+import { AppSliceState } from '../app';
 
 // NgRx logger from https://github.com/btroncone/ngrx-store-logger
 export function logger(reducer: ActionReducer<AppState>): any {
@@ -22,6 +24,7 @@ export interface AppState {
   loaders: LoadersState;
   signUp: SignUpState;
   users: UsersState;
+  app: AppSliceState;
 }
 
 export const reducers: ActionReducerMap<AppState> = {
@@ -29,6 +32,7 @@ export const reducers: ActionReducerMap<AppState> = {
   loaders: loaders.reducer,
   signUp: signUp.reducer,
   users: users.reducer,
+  app: app.reducer,
 };
 
 export const metaReducers: MetaReducer<AppState>[] = !environment.production

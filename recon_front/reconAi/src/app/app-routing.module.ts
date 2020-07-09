@@ -29,7 +29,6 @@ const routes: Routes = [
     path: 'users',
     canActivate: [AuthRoleGuard],
     data: {
-      title: 'Users',
       expectedRolePriority: UserRolesPriorities.ADMIN_ROLE,
     },
     loadChildren: () =>

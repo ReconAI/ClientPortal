@@ -1,3 +1,5 @@
+import { setAppTitleAction } from './../../store/app/app.actions';
+import { selectAppTitle } from './../../store/app/app.selectors';
 import { checkWhetherMatchesRouteWithoutProfileInit } from './../../core/helpers/withoutProfileInit';
 import {
   selectCurrentUserLoadingStatus,
@@ -19,6 +21,10 @@ import { Location } from '@angular/common';
 })
 export class LandingPageComponent implements OnInit, OnDestroy {
   title = '';
+  // from components, effects
+  titleChangesSubscription$: Subscription;
+  // from routing
+  titleChangesFromRouting$: Subscription;
 
   constructor(
     // to get current url
@@ -30,9 +36,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
 
   globalLoadingStatusSubscription$: Subscription;
   isGlobalLoading: boolean;
-  globalLoadingStatus$ = this.store.pipe(
-    select(selectGlobalLoadingStatus),
-  );
+  globalLoadingStatus$ = this.store.pipe(select(selectGlobalLoadingStatus));
 
   ngOnInit(): void {
     // check if we have to call GET /profile
@@ -40,23 +44,39 @@ export class LandingPageComponent implements OnInit, OnDestroy {
       this.store.dispatch(loadCurrentUserRequestedAction());
     }
 
-
-
     this.globalLoadingStatusSubscription$ = this.globalLoadingStatus$.subscribe(
       (status: boolean) => {
         this.isGlobalLoading = status;
       }
     );
+
     // change the title of landing page
-    this.router.events
+    this.titleChangesSubscription$ = this.store
+      .pipe(select(selectAppTitle))
+      .subscribe((title: string) => {
+        this.title = title;
+      });
+
+    this.titleChangesFromRouting$ = this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe(() => {
-        this.title =
-          this?.activatedRoute?.snapshot?.firstChild?.data.title || '';
+        let page = this?.activatedRoute?.snapshot?.firstChild;
+        let title = this?.activatedRoute?.snapshot?.firstChild?.data.title;
+        while (page.firstChild) {
+          page = page?.firstChild;
+          if (page?.data?.title) {
+            title = page?.data?.title;
+          }
+        }
+        if (title) {
+          this.store.dispatch(setAppTitleAction({ title }));
+        }
       });
   }
 
   ngOnDestroy(): void {
+    this.titleChangesFromRouting$.unsubscribe();
+    this.titleChangesSubscription$.unsubscribe();
     this.globalLoadingStatusSubscription$.unsubscribe();
   }
 }
