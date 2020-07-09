@@ -4,6 +4,7 @@ Reporting tool custom middlewares
 
 import re
 from datetime import date, datetime
+from pathlib import Path
 
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
@@ -27,6 +28,8 @@ class HTTPLogMiddleware(MiddlewareMixin):
         :rtype: Response
         """
         if self.__not_skip(request):
+            Path(settings.STORAGE_ROOT).mkdir(parents=True, exist_ok=True)
+
             file = FileSystemStorage(
                 location=settings.STORAGE_ROOT
             ).open(
