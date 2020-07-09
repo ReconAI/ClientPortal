@@ -118,7 +118,7 @@ class UserInvitationForm(ModelForm, RoleFieldMixin, SendEmailMixin):
     def __generate_username(firstname: str, lastname: str):
         # get a slug of the firstname and last name.
         # it will normalize the string and add dashes for spaces
-        # i.e. 'HaRrY POTTer' -> 'harry-potter'
+        # i.e. 'HaRrY POTTer' -> 'harry_potter'
         u_username = slugify('{}_{}'.format(firstname, lastname))
 
         # count the number of users that start with the username
