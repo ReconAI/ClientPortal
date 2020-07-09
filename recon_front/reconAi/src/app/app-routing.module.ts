@@ -1,3 +1,4 @@
+import { UserRolesPriorities } from './constants/types/user';
 import { InvitationUserContainer } from './components/invitation-user/invitation-user.container';
 
 import { SuccessSignUpGuard } from './core/guards/successSignUp/success-sign-up.guard';
@@ -8,17 +9,16 @@ import { ActivationComponent } from './components/activation/activation/activati
 import { RegistrationSuccessComponent } from './components/registration/registration-success/registration-success.component';
 import { NotAuthGuard } from './core/guards/not-auth-guard/not-auth.guard';
 import { RegistrationContainer } from './components/registration/registration/registration.container';
-import { AuthGuard } from './guards/auth.guard';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
-import { InvitationUserComponent } from './components/invitation-user/invitation-user.component';
+import { AuthRoleGuard } from './core/guards/auth-role-guard/auth-role.guard';
 
 const routes: Routes = [
   {
     path: 'catalog',
-    canActivate: [AuthGuard],
+    canActivate: [AuthRoleGuard],
     data: {
       title: 'Catalog',
     },
@@ -27,16 +27,17 @@ const routes: Routes = [
   },
   {
     path: 'users',
-    canActivate: [AuthGuard],
+    canActivate: [AuthRoleGuard],
     data: {
       title: 'Users',
+      expectedRolePriority: UserRolesPriorities.ADMIN_ROLE,
     },
     loadChildren: () =>
       import('./users/users.module').then((m) => m.UsersModule),
   },
   {
     path: 'registration',
-    canActivate: [NotAuthGuard],
+    canActivateChild: [NotAuthGuard],
     data: {
       title: 'Organization registration',
     },
@@ -55,11 +56,11 @@ const routes: Routes = [
   },
   {
     path: 'new-feature',
-    // canActivate: [AuthGuard],
+    // canActivate: [AuthRoleGuard],
     data: {
       title: 'Request new feature',
     },
-    component: NewFeatureContainer
+    component: NewFeatureContainer,
   },
   {
     path: 'activate/:uidb/:token',
