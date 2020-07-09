@@ -3,6 +3,9 @@
 from django.db import migrations
 
 
+# time_created is considered redundant as it repeats created_dt objective
+
+
 class Migration(migrations.Migration):
 
     dependencies = [

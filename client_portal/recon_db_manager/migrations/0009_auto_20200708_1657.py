@@ -3,6 +3,11 @@
 from django.db import migrations, models
 
 
+# The amendment concerns prospect of having address and phone
+# fields empty in Django forms validation.
+
+# Modifications do not affect database schema.
+
 class Migration(migrations.Migration):
 
     dependencies = [

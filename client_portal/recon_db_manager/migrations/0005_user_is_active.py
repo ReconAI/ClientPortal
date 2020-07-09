@@ -3,6 +3,9 @@
 from django.db import migrations, models
 
 
+# Field concerning user email confirmation is required to be present
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
