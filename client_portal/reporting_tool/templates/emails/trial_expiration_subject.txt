@@ -1,0 +1,3 @@
+{% load i18n %}{% autoescape off %}
+{% blocktrans %}Trial expiration on {{ app_name }}{% endblocktrans %}
+{% endautoescape %}

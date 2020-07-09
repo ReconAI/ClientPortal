@@ -21,7 +21,7 @@ class TokenAuthentication(TokenAuthenticationBase):
         try:
             token = model.objects.get(key=key)
             user = token.user
-        except model.DoesNotExist:
+        except (model.DoesNotExist, TypeError):
             token = None
             user = AnonymousUser()
 

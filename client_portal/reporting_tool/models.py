@@ -2,6 +2,7 @@
 Reporting tool models are located here
 """
 import binascii
+from datetime import timedelta, datetime
 import os
 import unicodedata
 from typing import Tuple, Optional, Iterable, Type
@@ -15,6 +16,7 @@ from django.db.models.deletion import Collector
 from django.db.transaction import atomic
 from django.utils.crypto import salted_hmac
 from django.utils.module_loading import import_string
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
 from recon_db_manager.models import CommonUser, Organization
@@ -40,6 +42,15 @@ class User(CommonUser, PermissionsMixin):
     _password = None
 
     __iam = None
+
+    is_anonymous = False
+
+    # Last login is required for client part but was not defined in db
+    last_login = None
+
+    is_staff = True
+    user_permissions = []
+    is_authenticated = True
 
     class Meta:
         """
@@ -68,22 +79,6 @@ class User(CommonUser, PermissionsMixin):
         return self.__iam
 
     @property
-    def is_anonymous(self) -> bool:
-        """
-        Authenticated user is not anonymous
-
-        :rtype: bool
-        """
-        return False
-
-    @property
-    def last_login(self):
-        """
-        Last login is required for client part but was not defined in db
-        """
-        return None
-
-    @property
     def group(self) -> Group:
         """
         :rtype: Group
@@ -109,26 +104,21 @@ class User(CommonUser, PermissionsMixin):
         return self.group.name == Role.SUPER_ADMIN
 
     @property
-    def is_staff(self) -> bool:
+    def trial_expires_on(self) -> datetime:
+        """
+        :rtype: datetime
+        """
+        return (
+            self.created_dt
+            + timedelta(days=settings.TRIAL_PERIOD_DAYS)
+        )
+
+    @property
+    def is_on_trial(self) -> bool:
         """
         :rtype: bool
         """
-        return True
-
-    @property
-    def user_permissions(self) -> list:
-        """
-        :rtype: list
-        """
-        return []
-
-    @property
-    def is_authenticated(self) -> bool:
-        """
-        Always return True. This is a way to tell if the user has been
-        authenticated in templates.
-        """
-        return True
+        return self.trial_expires_on > now()
 
     def set_password(self, raw_password: str):
         """
