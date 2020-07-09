@@ -1,26 +1,48 @@
 """
 Contains forms associated with user management procedures
 """
-
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
-from django.core.mail import EmailMultiAlternatives
 from django.forms import ModelForm
-from django.template import loader
-from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.utils.text import slugify
 from requests import Request
 
-from reporting_tool.forms.accounts import UserForm
-from reporting_tool.forms.utils import CheckUserTokenForm, RoleFieldMixin
+from reporting_tool.forms.accounts import UserForm, \
+    UserEditForm as ProfileEditForm
+from reporting_tool.forms.utils import CheckUserTokenForm, RoleFieldMixin, \
+    SendEmailMixin
 from reporting_tool.frontend.router import Router
 from reporting_tool.models import User, UserGroup
 from reporting_tool.tokens import InvitationTokenGenerator
 
 
-class UserInvitationForm(ModelForm, RoleFieldMixin):
+class UserEditForm(ProfileEditForm, RoleFieldMixin):
+    """
+    Validate data coming to change user's data
+    """
+    role = RoleFieldMixin.role
+
+    class Meta:
+        """
+        All fields apart from id should be editable
+        """
+        model = User
+        fields = (
+            "username", "firstname", "lastname", "address", "phone"
+        )
+
+    def save(self, commit=True):
+        saved = super().save()
+
+        self.instance.usergroup.group = self.cleaned_data.get('role')
+        self.instance.usergroup.save()
+
+        return saved
+
+
+class UserInvitationForm(ModelForm, RoleFieldMixin, SendEmailMixin):
     """
     In order to be invited all the initial data must be valid
     """
@@ -60,28 +82,24 @@ class UserInvitationForm(ModelForm, RoleFieldMixin):
         user.save()
         UserGroup.objects.create(user=user, group=role)
 
-        self.__send_invitation_mail(request, user)
+        self.send_mail(
+            user.email,
+            'emails/user_invitation_subject.txt',
+            'emails/user_invitation.html',
+            request,
+            user
+        )
 
         return user
 
-    @staticmethod
-    def __generate_username(firstname: str, lastname: str):
-        # get a slug of the firstname and last name.
-        # it will normalize the string and add dashes for spaces
-        # i.e. 'HaRrY POTTer' -> 'harry-potter'
-        u_username = slugify('{}{}'.format(firstname, lastname))
+    def get_email_context(self, request: Request, user: User) -> dict:
+        """
+        :type request: Request
+        :type user: User
 
-        # count the number of users that start with the username
-        count = User.objects.filter(username__startswith=u_username).count()
-
-        if count:
-            return '{}{}'.format(u_username, count)
-
-        return u_username
-
-    @staticmethod
-    def __send_invitation_mail(request: Request, user: User):
-        message = render_to_string('emails/user_invitation.html', {
+        :rtype: dict
+        """
+        return {
             'user': user,
             'app_name': settings.APP_NAME,
             'site_name': get_current_site(request),
@@ -94,20 +112,22 @@ class UserInvitationForm(ModelForm, RoleFieldMixin):
                     InvitationTokenGenerator().make_token(user)
                 )
             )
-        })
+        }
 
-        subject = loader.render_to_string(
-            'emails/user_invitation_subject.txt',
-            {
-                'site_name': get_current_site(request)
-            }
-        )
+    @staticmethod
+    def __generate_username(firstname: str, lastname: str):
+        # get a slug of the firstname and last name.
+        # it will normalize the string and add dashes for spaces
+        # i.e. 'HaRrY POTTer' -> 'harry_potter'
+        u_username = slugify('{}_{}'.format(firstname, lastname))
 
-        EmailMultiAlternatives(
-            ''.join(subject.splitlines()),
-            message,
-            to=[user.email]
-        ).send()
+        # count the number of users that start with the username
+        count = User.objects.filter(username__startswith=u_username).count()
+
+        if count:
+            return '{}{}'.format(u_username, count)
+
+        return u_username
 
 
 class CheckUserInvitationTokenForm(CheckUserTokenForm):

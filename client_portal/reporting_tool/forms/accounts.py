@@ -14,10 +14,7 @@ from django.contrib.auth.forms import UserCreationForm, \
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.mail import EmailMultiAlternatives
 from django.forms import ModelForm
-from django.template import loader
-from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import gettext_lazy as _
@@ -25,7 +22,7 @@ from requests import Request
 from rest_framework.exceptions import NotFound
 
 from reporting_tool.forms.organization import OrganizationForm
-from reporting_tool.forms.utils import CheckUserTokenForm, RoleFieldMixin
+from reporting_tool.forms.utils import CheckUserTokenForm, SendEmailMixin
 from reporting_tool.frontend.router import Router
 from reporting_tool.models import Organization, User
 from reporting_tool.tokens import AccountActivationTokenGenerator
@@ -111,52 +108,42 @@ class UserForm(PreSignupForm):
                                                      **data)
 
 
-class UserEditForm(ModelForm, RoleFieldMixin):
+class UserEditForm(ModelForm):
     """
-    Validate data coming to change user's data
+    User edit data form
     """
     username = forms.CharField(
         label=_("Username"),
         min_length=2,
         error_messages={'min_length': _('Incorrect login.')}
     )
-    firstname = forms.CharField(label=_("First name"))
-    lastname = forms.CharField(label=_("Last name"))
-    address = forms.CharField(label=_("Address"))
-    phone = forms.CharField(label=_("Phone number"))
-    role = RoleFieldMixin.role
 
     class Meta:
         """
-        All fields apart from id should be editable
+        Solely username, firstname, lastname, address, phone are editable
         """
-        model = User
+        model = get_user_model()
         fields = (
             "username", "firstname", "lastname", "address", "phone"
         )
 
-    def save(self, commit=True):
-        saved = super().save()
 
-        self.instance.usergroup.group = self.cleaned_data.get('role')
-        self.instance.usergroup.save()
-
-        return saved
-
-
-class SignupForm:
+class SignupForm(SendEmailMixin):
     """
     Signup form is a combination of Userform and Organizationform
     """
     user_form_class = UserForm
     organization_form_class = OrganizationForm
 
-    def __init__(self, data: dict):
+    def __init__(self, data: dict, user=None, organization=None):
         """
         :type data: dict
         """
-        self.__user_form = UserForm(data)
-        self.__organization_form = OrganizationForm(data)
+        self._user_form = self.user_form_class(data, instance=user)
+        self._organization_form = self.organization_form_class(
+            data,
+            instance=organization
+        )
 
     def is_valid(self) -> bool:
         """
@@ -165,8 +152,8 @@ class SignupForm:
         :rtype: bool
         """
         return (
-            self.__organization_form.is_valid()
-            and self.__user_form.is_valid()
+            self._organization_form.is_valid()
+            and self._user_form.is_valid()
         )
 
     @property
@@ -175,33 +162,45 @@ class SignupForm:
         :rtype: Dict[str, List[str]]
         """
         return {
-            **self.__user_form.errors,
-            **self.__organization_form.errors
+            **self._user_form.errors,
+            **self._organization_form.errors
         }
 
     def save(self, request: Request) -> Tuple[User, Organization]:
         """
-        Wser with only just created organization will be inserted.
+        User with only just created organization will be inserted.
 
         :rtype: Tuple[User, Organization]
         """
-        organization = self.__organization_form.save()
+        organization = self._organization_form.save()
 
-        self.__user_form.set_organization(organization)
+        self._user_form.set_organization(organization)
 
-        user = self.__user_form.save()
+        user = self._user_form.save()
 
-        self.__send_activation_mail(request, user)
+        self.send_mail(
+            user.email,
+            'emails/account_activation_subject.txt',
+            'emails/account_activation.html',
+            request,
+            user
+        )
 
         return (
             user,
             organization
         )
 
-    @staticmethod
-    def __send_activation_mail(request: Request, user: User):
-        message = render_to_string('emails/account_activation.html', {
+    def get_email_context(self, request: Request, user: User) -> dict:
+        """
+        Email context for template loader
+
+        :type request: Request
+        :type user: User
+        """
+        return {
             'user': user,
+            'site_name': get_current_site(request),
             'activation_link': Router(
                 settings.CLIENT_APP_SHEMA_HOST_PORT
             ).reverse_full(
@@ -211,20 +210,27 @@ class SignupForm:
                     AccountActivationTokenGenerator().make_token(user)
                 )
             )
-        })
+        }
 
-        subject = loader.render_to_string(
-            'emails/account_activation_subject.txt',
-            {
-                'site_name': get_current_site(request)
-            }
+
+class UserAndOrganizationEditForm(SignupForm):
+    """
+    Modifies user and organization data at once.
+    """
+
+    user_form_class = UserEditForm
+    organization_form_class = OrganizationForm
+
+    def save(self, request: Request) -> Tuple[User, Organization]:
+        """
+        User and associated organization update
+
+        :rtype: Tuple[User, Organization]
+        """
+        return (
+            self._user_form.save(),
+            self._organization_form.save()
         )
-
-        EmailMultiAlternatives(
-            ''.join(subject.splitlines()),
-            message,
-            to=[user.email]
-        ).send()
 
 
 class PasswordResetForm(PasswordResetFormBase):

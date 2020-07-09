@@ -18,9 +18,8 @@ from rest_framework.generics import RetrieveUpdateDestroyAPIView, \
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
-from reporting_tool.forms.accounts import UserEditForm
 from reporting_tool.forms.user_management import UserInvitationForm, \
-    FollowInvitationForm, CheckUserInvitationTokenForm
+    FollowInvitationForm, CheckUserInvitationTokenForm, UserEditForm
 from reporting_tool.permissions import IsCompanyAdmin, IsActive, \
     IsNotAuthenticated
 from reporting_tool.serializers import UserSerializer, \
@@ -65,7 +64,7 @@ from reporting_tool.views.utils import CheckTokenMixin, FormMixin
         token_header(),
     ]
 ))
-class UserList(ListCreateAPIView):
+class UserList(ListCreateAPIView, FormMixin):
     """
     Shows set of users.
     Sends invitation to a new user.
@@ -94,16 +93,12 @@ class UserList(ListCreateAPIView):
     def create(self, request: Request, *args, **kwargs) -> JsonResponse:
         form = self.form_class(request.user.organization_id, data=request.data)
 
-        if form.is_valid():
-            form.save(request)
-
-            return JsonResponse({
-                'message': 'User is invited'
-            }, status=status.HTTP_201_CREATED)
-
-        return JsonResponse({
-            'errors': form.errors
-        }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        return self.save_or_error(
+            _('User is invited'),
+            success_status=status.HTTP_201_CREATED,
+            form=form,
+            request=request
+        )
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
@@ -123,6 +118,7 @@ class UserList(ListCreateAPIView):
 ))
 @method_decorator(name='delete', decorator=swagger_auto_schema(
     responses=get_responses(
+        status.HTTP_200_OK,
         status.HTTP_401_UNAUTHORIZED,
         status.HTTP_404_NOT_FOUND,
         status.HTTP_403_FORBIDDEN,
@@ -169,7 +165,7 @@ class UserList(ListCreateAPIView):
         token_header(),
     ]
 ))
-class UserItem(RetrieveUpdateDestroyAPIView):
+class UserItem(RetrieveUpdateDestroyAPIView, FormMixin):
     """
     Returns and updates user data.
     Deletes a user.
@@ -200,16 +196,10 @@ class UserItem(RetrieveUpdateDestroyAPIView):
             instance=self.get_object()
         )
 
-        if form.is_valid():
-            form.save()
-
-            return JsonResponse({
-                'message': _('User data is updated')
-            })
-
-        return JsonResponse({
-            'errors': form.errors
-        }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        return self.save_or_error(
+            _('User data is updated'),
+            form=form
+        )
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -227,7 +217,7 @@ class UserItem(RetrieveUpdateDestroyAPIView):
 
         return JsonResponse({
             'message': _('User is deleted')
-        }, status=status.HTTP_204_NO_CONTENT)
+        }, status=status.HTTP_200_OK)
 
 
 class InvitationView(APIView, FormMixin, CheckTokenMixin):
@@ -286,15 +276,6 @@ class InvitationView(APIView, FormMixin, CheckTokenMixin):
         """
         :rtype: JsonResponse
         """
-        form = self.get_form()
-
-        if form.is_valid():
-            form.save()
-
-            return JsonResponse({
-                'message': _('You are successfully registered')
-            }, status=status.HTTP_200_OK)
-
-        return JsonResponse({
-            'errors': form.errors
-        }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        return self.save_or_error(
+            _('You are successfully registered')
+        )
