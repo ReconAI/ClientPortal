@@ -45,6 +45,10 @@ export enum UsersActionTypes {
   INVITATION_SIGN_UP_SUCCEEDED = '[Users] Invitation Sign Up Succeeded',
   INVITATION_SIGN_UP_ERROR = '[Users] Invitation Sign Up Error',
   RESET_INVITATION_SIGN_UP_ERROR = '[Users] Reset Invitation Sign Up Error',
+
+  UPDATE_USER_REQUESTED = '[Users] Update User Requested',
+  UPDATE_USER_SUCCEEDED = '[Users] Update User Succeeded',
+  UPDATE_USER_ERROR = '[Users] Update User Error',
 }
 
 export const loadUsersListRequestedAction = createAction(
@@ -132,7 +136,6 @@ export const inviteUserActivationSucceededAction = createAction(
 export const invitationSignUpRequestedAction = createAction(
   UsersActionTypes.INVITATION_SIGN_UP_REQUESTED,
   props<UserProfileFormInterface>()
-  // props<UserProfileFormUserInterface & CredentialsRequestInterface>()
 );
 
 export const invitationSignUpSucceededAction = createAction(
@@ -147,3 +150,15 @@ export const invitationSignUpErrorAction = createAction(
 export const resetInvitationSignUpErrorAction = createAction(
   UsersActionTypes.RESET_INVITATION_SIGN_UP_ERROR
 );
+
+// update user
+export const updateUserRequested = createAction(
+  UsersActionTypes.UPDATE_USER_REQUESTED,
+  props<UserProfileFormUserInterface>()
+);
+
+export const updateUserSucceeded = createAction(
+  UsersActionTypes.UPDATE_USER_SUCCEEDED
+);
+
+export const updateUserError = createAction(UsersActionTypes.UPDATE_USER_ERROR);

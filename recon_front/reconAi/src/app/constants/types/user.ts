@@ -53,8 +53,8 @@ export interface UserProfileFormOrganizationInterface {
 
 export interface CredentialsRequestInterface {
   username: string;
-  password1: string;
-  password2: string;
+  password1?: string;
+  password2?: string;
 }
 
 export interface UserProfileFormUserInterface {

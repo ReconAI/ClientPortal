@@ -92,6 +92,9 @@ export const transformUserProfileResponseFromServer = (
     firstName: response.organization.inv_firstname,
     lastName: response.organization.inv_lastname,
   },
+  profile: {
+    username: response.username,
+  },
 });
 
 // it checks the length of data before removing and calculates new page
@@ -138,4 +141,30 @@ export const transformInviteSignUpUserToServer = (
   token: activation.token,
   password1: user.profile.password1,
   password2: user.profile.password2,
+});
+
+export interface UpdateUserServerRequestInterface {
+  username: string;
+  firstname: string;
+  lastname: string;
+  address: string;
+  phone: string;
+  role: string;
+}
+
+interface UpdateUserClientRequestInterface
+  extends UserProfileFormUserInterface {
+  username: string;
+  role: string;
+}
+
+export const transformUserUpdateToServer = (
+  user: UpdateUserClientRequestInterface
+): UpdateUserServerRequestInterface => ({
+  username: user.username,
+  firstname: user.firstName,
+  lastname: user.lastName,
+  address: user.address,
+  phone: user.phone,
+  role: user.role
 });
