@@ -1,6 +1,8 @@
-import { FormServerErrorInterface } from './../../constants/types/requests';
-import { HttpErrorResponse } from '@angular/common/http';
-import { UserProfileFormInterface, ServerUserOrganizationInterface } from 'app/constants/types';
+import {
+  UserProfileFormInterface,
+  ServerUserOrganizationInterface,
+  CredentialsRequestInterface,
+} from 'app/constants/types';
 
 export interface PreSignUpInterface {
   login: string;
@@ -8,22 +10,19 @@ export interface PreSignUpInterface {
   password2: string;
 }
 
-export interface PreSignUpRequestBody {
-  username: string;
-  password1: string;
-  password2: string;
-}
+
 
 export const transformPreSignUpUserForm = ({
   login,
   password1,
   password2,
-}: PreSignUpInterface): PreSignUpRequestBody => ({
+}: PreSignUpInterface): CredentialsRequestInterface => ({
   username: login,
   password1,
   password2,
 });
-export interface SignUpRequestInterface extends ServerUserOrganizationInterface {
+
+export interface SignUpRequestInterface {
   username: string;
   email: string;
   firstname: string;
@@ -33,10 +32,9 @@ export interface SignUpRequestInterface extends ServerUserOrganizationInterface 
   password1: string;
   password2: string;
 }
-
 export const transformSignUpFormToRequest = (
-  user: UserProfileFormInterface & PreSignUpRequestBody
-): SignUpRequestInterface => ({
+  user: UserProfileFormInterface & CredentialsRequestInterface
+): ServerUserOrganizationInterface & SignUpRequestInterface => ({
   username: user.username,
   email: user.user.email,
   firstname: user.user.firstName,
@@ -58,26 +56,3 @@ export const transformSignUpFormToRequest = (
   inv_phone: user.invoicing.phone,
   inv_email: user.invoicing.email,
 });
-
-export const signUpRelationsFormAnsServerFields = {
-  username: 'Login',
-  email: 'User email',
-  firstname: 'User first name',
-  lastname: 'User last name',
-  address: 'User address',
-  phone: 'User phone',
-  password1: 'Password',
-  password2: 'Confirmation password',
-  name: 'Organization name',
-  vat: 'Organization VAT',
-  main_firstname: 'Contact person first name',
-  main_lastname: 'Contact person last name',
-  main_address: 'Organization address',
-  main_phone: 'Organization phone',
-  main_email: 'Organization email',
-  inv_firstname: 'Invoicing first name',
-  inv_lastname: 'Invoicing last name',
-  inv_address: 'Invoicing address',
-  inv_phone: 'Invoicing phone',
-  inv_email: 'Invoicing email',
-};

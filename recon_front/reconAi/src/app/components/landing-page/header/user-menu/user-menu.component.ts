@@ -4,6 +4,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { UserRolesPriorities } from 'app/constants/types';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { loadUsersListRequestedAction } from 'app/store/users';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'recon-user-menu',
@@ -18,7 +19,7 @@ export class UserMenuComponent {
   @Input() userRole: string;
 
   @Output() logout$ = new EventEmitter();
-  constructor(public dialog: MatDialog) {}
+  constructor(public dialog: MatDialog, private router: Router) {}
   dialogRef: MatDialogRef<LoginModalComponent>;
 
   openDialog(): void {
@@ -27,6 +28,10 @@ export class UserMenuComponent {
       height: '410px',
       panelClass: 'login-modal',
     });
+  }
+
+  onNavigate(...url: string[]): void {
+    this.router.navigate([...url]);
   }
 
   logout(): void {

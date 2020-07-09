@@ -27,6 +27,7 @@ export class HttpErrorInterceptor implements HttpInterceptor {
     { url: '/api/reset' },
     { url: '/api/api-token-auth' },
     { url: '/api/users', method: 'POST' },
+    { url: '/api/users/invitations', method: 'PATCH' },
   ];
 
   createErrorServerMessage(error: HttpErrorResponse): string {

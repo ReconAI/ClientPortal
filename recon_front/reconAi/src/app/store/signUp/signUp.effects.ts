@@ -1,5 +1,5 @@
 import { generalTransformFormErrorToObject } from './../../core/helpers/generalFormsErrorsTransformation';
-import { UserProfileFormInterface } from './../../constants/types/user';
+import { UserProfileFormInterface, signUpRelationsFormAnsServerFields } from './../../constants/types/user';
 import { ActivationInterface } from './../../constants/types/activation';
 import { Router } from '@angular/router';
 import {
@@ -11,7 +11,6 @@ import { Action, Store } from '@ngrx/store';
 import {
   transformPreSignUpUserForm,
   transformSignUpFormToRequest,
-  signUpRelationsFormAnsServerFields,
 } from './signUp.server.helpers';
 import {
   SignUpActionTypes,

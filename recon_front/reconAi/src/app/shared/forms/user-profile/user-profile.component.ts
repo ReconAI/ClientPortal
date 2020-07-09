@@ -19,6 +19,7 @@ export class UserProfileComponent implements OnInit {
   @Input() loading = false;
   @Input() errors: FormServerErrorInterface;
   @Input() showTerms = false;
+  @Input() isInvitation = false;
   // make it work
   @Input() disabledButton = false;
 
@@ -41,6 +42,9 @@ export class UserProfileComponent implements OnInit {
   @Input() invoicingAddress: string;
   @Input() invoicingFirstName: string;
   @Input() invoicingLastName: string;
+
+  // it's used for invitation
+  @Input() profileUsername: string;
 
   @Output() sendUserInfo$ = new EventEmitter<UserProfileFormInterface>();
 
@@ -84,32 +88,55 @@ export class UserProfileComponent implements OnInit {
   //   // }
   // }
 
-  ngOnInit(): void {
-    this.profileForm = this.fb.group({
-      organization: this.fb.group({
-        firstName: [this.organizationFirstName || '', Validators.required],
-        lastName: [this.organizationLastName || '', Validators.required],
-        name: [this.organizationName || '', Validators.required],
-        phone: [this.organizationPhone || '', Validators.required],
-        email: [this.organizationEmail || '', Validators.required],
-        address: [this.organizationAddress || '', Validators.required],
-        vat: [this.organizationVat || '', Validators.required],
-      }),
-      user: this.fb.group({
-        firstName: [this.userFirstName || '', Validators.required],
-        lastName: [this.userLastName || '', Validators.required],
-        address: [this.userAddress || '', Validators.required],
-        phone: [this.userPhone || '', Validators.required],
-        email: [this.userEmail || '', Validators.required],
-      }),
-      invoicing: this.fb.group({
-        firstName: [this.invoicingFirstName || '', Validators.required],
-        lastName: [this.invoicingLastName || '', Validators.required],
-        address: [this.invoicingAddress || '', Validators.required],
-        phone: [this.invoicingPhone || '', Validators.required],
-        email: [this.invoicingEmail || '', Validators.required],
-      }),
+  createGroup(): FormGroup {
+    const userGroup = this.fb.group({
+      firstName: [this.userFirstName || '', Validators.required],
+      lastName: [this.userLastName || '', Validators.required],
+      address: [this.userAddress || '', Validators.required],
+      phone: [this.userPhone || '', Validators.required],
+      email: [
+        { value: this.userEmail || '', disabled: this.isInvitation },
+        Validators.required,
+      ],
     });
+
+    return this.fb.group(
+      this.isInvitation
+        ? {
+            user: userGroup,
+            profile: this.fb.group({
+              username: [this.profileUsername || '', Validators.required],
+              password1: ['', Validators.required],
+              password2: ['', Validators.required],
+            }),
+          }
+        : {
+            user: userGroup,
+            organization: this.fb.group({
+              firstName: [
+                this.organizationFirstName || '',
+                Validators.required,
+              ],
+              lastName: [this.organizationLastName || '', Validators.required],
+              name: [this.organizationName || '', Validators.required],
+              phone: [this.organizationPhone || '', Validators.required],
+              email: [this.organizationEmail || '', Validators.required],
+              address: [this.organizationAddress || '', Validators.required],
+              vat: [this.organizationVat || '', Validators.required],
+            }),
+            invoicing: this.fb.group({
+              firstName: [this.invoicingFirstName || '', Validators.required],
+              lastName: [this.invoicingLastName || '', Validators.required],
+              address: [this.invoicingAddress || '', Validators.required],
+              phone: [this.invoicingPhone || '', Validators.required],
+              email: [this.invoicingEmail || '', Validators.required],
+            }),
+          }
+    );
+  }
+
+  ngOnInit(): void {
+    this.profileForm = this.createGroup();
   }
 
   onSubmit(): void {

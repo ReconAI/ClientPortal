@@ -1,3 +1,4 @@
+import { InvitationUserContainer } from './components/invitation-user/invitation-user.container';
 
 import { SuccessSignUpGuard } from './core/guards/successSignUp/success-sign-up.guard';
 import { NewFeatureContainer } from './components/new-feature/new-feature.container';
@@ -70,7 +71,7 @@ const routes: Routes = [
   },
   {
     path: 'invite/:uidb/:token',
-    component: InvitationUserComponent,
+    component: InvitationUserContainer,
   },
   {
     path: '**',

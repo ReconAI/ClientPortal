@@ -3,8 +3,12 @@
     >Validation errors: {{ validationErrors }}</mat-error
   >
   <div class="form-container">
-    <p>ORGANIZATION INFORMATION</p>
-    <div class="block-container" formGroupName="organization">
+    <p *ngIf="!isInvitation">ORGANIZATION INFORMATION</p>
+    <div
+      class="block-container"
+      formGroupName="organization"
+      *ngIf="!isInvitation"
+    >
       <div>
         <recon-form-input
           label="Contact person first name"
@@ -62,8 +66,12 @@
         ></recon-form-input>
       </div>
     </div>
-    <p>INVOICING INFORMATION</p>
-    <div class="block-container" formGroupName="invoicing">
+    <p *ngIf="!isInvitation">INVOICING INFORMATION</p>
+    <div
+      class="block-container"
+      formGroupName="invoicing"
+      *ngIf="!isInvitation"
+    >
       <div>
         <recon-form-input
           label="Invoicing first name"
@@ -144,6 +152,36 @@
           label="Phone"
           placeholder="Phone"
           formControlName="phone"
+          [showRequiredSymbol]="true"
+        ></recon-form-input>
+      </div>
+    </div>
+
+    <p *ngIf="isInvitation">PROFILE</p>
+    <div class="block-container" formGroupName="profile" *ngIf="isInvitation">
+      <div>
+        <recon-form-input
+          label="Password"
+          placeholder="Password"
+          formControlName="password1"
+          fieldType="password"
+          [showRequiredSymbol]="true"
+        ></recon-form-input>
+      </div>
+      <div>
+        <recon-form-input
+          label="Confirm password"
+          placeholder="Confirm password"
+          formControlName="password2"
+          fieldType="password"
+          [showRequiredSymbol]="true"
+        ></recon-form-input>
+      </div>
+      <div>
+        <recon-form-input
+          label="Login"
+          placeholder="Login"
+          formControlName="username"
           [showRequiredSymbol]="true"
         ></recon-form-input>
       </div>

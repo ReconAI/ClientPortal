@@ -7,7 +7,7 @@ import {
 } from './../../constants/types/user';
 import { HttpErrorResponse } from '@angular/common/http';
 export interface UserTransformationResponse {
-  isAuthenticated: boolean;
+  isAuthenticated?: boolean;
   role: UserRoleTypes | null;
   rolePriority: UserRolesPriorities;
   firstName: string;

@@ -17,6 +17,7 @@ export class HeadersInterceptor implements HttpInterceptor {
     '/api/reset-password',
     '/api/pre-signup',
     '/api/reset',
+    '/api/users/invitations',
   ];
 
   constructor(private localStorageService: LocalStorageService) {}

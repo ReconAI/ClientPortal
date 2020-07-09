@@ -1,3 +1,4 @@
+import { InvitationUserContainer } from './components/invitation-user/invitation-user.container';
 import { UsersEffects } from './store/users/users.effects';
 import { HttpSuccessInterceptor } from './core/interceptors/http-success/http-success.interceptor';
 import { RegistrationSuccessHumanComponent } from './components/registration/registration-success/registration-success-human.component';
@@ -69,6 +70,7 @@ import { InvitationUserComponent } from './components/invitation-user/invitation
     NewFeatureComponent,
     NewFeatureContainer,
     InvitationUserComponent,
+    InvitationUserContainer,
   ],
   imports: [
     BrowserModule,

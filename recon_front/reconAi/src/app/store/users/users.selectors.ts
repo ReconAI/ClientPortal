@@ -1,3 +1,4 @@
+import { ActivationInterface } from './../../constants/types/activation';
 import { createSelector } from '@ngrx/store';
 
 import { AppState } from './../reducers/index';
@@ -9,6 +10,8 @@ import {
   UserProfileFormUserInterface,
   UserProfileFormInvoicingInterface,
 } from 'app/constants/types';
+import { UserTransformationResponse } from '../user/user.server.helpers';
+import { FormServerErrorInterface } from 'app/constants/types/requests';
 
 export const selectUsers = (state: AppState): UsersState => state.users;
 
@@ -169,4 +172,51 @@ const selectUsersError = createSelector(
 export const selectAddUserError = createSelector(
   selectUsersError,
   (errors: UsersErrors): string => errors.addUser
+);
+
+// invitation
+export const selectInvitedUser = createSelector(
+  selectUsers,
+  (users: UsersState): UserTransformationResponse => users.invitedUser
+);
+
+export const selectInvitedUserFirstName = createSelector(
+  selectInvitedUser,
+  (invitedUser: UserTransformationResponse): string => invitedUser?.firstName
+);
+
+export const selectInvitedUserLastName = createSelector(
+  selectInvitedUser,
+  (invitedUser: UserTransformationResponse): string => invitedUser?.lastName
+);
+
+export const selectInvitedUserEmail = createSelector(
+  selectInvitedUser,
+  (invitedUser: UserTransformationResponse): string => invitedUser?.email
+);
+
+export const selectInvitedUserUsername = createSelector(
+  selectInvitedUser,
+  (invitedUser: UserTransformationResponse): string => invitedUser?.username
+);
+
+// export const selectInvitedUserAddress = createSelector(
+//   selectInvitedUser,
+//   (invitedUser: UserTransformationResponse): string => invitedUser?.address
+// );
+
+// export const selectInvitedUserPhone = createSelector(
+//   selectInvitedUser,
+//   (invitedUser: UserTransformationResponse): string => invitedUser?.phone
+// );
+
+// invitation sign up
+export const selectInvitedActivation = createSelector(
+  selectUsers,
+  (users: UsersState): ActivationInterface => users.inviteActivation
+);
+
+export const selectInvitedSignUpError = createSelector(
+  selectUsersError,
+  (errors: UsersErrors): FormServerErrorInterface => errors?.inviteUserSignUp
 );

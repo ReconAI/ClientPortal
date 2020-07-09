@@ -28,7 +28,7 @@ export class AuthGuard implements CanActivate, CanActivateChild {
     | UrlTree {
     return this.store.pipe(
       select(selectIsAuthenticated),
-      filter((isAuth) => isAuth !== null),
+      filter((isAuth) => isAuth !== null)
     );
   }
 

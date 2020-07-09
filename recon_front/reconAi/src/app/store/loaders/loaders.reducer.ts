@@ -12,6 +12,8 @@ import {
   setUserProfileLoadingStatusAction,
   setDeleteUserLoadingStatusAction,
   setAddUserLoadingStatusAction,
+  setInviteUserLoadingStatusAction,
+  setInviteSignUpUserLoadingStatusAction,
 } from './loaders.actions';
 import { createReducer, on, Action } from '@ngrx/store';
 
@@ -30,6 +32,8 @@ export interface LoadersState {
   userProfile: boolean;
   deleteUser: boolean;
   addUser: boolean;
+  inviteUser: boolean;
+  inviteSignUpUser: boolean;
 }
 
 const initialState: LoadersState = {
@@ -46,6 +50,8 @@ const initialState: LoadersState = {
   userProfile: false,
   deleteUser: false,
   addUser: false,
+  inviteUser: false,
+  inviteSignUpUser: false,
 };
 
 const setCurrentUserLoadingStatusReducer = (
@@ -108,6 +114,16 @@ const setAddUserLoadingStatusReducer = (
   { status }: Action & LoaderInterface
 ): LoadersState => ({ ...state, addUser: status });
 
+const setInviteUserLoadingStatusReducer = (
+  state: LoadersState,
+  { status }: Action & LoaderInterface
+): LoadersState => ({ ...state, inviteUser: status });
+
+const setInviteSignUpUserLoadingStatusReducer = (
+  state: LoadersState,
+  { status }: Action & LoaderInterface
+): LoadersState => ({ ...state, inviteSignUpUser: status });
+
 const loadersReducer = createReducer(
   initialState,
   on(setCurrentUserLoadingStatusAction, setCurrentUserLoadingStatusReducer),
@@ -124,7 +140,12 @@ const loadersReducer = createReducer(
   on(setUserListLoadingStatusAction, setUserListLoadingStatusReducer),
   on(setUserProfileLoadingStatusAction, setUserProfileLoadingStatusReducer),
   on(setDeleteUserLoadingStatusAction, setDeleteUserLoadingStatusReducer),
-  on(setAddUserLoadingStatusAction, setAddUserLoadingStatusReducer)
+  on(setAddUserLoadingStatusAction, setAddUserLoadingStatusReducer),
+  on(setInviteUserLoadingStatusAction, setInviteUserLoadingStatusReducer),
+  on(
+    setInviteSignUpUserLoadingStatusAction,
+    setInviteSignUpUserLoadingStatusReducer
+  )
 );
 
 export function reducer(state: LoadersState | undefined, action: Action) {

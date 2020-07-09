@@ -1,4 +1,11 @@
-import { ServerUserInterface } from 'app/constants/types';
+import { UserProfileFormInterface } from './../../constants/types/user';
+import { generalTransformFormErrorToObject } from './../../core/helpers/generalFormsErrorsTransformation';
+import {
+  ServerUserInterface,
+  CredentialsRequestInterface,
+  UserProfileFormUserInterface,
+  signUpRelationsFormAnsServerFields,
+} from 'app/constants/types';
 import { ActivationInterface } from './../../constants/types/activation';
 import { generalTransformFormErrorToString } from 'app/core/helpers/generalFormsErrorsTransformation';
 import {
@@ -10,6 +17,7 @@ import {
   ServerUserProfileInterface,
   calculatePageAfterDelete,
   transformAddUserToServer,
+  transformInviteSignUpUserToServer,
 } from './users.server.helpers';
 import {
   UsersActionTypes,
@@ -24,6 +32,9 @@ import {
   addUserErrorAction,
   inviteUserSucceededAction,
   inviteUserErrorAction,
+  inviteUserActivationSucceededAction,
+  invitationSignUpSucceededAction,
+  invitationSignUpErrorAction,
 } from './users.actions';
 import { Router } from '@angular/router';
 import { Action, Store, select } from '@ngrx/store';
@@ -45,8 +56,14 @@ import {
   setUserProfileLoadingStatusAction,
   setDeleteUserLoadingStatusAction,
   setAddUserLoadingStatusAction,
+  setInviteUserLoadingStatusAction,
+  setInviteSignUpUserLoadingStatusAction,
 } from '../loaders';
-import { selectUsersList, selectUsersMetaCurrentPage } from './users.selectors';
+import {
+  selectUsersList,
+  selectUsersMetaCurrentPage,
+  selectInvitedActivation,
+} from './users.selectors';
 import { AddUserInterface } from 'app/users/constants';
 import { transformUserResponse } from '../user/user.server.helpers';
 
@@ -215,14 +232,80 @@ export class UsersEffects {
       ofType<Action & ActivationInterface>(
         UsersActionTypes.INVITE_USER_REQUESTED
       ),
+      tap(() => {
+        this.store.dispatch(
+          setInviteUserLoadingStatusAction({
+            status: true,
+          })
+        );
+      }),
       switchMap((activation) =>
         this.httpClient
           .post<ServerUserInterface>('/api/users/invitations', activation)
           .pipe(
-            map((user) =>
-              inviteUserSucceededAction(transformUserResponse(user))
+            map((user) => {
+              this.store.dispatch(
+                inviteUserActivationSucceededAction(activation)
+              );
+              return inviteUserSucceededAction(transformUserResponse(user));
+            }),
+            catchError((error) => {
+              this.router.navigate(['/']);
+              return of(inviteUserErrorAction());
+            }),
+            finalize(() => {
+              this.store.dispatch(
+                setInviteUserLoadingStatusAction({
+                  status: false,
+                })
+              );
+            })
+          )
+      )
+    )
+  );
+
+  signUpActivation$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action & UserProfileFormInterface>(
+        UsersActionTypes.INVITATION_SIGN_UP_REQUESTED
+      ),
+      tap(() => {
+        this.store.dispatch(
+          setInviteSignUpUserLoadingStatusAction({
+            status: true,
+          })
+        );
+      }),
+      withLatestFrom(this.store.pipe(select(selectInvitedActivation))),
+      switchMap(([user, activation]) =>
+        this.httpClient
+          .patch(
+            `/api/users/invitations`,
+            transformInviteSignUpUserToServer(user, activation)
+          )
+          .pipe(
+            map(() => invitationSignUpSucceededAction()),
+            tap(() => {
+              this.router.navigate(['/']);
+            }),
+            catchError((error) =>
+              of(
+                invitationSignUpErrorAction(
+                  generalTransformFormErrorToObject(
+                    error,
+                    signUpRelationsFormAnsServerFields
+                  )
+                )
+              )
             ),
-            catchError((error) => of(inviteUserErrorAction()))
+            finalize(() => {
+              this.store.dispatch(
+                setInviteSignUpUserLoadingStatusAction({
+                  status: false,
+                })
+              );
+            })
           )
       )
     )

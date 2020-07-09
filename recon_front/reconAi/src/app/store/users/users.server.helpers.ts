@@ -1,3 +1,10 @@
+import { ResetPasswordInterface } from './../../constants/types/resetPassword';
+import { SignUpRequestInterface } from './../signUp/signUp.server.helpers';
+import {
+  UserProfileFormUserInterface,
+  CredentialsRequestInterface,
+} from './../../constants/types/user';
+import { ActivationInterface } from './../../constants/types/activation';
 import {
   UserInterface,
   AddUserInterface,
@@ -115,4 +122,20 @@ export const transformAddUserToServer = ({
   firstname: firstName,
   lastname: lastName,
   ...rest,
+});
+
+export const transformInviteSignUpUserToServer = (
+  user: UserProfileFormInterface,
+  activation: ActivationInterface
+): SignUpRequestInterface & ActivationInterface => ({
+  username: user.profile.username,
+  email: user.user.email,
+  firstname: user.user.firstName,
+  lastname: user.user.lastName,
+  address: user.user.address,
+  phone: user.user.phone,
+  uidb64: activation.uidb64,
+  token: activation.token,
+  password1: user.profile.password1,
+  password2: user.profile.password2,
 });

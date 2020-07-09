@@ -13,9 +13,14 @@
     <button mat-menu-item>Profile</button>
     <mat-divider></mat-divider>
     <button mat-menu-item>History</button>
+
     <mat-divider></mat-divider>
-    <button mat-menu-item>User management</button>
-    <mat-divider></mat-divider>
+    <ng-container *reconCheckUserRolePriority="userRolePriorities.ADMIN_ROLE">
+      <button mat-menu-item (click)="onNavigate('users')">
+        User management
+      </button>
+      <mat-divider></mat-divider>
+    </ng-container>
     <button mat-menu-item (click)="logout()">Log Out</button>
   </mat-menu>
 </div>

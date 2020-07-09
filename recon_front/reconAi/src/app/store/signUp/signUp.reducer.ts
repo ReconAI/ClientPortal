@@ -3,7 +3,6 @@ import {
   FormServerErrorInterface,
   ObjectFormErrorInterface,
 } from './../../constants/types/requests';
-import { PreSignUpRequestBody } from './../signUp/signUp.server.helpers';
 import { createReducer, on, Action } from '@ngrx/store';
 import {
   setPreSignUpInfoAction,

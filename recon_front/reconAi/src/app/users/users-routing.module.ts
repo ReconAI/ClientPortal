@@ -5,7 +5,10 @@ import { Routes, RouterModule } from '@angular/router';
 
 const routes: Routes = [
   {
-    path: 'management',
+    path: '',
+    data: {
+      title: 'Users management',
+    },
     component: ManagementContainer,
   },
   {

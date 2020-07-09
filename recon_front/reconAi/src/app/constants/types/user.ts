@@ -51,6 +51,12 @@ export interface UserProfileFormOrganizationInterface {
   lastName: string;
 }
 
+export interface CredentialsRequestInterface {
+  username: string;
+  password1: string;
+  password2: string;
+}
+
 export interface UserProfileFormUserInterface {
   firstName: string;
   lastName: string;
@@ -68,9 +74,10 @@ export interface UserProfileFormInvoicingInterface {
 }
 
 export interface UserProfileFormInterface {
-  organization: UserProfileFormOrganizationInterface;
+  organization?: UserProfileFormOrganizationInterface;
   user: UserProfileFormUserInterface;
-  invoicing: UserProfileFormInvoicingInterface;
+  invoicing?: UserProfileFormInvoicingInterface;
+  profile?: CredentialsRequestInterface;
 }
 
 export interface ServerUserInterface {
@@ -122,3 +129,26 @@ export const SERVER_USER_ROLES = [
     value: 'client',
   },
 ];
+
+export const signUpRelationsFormAnsServerFields = {
+  username: 'Login',
+  email: 'User email',
+  firstname: 'User first name',
+  lastname: 'User last name',
+  address: 'User address',
+  phone: 'User phone',
+  password1: 'Password',
+  password2: 'Confirmation password',
+  name: 'Organization name',
+  vat: 'Organization VAT',
+  main_firstname: 'Contact person first name',
+  main_lastname: 'Contact person last name',
+  main_address: 'Organization address',
+  main_phone: 'Organization phone',
+  main_email: 'Organization email',
+  inv_firstname: 'Invoicing first name',
+  inv_lastname: 'Invoicing last name',
+  inv_address: 'Invoicing address',
+  inv_phone: 'Invoicing phone',
+  inv_email: 'Invoicing email',
+};

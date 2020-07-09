@@ -6,9 +6,17 @@ import {
   UserProfileRequestInterface,
 } from './users.server.helpers';
 import { createAction, props } from '@ngrx/store';
-import { UserProfileFormInterface } from 'app/constants/types';
+import {
+  UserProfileFormInterface,
+  UserProfileFormUserInterface,
+  CredentialsRequestInterface,
+} from 'app/constants/types';
 import { AddUserInterface } from 'app/users/constants';
-import { FormServerErrorInterface } from 'app/constants/types/requests';
+import {
+  FormServerErrorInterface,
+  ObjectFormErrorInterface,
+} from 'app/constants/types/requests';
+
 export enum UsersActionTypes {
   LOAD_USERS_LIST_REQUESTED = '[Users] Load Users Requested',
   LOAD_USERS_LIST_SUCCEEDED = '[Users] Load Users Succeeded',
@@ -30,7 +38,13 @@ export enum UsersActionTypes {
 
   INVITE_USER_REQUESTED = '[Users] Invite User Requested',
   INVITE_USER_SUCCEEDED = '[Users] Invite User Succeeded',
+  INVITE_USER_ACTIVATION_SUCCEEDED = '[Users] Invite User Activation Succeeded',
   INVITE_USER_ERROR = '[Users] Invite User Error',
+
+  INVITATION_SIGN_UP_REQUESTED = '[Users] Invitation Sign Up Requested',
+  INVITATION_SIGN_UP_SUCCEEDED = '[Users] Invitation Sign Up Succeeded',
+  INVITATION_SIGN_UP_ERROR = '[Users] Invitation Sign Up Error',
+  RESET_INVITATION_SIGN_UP_ERROR = '[Users] Reset Invitation Sign Up Error',
 }
 
 export const loadUsersListRequestedAction = createAction(
@@ -107,5 +121,29 @@ export const inviteUserSucceededAction = createAction(
 );
 
 export const inviteUserErrorAction = createAction(
-  UsersActionTypes.INVITE_USER_ERROR,
+  UsersActionTypes.INVITE_USER_ERROR
+);
+
+export const inviteUserActivationSucceededAction = createAction(
+  UsersActionTypes.INVITE_USER_ACTIVATION_SUCCEEDED,
+  props<ActivationInterface>()
+);
+
+export const invitationSignUpRequestedAction = createAction(
+  UsersActionTypes.INVITATION_SIGN_UP_REQUESTED,
+  props<UserProfileFormInterface>()
+  // props<UserProfileFormUserInterface & CredentialsRequestInterface>()
+);
+
+export const invitationSignUpSucceededAction = createAction(
+  UsersActionTypes.INVITATION_SIGN_UP_SUCCEEDED
+);
+
+export const invitationSignUpErrorAction = createAction(
+  UsersActionTypes.INVITATION_SIGN_UP_ERROR,
+  props<ObjectFormErrorInterface>()
+);
+
+export const resetInvitationSignUpErrorAction = createAction(
+  UsersActionTypes.RESET_INVITATION_SIGN_UP_ERROR
 );

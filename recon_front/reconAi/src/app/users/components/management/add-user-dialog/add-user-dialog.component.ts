@@ -14,7 +14,9 @@ export class AddUserDialogComponent implements OnInit {
   @Output() submitAddUser$ = new EventEmitter<AddUserInterface>();
   constructor(private fb: FormBuilder) {}
   newUserForm: FormGroup;
-  readonly USER_ROLES = SERVER_USER_ROLES;
+  readonly USER_ROLES = SERVER_USER_ROLES.filter(
+    ({ value }) => value !== 'super_admin'
+  );
 
   ngOnInit(): void {
     this.newUserForm = this.fb.group({

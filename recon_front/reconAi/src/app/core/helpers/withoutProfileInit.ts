@@ -11,5 +11,10 @@ export const checkWhetherMatchesRouteWithoutProfileInit = (
     return true;
   }
 
+  // invite/uidb64/token
+  if (url.match(/\/invite\/.+\/.+/)) {
+    return true;
+  }
+
   return false;
 };

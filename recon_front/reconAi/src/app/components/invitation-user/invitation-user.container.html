@@ -1,0 +1,12 @@
+<recon-invitation-user
+  [token]="token"
+  [uidb64]="uidb64"
+  [errors]="errors$ | async"
+  [email]="userEmail$ | async"
+  [lastName]="userLastName$ | async"
+  [firstName]="userFirstName$ | async"
+  [userUsername]="userUsername$ | async"
+  [isLoadingActivating]="isLoadingActivating$ | async"
+  [isLoadingSignUp]="isLoadingSignUp$ | async"
+  (invitationSignUp$)="invitationSignUpClick($event)"
+></recon-invitation-user>
