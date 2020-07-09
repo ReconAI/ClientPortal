@@ -6,8 +6,11 @@ from typing import Type, List, Union
 from django.contrib.auth.models import Group
 from django.db.models import Model
 from django.forms import Form, BaseForm
+from django.utils.translation import gettext_lazy as _
 from drf_braces.serializers.form_serializer import FormSerializer
 from rest_framework import serializers
+from rest_framework.authtoken.serializers import \
+    AuthTokenSerializer as AuthTokenSerializerBase
 
 from recon_db_manager.models import Organization
 from reporting_tool.models import User
@@ -135,3 +138,15 @@ class UserOrganizationSerializer(UserSerializer):
             'phone', 'email', 'created_dt', 'user_level', 'is_active',
             'group', 'organization'
         )
+
+
+class AuthTokenSerializer(AuthTokenSerializerBase):
+    """
+    Handles users' empty passwords
+    """
+    def validate(self, attrs):
+        try:
+            return super().validate(attrs)
+        except TypeError:
+            msg = _('Unable to log in with provided credentials.')
+            raise serializers.ValidationError(msg, code='authorization')

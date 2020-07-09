@@ -107,4 +107,22 @@ class IsCompanyAdmin(BasePermission):
 
         :rtype: bool
         """
-        return request.user.is_admin
+        user = request.user
+
+        return user.is_superuser or user.is_admin
+
+
+class PaymentRequired(BasePermission):
+    """
+    User must pay for the service
+    """
+    def has_permission(self, request: Request, view) -> bool:
+        """
+        :type request: Request
+        :param view:
+
+        :rtype: bool
+        """
+        user = request.user
+
+        return user.is_superuser or user.is_on_trial
