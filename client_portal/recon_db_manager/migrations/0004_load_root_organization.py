@@ -5,6 +5,11 @@ from django.db import migrations
 from recon_db_manager.models import Organization
 
 
+# Root organization with name `Recon AI`
+# is must be inserted on database initialization.
+# All of the superusers will be attached to it.
+
+
 def load_root_organization(*args, **kwargs):
     Organization.objects.create(name=Organization.ROOT)
 

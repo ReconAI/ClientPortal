@@ -3,6 +3,9 @@
 from django.db import migrations, models
 
 
+# is_active is renamed to isEmailVerified
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
