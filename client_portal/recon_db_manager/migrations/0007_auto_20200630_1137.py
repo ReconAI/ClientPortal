@@ -3,6 +3,10 @@
 from django.db import migrations, models
 
 
+# Schema itself is not affected. Email fields are just converted to Django's
+# EmailField
+
+
 class Migration(migrations.Migration):
 
     dependencies = [

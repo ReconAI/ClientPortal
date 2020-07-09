@@ -3,6 +3,9 @@
 from django.db import migrations, models
 
 
+# email and username are required to be unique and must not be nullable
+
+
 class Migration(migrations.Migration):
 
     dependencies = [

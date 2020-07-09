@@ -3,6 +3,14 @@
 from django.db import migrations, models
 
 
+# Email field is just converted to Django's EmailField
+
+# The second amendment concerns prospect of having email, firstname
+# and lastname fields empty in Django forms validation.
+
+# Both modifications do not affect database schema.
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
