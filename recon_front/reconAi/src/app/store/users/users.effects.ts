@@ -258,7 +258,16 @@ export class UsersEffects {
               this.store.dispatch(
                 inviteUserActivationSucceededAction(activation)
               );
-              return inviteUserSucceededAction(transformActivateUserToClient(user));
+              let roleName = user?.group?.name || 'user';
+              roleName = roleName.charAt(0).toUpperCase() + roleName.slice(1);
+              this.store.dispatch(
+                setAppTitleAction({
+                  title: `${roleName}'s registration`,
+                })
+              );
+              return inviteUserSucceededAction(
+                transformActivateUserToClient(user)
+              );
             }),
             catchError((error) => {
               this.router.navigate(['/']);

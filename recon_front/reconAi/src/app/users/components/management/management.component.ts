@@ -62,8 +62,6 @@ export class ManagementComponent implements OnInit {
     this.router.navigate([`/users/${user?.id}`]);
   }
 
-  editUserClick(user: UserInterface): void {}
-
   deleteUserClick(user: UserInterface): void {
     this.openDeleteDialog(user);
   }
@@ -78,7 +76,7 @@ export class ManagementComponent implements OnInit {
   openDeleteDialog(user: UserInterface): void {
     this.dialog.open(DeleteUserDialogContainer, {
       width: '440px',
-      height: '200px',
+      height: '220px',
       data: {
         name: `${user.firstName} ${user.lastName}`,
         id: user.id,
