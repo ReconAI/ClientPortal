@@ -49,7 +49,6 @@ export class LandingPageComponent implements OnInit, OnDestroy {
         this.isGlobalLoading = status;
       }
     );
-
     // change the title of landing page
     this.titleChangesSubscription$ = this.store
       .pipe(select(selectAppTitle))

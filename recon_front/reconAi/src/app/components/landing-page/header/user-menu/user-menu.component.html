@@ -10,7 +10,7 @@
     }}</mat-icon>
   </button>
   <mat-menu #menu="matMenu" xPosition="before" class="recon-menu">
-    <button mat-menu-item>Profile</button>
+    <button mat-menu-item (click)="onNavigate('profile')">Profile</button>
     <mat-divider></mat-divider>
     <button mat-menu-item>History</button>
 

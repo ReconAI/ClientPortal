@@ -32,20 +32,20 @@ export const selectUserRolePriority = createSelector(
 
 export const selectLoginErrorsStatus = createSelector(
   selectUser,
-  (user: UserState): string => user.errors?.login || ''
+  (user: UserState): string => user?.errors?.login || ''
 );
 
 export const selectCurrentUserName = createSelector(
   selectUser,
-  (user: UserState): string => user.username || ''
+  (user: UserState): string => user?.profile?.username || ''
 );
 
 export const selectPreResetPasswordError = createSelector(
   selectUser,
-  (user: UserState): string => user.errors?.preResetPassword || ''
+  (user: UserState): string => user?.errors?.preResetPassword || ''
 );
 
 export const selectResetPasswordError = createSelector(
   selectUser,
-  (user: UserState): string => user.errors?.resetPassword || ''
+  (user: UserState): string => user?.errors?.resetPassword || ''
 );

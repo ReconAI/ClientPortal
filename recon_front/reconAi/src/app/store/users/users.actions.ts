@@ -121,7 +121,7 @@ export const inviteUserRequestedAction = createAction(
 
 export const inviteUserSucceededAction = createAction(
   UsersActionTypes.INVITE_USER_SUCCEEDED,
-  props<UserTransformationResponse>()
+  props<UserProfileFormInterface>()
 );
 
 export const inviteUserErrorAction = createAction(

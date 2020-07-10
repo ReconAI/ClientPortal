@@ -166,5 +166,20 @@ export const transformUserUpdateToServer = (
   lastname: user.lastName,
   address: user.address,
   phone: user.phone,
-  role: user.role
+  role: user.role,
+});
+
+export const transformActivateUserToClient = (
+  user: ServerUserInterface
+): UserProfileFormInterface => ({
+  user: {
+    firstName: user.firstname,
+    lastName: user.lastname,
+    email: user.email,
+    address: user.address,
+    phone: user.phone,
+  },
+  profile: {
+    username: user.username,
+  },
 });

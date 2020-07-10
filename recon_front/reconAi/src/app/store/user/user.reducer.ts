@@ -31,17 +31,11 @@ export const userErrorsInit: UserErrorsInterface = {
   resetPassword: null,
   preResetPassword: null,
 };
-export interface UserState {
+export interface UserState extends UserTransformationResponse {
   isAuthenticated: boolean;
   role: UserRoleTypes | null;
   rolePriority: UserRolesPriorities;
-  firstName: string;
-  lastName: string;
-  address: string;
-  phone: string;
-  email: string;
   isActive: boolean;
-  username: string;
   errors: UserErrorsInterface;
 }
 
@@ -50,13 +44,11 @@ export const initialState: UserState = {
   isAuthenticated: null,
   role: DEFAULT_USER_ROLE,
   rolePriority: DEFAULT_USER_ROLE_PRIORITY,
-  firstName: null,
-  lastName: null,
-  address: null,
-  phone: null,
-  email: null,
+  user: null,
+  organization: null,
+  profile: null,
+  invoicing: null,
   isActive: null,
-  username: null,
   errors: userErrorsInit,
 };
 

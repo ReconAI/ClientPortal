@@ -93,6 +93,7 @@ export interface ServerUserInterface {
   group: {
     name: UserRoleTypes;
   };
+  organization?: ServerUserOrganizationInterface;
   username: string;
 }
 

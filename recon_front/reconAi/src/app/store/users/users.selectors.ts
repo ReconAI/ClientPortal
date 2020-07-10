@@ -182,22 +182,22 @@ export const selectInvitedUser = createSelector(
 
 export const selectInvitedUserFirstName = createSelector(
   selectInvitedUser,
-  (invitedUser: UserTransformationResponse): string => invitedUser?.firstName
+  (invitedUser: UserTransformationResponse): string => invitedUser?.user?.firstName || ''
 );
 
 export const selectInvitedUserLastName = createSelector(
   selectInvitedUser,
-  (invitedUser: UserTransformationResponse): string => invitedUser?.lastName
+  (invitedUser: UserTransformationResponse): string => invitedUser?.user?.lastName || ''
 );
 
 export const selectInvitedUserEmail = createSelector(
   selectInvitedUser,
-  (invitedUser: UserTransformationResponse): string => invitedUser?.email
+  (invitedUser: UserTransformationResponse): string =>  invitedUser?.user?.email || ''
 );
 
 export const selectInvitedUserUsername = createSelector(
   selectInvitedUser,
-  (invitedUser: UserTransformationResponse): string => invitedUser?.username
+  (invitedUser: UserTransformationResponse): string =>  invitedUser?.profile?.username || ''
 );
 
 // export const selectInvitedUserAddress = createSelector(

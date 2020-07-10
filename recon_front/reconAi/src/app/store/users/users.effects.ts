@@ -19,6 +19,7 @@ import {
   calculatePageAfterDelete,
   transformAddUserToServer,
   transformInviteSignUpUserToServer,
+  transformActivateUserToClient,
 } from './users.server.helpers';
 import {
   UsersActionTypes,
@@ -257,7 +258,7 @@ export class UsersEffects {
               this.store.dispatch(
                 inviteUserActivationSucceededAction(activation)
               );
-              return inviteUserSucceededAction(transformUserResponse(user));
+              return inviteUserSucceededAction(transformActivateUserToClient(user));
             }),
             catchError((error) => {
               this.router.navigate(['/']);

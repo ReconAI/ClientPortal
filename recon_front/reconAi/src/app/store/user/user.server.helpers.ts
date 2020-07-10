@@ -1,21 +1,19 @@
 import { ResetPasswordWithMetaInterface } from 'app/constants/types/resetPassword';
 import { getUserPriorityByRole } from './../../core/helpers/priorities';
-import { UserRolesPriorities, ServerUserInterface } from 'app/constants/types';
+import {
+  UserRolesPriorities,
+  ServerUserInterface,
+  UserProfileFormInterface,
+} from 'app/constants/types';
 import {
   UserRoleTypes,
   DEFAULT_AUTHORIZED_USER_ROLE,
 } from './../../constants/types/user';
 import { HttpErrorResponse } from '@angular/common/http';
-export interface UserTransformationResponse {
+export interface UserTransformationResponse extends UserProfileFormInterface {
   isAuthenticated?: boolean;
   role: UserRoleTypes | null;
   rolePriority: UserRolesPriorities;
-  firstName: string;
-  lastName: string;
-  address: string;
-  phone: string;
-  email: string;
-  username: string;
   isActive: boolean;
 }
 
@@ -25,13 +23,33 @@ export const transformUserResponse = (
   isAuthenticated: null,
   role: response?.group?.name || DEFAULT_AUTHORIZED_USER_ROLE,
   rolePriority: getUserPriorityByRole(response?.group?.name),
-  firstName: response.firstname,
-  lastName: response.lastname,
-  address: response.address,
-  phone: response.phone,
-  email: response.email,
   isActive: response.is_active,
-  username: response.username,
+  profile: {
+    username: response.username,
+  },
+  user: {
+    firstName: response.firstname,
+    lastName: response.lastname,
+    address: response.address,
+    phone: response.phone,
+    email: response.email,
+  },
+  organization: {
+    name: response.organization.name,
+    firstName: response.organization.main_firstname,
+    lastName: response.organization.main_lastname,
+    phone: response.organization.main_phone,
+    email: response.organization.main_email,
+    address: response.organization.main_address,
+    vat: response.organization.vat,
+  },
+  invoicing: {
+    firstName: response.organization.inv_firstname,
+    lastName: response.organization.inv_lastname,
+    address: response.organization.inv_address,
+    phone: response.organization.inv_phone,
+    email: response.organization.inv_email,
+  },
 });
 
 export interface LoginUserFormInterface {
