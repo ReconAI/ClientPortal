@@ -56,7 +56,7 @@ stages:
   extends:
   - .expand_env
   script:
-  - docker build -f docker/client_portal/reporting_tool_server_dockerfile -t ${CI_REGISTRY}/${NAMESPACE}/reporting_tool:${CI_COMMIT_REF_SLUG} . || { echo "Image failed to build"; exit 1; }
+  - docker build -f docker/client_portal/reporting_tool_server_dockerfile_DEV -t ${CI_REGISTRY}/${NAMESPACE}/reporting_tool:${CI_COMMIT_REF_SLUG} . || { echo "Image failed to build"; exit 1; }
   - docker push ${CI_REGISTRY}/${NAMESPACE}/reporting_tool:${CI_COMMIT_REF_SLUG} || { echo "Image failed to push"; exit 1; }
   - docker build -f docker/client_portal/reporting_tool_client_dockerfile -t ${CI_REGISTRY}/${NAMESPACE}/reporting_tool_front:${CI_COMMIT_REF_SLUG} . || { echo "Image failed to build"; exit 1; }
   - docker push ${CI_REGISTRY}/${NAMESPACE}/reporting_tool_front:${CI_COMMIT_REF_SLUG} || { echo "Image failed to push"; exit 1; }
