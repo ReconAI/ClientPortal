@@ -61,6 +61,7 @@ import { AppState } from '../reducers';
 import {
   ServerUserInterface,
   UserProfileFormInterface,
+  signUpRelationsFormAnsServerFields,
 } from 'app/constants/types';
 
 @Injectable()
@@ -263,9 +264,13 @@ export class UserEffects {
         );
       }),
       withLatestFrom(this.store.pipe(select(selectCurrentUserName))),
-      switchMap(([user, username]) =>
-        this.httpClient
-          .patch('/api/profile', transformUpdateCurrentUserToServer(user, username))
+      switchMap(([user, username]) => {
+        console.log(user, 'EFFECT');
+        return this.httpClient
+          .patch(
+            '/api/profile',
+            transformUpdateCurrentUserToServer(user, username)
+          )
           .pipe(
             map(() => {
               this.store.dispatch(resetUpdateCurrentUserErrorAction());
@@ -274,7 +279,10 @@ export class UserEffects {
             catchError((error) =>
               of(
                 updateCurrentUserErrorAction(
-                  generalTransformFormErrorToObject(error)
+                  generalTransformFormErrorToObject(
+                    error,
+                    signUpRelationsFormAnsServerFields
+                  )
                 )
               )
             ),
@@ -285,8 +293,8 @@ export class UserEffects {
                 })
               );
             })
-          )
-      )
+          );
+      })
     )
   );
 }

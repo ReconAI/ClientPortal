@@ -18,5 +18,7 @@
   [invoicingAddress]="invoicingAddress$ | async"
   [invoicingFirstName]="invoicingFirstName$ | async"
   [invoicingLastName]="invoicingLastName$ | async"
+  [isUpdating]="isUpdating$ | async"
+  (sendUser$)="sendUser($event)"
 >
 </recon-user>

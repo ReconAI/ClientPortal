@@ -22,20 +22,23 @@ import {
 } from './../../store/user/user.selectors';
 import { Store, select } from '@ngrx/store';
 import { AppState } from './../../store/reducers/index';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
   UserRolesPriorities,
   UserProfileFormInterface,
 } from 'app/constants/types';
 import { FormServerErrorInterface } from 'app/constants/types/requests';
-import { updateCurrentUserRequestedAction } from 'app/store/user';
+import {
+  updateCurrentUserRequestedAction,
+  resetUpdateCurrentUserErrorAction,
+} from 'app/store/user';
 
 @Component({
   selector: 'recon-current-user-profile-container',
   templateUrl: './current-user-profile.container.html',
 })
-export class CurrentUserProfileContainer implements OnInit {
+export class CurrentUserProfileContainer implements OnInit, OnDestroy {
   constructor(private store: Store<AppState>) {}
 
   isLoading$: Observable<boolean> = this.store.pipe(
@@ -109,7 +112,12 @@ export class CurrentUserProfileContainer implements OnInit {
 
   ngOnInit(): void {}
 
+  ngOnDestroy(): void {
+    this.store.dispatch(resetUpdateCurrentUserErrorAction());
+  }
+
   updateUser(user: UserProfileFormInterface): void {
+    console.log(user, 'CONTAINER');
     this.store.dispatch(updateCurrentUserRequestedAction(user));
   }
 }

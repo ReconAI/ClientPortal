@@ -18,6 +18,7 @@ export enum LoadersActionTypes {
   SET_INVITE_USER_LOADING_STATUS = '[Loaders] Set Invite User Loading Status',
   SET_INVITE_SIGN_UP_USER_LOADING_STATUS = '[Loaders] Set Invite Sign Up User Loading Status',
   SET_UPDATE_CURRENT_USER_LOADING_STATUS = '[Loaders] Set Update Current User Loading Status',
+  SET_UPDATE_USER_LOADING_STATUS = '[Loaders] Set Update User Loading Status',
 }
 
 export interface LoaderInterface {
@@ -104,3 +105,7 @@ export const setUpdateCurrentUserLoadingStatusAction = createAction(
   props<LoaderInterface>()
 );
 
+export const setUpdateUserLoadingStatusAction = createAction(
+  LoadersActionTypes.SET_UPDATE_USER_LOADING_STATUS,
+  props<LoaderInterface>()
+);

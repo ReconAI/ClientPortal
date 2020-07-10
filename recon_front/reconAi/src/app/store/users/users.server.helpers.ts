@@ -94,6 +94,7 @@ export const transformUserProfileResponseFromServer = (
     lastName: response.organization.inv_lastname,
   },
   profile: {
+    id: response.id,
     username: response.username,
   },
 });
@@ -174,4 +175,20 @@ export const transformActivateUserToClient = (
   profile: {
     username: user.username,
   },
+});
+
+export interface UpdateUserRequestInterface {
+  firstname: string;
+  lastname: string;
+  address: string;
+  phone: string;
+}
+
+export const transformUpdateUserToServer = (
+  user: UserProfileFormUserInterface
+): UpdateUserRequestInterface => ({
+  firstname: user.firstName,
+  lastname: user.lastName,
+  address: user.address,
+  phone: user.phone,
 });

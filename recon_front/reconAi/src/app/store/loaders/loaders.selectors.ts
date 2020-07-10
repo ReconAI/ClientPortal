@@ -83,3 +83,8 @@ export const selectUpdateCurrentUserLoadingStatus = createSelector(
   selectLoaders,
   (loaders: LoadersState): boolean => loaders.updateCurrentUser
 );
+
+export const selectUpdateUserLoadingStatus = createSelector(
+  selectLoaders,
+  (loaders: LoadersState): boolean => loaders.updateUser
+);

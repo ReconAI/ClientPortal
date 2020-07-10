@@ -40,6 +40,11 @@ export const selectUserProfile = createSelector(
   (users: UsersState): UserProfileFormInterface => users.user
 );
 
+export const selectUserProfileId = createSelector(
+  selectUserProfile,
+  (user: UserProfileFormInterface) => user?.profile?.id
+);
+
 // User Profile
 // Organization
 export const selectUserProfileOrganization = createSelector(
@@ -182,22 +187,26 @@ export const selectInvitedUser = createSelector(
 
 export const selectInvitedUserFirstName = createSelector(
   selectInvitedUser,
-  (invitedUser: UserTransformationResponse): string => invitedUser?.user?.firstName || ''
+  (invitedUser: UserTransformationResponse): string =>
+    invitedUser?.user?.firstName || ''
 );
 
 export const selectInvitedUserLastName = createSelector(
   selectInvitedUser,
-  (invitedUser: UserTransformationResponse): string => invitedUser?.user?.lastName || ''
+  (invitedUser: UserTransformationResponse): string =>
+    invitedUser?.user?.lastName || ''
 );
 
 export const selectInvitedUserEmail = createSelector(
   selectInvitedUser,
-  (invitedUser: UserTransformationResponse): string =>  invitedUser?.user?.email || ''
+  (invitedUser: UserTransformationResponse): string =>
+    invitedUser?.user?.email || ''
 );
 
 export const selectInvitedUserUsername = createSelector(
   selectInvitedUser,
-  (invitedUser: UserTransformationResponse): string =>  invitedUser?.profile?.username || ''
+  (invitedUser: UserTransformationResponse): string =>
+    invitedUser?.profile?.username || ''
 );
 
 // export const selectInvitedUserAddress = createSelector(

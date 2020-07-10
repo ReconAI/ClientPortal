@@ -24,6 +24,7 @@ import {
   logoutUserSucceededAction,
   updateCurrentUserErrorAction,
   resetUpdateCurrentUserErrorAction,
+  updateCurrentUserSucceededAction,
 } from './user.actions';
 
 export interface UserErrorsInterface {
@@ -179,6 +180,7 @@ const userReducer = createReducer(
   on(resetPasswordErrorAction, resetPasswordErrorReducer),
   on(resetResetPasswordErrorAction, resetResetPasswordErrorReducer),
   on(logoutUserSucceededAction, logoutUserSucceededReducer),
+  on(updateCurrentUserSucceededAction, updateCurrentUserSucceededReducer),
   on(updateCurrentUserErrorAction, updateCurrentUserErrorReducer),
   on(resetUpdateCurrentUserErrorAction, resetUpdateCurrentUserErrorReducer)
 );

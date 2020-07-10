@@ -1,5 +1,8 @@
 import { setAppTitleAction } from './../../../store/app/app.actions';
-import { selectUserProfileLoadingStatus } from './../../../store/loaders/loaders.selectors';
+import {
+  selectUserProfileLoadingStatus,
+  selectUpdateUserLoadingStatus,
+} from './../../../store/loaders/loaders.selectors';
 import { Observable } from 'rxjs';
 import {
   selectUserProfileOrganizationName,
@@ -24,11 +27,13 @@ import {
 import {
   loadUserProfileRequestedAction,
   resetUserProfileAction,
+  updateUserRequested,
 } from './../../../store/users/users.actions';
 import { ActivatedRoute } from '@angular/router';
 import { Store, select } from '@ngrx/store';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AppState } from 'app/store/reducers';
+import { UserProfileFormInterface } from 'app/constants/types';
 
 @Component({
   selector: 'recon-user-container',
@@ -92,6 +97,10 @@ export class UserContainer implements OnInit, OnDestroy {
     select(selectUserProfileInvoicingPhone)
   );
 
+  isUpdating$: Observable<boolean> = this.store.pipe(
+    select(selectUpdateUserLoadingStatus)
+  );
+
   invoicingEmail$: Observable<string> = this.store.pipe(
     select(selectUserProfileInvoicingEmail)
   );
@@ -114,5 +123,9 @@ export class UserContainer implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.store.dispatch(resetUserProfileAction());
+  }
+
+  sendUser(user: UserProfileFormInterface): void {
+    this.store.dispatch(updateUserRequested(user.user));
   }
 }

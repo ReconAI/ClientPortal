@@ -20,6 +20,7 @@ import {
   transformAddUserToServer,
   transformInviteSignUpUserToServer,
   transformActivateUserToClient,
+  transformUpdateUserToServer,
 } from './users.server.helpers';
 import {
   UsersActionTypes,
@@ -37,6 +38,8 @@ import {
   inviteUserActivationSucceededAction,
   invitationSignUpSucceededAction,
   invitationSignUpErrorAction,
+  updateUserSucceeded,
+  updateUserError,
 } from './users.actions';
 import { Router } from '@angular/router';
 import { Action, Store, select } from '@ngrx/store';
@@ -60,11 +63,13 @@ import {
   setAddUserLoadingStatusAction,
   setInviteUserLoadingStatusAction,
   setInviteSignUpUserLoadingStatusAction,
+  setUpdateUserLoadingStatusAction,
 } from '../loaders';
 import {
   selectUsersList,
   selectUsersMetaCurrentPage,
   selectInvitedActivation,
+  selectUserProfileId,
 } from './users.selectors';
 import { AddUserInterface } from 'app/users/constants';
 import { transformUserResponse } from '../user/user.server.helpers';
@@ -322,6 +327,37 @@ export class UsersEffects {
             finalize(() => {
               this.store.dispatch(
                 setInviteSignUpUserLoadingStatusAction({
+                  status: false,
+                })
+              );
+            })
+          )
+      )
+    )
+  );
+
+  update$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action & UserProfileFormUserInterface>(
+        UsersActionTypes.UPDATE_USER_REQUESTED
+      ),
+      tap(() => {
+        this.store.dispatch(
+          setUpdateUserLoadingStatusAction({
+            status: true,
+          })
+        );
+      }),
+      withLatestFrom(this.store.pipe(select(selectUserProfileId))),
+      switchMap(([user, id]) =>
+        this.httpClient
+          .put(`/api/users/${id}`, transformUpdateUserToServer(user))
+          .pipe(
+            map(() => updateUserSucceeded()),
+            catchError((error) => of(updateUserError())),
+            finalize(() => {
+              this.store.dispatch(
+                setUpdateUserLoadingStatusAction({
                   status: false,
                 })
               );

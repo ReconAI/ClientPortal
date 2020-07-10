@@ -23,6 +23,8 @@
     [invoicingAddress]="invoicingAddress"
     [invoicingFirstName]="invoicingFirstName"
     [invoicingLastName]="invoicingLastName"
+    [loading]="isUpdating"
+    (sendUserInfo$)="sendUser($event)"
   >
   </recon-user-profile>
 </ng-container>

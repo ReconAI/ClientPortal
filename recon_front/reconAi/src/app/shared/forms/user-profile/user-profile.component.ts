@@ -99,7 +99,7 @@ export class UserProfileComponent implements OnInit {
       phone: [this.userPhone || '', Validators.required],
       email: [
         { value: this.userEmail || '', disabled: this.disabledUserEmail },
-        Validators.required,
+        !this.disabledUserEmail && Validators.required,
       ],
     });
 
@@ -232,6 +232,7 @@ export class UserProfileComponent implements OnInit {
   }
 
   onSubmit(): void {
-    this.sendUserInfo$.emit(this.profileForm.value);
+    // it's instead of simple value to get disabled values
+    this.sendUserInfo$.emit(this.profileForm.getRawValue());
   }
 }

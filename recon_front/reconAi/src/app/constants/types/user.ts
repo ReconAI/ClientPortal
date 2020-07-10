@@ -55,6 +55,7 @@ export interface CredentialsRequestInterface {
   username: string;
   password1?: string;
   password2?: string;
+  id?: string;
 }
 
 export interface UserProfileFormUserInterface {

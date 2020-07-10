@@ -1,5 +1,6 @@
 import { FormServerErrorInterface } from 'app/constants/types/requests';
 import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
+import { UserProfileFormInterface } from 'app/constants/types';
 
 @Component({
   selector: 'recon-user',
@@ -31,4 +32,12 @@ export class UserComponent {
   @Input() invoicingAddress: string;
   @Input() invoicingFirstName: string;
   @Input() invoicingLastName: string;
+
+  @Input() isUpdating: boolean;
+
+  @Output() sendUser$ = new EventEmitter<UserProfileFormInterface>();
+
+  sendUser(user: UserProfileFormInterface): void {
+    this.sendUser$.emit(user);
+  }
 }
