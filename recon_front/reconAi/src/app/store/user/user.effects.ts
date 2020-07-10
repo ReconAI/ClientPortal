@@ -267,7 +267,7 @@ export class UserEffects {
       switchMap(([user, username]) => {
         console.log(user, 'EFFECT');
         return this.httpClient
-          .patch(
+          .put(
             '/api/profile',
             transformUpdateCurrentUserToServer(user, username)
           )

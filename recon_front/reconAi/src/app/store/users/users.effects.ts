@@ -305,7 +305,7 @@ export class UsersEffects {
       withLatestFrom(this.store.pipe(select(selectInvitedActivation))),
       switchMap(([user, activation]) =>
         this.httpClient
-          .patch(
+          .put(
             `/api/users/invitations`,
             transformInviteSignUpUserToServer(user, activation)
           )
