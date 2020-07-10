@@ -212,7 +212,8 @@ class CurrentUserProfileView(APIView, FormMixin):
 
         return self.save_or_error(
             _('Data is modified'),
-            form=form
+            form=form,
+            request=request
         )
 
     def __get_update_form(self,

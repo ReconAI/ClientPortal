@@ -127,6 +127,14 @@ class UserEditForm(ModelForm):
             "username", "firstname", "lastname", "address", "phone"
         )
 
+    def save(self, commit=True, **kwargs) -> get_user_model():
+        """
+        :type commit: bool
+
+        :rtype: User
+        """
+        return super().save(commit)
+
 
 class SignupForm(SendEmailMixin):
     """
