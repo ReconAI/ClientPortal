@@ -274,7 +274,7 @@ class InvitationView(APIView, FormMixin, CheckTokenMixin):
                               'token is still valid and registers the user',
     )
     @method_decorator(never_cache)
-    def patch(self, *args, **kwargs) -> JsonResponse:
+    def put(self, *args, **kwargs) -> JsonResponse:
         """
         :rtype: JsonResponse
         """
