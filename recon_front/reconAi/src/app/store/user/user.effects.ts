@@ -1,6 +1,10 @@
+import { selectCurrentUserName } from './user.selectors';
 import { Router } from '@angular/router';
 import { ResetPasswordWithMetaInterface } from 'app/constants/types/resetPassword';
-import { generalTransformFormErrorToString } from './../../core/helpers/generalFormsErrorsTransformation';
+import {
+  generalTransformFormErrorToString,
+  generalTransformFormErrorToObject,
+} from './../../core/helpers/generalFormsErrorsTransformation';
 import {
   setLoginLoadingStatusAction,
   setCurrentUserLoadingStatusAction,
@@ -8,15 +12,17 @@ import {
   setPreSignUpLoadingStatusAction,
   setResetPasswordLoadingStatusAction,
   setPreResetPasswordLoadingStatusAction,
+  setUpdateCurrentUserLoadingStatusAction,
 } from './../loaders/loaders.actions';
 import { LocalStorageService } from './../../core/services/localStorage/local-storage.service';
-import { Action, Store } from '@ngrx/store';
+import { Action, Store, select } from '@ngrx/store';
 import {
   transformUserResponse,
   ServerLoginUserResponseInterface,
   transformLoginUserForm,
   PreResetPasswordRequestInterface,
   transformResetPasswordFormToRequest,
+  transformUpdateCurrentUserToServer,
 } from './user.server.helpers';
 import {
   UserActionTypes,
@@ -34,6 +40,9 @@ import {
   preResetPasswordSucceededAction,
   preResetResetPasswordErrorAction,
   preResetPasswordErrorAction,
+  updateCurrentUserSucceededAction,
+  resetUpdateCurrentUserErrorAction,
+  updateCurrentUserErrorAction,
 } from './user.actions';
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
@@ -45,10 +54,14 @@ import {
   finalize,
   tap,
   filter,
+  withLatestFrom,
 } from 'rxjs/operators';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { AppState } from '../reducers';
-import { ServerUserInterface } from 'app/constants/types';
+import {
+  ServerUserInterface,
+  UserProfileFormInterface,
+} from 'app/constants/types';
 
 @Injectable()
 export class UserEffects {
@@ -234,6 +247,46 @@ export class UserEffects {
             })
           );
       })
+    )
+  );
+
+  updateCurrentUser$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<UserProfileFormInterface & Action>(
+        UserActionTypes.UPDATE_CURRENT_USER_REQUESTED
+      ),
+      tap(() => {
+        this.store.dispatch(
+          setUpdateCurrentUserLoadingStatusAction({
+            status: true,
+          })
+        );
+      }),
+      withLatestFrom(this.store.pipe(select(selectCurrentUserName))),
+      switchMap(([user, username]) =>
+        this.httpClient
+          .patch('/api/profile', transformUpdateCurrentUserToServer(user, username))
+          .pipe(
+            map(() => {
+              this.store.dispatch(resetUpdateCurrentUserErrorAction());
+              return updateCurrentUserSucceededAction(user);
+            }),
+            catchError((error) =>
+              of(
+                updateCurrentUserErrorAction(
+                  generalTransformFormErrorToObject(error)
+                )
+              )
+            ),
+            finalize(() => {
+              this.store.dispatch(
+                setUpdateCurrentUserLoadingStatusAction({
+                  status: false,
+                })
+              );
+            })
+          )
+      )
     )
   );
 }

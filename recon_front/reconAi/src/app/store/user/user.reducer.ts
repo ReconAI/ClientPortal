@@ -1,4 +1,8 @@
-import { FormServerErrorInterface } from './../../constants/types/requests';
+import { UserProfileFormInterface } from 'app/constants/types';
+import {
+  FormServerErrorInterface,
+  ObjectFormErrorInterface,
+} from './../../constants/types/requests';
 import { UserTransformationResponse } from './user.server.helpers';
 import {
   UserRoleTypes,
@@ -18,18 +22,22 @@ import {
   preResetPasswordErrorAction,
   preResetResetPasswordErrorAction,
   logoutUserSucceededAction,
+  updateCurrentUserErrorAction,
+  resetUpdateCurrentUserErrorAction,
 } from './user.actions';
 
 export interface UserErrorsInterface {
   login: string;
   resetPassword: string;
   preResetPassword: string;
+  updateCurrentUser: FormServerErrorInterface;
 }
 
 export const userErrorsInit: UserErrorsInterface = {
   login: null,
   resetPassword: null,
   preResetPassword: null,
+  updateCurrentUser: null,
 };
 export interface UserState extends UserTransformationResponse {
   isAuthenticated: boolean;
@@ -130,6 +138,35 @@ const logoutUserSucceededReducer = (state: UserState): UserState => ({
   isAuthenticated: false,
 });
 
+const updateCurrentUserSucceededReducer = (
+  state: UserState,
+  { type, ...user }: Action & UserProfileFormInterface
+): UserState => ({
+  ...state,
+  organization: user.organization,
+  user: user.user,
+  invoicing: user.invoicing,
+});
+
+const updateCurrentUserErrorReducer = (
+  state: UserState,
+  { type, errors }: Action & ObjectFormErrorInterface
+): UserState => ({
+  ...state,
+  errors: {
+    ...state.errors,
+    updateCurrentUser: errors,
+  },
+});
+
+const resetUpdateCurrentUserErrorReducer = (state: UserState): UserState => ({
+  ...state,
+  errors: {
+    ...state.errors,
+    updateCurrentUser: userErrorsInit.updateCurrentUser,
+  },
+});
+
 const userReducer = createReducer(
   initialState,
   on(loadCurrentUserSucceededAction, loadCurrentUserSucceededReducer),
@@ -141,7 +178,9 @@ const userReducer = createReducer(
   on(preResetResetPasswordErrorAction, preResetResetPasswordErrorReducer),
   on(resetPasswordErrorAction, resetPasswordErrorReducer),
   on(resetResetPasswordErrorAction, resetResetPasswordErrorReducer),
-  on(logoutUserSucceededAction, logoutUserSucceededReducer)
+  on(logoutUserSucceededAction, logoutUserSucceededReducer),
+  on(updateCurrentUserErrorAction, updateCurrentUserErrorReducer),
+  on(resetUpdateCurrentUserErrorAction, resetUpdateCurrentUserErrorReducer)
 );
 
 export function reducer(state: UserState | undefined, action: Action) {

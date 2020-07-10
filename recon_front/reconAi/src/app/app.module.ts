@@ -1,3 +1,4 @@
+import { CurrentUserProfileContainer } from './components/current-user-profile/current-user-profile.container';
 import { InvitationUserContainer } from './components/invitation-user/invitation-user.container';
 import { UsersEffects } from './store/users/users.effects';
 import { HttpSuccessInterceptor } from './core/interceptors/http-success/http-success.interceptor';
@@ -73,6 +74,7 @@ import { CurrentUserProfileComponent } from './components/current-user-profile/c
     InvitationUserComponent,
     InvitationUserContainer,
     CurrentUserProfileComponent,
+    CurrentUserProfileContainer,
   ],
   imports: [
     BrowserModule,

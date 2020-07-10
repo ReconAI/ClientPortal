@@ -153,3 +153,12 @@ export const signUpRelationsFormAnsServerFields = {
   inv_phone: 'Invoicing phone',
   inv_email: 'Invoicing email',
 };
+
+export interface UpdateUserServerRequestInterface {
+  username: string;
+  firstname: string;
+  lastname: string;
+  address: string;
+  phone: string;
+  role?: string;
+}

@@ -8,8 +8,11 @@ import {
 import {
   UserRoleTypes,
   DEFAULT_AUTHORIZED_USER_ROLE,
+  ServerUserOrganizationInterface,
+  UpdateUserServerRequestInterface,
 } from './../../constants/types/user';
 import { HttpErrorResponse } from '@angular/common/http';
+import { SignUpRequestInterface } from '../signUp/signUp.server.helpers';
 export interface UserTransformationResponse extends UserProfileFormInterface {
   isAuthenticated?: boolean;
   role: UserRoleTypes | null;
@@ -94,4 +97,27 @@ export const transformResetPasswordFormToRequest = ({
   uidb64,
   new_password1: password1,
   new_password2: password2,
+});
+
+export const transformUpdateCurrentUserToServer = (
+  user: UserProfileFormInterface,
+  username
+): ServerUserOrganizationInterface & UpdateUserServerRequestInterface => ({
+  username,
+  firstname: user.user.firstName,
+  lastname: user.user.lastName,
+  address: user.user.address,
+  phone: user.user.phone,
+  name: user.organization.name,
+  vat: user.organization.vat,
+  main_firstname: user.organization.firstName,
+  main_lastname: user.organization.lastName,
+  main_address: user.organization.address,
+  main_phone: user.organization.phone,
+  main_email: user.organization.email,
+  inv_firstname: user.invoicing.firstName,
+  inv_lastname: user.invoicing.lastName,
+  inv_address: user.invoicing.address,
+  inv_phone: user.invoicing.phone,
+  inv_email: user.invoicing.email,
 });

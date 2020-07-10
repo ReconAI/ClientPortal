@@ -3,6 +3,7 @@ import { SignUpRequestInterface } from './../signUp/signUp.server.helpers';
 import {
   UserProfileFormUserInterface,
   CredentialsRequestInterface,
+  UpdateUserServerRequestInterface,
 } from './../../constants/types/user';
 import { ActivationInterface } from './../../constants/types/activation';
 import {
@@ -142,15 +143,6 @@ export const transformInviteSignUpUserToServer = (
   password1: user.profile.password1,
   password2: user.profile.password2,
 });
-
-export interface UpdateUserServerRequestInterface {
-  username: string;
-  firstname: string;
-  lastname: string;
-  address: string;
-  phone: string;
-  role: string;
-}
 
 interface UpdateUserClientRequestInterface
   extends UserProfileFormUserInterface {

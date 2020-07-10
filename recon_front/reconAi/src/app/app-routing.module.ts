@@ -1,4 +1,4 @@
-import { CurrentUserProfileComponent } from './components/current-user-profile/current-user-profile.component';
+import { CurrentUserProfileContainer } from './components/current-user-profile/current-user-profile.container';
 import { UserRolesPriorities } from './constants/types/user';
 import { InvitationUserContainer } from './components/invitation-user/invitation-user.container';
 
@@ -57,7 +57,10 @@ const routes: Routes = [
   {
     path: 'profile',
     canActivate: [AuthRoleGuard],
-    component: CurrentUserProfileComponent,
+    component: CurrentUserProfileContainer,
+    data: {
+      title: 'Profile',
+    },
   },
   {
     path: 'new-feature',

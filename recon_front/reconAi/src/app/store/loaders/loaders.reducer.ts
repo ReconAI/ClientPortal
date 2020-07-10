@@ -14,6 +14,7 @@ import {
   setAddUserLoadingStatusAction,
   setInviteUserLoadingStatusAction,
   setInviteSignUpUserLoadingStatusAction,
+  setUpdateCurrentUserLoadingStatusAction,
 } from './loaders.actions';
 import { createReducer, on, Action } from '@ngrx/store';
 
@@ -34,6 +35,7 @@ export interface LoadersState {
   addUser: boolean;
   inviteUser: boolean;
   inviteSignUpUser: boolean;
+  updateCurrentUser: boolean;
 }
 
 const initialState: LoadersState = {
@@ -52,6 +54,7 @@ const initialState: LoadersState = {
   addUser: false,
   inviteUser: false,
   inviteSignUpUser: false,
+  updateCurrentUser: false,
 };
 
 const setCurrentUserLoadingStatusReducer = (
@@ -124,6 +127,11 @@ const setInviteSignUpUserLoadingStatusReducer = (
   { status }: Action & LoaderInterface
 ): LoadersState => ({ ...state, inviteSignUpUser: status });
 
+const setUpdateCurrentUserLoadingStatusReducer = (
+  state: LoadersState,
+  { status }: Action & LoaderInterface
+): LoadersState => ({ ...state, updateCurrentUser: status });
+
 const loadersReducer = createReducer(
   initialState,
   on(setCurrentUserLoadingStatusAction, setCurrentUserLoadingStatusReducer),
@@ -145,6 +153,10 @@ const loadersReducer = createReducer(
   on(
     setInviteSignUpUserLoadingStatusAction,
     setInviteSignUpUserLoadingStatusReducer
+  ),
+  on(
+    setUpdateCurrentUserLoadingStatusAction,
+    setUpdateCurrentUserLoadingStatusReducer
   )
 );
 

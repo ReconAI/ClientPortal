@@ -78,3 +78,8 @@ export const selectInviteSignUpUserLoadingStatus = createSelector(
   selectLoaders,
   (loaders: LoadersState): boolean => loaders.inviteSignUpUser
 );
+
+export const selectUpdateCurrentUserLoadingStatus = createSelector(
+  selectLoaders,
+  (loaders: LoadersState): boolean => loaders.updateCurrentUser
+);

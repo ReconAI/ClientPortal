@@ -1,1 +1,25 @@
-<p>current-user-profile works!</p>
+<recon-user-profile
+  [disabledInvoicing]="disablingBlocks()"
+  [disabledOrganization]="disablingBlocks()"
+  [organizationName]="organizationName"
+  [organizationPhone]="organizationPhone"
+  [organizationEmail]="organizationEmail"
+  [organizationAddress]="organizationAddress"
+  [organizationVat]="organizationVat"
+  [organizationFirstName]="organizationFirstName"
+  [organizationLastName]="organizationLastName"
+  [userPhone]="userPhone"
+  [userEmail]="userEmail"
+  [userAddress]="userAddress"
+  [userFirstName]="userFirstName"
+  [userLastName]="userLastName"
+  [invoicingPhone]="invoicingPhone"
+  [invoicingEmail]="invoicingEmail"
+  [invoicingAddress]="invoicingAddress"
+  [invoicingFirstName]="invoicingFirstName"
+  [invoicingLastName]="invoicingLastName"
+  [loading]="sendLoadingStatus"
+  [errors]="errors"
+  (sendUserInfo$)="updateUser($event)"
+>
+</recon-user-profile>
