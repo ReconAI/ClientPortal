@@ -1,3 +1,4 @@
+import { UserRolesPriorities } from 'app/constants/types';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { UserInterface } from './../../constants/types/user';
@@ -18,6 +19,7 @@ export class ManagementComponent implements OnInit {
 
   @Output() loadData$ = new EventEmitter<number>();
 
+  readonly userRolePriorities = UserRolesPriorities;
   readonly columns = [
     {
       header: 'First name',

@@ -13,8 +13,8 @@ export type DEVELOPER_TYPE_ROLE = 'developer';
 export enum UserRolesPriorities {
   UNAUTHORIZED_ROLE = 1,
   CLIENT_ROLE,
-  ADMIN_ROLE,
   DEVELOPER_ROLE,
+  ADMIN_ROLE,
   SUPER_ADMIN_ROLE,
 }
 

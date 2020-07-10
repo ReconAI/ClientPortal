@@ -15,7 +15,9 @@
     <button mat-menu-item>History</button>
 
     <mat-divider></mat-divider>
-    <ng-container *reconCheckUserRolePriority="userRolePriorities.ADMIN_ROLE">
+    <ng-container
+      *reconCheckUserRolePriority="userRolePriorities.DEVELOPER_ROLE"
+    >
       <button mat-menu-item (click)="onNavigate('users')">
         User management
       </button>

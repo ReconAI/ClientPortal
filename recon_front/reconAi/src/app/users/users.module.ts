@@ -1,3 +1,4 @@
+import { CoreModule } from './../core/core.module';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { UserComponent } from './components/user/user.component';
@@ -34,6 +35,7 @@ import { AddUserDialogContainer } from './components/management/add-user-dialog/
     SharedModule,
     UsersRoutingModule,
     SharedModule,
+    CoreModule,
   ],
   providers: [
     { provide: MatDialogRef, useValue: {} },
