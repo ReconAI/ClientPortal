@@ -202,7 +202,7 @@ class CurrentUserProfileView(APIView, FormMixin):
             token_header()
         ]
     )
-    def patch(self, request: Request, *args, **kwargs) -> JsonResponse:
+    def put(self, request: Request, *args, **kwargs) -> JsonResponse:
         """
         :type request: Request
 
