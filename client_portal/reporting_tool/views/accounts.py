@@ -26,8 +26,9 @@ from reporting_tool.forms.organization import OrganizationForm
 from reporting_tool.models import Token
 from reporting_tool.permissions import IsNotAuthenticated, IsActive, \
     PaymentRequired
-from reporting_tool.serializers import UserSerializer, \
-    form_to_formserializer, forms_to_formserializer, AuthTokenSerializer
+from reporting_tool.serializers import form_to_formserializer, \
+    forms_to_formserializer, AuthTokenSerializer, \
+    UserOrganizationSerializer
 from reporting_tool.settings import RECON_AI_CONNECTION_NAME
 from reporting_tool.swagger.headers import token_header
 from reporting_tool.swagger.responses import get_responses, token, http400, \
@@ -158,7 +159,7 @@ class CurrentUserProfileView(APIView, FormMixin):
     @staticmethod
     @swagger_auto_schema(
         responses={
-            status.HTTP_200_OK: data_serializer(UserSerializer),
+            status.HTTP_200_OK: data_serializer(UserOrganizationSerializer),
             status.HTTP_401_UNAUTHORIZED: http401(),
             status.HTTP_405_METHOD_NOT_ALLOWED: http405()
         },
@@ -177,7 +178,7 @@ class CurrentUserProfileView(APIView, FormMixin):
 
         :rtype: JsonResponse
         """
-        serializer = UserSerializer(request.user)
+        serializer = UserOrganizationSerializer(request.user)
 
         return JsonResponse({
             'data': serializer.data
@@ -211,7 +212,8 @@ class CurrentUserProfileView(APIView, FormMixin):
 
         return self.save_or_error(
             _('Data is modified'),
-            form=form
+            form=form,
+            request=request
         )
 
     def __get_update_form(self,
