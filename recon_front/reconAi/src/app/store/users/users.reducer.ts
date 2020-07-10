@@ -54,7 +54,7 @@ export const initialState: UsersState = {
 
 const loadUsersListSucceededReducer = (
   state: UsersState,
-  { type, ...payload }: Action & UserInterface // check it out
+  { type, ...payload }: Action & UserInterface
 ): UsersState => ({ ...state, ...payload });
 
 const loadUserProfileSucceededReducer = (

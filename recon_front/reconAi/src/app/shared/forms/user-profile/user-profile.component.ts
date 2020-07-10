@@ -20,7 +20,7 @@ export class UserProfileComponent implements OnInit {
   @Input() errors: FormServerErrorInterface;
   @Input() showTerms = false;
   @Input() isInvitation = false;
-  // make it work
+
   @Input() disabledButton = false;
   @Input() disabledUserEmail = false;
   @Input() disabledOrganization = false;
@@ -64,32 +64,6 @@ export class UserProfileComponent implements OnInit {
   }
 
   constructor(private fb: FormBuilder) {}
-
-  // ngOnChanges(changes: SimpleChanges) {
-  //   // checks whether form is changed from outside
-  //   // for (const propName in changes) {
-  //   //   if (changes.hasOwnProperty(propName)) {
-  //   //     let block = '';
-  //   //     if (propName.startsWith('organization')) {
-  //   //       console.log(propName, 'RPOP NAME');
-  //   //       block = 'organization';
-  //   //     }
-  //   //     if (propName.startsWith('user')) {
-  //   //       block = 'user';
-  //   //     }
-  //   //     if (propName.startsWith('invoicing')) {
-  //   //       block = 'invoicing';
-  //   //     }
-  //   //     if (block) {
-  //   //       let field = propName.slice(block.length);
-  //   //       field = field.charAt(0).toLowerCase() + field.slice(1);
-  //   //       this?.profileForm
-  //   //         ?.get([block, field])
-  //   //         .patchValue(changes[propName].currentValue);
-  //   //     }
-  //   //   }
-  //   // }
-  // }
 
   createGroup(): FormGroup {
     const userGroup = this.fb.group({

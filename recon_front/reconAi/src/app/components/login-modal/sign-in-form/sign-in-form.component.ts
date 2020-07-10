@@ -31,8 +31,6 @@ export class SignInFormComponent implements OnInit, OnDestroy {
   signInForm: FormGroup;
   dialogRef: MatDialogRef<PreResetPasswordContainer>;
 
-  // @ViewChild('myLogin') loginItem:;
-
   readonly loginTooltipText = LOGIN_RULES_TOOLTIP;
   readonly passwordTooltipText = PASSWORD_RULES_TOOLTIP;
 

@@ -1,5 +1,8 @@
 import { generalTransformFormErrorToObject } from './../../core/helpers/generalFormsErrorsTransformation';
-import { UserProfileFormInterface, signUpRelationsFormAnsServerFields } from './../../constants/types/user';
+import {
+  UserProfileFormInterface,
+  signUpRelationsFormAnsServerFields,
+} from './../../constants/types/user';
 import { ActivationInterface } from './../../constants/types/activation';
 import { Router } from '@angular/router';
 import {
@@ -63,7 +66,6 @@ export class SignUpEffects {
         this.httpClient
           .post('/api/pre-signup', transformPreSignUpUserForm(user))
           .pipe(
-            // check type
             map(() => {
               this.store.dispatch(setPreSignUpInfoAction(user));
               this.router.navigate(['/registration']);
@@ -93,7 +95,6 @@ export class SignUpEffects {
       ofType(SignUpActionTypes.ACTIVATION_REQUESTED),
       switchMap((activation: ActivationInterface) =>
         this.httpClient.put('/api/activate', activation).pipe(
-          // check type
           map(() => activationSucceededAction()),
           catchError((error) => {
             return of(activationErrorAction());
@@ -127,7 +128,6 @@ export class SignUpEffects {
             })
           )
           .pipe(
-            // check type
             // clean the reducer state out
             map(() => signUpUserSucceededAction()),
             tap(() => {

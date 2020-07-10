@@ -209,16 +209,6 @@ export const selectInvitedUserUsername = createSelector(
     invitedUser?.profile?.username || ''
 );
 
-// export const selectInvitedUserAddress = createSelector(
-//   selectInvitedUser,
-//   (invitedUser: UserTransformationResponse): string => invitedUser?.address
-// );
-
-// export const selectInvitedUserPhone = createSelector(
-//   selectInvitedUser,
-//   (invitedUser: UserTransformationResponse): string => invitedUser?.phone
-// );
-
 // invitation sign up
 export const selectInvitedActivation = createSelector(
   selectUsers,

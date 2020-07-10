@@ -1,7 +1,6 @@
 import { AppTitleActionInterface, setAppTitleAction } from './app.actions';
 import { createReducer, on, Action } from '@ngrx/store';
 
-// maybe add universal one and add structure
 export interface AppSliceState {
   title: string;
 }
