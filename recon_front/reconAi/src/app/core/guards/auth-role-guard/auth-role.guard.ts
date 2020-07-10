@@ -1,4 +1,8 @@
-import { selectIsAuthenticated } from './../store/user/user.selectors';
+import {
+  selectIsAuthenticated,
+  selectUserRolePriority,
+} from './../../../store/user/user.selectors';
+
 import { Injectable } from '@angular/core';
 import {
   CanActivate,
@@ -8,14 +12,14 @@ import {
   CanActivateChild,
 } from '@angular/router';
 import { Observable } from 'rxjs';
-import { tap, filter } from 'rxjs/operators';
+import { filter, map, withLatestFrom } from 'rxjs/operators';
 import { Store, select } from '@ngrx/store';
 import { AppState } from 'app/store/reducers';
 
 @Injectable({
   providedIn: 'root',
 })
-export class AuthGuard implements CanActivate, CanActivateChild {
+export class AuthRoleGuard implements CanActivate, CanActivateChild {
   constructor(private store: Store<AppState>) {}
 
   canActivate(
@@ -29,6 +33,13 @@ export class AuthGuard implements CanActivate, CanActivateChild {
     return this.store.pipe(
       select(selectIsAuthenticated),
       filter((isAuth) => isAuth !== null),
+      withLatestFrom(this.store.pipe(select(selectUserRolePriority))),
+      map(
+        ([isAuth, userRolePriority]) =>
+          isAuth &&
+          (!next?.data?.expectedRolePriority ||
+            userRolePriority >= next?.data?.expectedRolePriority)
+      )
     );
   }
 

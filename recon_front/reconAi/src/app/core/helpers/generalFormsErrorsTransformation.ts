@@ -9,10 +9,10 @@ export const generalTransformFormErrorToString = (
 ): FormServerErrorInterface | null => {
   const errors = error?.error?.errors;
 
+  console.log(error, 'ERROR');
   if (errors) {
     if (error.status === 400 || error.status === 422 || error.status === 404) {
       if (typeof errors === 'string') {
-
         return {
           general: errors,
         };

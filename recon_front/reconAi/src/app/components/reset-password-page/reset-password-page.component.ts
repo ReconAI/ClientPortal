@@ -1,12 +1,8 @@
-import { ofType } from '@ngrx/effects';
 import { Subscription } from 'rxjs';
 import { ResetPasswordModalContainer } from './reset-password-modal/reset-password-modal.container';
 import { MatDialogRef, MatDialog } from '@angular/material/dialog';
-import { AppState } from './../../store/reducers/index';
-import { Store, ActionsSubject } from '@ngrx/store';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
-import { resetPasswordSucceededAction } from 'app/store/user';
 
 @Component({
   selector: 'recon-reset-password-page',
@@ -16,18 +12,13 @@ import { resetPasswordSucceededAction } from 'app/store/user';
 export class ResetPasswordPageComponent implements OnInit {
   uidb64: string;
   token: string;
-  dialogRef: MatDialogRef<any>; // check type
+  dialogRef: MatDialogRef<ResetPasswordModalContainer>;
   subscriptionToClose$: Subscription;
   constructor(
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    public dialog: MatDialog,
-    private actionsSubject: ActionsSubject
+    public dialog: MatDialog
   ) {}
-
-  closeDialog(): void {
-    this.dialogRef.close();
-  }
 
   openDialog(): void {
     this.dialogRef = this.dialog.open(ResetPasswordModalContainer, {
@@ -36,7 +27,6 @@ export class ResetPasswordPageComponent implements OnInit {
       data: {
         uidb64: this.uidb64,
         token: this.token,
-        subscriptionToClose$: this.subscriptionToClose$,
       },
     });
   }
@@ -46,11 +36,6 @@ export class ResetPasswordPageComponent implements OnInit {
     this.token = this.activatedRoute.snapshot.paramMap.get('token');
 
     this.router.navigate(['/']);
-    this.subscriptionToClose$ = this.actionsSubject
-      .pipe(ofType(resetPasswordSucceededAction))
-      .subscribe(() => {
-        this.closeDialog();
-      });
 
     if (this.uidb64 && this.token) {
       this.openDialog();

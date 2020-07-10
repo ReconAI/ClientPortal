@@ -1,3 +1,6 @@
+import { CurrentUserProfileContainer } from './components/current-user-profile/current-user-profile.container';
+import { InvitationUserContainer } from './components/invitation-user/invitation-user.container';
+import { UsersEffects } from './store/users/users.effects';
 import { HttpSuccessInterceptor } from './core/interceptors/http-success/http-success.interceptor';
 import { RegistrationSuccessHumanComponent } from './components/registration/registration-success/registration-success-human.component';
 import { SignUpEffects } from './store/signUp/signUp.effects';
@@ -33,7 +36,6 @@ import { SignInFormComponent } from './components/login-modal/sign-in-form/sign-
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { SignUpFormContainer } from './components/login-modal/sign-in-form/sign-up-form.container';
 import { RegistrationContainer } from './components/registration/registration/registration.container';
-import { UserProfileComponent } from './components/userProfile/user-profile/user-profile.component';
 import { RegistrationSuccessComponent } from './components/registration/registration-success/registration-success.component';
 import { ActivationComponent } from './components/activation/activation/activation.component';
 import { PreResetPasswordComponent } from './components/login-modal/pre-reset-password/pre-reset-password.component';
@@ -43,6 +45,8 @@ import { ResetPasswordModalComponent } from './components/reset-password-page/re
 import { ResetPasswordModalContainer } from './components/reset-password-page/reset-password-modal/reset-password-modal.container';
 import { NewFeatureComponent } from './components/new-feature/new-feature.component';
 import { NewFeatureContainer } from './components/new-feature/new-feature.container';
+import { InvitationUserComponent } from './components/invitation-user/invitation-user.component';
+import { CurrentUserProfileComponent } from './components/current-user-profile/current-user-profile.component';
 
 @NgModule({
   declarations: [
@@ -57,7 +61,6 @@ import { NewFeatureContainer } from './components/new-feature/new-feature.contai
     SignInFormContainer,
     SignUpFormContainer,
     RegistrationContainer,
-    UserProfileComponent,
     RegistrationSuccessComponent,
     RegistrationSuccessHumanComponent,
     ActivationComponent,
@@ -68,6 +71,10 @@ import { NewFeatureContainer } from './components/new-feature/new-feature.contai
     ResetPasswordModalContainer,
     NewFeatureComponent,
     NewFeatureContainer,
+    InvitationUserComponent,
+    InvitationUserContainer,
+    CurrentUserProfileComponent,
+    CurrentUserProfileContainer,
   ],
   imports: [
     BrowserModule,
@@ -86,7 +93,7 @@ import { NewFeatureContainer } from './components/new-feature/new-feature.contai
     CoreModule,
     SharedModule, // remove later
     StoreRouterConnectingModule.forRoot(),
-    EffectsModule.forRoot([UserEffects, SignUpEffects]),
+    EffectsModule.forRoot([UserEffects, SignUpEffects, UsersEffects]),
   ],
   providers: [
     // token and headers

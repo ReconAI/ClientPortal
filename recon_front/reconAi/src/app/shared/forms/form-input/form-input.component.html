@@ -1,7 +1,11 @@
 <div class="field-container" [ngSwitch]="fieldType">
   <label [for]="uniqueId">{{ label }} </label>
   <span class="required" *ngIf="showRequiredSymbol">*</span>
-  <ng-container *ngSwitchCase="'text'">
+  <ng-container
+    *ngSwitchCase="
+      fieldType === 'text' || fieldType === 'password' ? fieldType : ''
+    "
+  >
     <div class="input-container">
       <input
         [id]="uniqueId"
@@ -10,6 +14,7 @@
         [ngClass]="{
           'recon-input-invalid': hasErrors
         }"
+        [type]="fieldType"
         [placeholder]="placeholder"
         [disabled]="disabled"
         (input)="onChange($event.target.value)"

@@ -1,6 +1,10 @@
+import { selectCurrentUserName } from './user.selectors';
 import { Router } from '@angular/router';
 import { ResetPasswordWithMetaInterface } from 'app/constants/types/resetPassword';
-import { generalTransformFormErrorToString } from './../../core/helpers/generalFormsErrorsTransformation';
+import {
+  generalTransformFormErrorToString,
+  generalTransformFormErrorToObject,
+} from './../../core/helpers/generalFormsErrorsTransformation';
 import {
   setLoginLoadingStatusAction,
   setCurrentUserLoadingStatusAction,
@@ -8,16 +12,17 @@ import {
   setPreSignUpLoadingStatusAction,
   setResetPasswordLoadingStatusAction,
   setPreResetPasswordLoadingStatusAction,
+  setUpdateCurrentUserLoadingStatusAction,
 } from './../loaders/loaders.actions';
 import { LocalStorageService } from './../../core/services/localStorage/local-storage.service';
-import { Action, Store } from '@ngrx/store';
+import { Action, Store, select } from '@ngrx/store';
 import {
-  UserResponse,
   transformUserResponse,
   ServerLoginUserResponseInterface,
   transformLoginUserForm,
   PreResetPasswordRequestInterface,
   transformResetPasswordFormToRequest,
+  transformUpdateCurrentUserToServer,
 } from './user.server.helpers';
 import {
   UserActionTypes,
@@ -35,6 +40,9 @@ import {
   preResetPasswordSucceededAction,
   preResetResetPasswordErrorAction,
   preResetPasswordErrorAction,
+  updateCurrentUserSucceededAction,
+  resetUpdateCurrentUserErrorAction,
+  updateCurrentUserErrorAction,
 } from './user.actions';
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
@@ -46,9 +54,15 @@ import {
   finalize,
   tap,
   filter,
+  withLatestFrom,
 } from 'rxjs/operators';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { AppState } from '../reducers';
+import {
+  ServerUserInterface,
+  UserProfileFormInterface,
+  signUpRelationsFormAnsServerFields,
+} from 'app/constants/types';
 
 @Injectable()
 export class UserEffects {
@@ -71,7 +85,7 @@ export class UserEffects {
         );
       }),
       switchMap(() =>
-        this.httpClient.get<UserResponse>('/authApi/profile').pipe(
+        this.httpClient.get<ServerUserInterface>('/api/profile').pipe(
           map((user) =>
             loadCurrentUserSucceededAction(transformUserResponse(user))
           ),
@@ -101,7 +115,7 @@ export class UserEffects {
       switchMap((data) =>
         this.httpClient
           .post<ServerLoginUserResponseInterface>(
-            '/authApi/api-token-auth',
+            '/api/api-token-auth',
             transformLoginUserForm(data)
           )
           .pipe(
@@ -143,7 +157,7 @@ export class UserEffects {
         );
       }),
       switchMap(() =>
-        this.httpClient.put('/authApi/logout', {}).pipe(
+        this.httpClient.put('/api/logout', {}).pipe(
           map(() => {
             this.localStorageService.removeAuthToken();
             this.store.dispatch(resetCurrentUserAction());
@@ -176,7 +190,7 @@ export class UserEffects {
         );
       }),
       switchMap((email: PreResetPasswordRequestInterface) =>
-        this.httpClient.post('/authApi/reset-password', email).pipe(
+        this.httpClient.post('/api/reset-password', email).pipe(
           map(() => {
             // check if we need it
             this.store.dispatch(preResetResetPasswordErrorAction());
@@ -213,10 +227,7 @@ export class UserEffects {
       }),
       switchMap((credentials: ResetPasswordWithMetaInterface) => {
         return this.httpClient
-          .put(
-            '/authApi/reset',
-            transformResetPasswordFormToRequest(credentials)
-          )
+          .put('/api/reset', transformResetPasswordFormToRequest(credentials))
           .pipe(
             map(() => {
               return resetPasswordSucceededAction();
@@ -231,6 +242,52 @@ export class UserEffects {
             finalize(() => {
               this.store.dispatch(
                 setResetPasswordLoadingStatusAction({
+                  status: false,
+                })
+              );
+            })
+          );
+      })
+    )
+  );
+
+  updateCurrentUser$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<UserProfileFormInterface & Action>(
+        UserActionTypes.UPDATE_CURRENT_USER_REQUESTED
+      ),
+      tap(() => {
+        this.store.dispatch(
+          setUpdateCurrentUserLoadingStatusAction({
+            status: true,
+          })
+        );
+      }),
+      withLatestFrom(this.store.pipe(select(selectCurrentUserName))),
+      switchMap(([user, username]) => {
+        return this.httpClient
+          .put(
+            '/api/profile',
+            transformUpdateCurrentUserToServer(user, username)
+          )
+          .pipe(
+            map(() => {
+              this.store.dispatch(resetUpdateCurrentUserErrorAction());
+              return updateCurrentUserSucceededAction(user);
+            }),
+            catchError((error) =>
+              of(
+                updateCurrentUserErrorAction(
+                  generalTransformFormErrorToObject(
+                    error,
+                    signUpRelationsFormAnsServerFields
+                  )
+                )
+              )
+            ),
+            finalize(() => {
+              this.store.dispatch(
+                setUpdateCurrentUserLoadingStatusAction({
                   status: false,
                 })
               );

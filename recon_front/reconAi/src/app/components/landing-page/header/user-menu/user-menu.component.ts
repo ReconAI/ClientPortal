@@ -1,65 +1,40 @@
 import { Subscription, Observable } from 'rxjs';
 import { LoginModalComponent } from './../../../login-modal/login-modal.component';
-import {
-  Component,
-  OnInit,
-  ViewEncapsulation,
-  Input,
-  OnChanges,
-  OnDestroy,
-  Output,
-  EventEmitter
-} from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { UserRolesPriorities } from 'app/constants/types';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { loadUsersListRequestedAction } from 'app/store/users';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'recon-user-menu',
   templateUrl: './user-menu.component.html',
   styleUrls: ['./user-menu.component.less'],
-  encapsulation: ViewEncapsulation.None,
 })
-export class UserMenuComponent implements OnInit, OnDestroy {
+export class UserMenuComponent {
   readonly userRolePriorities = UserRolesPriorities;
 
   @Input() userPriority: UserRolesPriorities;
-  @Input() closeModalEvent$: Observable<any>; // check type
   @Input() userName: string;
   @Input() userRole: string;
 
   @Output() logout$ = new EventEmitter();
-  constructor(public dialog: MatDialog) {}
-  dialogRef: MatDialogRef<any>; // check type
-  subscriptionToCloseModal$: Subscription;
+  constructor(public dialog: MatDialog, private router: Router) {}
+  dialogRef: MatDialogRef<LoginModalComponent>;
 
   openDialog(): void {
     this.dialogRef = this.dialog.open(LoginModalComponent, {
       width: '460px',
       height: '410px',
-      panelClass: 'login-modal'
+      panelClass: 'login-modal',
     });
   }
 
+  onNavigate(...url: string[]): void {
+    this.router.navigate([...url]);
+  }
+
   logout(): void {
-    this.logout$.emit({});
-  }
-
-  closeDialog(): void {
-    this.dialogRef.close();
-  }
-
-  ngOnInit(): void {
-    // check whether we should close modal window after sign in or sign up
-    if (this.closeModalEvent$) {
-      this.subscriptionToCloseModal$ = this.closeModalEvent$.subscribe(() => {
-        this.closeDialog();
-      });
-    }
-  }
-
-  ngOnDestroy(): void {
-    if (this.subscriptionToCloseModal$) {
-      this.subscriptionToCloseModal$.unsubscribe();
-    }
+    this.logout$.emit();
   }
 }

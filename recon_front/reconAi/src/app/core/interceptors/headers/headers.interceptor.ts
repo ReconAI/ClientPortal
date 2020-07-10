@@ -12,11 +12,12 @@ import { Observable } from 'rxjs';
 export class HeadersInterceptor implements HttpInterceptor {
   readonly AUTH_HEADER = 'Authorization';
   readonly urlsWithoutToken = [
-    '/authApi/api-token-auth',
-    '/authApi/signup',
-    '/authApi/reset-password',
-    '/authApi/pre-signup',
-    '/authApi/reset',
+    '/api/api-token-auth',
+    '/api/signup',
+    '/api/reset-password',
+    '/api/pre-signup',
+    '/api/reset',
+    '/api/users/invitations',
   ];
 
   constructor(private localStorageService: LocalStorageService) {}

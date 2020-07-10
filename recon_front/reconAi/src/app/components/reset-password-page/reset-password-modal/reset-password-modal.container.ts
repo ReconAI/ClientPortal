@@ -1,5 +1,4 @@
 import { Subscription } from 'rxjs';
-import { ModalCloseSubscriptionInterface } from './../../../constants/types/modals';
 import { ofType } from '@ngrx/effects';
 import { selectResetPasswordError } from './../../../store/user/user.selectors';
 import { selectResetPasswordLoadingStatus } from './../../../store/loaders/loaders.selectors';
@@ -8,10 +7,10 @@ import {
   resetResetPasswordErrorAction,
   resetPasswordSucceededAction,
 } from './../../../store/user/user.actions';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
   ResetPasswordInterface,
-  PasswordMetaInterface,
+  ActivationInterface,
 } from './../../../constants/types/resetPassword';
 
 import { AppState } from './../../../store/reducers/index';
@@ -26,7 +25,9 @@ export class ResetPasswordModalContainer implements OnInit, OnDestroy {
   constructor(
     private store: Store<AppState>,
     @Inject(MAT_DIALOG_DATA)
-    public data: PasswordMetaInterface & ModalCloseSubscriptionInterface
+    public data: ActivationInterface,
+    private dialogRef: MatDialogRef<ResetPasswordModalContainer>,
+    private actionsSubject: ActionsSubject
   ) {}
   subscriptionToClose$: Subscription;
 
@@ -35,9 +36,11 @@ export class ResetPasswordModalContainer implements OnInit, OnDestroy {
   );
 
   passwordsError$ = this.store.pipe(select(selectResetPasswordError));
-
+  closeModal$ = this.actionsSubject.pipe(ofType(resetPasswordSucceededAction));
   ngOnInit(): void {
-    this.subscriptionToClose$ = this.data.subscriptionToClose$;
+    this.subscriptionToClose$ = this.closeModal$.subscribe(() => {
+      this.dialogRef.close();
+    });
   }
 
   ngOnDestroy(): void {

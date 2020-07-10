@@ -1,0 +1,8 @@
+<recon-management
+  [data]="users$ | async"
+  [currentPage]="currentPage$ | async"
+  [totalCount]="totalCount$ | async"
+  [pageSize]="pageSize$ | async"
+  (loadData$)="loadUsers($event)"
+>
+</recon-management>

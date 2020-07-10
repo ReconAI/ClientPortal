@@ -1,56 +1,58 @@
 import { ResetPasswordWithMetaInterface } from 'app/constants/types/resetPassword';
 import { getUserPriorityByRole } from './../../core/helpers/priorities';
-import { FormServerErrorInterface } from './../../constants/types/requests';
-import { UserRolesPriorities } from 'app/constants/types';
 import {
-  DEFAULT_USER_ROLE,
-  DEFAULT_USER_ROLE_PRIORITY,
+  UserRolesPriorities,
+  ServerUserInterface,
+  UserProfileFormInterface,
+} from 'app/constants/types';
+import {
   UserRoleTypes,
   DEFAULT_AUTHORIZED_USER_ROLE,
+  ServerUserOrganizationInterface,
+  UpdateUserServerRequestInterface,
 } from './../../constants/types/user';
 import { HttpErrorResponse } from '@angular/common/http';
-
-export interface UserResponse {
-  id: number;
-  firstname: string;
-  lastname: string;
-  address: string;
-  phone: string;
-  email: string;
-  user_level: number;
-  is_active: boolean;
-  group: {
-    name: UserRoleTypes;
-  };
-  username: string;
-}
-
-export interface UserTransformationResponse {
-  isAuthenticated: boolean;
+import { SignUpRequestInterface } from '../signUp/signUp.server.helpers';
+export interface UserTransformationResponse extends UserProfileFormInterface {
+  isAuthenticated?: boolean;
   role: UserRoleTypes | null;
   rolePriority: UserRolesPriorities;
-  firstName: string;
-  lastName: string;
-  address: string;
-  phone: string;
-  email: string;
-  username: string;
   isActive: boolean;
 }
 
 export const transformUserResponse = (
-  response: UserResponse
+  response: ServerUserInterface
 ): UserTransformationResponse => ({
   isAuthenticated: null,
   role: response?.group?.name || DEFAULT_AUTHORIZED_USER_ROLE,
   rolePriority: getUserPriorityByRole(response?.group?.name),
-  firstName: response.firstname,
-  lastName: response.lastname,
-  address: response.address,
-  phone: response.phone,
-  email: response.email,
   isActive: response.is_active,
-  username: response.username,
+  profile: {
+    username: response.username,
+  },
+  user: {
+    firstName: response.firstname,
+    lastName: response.lastname,
+    address: response.address,
+    phone: response.phone,
+    email: response.email,
+  },
+  organization: {
+    name: response.organization.name,
+    firstName: response.organization.main_firstname,
+    lastName: response.organization.main_lastname,
+    phone: response.organization.main_phone,
+    email: response.organization.main_email,
+    address: response.organization.main_address,
+    vat: response.organization.vat,
+  },
+  invoicing: {
+    firstName: response.organization.inv_firstname,
+    lastName: response.organization.inv_lastname,
+    address: response.organization.inv_address,
+    phone: response.organization.inv_phone,
+    email: response.organization.inv_email,
+  },
 });
 
 export interface LoginUserFormInterface {
@@ -78,7 +80,7 @@ export interface PreResetPasswordRequestInterface {
   email: string;
 }
 
-export interface ResetPasswordReqestInterface {
+export interface ResetPasswordRequestInterface {
   token: string;
   uidb64: string;
   new_password1: string;
@@ -90,9 +92,32 @@ export const transformResetPasswordFormToRequest = ({
   token,
   password1,
   password2,
-}: ResetPasswordWithMetaInterface): ResetPasswordReqestInterface => ({
+}: ResetPasswordWithMetaInterface): ResetPasswordRequestInterface => ({
   token,
   uidb64,
   new_password1: password1,
   new_password2: password2,
+});
+
+export const transformUpdateCurrentUserToServer = (
+  user: UserProfileFormInterface,
+  username
+): ServerUserOrganizationInterface & UpdateUserServerRequestInterface => ({
+  username,
+  firstname: user.user.firstName,
+  lastname: user.user.lastName,
+  address: user.user.address,
+  phone: user.user.phone,
+  name: user.organization.name,
+  vat: user.organization.vat,
+  main_firstname: user.organization.firstName,
+  main_lastname: user.organization.lastName,
+  main_address: user.organization.address,
+  main_phone: user.organization.phone,
+  main_email: user.organization.email,
+  inv_firstname: user.invoicing.firstName,
+  inv_lastname: user.invoicing.lastName,
+  inv_address: user.invoicing.address,
+  inv_phone: user.invoicing.phone,
+  inv_email: user.invoicing.email,
 });

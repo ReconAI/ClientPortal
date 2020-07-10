@@ -8,6 +8,14 @@ import {
   setResetPasswordLoadingStatusAction,
   setPreResetPasswordLoadingStatusAction,
   setSignUpLoadingStatusAction,
+  setUserListLoadingStatusAction,
+  setUserProfileLoadingStatusAction,
+  setDeleteUserLoadingStatusAction,
+  setAddUserLoadingStatusAction,
+  setInviteUserLoadingStatusAction,
+  setInviteSignUpUserLoadingStatusAction,
+  setUpdateCurrentUserLoadingStatusAction,
+  setUpdateUserLoadingStatusAction,
 } from './loaders.actions';
 import { createReducer, on, Action } from '@ngrx/store';
 
@@ -22,6 +30,14 @@ export interface LoadersState {
   userActivation: boolean;
   resetPassword: boolean;
   preResetPassword: boolean;
+  userList: boolean;
+  userProfile: boolean;
+  deleteUser: boolean;
+  addUser: boolean;
+  inviteUser: boolean;
+  inviteSignUpUser: boolean;
+  updateCurrentUser: boolean;
+  updateUser: boolean;
 }
 
 const initialState: LoadersState = {
@@ -34,6 +50,14 @@ const initialState: LoadersState = {
   userActivation: false,
   resetPassword: false,
   preResetPassword: false,
+  userList: false,
+  userProfile: false,
+  deleteUser: false,
+  addUser: false,
+  inviteUser: false,
+  inviteSignUpUser: false,
+  updateCurrentUser: false,
+  updateUser: false,
 };
 
 const setCurrentUserLoadingStatusReducer = (
@@ -76,6 +100,46 @@ const setResetPasswordLoadingStatusReducer = (
   { status }: Action & LoaderInterface
 ): LoadersState => ({ ...state, resetPassword: status });
 
+const setUserListLoadingStatusReducer = (
+  state: LoadersState,
+  { status }: Action & LoaderInterface
+): LoadersState => ({ ...state, userList: status });
+
+const setUserProfileLoadingStatusReducer = (
+  state: LoadersState,
+  { status }: Action & LoaderInterface
+): LoadersState => ({ ...state, userProfile: status });
+
+const setDeleteUserLoadingStatusReducer = (
+  state: LoadersState,
+  { status }: Action & LoaderInterface
+): LoadersState => ({ ...state, deleteUser: status });
+
+const setAddUserLoadingStatusReducer = (
+  state: LoadersState,
+  { status }: Action & LoaderInterface
+): LoadersState => ({ ...state, addUser: status });
+
+const setInviteUserLoadingStatusReducer = (
+  state: LoadersState,
+  { status }: Action & LoaderInterface
+): LoadersState => ({ ...state, inviteUser: status });
+
+const setInviteSignUpUserLoadingStatusReducer = (
+  state: LoadersState,
+  { status }: Action & LoaderInterface
+): LoadersState => ({ ...state, inviteSignUpUser: status });
+
+const setUpdateCurrentUserLoadingStatusReducer = (
+  state: LoadersState,
+  { status }: Action & LoaderInterface
+): LoadersState => ({ ...state, updateCurrentUser: status });
+
+const setUpdateUserLoadingStatusReducer = (
+  state: LoadersState,
+  { status }: Action & LoaderInterface
+): LoadersState => ({ ...state, updateUser: status });
+
 const loadersReducer = createReducer(
   initialState,
   on(setCurrentUserLoadingStatusAction, setCurrentUserLoadingStatusReducer),
@@ -85,7 +149,24 @@ const loadersReducer = createReducer(
   on(setSignUpLoadingStatusAction, setSignUpLoadingStatusReducer),
   on(setActivationLoadingStatusAction, setActivationLoadingStatusReducer),
   on(setResetPasswordLoadingStatusAction, setResetPasswordLoadingStatusReducer),
-  on(setPreResetPasswordLoadingStatusAction, setPreResetPasswordLoadingStatusReducer),
+  on(
+    setPreResetPasswordLoadingStatusAction,
+    setPreResetPasswordLoadingStatusReducer
+  ),
+  on(setUserListLoadingStatusAction, setUserListLoadingStatusReducer),
+  on(setUserProfileLoadingStatusAction, setUserProfileLoadingStatusReducer),
+  on(setDeleteUserLoadingStatusAction, setDeleteUserLoadingStatusReducer),
+  on(setAddUserLoadingStatusAction, setAddUserLoadingStatusReducer),
+  on(setInviteUserLoadingStatusAction, setInviteUserLoadingStatusReducer),
+  on(
+    setInviteSignUpUserLoadingStatusAction,
+    setInviteSignUpUserLoadingStatusReducer
+  ),
+  on(
+    setUpdateCurrentUserLoadingStatusAction,
+    setUpdateCurrentUserLoadingStatusReducer
+  ),
+  on(setUpdateUserLoadingStatusAction, setUpdateUserLoadingStatusReducer)
 );
 
 export function reducer(state: LoadersState | undefined, action: Action) {
