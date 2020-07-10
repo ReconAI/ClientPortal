@@ -13,8 +13,7 @@ from django.views.decorators.cache import never_cache
 from drf_yasg.utils import swagger_auto_schema
 from requests import Request
 from rest_framework import status
-from rest_framework.generics import RetrieveUpdateDestroyAPIView, \
-    ListCreateAPIView
+from rest_framework.generics import ListCreateAPIView, GenericAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
@@ -92,6 +91,11 @@ class UserList(ListCreateAPIView, FormMixin):
     @atomic(using='default')
     @atomic(using=RECON_AI_CONNECTION_NAME)
     def create(self, request: Request, *args, **kwargs) -> JsonResponse:
+        """
+        :type request: Request
+
+        :rtype: JsonResponse
+        """
         form = self.form_class(request.user.organization_id, data=request.data)
 
         return self.save_or_error(
@@ -102,71 +106,7 @@ class UserList(ListCreateAPIView, FormMixin):
         )
 
 
-@method_decorator(name='get', decorator=swagger_auto_schema(
-    responses={
-        status.HTTP_200_OK: data_serializer(UserOrganizationSerializer),
-        status.HTTP_401_UNAUTHORIZED: http401(),
-        status.HTTP_404_NOT_FOUND: http404(),
-        status.HTTP_403_FORBIDDEN: http403(),
-        status.HTTP_405_METHOD_NOT_ALLOWED: http405()
-    },
-    tags=['User Management'],
-    operation_summary="User data",
-    operation_description='Returns user data within current user organization',
-    manual_parameters=[
-        token_header(),
-    ]
-))
-@method_decorator(name='delete', decorator=swagger_auto_schema(
-    responses=get_responses(
-        status.HTTP_200_OK,
-        status.HTTP_401_UNAUTHORIZED,
-        status.HTTP_404_NOT_FOUND,
-        status.HTTP_403_FORBIDDEN,
-        status.HTTP_405_METHOD_NOT_ALLOWED
-    ),
-    tags=['User Management'],
-    operation_summary="Delete user",
-    operation_description='Delete user within current user organization',
-    manual_parameters=[
-        token_header(),
-    ]
-))
-@method_decorator(name='patch', decorator=swagger_auto_schema(
-    responses=get_responses(
-        status.HTTP_200_OK,
-        status.HTTP_400_BAD_REQUEST,
-        status.HTTP_404_NOT_FOUND,
-        status.HTTP_403_FORBIDDEN,
-        status.HTTP_405_METHOD_NOT_ALLOWED,
-        status.HTTP_422_UNPROCESSABLE_ENTITY
-    ),
-    request_body=form_to_formserializer(UserEditForm),
-    tags=['User Management'],
-    operation_summary="User data update",
-    operation_description='Updates user data within current user organization',
-    manual_parameters=[
-        token_header(),
-    ]
-))
-@method_decorator(name='put', decorator=swagger_auto_schema(
-    responses=get_responses(
-        status.HTTP_200_OK,
-        status.HTTP_400_BAD_REQUEST,
-        status.HTTP_404_NOT_FOUND,
-        status.HTTP_403_FORBIDDEN,
-        status.HTTP_405_METHOD_NOT_ALLOWED,
-        status.HTTP_422_UNPROCESSABLE_ENTITY
-    ),
-    request_body=form_to_formserializer(UserEditForm),
-    tags=['User Management'],
-    operation_summary="User data update",
-    operation_description='Updates user data within current user organization',
-    manual_parameters=[
-        token_header(),
-    ]
-))
-class UserItem(RetrieveUpdateDestroyAPIView, FormMixin):
+class UserItem(GenericAPIView, FormMixin):
     """
     Returns and updates user data.
     Deletes a user.
@@ -190,9 +130,56 @@ class UserItem(RetrieveUpdateDestroyAPIView, FormMixin):
             organization_id=self.request.user.organization_id
         ).exclude(id=self.request.user.pk)
 
+    @swagger_auto_schema(
+        responses={
+            status.HTTP_200_OK: data_serializer(UserOrganizationSerializer),
+            status.HTTP_401_UNAUTHORIZED: http401(),
+            status.HTTP_404_NOT_FOUND: http404(),
+            status.HTTP_403_FORBIDDEN: http403(),
+            status.HTTP_405_METHOD_NOT_ALLOWED: http405()
+        },
+        tags=['User Management'],
+        operation_summary="User data",
+        operation_description='Returns user data within '
+                              'current user organization',
+        manual_parameters=[
+            token_header(),
+        ]
+    )
+    def get(self, *args, **kwargs) -> JsonResponse:
+        """
+        :rtype: JsonResponse
+        """
+        instance = self.get_object()
+
+        return JsonResponse({
+            'data': UserOrganizationSerializer(instance).data
+        })
+
+    @swagger_auto_schema(
+        responses=get_responses(
+            status.HTTP_200_OK,
+            status.HTTP_400_BAD_REQUEST,
+            status.HTTP_404_NOT_FOUND,
+            status.HTTP_403_FORBIDDEN,
+            status.HTTP_405_METHOD_NOT_ALLOWED,
+            status.HTTP_422_UNPROCESSABLE_ENTITY
+        ),
+        request_body=form_to_formserializer(UserEditForm),
+        tags=['User Management'],
+        operation_summary="User data update",
+        operation_description='Updates user data '
+                              'within current user organization',
+        manual_parameters=[
+            token_header(),
+        ]
+    )
     @atomic(using='default')
     @atomic(using=RECON_AI_CONNECTION_NAME)
-    def update(self, request, *args, **kwargs) -> JsonResponse:
+    def put(self, request, *args, **kwargs) -> JsonResponse:
+        """
+        :rtype: JsonResponse
+        """
         form = self.form_class(
             request.data,
             instance=self.get_object()
@@ -203,19 +190,26 @@ class UserItem(RetrieveUpdateDestroyAPIView, FormMixin):
             form=form
         )
 
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-
-        return JsonResponse({
-            'data': UserOrganizationSerializer(instance).data
-        })
-
-    @atomic(using='default')
-    @atomic(using=RECON_AI_CONNECTION_NAME)
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-
-        self.perform_destroy(instance)
+    @swagger_auto_schema(
+        responses=get_responses(
+            status.HTTP_200_OK,
+            status.HTTP_401_UNAUTHORIZED,
+            status.HTTP_404_NOT_FOUND,
+            status.HTTP_403_FORBIDDEN,
+            status.HTTP_405_METHOD_NOT_ALLOWED
+        ),
+        tags=['User Management'],
+        operation_summary="Delete user",
+        operation_description='Delete user within current user organization',
+        manual_parameters=[
+            token_header(),
+        ]
+    )
+    def delete(self, request, *args, **kwargs) -> JsonResponse:
+        """
+        :rtype: JsonResponse
+        """
+        self.get_object().delete()
 
         return JsonResponse({
             'message': _('User is deleted')
