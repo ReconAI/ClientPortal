@@ -117,7 +117,6 @@ export class CurrentUserProfileContainer implements OnInit, OnDestroy {
   }
 
   updateUser(user: UserProfileFormInterface): void {
-    console.log(user, 'CONTAINER');
     this.store.dispatch(updateCurrentUserRequestedAction(user));
   }
 }

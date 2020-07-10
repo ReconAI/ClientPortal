@@ -68,7 +68,6 @@ export class InvitationUserContainer implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log('IM HERE');
     this.uidb64 = this.activatedRoute.snapshot.paramMap.get('uidb');
     this.token = this.activatedRoute.snapshot.paramMap.get('token');
 

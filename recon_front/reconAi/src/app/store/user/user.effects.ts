@@ -265,7 +265,6 @@ export class UserEffects {
       }),
       withLatestFrom(this.store.pipe(select(selectCurrentUserName))),
       switchMap(([user, username]) => {
-        console.log(user, 'EFFECT');
         return this.httpClient
           .put(
             '/api/profile',
