@@ -7,12 +7,12 @@ import {
 } from './../../store/loaders/loaders.selectors';
 import { loadCurrentUserRequestedAction } from './../../store/user/user.actions';
 import { AppState } from './../../store/reducers/index';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, Renderer2 } from '@angular/core';
 import { Store, select } from '@ngrx/store';
 import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { filter, map, tap } from 'rxjs/operators';
 import { Subscription, Observable } from 'rxjs';
-import { Location } from '@angular/common';
+import { Location, DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'recon-landing-page',
@@ -24,14 +24,16 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   // from components, effects
   titleChangesSubscription$: Subscription;
   // from routing
-  titleChangesFromRouting$: Subscription;
+  changesFromRouting$: Subscription;
 
   constructor(
     // to get current url
     private location: Location,
     private store: Store<AppState>,
     private router: Router,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private renderer: Renderer2,
+    @Inject(DOCUMENT) private document
   ) {}
 
   globalLoadingStatusSubscription$: Subscription;
@@ -56,11 +58,12 @@ export class LandingPageComponent implements OnInit, OnDestroy {
         this.title = title;
       });
 
-    this.titleChangesFromRouting$ = this.router.events
+    this.changesFromRouting$ = this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe(() => {
         let page = this?.activatedRoute?.snapshot?.firstChild;
         let title = this?.activatedRoute?.snapshot?.firstChild?.data.title;
+        let backgroundWithoutUnion = false;
         while (page.firstChild) {
           page = page?.firstChild;
           if (page?.data?.title) {
@@ -70,11 +73,21 @@ export class LandingPageComponent implements OnInit, OnDestroy {
         if (title) {
           this.store.dispatch(setAppTitleAction({ title }));
         }
+        backgroundWithoutUnion = page?.data?.backgroundWithoutUnion;
+        this.updateBodyClass(backgroundWithoutUnion);
       });
   }
 
+  private updateBodyClass(backgroundWithoutUnion?: boolean) {
+    this.renderer.setAttribute(this.document?.body, 'class', '');
+    if (!backgroundWithoutUnion) {
+      this.renderer.addClass(this.document?.body, 'body-with-union');
+
+    }
+  }
+
   ngOnDestroy(): void {
-    this.titleChangesFromRouting$.unsubscribe();
+    this.changesFromRouting$.unsubscribe();
     this.titleChangesSubscription$.unsubscribe();
     this.globalLoadingStatusSubscription$.unsubscribe();
   }
