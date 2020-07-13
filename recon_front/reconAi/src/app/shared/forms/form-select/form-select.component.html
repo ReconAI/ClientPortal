@@ -1,11 +1,20 @@
 <div
   [ngClass]="{ 'disabled-field': disabled }"
   class="select"
-  [ngClass]="{ 'is-active': isActive }"
+  [ngClass]="{
+    'is-active': isActive,
+    'recon-select-invalid': hasErrors,
+    'without-value': !selectedOption?.value
+  }"
   (reconClickOutside)="handleClickOutside()"
   tabindex="0"
+  (blur)="onTouched()"
 >
-  <div class="select-header" (click)="headerClick()">
+  <label [for]="uniqueId" class="select-label" *ngIf="label"
+    >{{ label }}
+    <span class="required" *ngIf="showRequiredSymbol">*</span></label
+  >
+  <div class="select-header" (click)="headerClick()" [id]="uniqueId">
     <span>{{ headerLabel }}</span>
     <div class="select-icon">
       <mat-icon aria-hidden="false" aria-label="person">{{

@@ -6,8 +6,15 @@
     [showRequiredSymbol]="true"
   ></recon-form-input>
 
-  <recon-form-select formControlName="manufacture" [showRequiredSymbol]="true">
+  <recon-form-select
+    formControlName="manufacture"
+    [showRequiredSymbol]="true"
+    label="Manufacture"
+  >
   </recon-form-select>
+  <div>
+    <span class="add-manufacture-label">+ Add new manufacture</span>
+  </div>
 </form>
 
 {{ jsonValue }}

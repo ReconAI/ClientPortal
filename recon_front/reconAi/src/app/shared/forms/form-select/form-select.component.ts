@@ -108,7 +108,7 @@ export class FormSelectComponent implements ControlValueAccessor, OnInit {
     return (
       this.selectedOption?.label?.toString() ||
       this.placeholder ||
-      'Choose option'
+      'Choose an option'
     );
   }
 

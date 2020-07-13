@@ -5,9 +5,22 @@
     position: relative;
 
     &:focus {
+        outline: 0;
         .select-header {
-            // border: 1px solid @recon-black;
-            outline: 1 px solid pink;
+            border: 1px solid @recon-black;
+        }
+    }
+
+    &.recon-select-invalid {
+
+        .select-header {
+            border-color: @recon-error-input-border;
+        }
+    }
+
+    &.without-value {
+        .select-header {
+            color: #757575;
         }
     }
 }
@@ -19,17 +32,16 @@
 }
 
 .select-header {
-    border: 1px solid #ccc;
+    border: 1px solid @recon-border-input;
+    background-color: @recon-background-input;
     cursor: pointer;
     display: flex;
     align-items: center;
+    box-sizing: border-box;
+    margin: 10px 0px;
 
     span {
         margin-left: 20px;
-    }
-
-    &.recon-input-invalid {
-        border-color: @recon-error-input-border;
     }
 }
 
