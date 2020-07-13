@@ -1,0 +1,78 @@
+@import "../../../../variables.less";
+
+.select {
+    width: 100%;
+    position: relative;
+
+    &:focus {
+        .select-header {
+            // border: 1px solid @recon-black;
+            outline: 1 px solid pink;
+        }
+    }
+}
+
+.select.is-active {
+    .select-body {
+        display: block;
+    }
+}
+
+.select-header {
+    border: 1px solid #ccc;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+
+    span {
+        margin-left: 20px;
+    }
+
+    &.recon-input-invalid {
+        border-color: @recon-error-input-border;
+    }
+}
+
+.select-current {
+    font-size: 18px;
+    line-height: 24px;
+    padding: 8px;
+}
+
+.select-icon {
+    align-items: center;
+    display: flex;
+    flex-shrink: 0;
+    justify-content: center;
+    height: 40px;
+    margin-left: auto;
+    text-align: center;
+    width: 40px;
+}
+
+.select-body {
+    left: 0;
+    right: 0;
+    position: absolute;
+    top: 100%;
+    border: 1px solid #ccc;
+    border-top: 0px;
+    display: none;
+}
+
+.select-item {
+    line-height: 24px;
+    padding: 8px;
+    font-size: 16px;
+    padding-left: 20px;
+    background-color: white;
+
+    &:hover {
+        background-color: #f2f2f2;
+        cursor: pointer;
+    }
+}
+
+.select.disabled-field {
+    opacity: 75%;
+}

@@ -1,0 +1,25 @@
+<div
+  [ngClass]="{ 'disabled-field': disabled }"
+  class="select"
+  [ngClass]="{ 'is-active': isActive }"
+  (reconClickOutside)="handleClickOutside()"
+  tabindex="0"
+>
+  <div class="select-header" (click)="headerClick()">
+    <span>{{ headerLabel }}</span>
+    <div class="select-icon">
+      <mat-icon aria-hidden="false" aria-label="person">{{
+        isActive ? "keyboard_arrow_up" : "keyboard_arrow_down"
+      }}</mat-icon>
+    </div>
+  </div>
+  <div class="select-body">
+    <div
+      class="select-item"
+      *ngFor="let option of options"
+      (click)="optionClick(option)"
+    >
+      {{ option.label }}
+    </div>
+  </div>
+</div>

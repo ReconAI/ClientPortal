@@ -6,7 +6,7 @@
     CREATE
   </button>
   <mat-menu #menu="matMenu" xPosition="before" class="recon-menu">
-    <button mat-menu-item>
+    <button mat-menu-item (click)="navigateTo('/orders/create-device')"> 
       Device
     </button>
     <mat-divider></mat-divider>

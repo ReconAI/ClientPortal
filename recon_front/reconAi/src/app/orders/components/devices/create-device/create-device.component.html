@@ -1,0 +1,13 @@
+<form [formGroup]="deviceForm">
+  <recon-form-input
+    label="Name"
+    placeholder="Name"
+    formControlName="name"
+    [showRequiredSymbol]="true"
+  ></recon-form-input>
+
+  <recon-form-select formControlName="manufacture" [showRequiredSymbol]="true">
+  </recon-form-select>
+</form>
+
+{{ jsonValue }}
