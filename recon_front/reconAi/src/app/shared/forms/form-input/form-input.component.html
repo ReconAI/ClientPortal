@@ -1,4 +1,8 @@
-<div class="field-container" [ngSwitch]="fieldType">
+<div
+  class="field-container"
+  [ngClass]="{ 'disabled-field': disabled }"
+  [ngSwitch]="fieldType"
+>
   <label [for]="uniqueId">{{ label }} </label>
   <span class="required" *ngIf="showRequiredSymbol">*</span>
   <ng-container
