@@ -1,0 +1,27 @@
+<form [formGroup]="categoriesForm">
+  <ng-container
+    *ngFor="let link of categories.controls; let i = index"
+    formArrayName="categories"
+  >
+    <recon-form-input
+      label=""
+      [formControlName]="i"
+      [isWithCloseIcon]="true"
+      (clickIcon)="removeCategory(i)"
+    ></recon-form-input>
+  </ng-container>
+
+  <div class="add-item-to-list-container">
+    <span (click)="addCategory()">+ Add category...</span>
+  </div>
+
+  <div class="button-container">
+    <button
+      mat-raised-button
+      color="primary"
+      [disabled]="!categoriesForm.valid"
+    >
+      Save
+    </button>
+  </div>
+</form>
