@@ -16,4 +16,4 @@ class ReportingToolConfig(AppConfig):
         """
         Imports signals on ready
         """
-        import reporting_tool.signals
+        import shared.signals

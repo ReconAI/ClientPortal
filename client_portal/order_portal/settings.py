@@ -31,15 +31,15 @@ APP_NAME = 'Recon AI'
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
+    # 'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
+    # 'django.contrib.sessions',
+    # 'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
-    'reporting_tool',
+    'order_portal',
     'recon_db_manager',
     'drf_yasg',
     'shared'
@@ -56,17 +56,8 @@ MIDDLEWARE = [
     'shared.middlewares.HTTPLogMiddleware'
 ]
 
-EMAIL_BACKEND = 'django.core.mail.backends.{}.EmailBackend'.format(
-    os.environ.get('EMAIL_BACKEND', 'console')  # console, dummy, firebased, locmem, smtp
-)
-EMAIL_HOST = os.environ.get('EMAIL_HOST')
-EMAIL_PORT = os.environ.get('EMAIL_PORT')
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
-EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS')
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
 
-ROOT_URLCONF = 'reporting_tool.urls'
+ROOT_URLCONF = 'order_portal.urls'
 
 TEMPLATES = [
     {
@@ -102,7 +93,7 @@ SWAGGER_SETTINGS = {
 
 AUTH_USER_MODEL = 'shared.User'
 
-WSGI_APPLICATION = 'reporting_tool.wsgi.application'
+WSGI_APPLICATION = 'order_portal.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
@@ -137,38 +128,10 @@ DATABASE_ROUTERS = ['shared.db_routers.ReconDBRouter']
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-    {
-        'NAME': 'shared.validators.TwoLowercasesPasswordValidator',
-    },
-    {
-        'NAME': 'shared.validators.TwoUppercasesPasswordValidator',
-    },
-    {
-        'NAME': 'shared.validators.TwoNumbersPasswordValidator',
-    },
-    {
-        'NAME': 'shared.validators.SpecialCharacterPasswordValidator',
-    },
-]
 
-AWS_IAM_USER_MANAGER = os.environ.get('AWS_IAM_SYNC_MANAGER',
-                                      'shared.managers.DummyIaMUserManager')
-AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', '')
-AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', '')
-AWS_IAM_USER_GROUP = os.environ.get('AWS_IAM_USER_GROUP', '')
+# AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', '')
+# AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', '')
+# AWS_IAM_USER_GROUP = os.environ.get('AWS_IAM_USER_GROUP', '')
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
@@ -198,29 +161,3 @@ AWS_EXPORT_HTTP_LOG_KEY = os.environ.get('AWS_EXPORT_HTTP_LOG_KEY')
 
 CLIENT_APP_SHEMA_HOST_PORT = os.environ.get(
     'CLIENT_APP_SHEMA_HOST_PORT')  # like http://127.0.0.1:8000
-
-# Payments settings
-TRIAL_PERIOD_DAYS = 30
-
-
-LOGGING = {
-    'version': 1,
-    'filters': {
-        'require_debug_true': {
-            '()': 'django.utils.log.RequireDebugTrue',
-        }
-    },
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'filters': ['require_debug_true'],
-            'class': 'logging.StreamHandler',
-        }
-    },
-    'loggers': {
-        'django.db.backends': {
-            'level': 'DEBUG',
-            'handlers': ['console'],
-        }
-    }
-}

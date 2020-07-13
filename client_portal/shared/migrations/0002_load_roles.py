@@ -2,7 +2,7 @@
 from django.contrib.auth.models import Group
 from django.db import migrations
 
-from reporting_tool.models import Role
+from shared.models import Role
 
 
 def load_roles(*args, **kwargs):
@@ -12,7 +12,7 @@ def load_roles(*args, **kwargs):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting_tool', '0001_initial'),
+        ('shared', '0001_initial'),
     ]
 
     operations = [

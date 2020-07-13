@@ -8,6 +8,15 @@ const PROXY_CONFIG = [
       "^/api": "",
     },
   },
+  {
+    context: ["/rep-api"],
+    target: process.env.ORDER_PORTAL_API_URL || "http://127.0.0.1:8081/",
+    secure: true,
+    "changeOrigin": true,
+    pathRewrite: {
+      "^/rep-api": "",
+    },
+  },
 ];
 
 module.exports = PROXY_CONFIG;
