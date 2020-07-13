@@ -11,6 +11,13 @@ const routes: Routes = [
     },
     component: OrdersListComponent,
   },
+  // {
+  //   path: 'categories',
+  //   data: {
+  //     title: 'Categories',
+  //   },
+  //   component: UpdateDeviceListComponent,
+  // },
 ];
 
 @NgModule({

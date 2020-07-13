@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewEncapsulation, Input } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'recon-orders-list',
@@ -16,7 +17,11 @@ export class OrdersListComponent implements OnInit {
     'Routers',
   ];
   @Input() sortValue = 'new';
-  constructor() {}
+  constructor(private router: Router) {}
+
+  navigateTo(url: string): void {
+    this.router.navigate([url]);
+  }
 
   ngOnInit(): void {}
 }

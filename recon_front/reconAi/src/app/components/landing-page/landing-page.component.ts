@@ -79,7 +79,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   }
 
   private updateBodyClass(backgroundWithoutUnion?: boolean) {
-    this.renderer.setAttribute(this.document?.body, 'class', '');
+    this.renderer.removeClass(this.document?.body, 'body-with-union');
     if (!backgroundWithoutUnion) {
       this.renderer.addClass(this.document?.body, 'body-with-union');
 
