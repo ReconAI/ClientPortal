@@ -13,7 +13,7 @@ COPY client_portal/order_portal ./order_portal
 COPY client_portal/shared ./shared
 COPY client_portal/manage.py ./
 COPY docker/check_db_readiness.sh check_db_readiness.sh
-COPY docker/run_django_server.sh run_django_server.sh
+COPY docker/run_order_portal.sh run_order_portal.sh
 
 RUN python -m pip install -r requirements.txt
 
