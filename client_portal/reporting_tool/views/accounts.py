@@ -23,18 +23,18 @@ from reporting_tool.forms.accounts import PreSignupForm, SignupForm, \
     CheckResetPasswordTokenForm, SetPasswordForm, UserEditForm, \
     UserAndOrganizationEditForm
 from reporting_tool.forms.organization import OrganizationForm
-from reporting_tool.models import Token
-from reporting_tool.permissions import IsNotAuthenticated, IsActive, \
+from shared.models import Token
+from shared.permissions import IsNotAuthenticated, IsActive, \
     PaymentRequired
-from reporting_tool.serializers import form_to_formserializer, \
+from shared.serializers import form_to_formserializer, \
     forms_to_formserializer, AuthTokenSerializer, \
     UserOrganizationSerializer
 from reporting_tool.settings import RECON_AI_CONNECTION_NAME
-from reporting_tool.swagger.headers import token_header
-from reporting_tool.swagger.responses import get_responses, token, http400, \
+from shared.swagger.headers import token_header
+from shared.swagger.responses import get_responses, token, http400, \
     http405, http403, http401, data_serializer
 from reporting_tool.tokens import PasswordResetTokenGenerator
-from reporting_tool.views.utils import CheckTokenMixin, FormMixin
+from shared.views.utils import CheckTokenMixin, FormMixin
 
 
 class PreSignupValidationView(APIView):

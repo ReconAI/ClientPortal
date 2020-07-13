@@ -5,7 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 
-from reporting_tool.models import User
+from .models import User
 
 
 @receiver(post_save, sender=User)

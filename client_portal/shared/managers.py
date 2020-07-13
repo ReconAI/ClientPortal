@@ -27,7 +27,7 @@ class UserManager(UserManagerBase):
 
         :raise: NotFoundExcelption
         """
-        from reporting_tool.models import UserGroup
+        from .models import UserGroup
 
         user = self._create_user(organization=organization, **extra_fields)
 
@@ -42,7 +42,7 @@ class UserManager(UserManagerBase):
 
         :rtype: User
         """
-        from reporting_tool.models import Role
+        from .models import Role
 
         return self.__create(organization, Role.ADMIN, **extra_fields)
 
@@ -53,7 +53,7 @@ class UserManager(UserManagerBase):
 
         :rtype: User
         """
-        from reporting_tool.models import Role
+        from .models import Role
 
         return self.__create(organization, Role.DEVELOPER, **extra_fields)
 
@@ -64,7 +64,7 @@ class UserManager(UserManagerBase):
 
         :rtype: User
         """
-        from reporting_tool.models import Role
+        from .models import Role
 
         return self.__create(organization, Role.CLIENT, **extra_fields)
 
@@ -76,7 +76,7 @@ class UserManager(UserManagerBase):
 
         :raise: NotFoundException
         """
-        from reporting_tool.models import Role
+        from .models import Role
 
         extra_fields.update({
             'is_active': True
