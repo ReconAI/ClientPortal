@@ -143,7 +143,7 @@ class IaMUserManager(AbstractIaMUserManager):
     """
     Manages data from IaM service
     """
-    __user_serializer = 'reporting_tool.serializers.UserSerializer'
+    __user_serializer = 'shared.serializers.UserSerializer'
 
     def __init__(self, instance: User):
         """
