@@ -1,4 +1,8 @@
-import { FormServerErrorInterface } from './../../constants/types/requests';
+import { UserProfileFormInterface } from './../../constants/types/user';
+import {
+  FormServerErrorInterface,
+  ObjectFormErrorInterface,
+} from './../../constants/types/requests';
 import {
   LoginUserFormInterface,
   UserTransformationResponse,
@@ -31,6 +35,11 @@ export enum UserActionTypes {
   RESET_PASSWORD_SUCCEEDED = '[User] Reset Password Succeeded',
   RESET_PASSWORD_ERROR = '[User] Reset Password Error',
   RESET_RESET_PASSWORD_ERROR = '[User] Reset Reset Password Error',
+
+  UPDATE_CURRENT_USER_REQUESTED = '[User] Update Current User Requested',
+  UPDATE_CURRENT_USER_SUCCEEDED = '[User] Update Current User Succeeded',
+  UPDATE_CURRENT_USER_ERROR = '[User] Update Current User Error',
+  RESET_UPDATE_CURRENT_USER_ERROR = '[User] Reset Update Current User Error',
 }
 
 export const loadCurrentUserRequestedAction = createAction(
@@ -114,4 +123,23 @@ export const resetPasswordErrorAction = createAction(
 
 export const resetResetPasswordErrorAction = createAction(
   UserActionTypes.RESET_RESET_PASSWORD_ERROR
+);
+
+export const updateCurrentUserRequestedAction = createAction(
+  UserActionTypes.UPDATE_CURRENT_USER_REQUESTED,
+  props<UserProfileFormInterface>()
+);
+
+export const updateCurrentUserSucceededAction = createAction(
+  UserActionTypes.UPDATE_CURRENT_USER_SUCCEEDED,
+  props<UserProfileFormInterface>()
+);
+
+export const updateCurrentUserErrorAction = createAction(
+  UserActionTypes.UPDATE_CURRENT_USER_ERROR,
+  props<ObjectFormErrorInterface>()
+);
+
+export const resetUpdateCurrentUserErrorAction = createAction(
+  UserActionTypes.RESET_UPDATE_CURRENT_USER_ERROR
 );

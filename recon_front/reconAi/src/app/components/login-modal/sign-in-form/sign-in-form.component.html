@@ -69,9 +69,9 @@
     color="primary"
     [disabled]="loadingStatus || !signInForm.valid"
   >
-    <mat-icon *ngIf="loadingStatus; else elseBlock">
+    <mat-icon *ngIf="loadingStatus; else loaded">
       <mat-spinner color="primary" diameter="20"></mat-spinner>
     </mat-icon>
-    <ng-template #elseBlock>{{ isSignUp ? "Sign Up" : "Sign In" }}</ng-template>
+    <ng-template #loaded>{{ isSignUp ? "Sign Up" : "Sign In" }}</ng-template>
   </button>
 </form>

@@ -1,0 +1,5 @@
+<recon-add-user-dialog
+  [isLoading]="loadingStatus$ | async"
+  [validationError]="errorStatus$ | async"
+  (submitAddUser$)="submitAddUser($event)"
+></recon-add-user-dialog>

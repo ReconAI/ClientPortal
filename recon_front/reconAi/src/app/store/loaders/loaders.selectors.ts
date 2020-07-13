@@ -48,3 +48,43 @@ export const selectPreResetPasswordLoadingStatus = createSelector(
   selectLoaders,
   (loaders: LoadersState): boolean => loaders.preResetPassword
 );
+
+export const selectUsersListLoadingStatus = createSelector(
+  selectLoaders,
+  (loaders: LoadersState): boolean => loaders.userList
+);
+
+export const selectUserProfileLoadingStatus = createSelector(
+  selectLoaders,
+  (loaders: LoadersState): boolean => loaders.userProfile
+);
+
+export const selectDeleteUserLoadingStatus = createSelector(
+  selectLoaders,
+  (loaders: LoadersState): boolean => loaders.deleteUser
+);
+
+export const selectAddUserLoadingStatus = createSelector(
+  selectLoaders,
+  (loaders: LoadersState): boolean => loaders.addUser
+);
+
+export const selectInviteUserLoadingStatus = createSelector(
+  selectLoaders,
+  (loaders: LoadersState): boolean => loaders.inviteUser
+);
+
+export const selectInviteSignUpUserLoadingStatus = createSelector(
+  selectLoaders,
+  (loaders: LoadersState): boolean => loaders.inviteSignUpUser
+);
+
+export const selectUpdateCurrentUserLoadingStatus = createSelector(
+  selectLoaders,
+  (loaders: LoadersState): boolean => loaders.updateCurrentUser
+);
+
+export const selectUpdateUserLoadingStatus = createSelector(
+  selectLoaders,
+  (loaders: LoadersState): boolean => loaders.updateUser
+);

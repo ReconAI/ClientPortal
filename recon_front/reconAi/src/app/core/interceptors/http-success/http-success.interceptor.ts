@@ -9,11 +9,15 @@ import {
   HttpResponse,
 } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { UrlInterceptorInterface } from 'app/constants/types/requests';
 
 @Injectable()
 export class HttpSuccessInterceptor implements HttpInterceptor {
   constructor(private snackBar: MatSnackBar) {}
   readonly durationInSeconds = 3;
+  readonly urlsToNotShow: UrlInterceptorInterface[] = [
+    { url: '/api/users/invitations', method: 'POST' },
+  ];
 
   createSuccessServerMessage(response: HttpResponse<any>): string {
     return response?.body?.message || '';
@@ -32,7 +36,15 @@ export class HttpSuccessInterceptor implements HttpInterceptor {
   ): Observable<HttpEvent<unknown>> {
     return next.handle(request).pipe(
       tap((event: HttpEvent<any>) => {
-        if (event instanceof HttpResponse && event?.body?.message) {
+        if (
+          event instanceof HttpResponse &&
+          event?.body?.message &&
+          !this.urlsToNotShow.find(
+            (req) =>
+              req.url === request.url &&
+              (!req.method || req.method === request.method)
+          )
+        ) {
           this.openSnackBar(this.createSuccessServerMessage(event));
         }
       })

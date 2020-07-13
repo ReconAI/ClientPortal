@@ -1,0 +1,11 @@
+<div>
+  <ng-container *ngIf="currentPage">
+    <span
+      [class]="{ chosen: currentPage === elem }"
+      (click)="selectPage(elem)"
+      *ngFor="let elem of shownPages"
+    >
+      {{ elem }}
+    </span>
+  </ng-container>
+</div>

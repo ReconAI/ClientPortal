@@ -1,0 +1,33 @@
+<ng-container *ngIf="isLoading">
+  Loading...
+</ng-container>
+<ng-container *ngIf="!isLoading && isUserFound">
+  <recon-user-profile
+    [disabledUserEmail]="true"
+    [disabledOrganization]="true"
+    [disabledInvoicing]="true"
+    [organizationName]="organizationName"
+    [organizationPhone]="organizationPhone"
+    [organizationEmail]="organizationEmail"
+    [organizationAddress]="organizationAddress"
+    [organizationVat]="organizationVat"
+    [organizationFirstName]="organizationFirstName"
+    [organizationLastName]="organizationLastName"
+    [userPhone]="userPhone"
+    [userEmail]="userEmail"
+    [userAddress]="userAddress"
+    [userFirstName]="userFirstName"
+    [userLastName]="userLastName"
+    [invoicingPhone]="invoicingPhone"
+    [invoicingEmail]="invoicingEmail"
+    [invoicingAddress]="invoicingAddress"
+    [invoicingFirstName]="invoicingFirstName"
+    [invoicingLastName]="invoicingLastName"
+    [loading]="isUpdating"
+    (sendUserInfo$)="sendUser($event)"
+  >
+  </recon-user-profile>
+</ng-container>
+<span *ngIf="!isLoading && !isUserFound">
+  User isn't found.
+</span>

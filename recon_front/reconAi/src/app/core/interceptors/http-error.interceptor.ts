@@ -10,21 +10,24 @@ import {
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { UrlInterceptorInterface } from 'app/constants/types/requests';
 
 @Injectable()
 export class HttpErrorInterceptor implements HttpInterceptor {
   constructor(private snackBar: MatSnackBar) {}
   readonly durationInSeconds = 3;
   readonly defaultErrorMessage = 'Server error';
-  readonly errorsToNotShowMessage = [
-    '/authApi/profile',
+  readonly errorsToNotShowMessage: UrlInterceptorInterface[] = [
+    { url: '/api/profile' },
 
     // forms
-    '/authApi/api-token-auth',
-    '/authApi/reset-password',
-    '/authApi/pre-signup',
-    '/authApi/signup',
-    '/authApi/reset',
+    { url: '/api/reset-password' },
+    { url: '/api/pre-signup' },
+    { url: '/api/signup' },
+    { url: '/api/reset' },
+    { url: '/api/api-token-auth' },
+    { url: '/api/users', method: 'POST' },
+    { url: '/api/users/invitations', method: 'PUT' },
   ];
 
   createErrorServerMessage(error: HttpErrorResponse): string {
@@ -63,16 +66,18 @@ export class HttpErrorInterceptor implements HttpInterceptor {
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
     return next.handle(request).pipe(
-      // retry(1),
       catchError((error: HttpErrorResponse) => {
         let errorMessage = '';
-
         if (error.error instanceof ErrorEvent) {
           // client-side error
           errorMessage = `Error: ${error.error.message}`;
         } else if (
           Math.floor(error.status / 100) === 5 ||
-          !this.errorsToNotShowMessage.includes(request?.url)
+          !this.errorsToNotShowMessage.find(
+            (req) =>
+              req.url === request?.url &&
+              (!req.method || req.method === request?.method)
+          )
         ) {
           // server-side error
           errorMessage = this.createErrorServerMessage(error);

@@ -1,3 +1,7 @@
+import { CurrentUserProfileContainer } from './components/current-user-profile/current-user-profile.container';
+import { UserRolesPriorities } from './constants/types/user';
+import { InvitationUserContainer } from './components/invitation-user/invitation-user.container';
+
 import { SuccessSignUpGuard } from './core/guards/successSignUp/success-sign-up.guard';
 import { NewFeatureContainer } from './components/new-feature/new-feature.container';
 import { RegistrationGuard } from './core/guards/registration/registration.guard';
@@ -6,16 +10,16 @@ import { ActivationComponent } from './components/activation/activation/activati
 import { RegistrationSuccessComponent } from './components/registration/registration-success/registration-success.component';
 import { NotAuthGuard } from './core/guards/not-auth-guard/not-auth.guard';
 import { RegistrationContainer } from './components/registration/registration/registration.container';
-import { AuthGuard } from './guards/auth.guard';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
+import { AuthRoleGuard } from './core/guards/auth-role-guard/auth-role.guard';
 
 const routes: Routes = [
   {
     path: 'catalog',
-    canActivate: [AuthGuard],
+    canActivate: [AuthRoleGuard],
     data: {
       title: 'Catalog',
     },
@@ -23,8 +27,17 @@ const routes: Routes = [
       import('./catalog/catalog.module').then((m) => m.CatalogModule),
   },
   {
+    path: 'users',
+    canActivate: [AuthRoleGuard],
+    data: {
+      expectedRolePriority: UserRolesPriorities.ADMIN_ROLE,
+    },
+    loadChildren: () =>
+      import('./users/users.module').then((m) => m.UsersModule),
+  },
+  {
     path: 'registration',
-    canActivate: [NotAuthGuard],
+    canActivateChild: [NotAuthGuard],
     data: {
       title: 'Organization registration',
     },
@@ -42,12 +55,20 @@ const routes: Routes = [
     ],
   },
   {
+    path: 'profile',
+    canActivate: [AuthRoleGuard],
+    component: CurrentUserProfileContainer,
+    data: {
+      title: 'Profile',
+    },
+  },
+  {
     path: 'new-feature',
-    // canActivate: [AuthGuard],
+    // canActivate: [AuthRoleGuard],
     data: {
       title: 'Request new feature',
     },
-    component: NewFeatureContainer
+    component: NewFeatureContainer,
   },
   {
     path: 'activate/:uidb/:token',
@@ -56,6 +77,10 @@ const routes: Routes = [
   {
     path: 'reset/:uidb/:token',
     component: ResetPasswordPageComponent,
+  },
+  {
+    path: 'invite/:uidb/:token',
+    component: InvitationUserContainer,
   },
   {
     path: '**',

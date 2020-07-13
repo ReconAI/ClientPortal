@@ -7,7 +7,6 @@ import { AppState } from 'app/store/reducers';
   providedIn: 'root'
 })
 export class AuthService {
-  // TO DO Remove
   cachedUserRolePriority: UserRolesPriorities;
 
   constructor(private store: Store<AppState>) {}

@@ -1,5 +1,8 @@
 import { generalTransformFormErrorToObject } from './../../core/helpers/generalFormsErrorsTransformation';
-import { UserProfileFormInterface } from './../../constants/types/user';
+import {
+  UserProfileFormInterface,
+  signUpRelationsFormAnsServerFields,
+} from './../../constants/types/user';
 import { ActivationInterface } from './../../constants/types/activation';
 import { Router } from '@angular/router';
 import {
@@ -11,7 +14,6 @@ import { Action, Store } from '@ngrx/store';
 import {
   transformPreSignUpUserForm,
   transformSignUpFormToRequest,
-  signUpRelationsFormAnsServerFields,
 } from './signUp.server.helpers';
 import {
   SignUpActionTypes,
@@ -62,9 +64,8 @@ export class SignUpEffects {
       }),
       switchMap((user) =>
         this.httpClient
-          .post('/authApi/pre-signup', transformPreSignUpUserForm(user))
+          .post('/api/pre-signup', transformPreSignUpUserForm(user))
           .pipe(
-            // check type
             map(() => {
               this.store.dispatch(setPreSignUpInfoAction(user));
               this.router.navigate(['/registration']);
@@ -93,8 +94,7 @@ export class SignUpEffects {
     this.actions$.pipe(
       ofType(SignUpActionTypes.ACTIVATION_REQUESTED),
       switchMap((activation: ActivationInterface) =>
-        this.httpClient.put('/authApi/activate', activation).pipe(
-          // check type
+        this.httpClient.put('/api/activate', activation).pipe(
           map(() => activationSucceededAction()),
           catchError((error) => {
             return of(activationErrorAction());
@@ -119,7 +119,7 @@ export class SignUpEffects {
         const { password1, password2, username } = store.signUp;
         return this.httpClient
           .post(
-            '/authApi/signup',
+            '/api/signup',
             transformSignUpFormToRequest({
               ...(user as UserProfileFormInterface),
               password1,
@@ -128,7 +128,6 @@ export class SignUpEffects {
             })
           )
           .pipe(
-            // check type
             // clean the reducer state out
             map(() => signUpUserSucceededAction()),
             tap(() => {

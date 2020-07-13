@@ -1,0 +1,64 @@
+<div class="recon-modal-title">
+  <h3>Add new user</h3>
+  <mat-icon [mat-dialog-close]="true">close</mat-icon>
+</div>
+<form [formGroup]="newUserForm" (ngSubmit)="submitAddUser()">
+  <mat-error *ngIf="validationError">
+    {{ validationError }}
+  </mat-error>
+  <mat-form-field>
+    <mat-label>First name</mat-label>
+    <input
+      matInput
+      placeholder="Input first name"
+      required
+      type="text"
+      autocomplete="on"
+      id="firstName"
+      formControlName="firstName"
+    />
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Last name</mat-label>
+    <input
+      matInput
+      placeholder="Input last name"
+      required
+      type="text"
+      autocomplete="on"
+      id="lastName"
+      formControlName="lastName"
+    />
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Email</mat-label>
+    <input
+      matInput
+      placeholder="Input email"
+      required
+      type="text"
+      autocomplete="on"
+      id="email"
+      formControlName="email"
+    />
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Role</mat-label>
+    <mat-select formControlName="role">
+      <mat-option *ngFor="let role of USER_ROLES" [value]="role.value">{{
+        role.title
+      }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <button
+    mat-raised-button
+    color="primary"
+    type="submit"
+    [disabled]="isLoading || !newUserForm.valid"
+  >
+    <mat-icon *ngIf="isLoading; else loaded">
+      <mat-spinner color="primary" diameter="20"></mat-spinner>
+    </mat-icon>
+    <ng-template #loaded>ADD</ng-template>
+  </button>
+</form>

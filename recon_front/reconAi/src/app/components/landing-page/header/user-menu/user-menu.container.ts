@@ -1,24 +1,12 @@
-import { ofType } from '@ngrx/effects';
-import {
-  loginUserSucceededAction,
-  logoutUserRequestedAction,
-} from './../../../../store/user/user.actions';
-import { preSignUpUserSucceededAction } from './../../../../store/signUp/signUp.actions';
+import { logoutUserRequestedAction } from './../../../../store/user/user.actions';
 import {
   selectUserRolePriority,
   selectCurrentUserName,
   selectUserRole,
 } from './../../../../store/user/user.selectors';
 import { Observable } from 'rxjs';
-import {
-  Component,
-  OnInit,
-  ViewChild,
-  ElementRef,
-  AfterViewChecked,
-  ViewEncapsulation,
-} from '@angular/core';
-import { Store, select, ActionsSubject } from '@ngrx/store';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Store, select } from '@ngrx/store';
 import { AppState } from 'app/store/reducers';
 import { UserRolesPriorities } from 'app/constants/types';
 
@@ -28,17 +16,10 @@ import { UserRolesPriorities } from 'app/constants/types';
   encapsulation: ViewEncapsulation.None,
 })
 export class UserMenuContainer implements OnInit {
-  constructor(
-    private store: Store<AppState>,
-    private actionsSubject: ActionsSubject
-  ) {}
+  constructor(private store: Store<AppState>) {}
 
   userPriority$: Observable<UserRolesPriorities> = this.store.pipe(
     select(selectUserRolePriority)
-  );
-
-  closeModal$ = this.actionsSubject.pipe(
-    ofType(loginUserSucceededAction, preSignUpUserSucceededAction)
   );
 
   userName$ = this.store.pipe(select(selectCurrentUserName));

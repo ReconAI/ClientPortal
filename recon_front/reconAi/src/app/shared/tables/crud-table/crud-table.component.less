@@ -1,0 +1,49 @@
+@import "../../../../variables.less";
+
+.mat-table>.recon-table-row:not(:first-child) {
+    cursor: pointer;
+
+    &:hover {
+        -webkit-box-shadow: 0px 0px 10px 0px rgba(207, 207, 207, 1);
+        -moz-box-shadow: 0px 0px 10px 0px rgba(207, 207, 207, 1);
+        box-shadow: 0px 0px 10px 0px rgba(207, 207, 207, 1);
+
+        // this transform is used to bring the row to the front layer only
+        transform: scale(1);
+
+        & .mat-cell:not(.mat-column-actions) {
+            color: @recon-primary-green;
+        }
+    }
+
+    .mat-column-actions {
+        justify-content: flex-end;
+    }
+}
+
+.mat-column-actions {
+    flex: 0 0 5%;
+}
+
+.mat-header-row.recon-table-row {
+    min-height: 35px;
+    border-bottom-width: 0px;
+
+    .mat-header-cell {
+        font-size: 13px;
+    }
+}
+
+.mat-cell,
+.mat-header-cell {
+    white-space: normal;
+    word-break: break-word;
+}
+
+.mat-footer-cell {
+    display: flex;
+    justify-content: center;
+    background-color: #F9F9F9;
+    border-right: 1px solid rgba(0, 0, 0, 0.12);
+    border-left: 1px solid rgba(0, 0, 0, 0.12);
+}
