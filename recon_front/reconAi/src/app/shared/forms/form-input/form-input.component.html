@@ -21,6 +21,8 @@
         (blur)="onTouched()"
       />
       <div
+        [matTooltip]="closeTooltip || ''"
+        matTooltipPosition="right"
         class="close-icon-container"
         *ngIf="isWithCloseIcon"
         (click)="pressIcon()"

@@ -1,3 +1,4 @@
+import { CLOSE_ICON_TOOLTIP_TEXT } from './../../constants/labels/categories';
 import { FormGroup, FormBuilder, FormArray } from '@angular/forms';
 import { Component, OnInit, Input } from '@angular/core';
 
@@ -16,6 +17,7 @@ export class UpdateCategoryListComponent implements OnInit {
     'Routers',
   ];
   categoriesForm: FormGroup;
+  readonly closeTooltip = CLOSE_ICON_TOOLTIP_TEXT;
   constructor(private fb: FormBuilder) {}
 
   get categories() {

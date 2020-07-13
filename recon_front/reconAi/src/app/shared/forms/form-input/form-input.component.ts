@@ -29,6 +29,7 @@ export class FormInputComponent implements ControlValueAccessor, OnInit {
   uniqueId: string;
 
   @Input() label = '';
+  @Input() closeTooltip = '';
   @Input() placeholder = '';
   @Input() errorMessages: { [key: string]: string } = {};
   @Input() disabled = false;
