@@ -78,7 +78,7 @@ const addUserErrorReducer = (
   },
 });
 
-const resetUserErrorReducer = (state: UsersState): UsersState => ({
+const resetAddUserErrorReducer = (state: UsersState): UsersState => ({
   ...state,
   errors: {
     ...state.errors,
@@ -127,7 +127,7 @@ const usersReducer = createReducer(
   on(loadUserProfileSucceededAction, loadUserProfileSucceededReducer),
   on(resetUserProfileAction, resetUserProfileReducer),
   on(addUserErrorAction, addUserErrorReducer),
-  on(resetAddUserErrorAction, resetUserErrorReducer),
+  on(resetAddUserErrorAction, resetAddUserErrorReducer),
   on(inviteUserSucceededAction, inviteUserSucceededReducer),
   on(inviteUserActivationSucceededAction, inviteUserActivationSucceededReducer),
   on(resetInvitationSignUpErrorAction, resetInvitationSignUpErrorReducer),

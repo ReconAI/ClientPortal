@@ -1,4 +1,7 @@
-import { addUserSucceededAction } from './../../../../store/users/users.actions';
+import {
+  addUserSucceededAction,
+  resetAddUserErrorAction,
+} from './../../../../store/users/users.actions';
 import { ofType } from '@ngrx/effects';
 import { MatDialogRef } from '@angular/material/dialog';
 import { selectAddUserError } from './../../../../store/users/users.selectors';
@@ -41,6 +44,7 @@ export class AddUserDialogContainer implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptionToClose$?.unsubscribe();
+    this.store.dispatch(resetAddUserErrorAction());
   }
 
   submitAddUser(user: AddUserInterface): void {
