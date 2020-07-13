@@ -6,4 +6,4 @@ bash check_db_readiness.sh -t "${WAIT_FOR_DB_TIMEOUT}" "${RECON_AI_DB_HOST}:${RE
 
 python manage.py migrate --settings=order_portal.settings
 python manage.py migrate --settings=recon_db_manager.settings
-python manage.py runserver 0.0.0.0:8000
+python manage.py runserver 0.0.0.0:8000 --settings=order_portal.settings
