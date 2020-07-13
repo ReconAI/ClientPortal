@@ -5,7 +5,9 @@ from django.forms import BaseForm
 from django.http import JsonResponse
 from django.utils.translation import gettext_lazy as _
 from django.views.generic.edit import FormMixin as FormMixinBase
-from rest_framework import status
+from rest_framework import status, mixins
+from rest_framework.generics import GenericAPIView
+from rest_framework.response import Response
 
 from shared.serializers import UserSerializer
 
@@ -75,3 +77,60 @@ class FormMixin(FormMixinBase):
         return JsonResponse({
             'errors': form.errors
         }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+
+class SerializerMixin:
+    def save_or_error(self, success_message: str, serializer=None):
+        if serializer is None:
+            try:
+                instance = self.get_object()
+            except AssertionError:
+                instance = None
+
+            serializer = self.get_serializer(
+                instance,
+                data=self.request.data
+            )
+
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response({
+                'message': success_message
+            }, status=status.HTTP_200_OK)
+
+        return Response({
+            'errors': serializer.errors
+        }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+
+class RetrieveUpdateDestroyAPIView(SerializerMixin,
+                                   mixins.RetrieveModelMixin,
+                                   mixins.UpdateModelMixin,
+                                   mixins.DestroyModelMixin,
+                                   GenericAPIView):
+    update_success_message = ''
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def put(self, *args, **kwargs):
+        return self.save_or_error(self.update_success_message)
+
+    def delete(self, request, *args, **kwargs):
+        self.get_object().delete()
+
+        return Response(status=status.HTTP_200_OK)
+
+
+class ListCreateAPIView(SerializerMixin,
+                        mixins.ListModelMixin,
+                        mixins.CreateModelMixin,
+                        GenericAPIView):
+    create_success_message = ''
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return self.save_or_error(self.create_success_message)
