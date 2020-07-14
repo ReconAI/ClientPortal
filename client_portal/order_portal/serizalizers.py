@@ -26,8 +26,8 @@ class ReadManufacturerSerializer(ModelSerializer):
 class WriteManufacturerSerializer(ModelSerializer):
     category_ids = ListField(
         child=serializers.IntegerField(min_value=1),
-        allow_empty=True,
-        min_length=0,
+        allow_empty=False,
+        min_length=1,
         max_length=None
     )
 
