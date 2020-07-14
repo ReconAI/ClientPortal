@@ -74,7 +74,7 @@ class UserList(ListCreateAPIView, FormMixin):
     serializer_class = UserSerializer
 
     queryset = get_user_model().objects.prefetch_related(
-        'usergroup__group').all()
+        'usergroup__group').order_by('-created_dt').all()
 
     form_class = UserInvitationForm
 
