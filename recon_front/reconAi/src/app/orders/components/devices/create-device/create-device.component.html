@@ -15,6 +15,40 @@
   <div>
     <span class="add-manufacture-label">+ Add new manufacture</span>
   </div>
+  <recon-form-file-with-list
+    accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*"
+    [parentForm]="deviceForm"
+    [maxCountOfFiles]="5"
+    field="image"
+    label="Add image"
+  ></recon-form-file-with-list>
+  <recon-form-input
+    label="Product number"
+    placeholder="Product number"
+    formControlName="product"
+    [showRequiredSymbol]="true"
+  ></recon-form-input>
+  <recon-form-input
+    label="Technical description"
+    placeholder="Technical description"
+    formControlName="description"
+    [showRequiredSymbol]="true"
+    fieldType="textarea"
+  ></recon-form-input>
+  <div class="price-container">
+    <recon-form-input
+      label="Buying price per device"
+      placeholder="Product number"
+      formControlName="buyingPrice"
+      [showRequiredSymbol]="true"
+    ></recon-form-input>
+    <recon-form-input
+      label="Sales price per device"
+      placeholder="Product number"
+      formControlName="salesPrice"
+      [showRequiredSymbol]="true"
+    ></recon-form-input>
+  </div>
 </form>
 
 {{ jsonValue }}

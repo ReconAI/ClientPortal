@@ -8,6 +8,7 @@ import { PaginationComponent } from './tables/pagination/pagination.component';
 import { CrudTableComponent } from './tables/crud-table/crud-table.component';
 import { UserProfileComponent } from './forms/user-profile/user-profile.component';
 import { FormSelectComponent } from './forms/form-select/form-select.component';
+import { FormFileWithListComponent } from './forms/form-file-with-list/form-file-with-list.component';
 
 @NgModule({
   declarations: [
@@ -16,6 +17,7 @@ import { FormSelectComponent } from './forms/form-select/form-select.component';
     CrudTableComponent,
     UserProfileComponent,
     FormSelectComponent,
+    FormFileWithListComponent,
   ],
   imports: [
     MaterialModule,
@@ -29,6 +31,7 @@ import { FormSelectComponent } from './forms/form-select/form-select.component';
     CrudTableComponent,
     UserProfileComponent,
     FormSelectComponent,
+    FormFileWithListComponent,
   ], // remove pagination
   providers: [],
 })

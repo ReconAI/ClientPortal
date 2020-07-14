@@ -14,6 +14,11 @@ export class CreateDeviceComponent implements OnInit {
     this.deviceForm = this.fb.group({
       name: ['', Validators.required],
       manufacture: ['', Validators.required],
+      image: this.fb.array([]),
+      product: ['', Validators.required],
+      description: ['', Validators.required],
+      buyingPrice: ['', Validators.required],
+      salesPrice: ['', Validators.required],
     });
   }
 
