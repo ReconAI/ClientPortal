@@ -1,3 +1,4 @@
+import { getUserPriorityByRole } from './../../core/helpers/priorities';
 import { ResetPasswordInterface } from './../../constants/types/resetPassword';
 import { SignUpRequestInterface } from './../signUp/signUp.server.helpers';
 import {
@@ -96,6 +97,7 @@ export const transformUserProfileResponseFromServer = (
   profile: {
     id: response.id,
     username: response.username,
+    rolePriority: getUserPriorityByRole(response?.group?.name),
   },
 });
 
