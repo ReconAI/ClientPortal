@@ -63,7 +63,6 @@ class UserInvitationForm(ModelForm, RoleFieldMixin, SendEmailMixin):
         :rtype: User
         """
         user = super().save(False)
-        user.is_active = True
         user.organization_id = self.__organization_id
         user.username = self.__generate_username(user.firstname, user.lastname)
 
@@ -162,5 +161,6 @@ class FollowInvitationForm(UserForm, CheckUserInvitationTokenForm):
         :rtype: User
         """
         self.instance.set_password(self.cleaned_data['password2'])
+        self.instance.is_active = True
 
         return self.instance.save()
