@@ -9,6 +9,7 @@ import { CrudTableComponent } from './tables/crud-table/crud-table.component';
 import { UserProfileComponent } from './forms/user-profile/user-profile.component';
 import { FormSelectComponent } from './forms/form-select/form-select.component';
 import { FormFileWithListComponent } from './forms/form-file-with-list/form-file-with-list.component';
+import { FormChipsComponent } from './forms/form-chips/form-chips.component';
 
 @NgModule({
   declarations: [
@@ -18,6 +19,7 @@ import { FormFileWithListComponent } from './forms/form-file-with-list/form-file
     UserProfileComponent,
     FormSelectComponent,
     FormFileWithListComponent,
+    FormChipsComponent,
   ],
   imports: [
     MaterialModule,
@@ -25,13 +27,14 @@ import { FormFileWithListComponent } from './forms/form-file-with-list/form-file
     FormsModule,
     CommonModule,
     CoreModule,
-  ], // check work around
+  ],
   exports: [
     FormInputComponent,
     CrudTableComponent,
     UserProfileComponent,
     FormSelectComponent,
     FormFileWithListComponent,
+    FormChipsComponent,
   ], // remove pagination
   providers: [],
 })

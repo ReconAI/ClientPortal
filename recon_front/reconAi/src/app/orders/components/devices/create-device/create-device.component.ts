@@ -19,6 +19,10 @@ export class CreateDeviceComponent implements OnInit {
       description: ['', Validators.required],
       buyingPrice: ['', Validators.required],
       salesPrice: ['', Validators.required],
+      seoTags: this.fb.array([]),
+      seoTitle: ['', Validators.required],
+      seoDescription: ['', Validators.required],
+      category: ['', Validators.required],
     });
   }
 

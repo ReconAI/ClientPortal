@@ -36,19 +36,49 @@
     fieldType="textarea"
   ></recon-form-input>
   <div class="price-container">
-    <recon-form-input
-      label="Buying price per device"
-      placeholder="Product number"
-      formControlName="buyingPrice"
-      [showRequiredSymbol]="true"
-    ></recon-form-input>
-    <recon-form-input
-      label="Sales price per device"
-      placeholder="Product number"
-      formControlName="salesPrice"
-      [showRequiredSymbol]="true"
-    ></recon-form-input>
+    <div>
+      <recon-form-input
+        label="Buying price per device"
+        placeholder="Buying price"
+        formControlName="buyingPrice"
+        [showRequiredSymbol]="true"
+      ></recon-form-input>
+    </div>
+    <div>
+      <recon-form-input
+        label="Sales price per device"
+        placeholder="Sales price"
+        formControlName="salesPrice"
+        [showRequiredSymbol]="true"
+      ></recon-form-input>
+    </div>
   </div>
+  <recon-form-chips
+    [parentForm]="deviceForm"
+    field="seoTags"
+    label="SEO tags"
+    placeholder="Add tag..."
+    [showRequiredSymbol]="true"
+  ></recon-form-chips>
+  <recon-form-input
+    label="Seo title"
+    placeholder="Seo title"
+    formControlName="seoTitle"
+    [showRequiredSymbol]="true"
+  ></recon-form-input>
+  <recon-form-input
+    label="Seo description"
+    placeholder="Seo description"
+    formControlName="seoDescription"
+    [showRequiredSymbol]="true"
+    fieldType="textarea"
+  ></recon-form-input>
+
+  <recon-form-select
+    formControlName="category"
+    [showRequiredSymbol]="true"
+    label="Device category"
+  ></recon-form-select>
 </form>
 
 {{ jsonValue }}
