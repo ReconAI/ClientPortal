@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic.edit import FormMixin as FormMixinBase
 from rest_framework import status
 
-from reporting_tool.serializers import UserSerializer
+from shared.serializers import UserSerializer
 
 
 class CheckTokenMixin:

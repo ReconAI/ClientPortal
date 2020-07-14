@@ -20,9 +20,8 @@ from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
 from recon_db_manager.models import CommonUser, Organization
-from reporting_tool.managers import UserManager, AbstractIaMUserManager
-from reporting_tool.permissions import PermissionsMixin
-from reporting_tool.settings import RECON_AI_CONNECTION_NAME
+from shared.managers import AbstractIaMUserManager, UserManager
+from shared.permissions import PermissionsMixin
 
 
 class User(CommonUser, PermissionsMixin):
@@ -197,7 +196,7 @@ class User(CommonUser, PermissionsMixin):
         return self.username
 
     @atomic(using='default')
-    @atomic(using=RECON_AI_CONNECTION_NAME)
+    @atomic(using=settings.RECON_AI_CONNECTION_NAME)
     def delete(self, using: str = None,
                keep_parents: bool = False) -> Tuple[int, dict]:
         """
@@ -245,6 +244,10 @@ class UserGroup(models.Model):
     UserGroup model
     Responsible for one-to-one relation Group - User
     """
+
+    class Meta:
+        db_table = 'UserGroups'
+
     id = models.BigAutoField(primary_key=True)
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
     user = models.OneToOneField(User, models.CASCADE, db_column='user_id',
@@ -255,6 +258,10 @@ class Token(models.Model):
     """
     The default authorization token model.
     """
+
+    class Meta:
+        db_table = 'Tokens'
+
     key = models.CharField(_("Key"), max_length=40, primary_key=True)
     created = models.DateTimeField(_("Created"), auto_now_add=True)
     user = models.OneToOneField(User, models.CASCADE, db_column='user_id',

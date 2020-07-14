@@ -6,7 +6,7 @@ from datetime import datetime
 from django.contrib.auth.tokens import \
     PasswordResetTokenGenerator as PasswordResetTokenGeneratorBase
 
-from reporting_tool.models import User
+from shared.models import User
 
 
 class PasswordResetTokenGenerator(PasswordResetTokenGeneratorBase):

@@ -4,20 +4,19 @@ RUN apk update \
 	&& apk add bash \
 	&& apk add postgresql-dev gcc python3-dev musl-dev
 
-CMD mkdir /client_portal
-WORKDIR /client_portal
-
+CMD mkdir /order_portal
+WORKDIR /order_portal
 
 COPY requirements.dev.txt requirements.txt
 COPY client_portal/recon_db_manager ./recon_db_manager
-COPY client_portal/reporting_tool ./reporting_tool
+COPY client_portal/order_portal ./order_portal
 COPY client_portal/shared ./shared
 COPY client_portal/manage.py ./
 COPY docker/check_db_readiness.sh check_db_readiness.sh
-COPY docker/run_reporting_tool.sh run_reporting_tool.sh
+COPY docker/run_order_portal.sh run_order_portal.sh
 
 RUN python -m pip install -r requirements.txt
 
 EXPOSE 8000
 
-ENTRYPOINT ["bash", "run_reporting_tool.sh"]
+ENTRYPOINT ["bash", "run_order_portal.sh"]
