@@ -21,7 +21,7 @@ export class UserProfileComponent implements OnInit {
   @Input() showTerms = false;
   @Input() isInvitation = false;
 
-  @Input() hideInvoicing = true;
+  @Input() hideInvoicing = false;
 
   @Input() disabledButton = false;
   @Input() disabledUserEmail = false;
@@ -196,7 +196,8 @@ export class UserProfileComponent implements OnInit {
     const isInvoicingValid =
       this.isInvitation ||
       this.disabledInvoicing ||
-      this.profileForm.controls.invoicing.valid;
+      this.hideInvoicing ||
+      this.profileForm?.controls?.invoicing?.valid;
     const isUserValid = this.profileForm.controls.user.valid;
 
     const isProfileValid =

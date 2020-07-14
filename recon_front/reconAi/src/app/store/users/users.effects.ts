@@ -21,6 +21,7 @@ import {
   transformInviteSignUpUserToServer,
   transformActivateUserToClient,
   transformUpdateUserToServer,
+  getTitleOfInvitedRegistration,
 } from './users.server.helpers';
 import {
   UsersActionTypes,
@@ -263,11 +264,10 @@ export class UsersEffects {
               this.store.dispatch(
                 inviteUserActivationSucceededAction(activation)
               );
-              let roleName = user?.group?.name || 'user';
-              roleName = roleName.charAt(0).toUpperCase() + roleName.slice(1);
+
               this.store.dispatch(
                 setAppTitleAction({
-                  title: `${roleName}'s registration`,
+                  title: getTitleOfInvitedRegistration(user?.group?.name),
                 })
               );
               return inviteUserSucceededAction(
