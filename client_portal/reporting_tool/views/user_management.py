@@ -19,15 +19,15 @@ from rest_framework.views import APIView
 
 from reporting_tool.forms.user_management import UserInvitationForm, \
     FollowInvitationForm, CheckUserInvitationTokenForm, UserEditForm
-from reporting_tool.permissions import IsCompanyAdmin, IsActive, \
+from shared.permissions import IsCompanyAdmin, IsActive, \
     IsNotAuthenticated, PaymentRequired
-from reporting_tool.serializers import UserSerializer, \
+from shared.serializers import UserSerializer, \
     form_to_formserializer, UserOrganizationSerializer
 from reporting_tool.settings import RECON_AI_CONNECTION_NAME
-from reporting_tool.swagger.headers import token_header
-from reporting_tool.swagger.responses import data_serializer, http401, \
+from shared.swagger.headers import token_header
+from shared.swagger.responses import data_serializer, http401, \
     http405, http404, http403, get_responses, data_message_serializer, http400
-from reporting_tool.views.utils import CheckTokenMixin, FormMixin
+from shared.views.utils import CheckTokenMixin, FormMixin
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(

@@ -7,7 +7,7 @@ from django.contrib.auth.models import AnonymousUser
 from rest_framework.authentication import \
     TokenAuthentication as TokenAuthenticationBase
 
-from reporting_tool.models import Token, User
+from .models import Token, User
 
 
 class TokenAuthentication(TokenAuthenticationBase):

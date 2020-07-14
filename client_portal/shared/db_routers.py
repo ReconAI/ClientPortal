@@ -6,7 +6,7 @@ from typing import Optional, Type
 from django.conf import settings
 from django.db.models import Model
 
-from reporting_tool.models import User, UserGroup, Token
+from .models import User, UserGroup, Token
 
 
 class DBRouter:
