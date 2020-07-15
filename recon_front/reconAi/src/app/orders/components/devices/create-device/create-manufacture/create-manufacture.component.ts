@@ -1,10 +1,23 @@
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
+import { Observable } from 'rxjs';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  FormControl,
+} from '@angular/forms';
+import {
+  Component,
+  OnInit,
+  ElementRef,
+  ViewChild,
+  HostListener,
+} from '@angular/core';
 import {
   MatAutocomplete,
   MatAutocompleteSelectedEvent,
 } from '@angular/material/autocomplete';
 import { MatChipInputEvent } from '@angular/material/chips';
+import { startWith, map } from 'rxjs/operators';
 
 @Component({
   selector: 'recon-create-manufacture',
@@ -13,10 +26,20 @@ import { MatChipInputEvent } from '@angular/material/chips';
 })
 export class CreateManufactureComponent implements OnInit {
   manufactureForm: FormGroup;
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder) {
+    this.filteredCategories = this.categoryControl.valueChanges.pipe(
+      map((category: string | null) => {
+        console.log(category, 'CATEGORY');
+        return category ? this._filter(category) : this.allCategories;
+      })
+    );
+  }
 
   selectedCategories: string[] = ['a', 'b', 'c'];
   allCategories: string[] = ['d', 'g', 'h', 'r'];
+  filteredCategories: Observable<string[]>;
+  categoryControl = new FormControl();
+
   @ViewChild('categoryInput') categoryInput: ElementRef<HTMLInputElement>;
   @ViewChild('auto') matAutocomplete: MatAutocomplete;
 
@@ -33,7 +56,7 @@ export class CreateManufactureComponent implements OnInit {
     if (input) {
       input.value = ' ';
     }
-    // this.categoryCtrl.setValue(null);
+    this.categoryControl.setValue(null);
   }
 
   remove(category: string): void {
@@ -44,15 +67,11 @@ export class CreateManufactureComponent implements OnInit {
     }
   }
 
-  optionClick(event) {
-    console.log(event, 'EVENT');
-    event.stopPropagation();
-  }
-
-  selected(event: MatAutocompleteSelectedEvent): void {
+  selected(event: MatAutocompleteSelectedEvent, trigger): void {
     this.selectedCategories.push(event.option.viewValue);
     this.categoryInput.nativeElement.value = '';
-    // this.categoryCtrl.setValue(null);
+    this.categoryControl.setValue(null);
+    trigger.openPanel();
   }
 
   ngOnInit(): void {
@@ -66,5 +85,12 @@ export class CreateManufactureComponent implements OnInit {
       supportEmail: ['', Validators.required],
       // supportEmail: ['', Validators.required],
     });
+  }
+
+  private _filter(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.allCategories.filter(
+      (category) => !filterValue || !category.toLowerCase().indexOf(filterValue)
+    );
   }
 }

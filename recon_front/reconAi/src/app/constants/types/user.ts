@@ -1,13 +1,13 @@
 export const UNAUTHORIZED_ROLE = 'unauthorized';
 export const CLIENT_ROLE = 'client';
 export const ADMIN_ROLE = 'admin';
-export const SUPER_ADMIN_ROLE = 'superadmin';
+export const SUPER_ADMIN_ROLE = 'super_admin';
 export const DEVELOPER_ROLE = 'developer';
 
 export type UNAUTHORIZED_TYPE_ROLE = 'unauthorized';
 export type CLIENT_TYPE_ROLE = 'client';
 export type ADMIN_TYPE_ROLE = 'admin';
-export type SUPER_ADMIN_TYPE_ROLE = 'superadmin';
+export type SUPER_ADMIN_TYPE_ROLE = 'super_admin';
 export type DEVELOPER_TYPE_ROLE = 'developer';
 
 export enum UserRolesPriorities {
