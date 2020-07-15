@@ -1371,3 +1371,51 @@ class RoadConditions(models.Model):
         RoadConditions model's Meta class specification
         """
         db_table = 'RoadConditions'
+
+
+class Category(models.Model):
+    """
+    Manufacturer category model
+    """
+    id = models.BigAutoField(primary_key=True)
+    name = models.CharField(max_length=255)
+
+    class Meta:
+        """
+        Manufacturer category model's Meta class specification
+        """
+        db_table = 'Categories'
+
+
+class Manufacturer(models.Model):
+    """
+    Manufacturer model
+    """
+    id = models.BigAutoField(primary_key=True)
+    name = models.CharField(max_length=255)
+    categories = models.ManyToManyField(Category,
+                                        db_table='ManufacturerCategories')
+
+    class Meta:
+        """
+        Manufacturer model's Meta class specification
+        """
+        db_table = 'Manufacturers'
+
+
+class Device(models.Model):
+    """
+    Device model
+    """
+    id = models.BigAutoField(primary_key=True)
+    name = models.CharField(max_length=255)
+    price = models.DecimalField(max_digits=16, decimal_places=2)
+    description = models.TextField()
+    manufacturer = models.ForeignKey(Manufacturer, on_delete=models.PROTECT,
+                                     db_column='manufacturerId')
+
+    class Meta:
+        """
+        Device model's Meta class specification
+        """
+        db_table = 'Devices'

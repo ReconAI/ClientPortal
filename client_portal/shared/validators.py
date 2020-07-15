@@ -8,7 +8,7 @@ from typing import Iterable
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
 
-from reporting_tool.models import Role
+from shared.models import Role
 
 
 class TwoLowercasesPasswordValidator:

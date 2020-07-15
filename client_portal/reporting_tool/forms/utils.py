@@ -15,9 +15,9 @@ from django.utils.translation import gettext_lazy as _
 from requests import Request
 from rest_framework.exceptions import ParseError, NotFound
 
-from reporting_tool.models import User
 from reporting_tool.tokens import PasswordResetTokenGenerator
-from reporting_tool.validators import user_role_validator
+from shared.validators import user_role_validator
+from shared.models import User
 
 
 class RoleFieldMixin:

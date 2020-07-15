@@ -3,6 +3,7 @@ Modules defines models serializers
 """
 from typing import Type, List, Union
 
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.db.models import Model
 from django.forms import Form, BaseForm
@@ -13,7 +14,6 @@ from rest_framework.authtoken.serializers import \
     AuthTokenSerializer as AuthTokenSerializerBase
 
 from recon_db_manager.models import Organization
-from reporting_tool.models import User
 
 
 def form_to_formserializer(form: Union[Type[BaseForm], type]) \
@@ -114,7 +114,7 @@ class UserSerializer(ReadOnlySerializer):
         """
         User is serializer's model
         """
-        model = User
+        model = get_user_model()
         fields = (
             'id', 'firstname', 'lastname', 'username', 'address',
             'phone', 'email', 'created_dt', 'user_level', 'is_active',
@@ -132,7 +132,7 @@ class UserOrganizationSerializer(UserSerializer):
         """
         User is serializer's model
         """
-        model = User
+        model = get_user_model()
         fields = (
             'id', 'firstname', 'lastname', 'username', 'address',
             'phone', 'email', 'created_dt', 'user_level', 'is_active',
@@ -150,3 +150,13 @@ class AuthTokenSerializer(AuthTokenSerializerBase):
         except TypeError:
             msg = _('Unable to log in with provided credentials.')
             raise serializers.ValidationError(msg, code='authorization')
+
+    def create(self, validated_data):
+        """
+        Create is prohibited for the Token
+        """
+
+    def update(self, instance, validated_data):
+        """
+        Update is prohibited for the Token
+        """

@@ -14,8 +14,8 @@ from reporting_tool.forms.accounts import UserForm
 from reporting_tool.forms.utils import CheckUserTokenForm, RoleFieldMixin, \
     SendEmailMixin
 from reporting_tool.frontend.router import Router
-from reporting_tool.models import User, UserGroup
 from reporting_tool.tokens import InvitationTokenGenerator
+from shared.models import User, UserGroup
 
 
 class UserEditForm(ModelForm):
@@ -53,7 +53,7 @@ class UserInvitationForm(ModelForm, RoleFieldMixin, SendEmailMixin):
         firstname, lastname, email must be filled and examined
         username is the string compiled from first and last names
         """
-        model = User
+        model = get_user_model()
         fields = ('firstname', 'lastname', 'email')
 
     def save(self, request: Request) -> User:
@@ -111,7 +111,9 @@ class UserInvitationForm(ModelForm, RoleFieldMixin, SendEmailMixin):
         u_username = slugify('{}_{}'.format(firstname, lastname))
 
         # count the number of users that start with the username
-        count = User.objects.filter(username__startswith=u_username).count()
+        count = get_user_model().objects.filter(
+            username__startswith=u_username
+        ).count()
 
         if count:
             return '{}{}'.format(u_username, count)
@@ -147,7 +149,7 @@ class FollowInvitationForm(UserForm, CheckUserInvitationTokenForm):
         """
         All the fields are required.
         """
-        model = User
+        model = get_user_model()
         fields = (
             'username', 'firstname', 'lastname', 'address', 'phone'
         )

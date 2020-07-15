@@ -112,6 +112,22 @@ class IsCompanyAdmin(BasePermission):
         return user.is_superuser or user.is_admin
 
 
+class IsSuperUser(BasePermission):
+    """
+    User must be company admin to proceed
+    """
+    def has_permission(self, request: Request, view) -> bool:
+        """
+        :type request: Request
+        :param view:
+
+        :rtype: bool
+        """
+        user = request.user
+
+        return user.is_superuser
+
+
 class PaymentRequired(BasePermission):
     """
     User must pay for the service

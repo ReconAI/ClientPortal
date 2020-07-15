@@ -197,8 +197,6 @@ def data_message_serializer(
     })
 
 
-
-
 _relations = {
     status.HTTP_200_OK: http200(),
     status.HTTP_201_CREATED: http201(),
@@ -223,3 +221,29 @@ def get_responses(*http_statuses: List[int]) -> Dict[int, openapi.Schema]:
         in http_statuses
         if http_status in _relations
     }
+
+
+DEFAULT_UNSAFE_REQUEST_RESPONSES = get_responses(
+    status.HTTP_200_OK,
+    status.HTTP_400_BAD_REQUEST,
+    status.HTTP_401_UNAUTHORIZED,
+    status.HTTP_404_NOT_FOUND,
+    status.HTTP_403_FORBIDDEN,
+    status.HTTP_405_METHOD_NOT_ALLOWED,
+    status.HTTP_422_UNPROCESSABLE_ENTITY
+)
+
+DEFAULT_DELETE_REQUEST_RESPONSES = get_responses(
+    status.HTTP_200_OK,
+    status.HTTP_401_UNAUTHORIZED,
+    status.HTTP_404_NOT_FOUND,
+    status.HTTP_403_FORBIDDEN,
+    status.HTTP_405_METHOD_NOT_ALLOWED
+)
+
+DEFAULT_GET_REQUESTS_RESPONSES = get_responses(
+    status.HTTP_401_UNAUTHORIZED,
+    status.HTTP_404_NOT_FOUND,
+    status.HTTP_403_FORBIDDEN,
+    status.HTTP_405_METHOD_NOT_ALLOWED
+)

@@ -21,11 +21,12 @@ from django.utils.translation import gettext_lazy as _
 from requests import Request
 from rest_framework.exceptions import NotFound
 
+from recon_db_manager.models import Organization
 from reporting_tool.forms.organization import OrganizationForm
 from reporting_tool.forms.utils import CheckUserTokenForm, SendEmailMixin
 from reporting_tool.frontend.router import Router
-from reporting_tool.models import Organization, User
 from reporting_tool.tokens import AccountActivationTokenGenerator
+from shared.models import User
 
 
 class PreSignupForm(UserCreationForm):
@@ -46,7 +47,7 @@ class PreSignupForm(UserCreationForm):
         """
         Fields username, email are required.
         """
-        model = User
+        model = get_user_model()
         fields = ('username',)
 
     def clean(self) -> dict:
@@ -81,7 +82,7 @@ class UserForm(PreSignupForm):
         """
         All the fields are required.
         """
-        model = User
+        model = get_user_model()
         fields = (
             'username', 'email', 'firstname', 'lastname', 'address', 'phone'
         )

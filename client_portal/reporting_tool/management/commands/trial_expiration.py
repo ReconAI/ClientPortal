@@ -15,7 +15,7 @@ from django.utils.timezone import now
 from requests import Request
 
 from reporting_tool.forms.utils import SendEmailMixin
-from reporting_tool.models import User
+from shared.models import User
 
 
 class Command(BaseCommand, SendEmailMixin):
