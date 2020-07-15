@@ -3,6 +3,7 @@
 </ng-container>
 <ng-container *ngIf="!isLoading && isUserFound">
   <recon-user-profile
+    [hideInvoicing]="hideInvoicing"
     [disabledUserEmail]="true"
     [disabledOrganization]="true"
     [disabledInvoicing]="true"
