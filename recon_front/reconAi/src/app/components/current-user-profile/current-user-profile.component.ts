@@ -39,8 +39,8 @@ export class CurrentUserProfileComponent implements OnInit {
   ngOnInit(): void {}
 
   // disable organization and invoicing blocks for clients
-  disablingBlocks(): boolean {
-    return this.userRolePriority < UserRolesPriorities.ADMIN_ROLE;
+  get isClient(): boolean {
+    return this.userRolePriority < UserRolesPriorities.DEVELOPER_ROLE;
   }
 
   updateUser(user: UserProfileFormInterface): void {

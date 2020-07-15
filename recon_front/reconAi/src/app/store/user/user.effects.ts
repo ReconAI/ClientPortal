@@ -1,4 +1,7 @@
-import { selectCurrentUserName } from './user.selectors';
+import {
+  selectCurrentUserName,
+  selectCurrentUserProfileInvoicing,
+} from './user.selectors';
 import { Router } from '@angular/router';
 import { ResetPasswordWithMetaInterface } from 'app/constants/types/resetPassword';
 import {
@@ -263,17 +266,22 @@ export class UserEffects {
           })
         );
       }),
-      withLatestFrom(this.store.pipe(select(selectCurrentUserName))),
-      switchMap(([user, username]) => {
+      withLatestFrom(
+        this.store.pipe(select(selectCurrentUserName)),
+        this.store.pipe(select(selectCurrentUserProfileInvoicing))
+      ),
+      switchMap(([user, username, invoicing]) => {
+        // it's used to get invoicing info for current client
+        const finalUser = { ...{ invoicing }, ...user };
         return this.httpClient
           .put(
             '/api/profile',
-            transformUpdateCurrentUserToServer(user, username)
+            transformUpdateCurrentUserToServer(finalUser, username)
           )
           .pipe(
             map(() => {
               this.store.dispatch(resetUpdateCurrentUserErrorAction());
-              return updateCurrentUserSucceededAction(user);
+              return updateCurrentUserSucceededAction(finalUser);
             }),
             catchError((error) =>
               of(

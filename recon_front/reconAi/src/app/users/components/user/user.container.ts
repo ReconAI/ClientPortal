@@ -1,3 +1,4 @@
+import { UserRolesPriorities } from './../../../constants/types/user';
 import { setAppTitleAction } from './../../../store/app/app.actions';
 import {
   selectUserProfileLoadingStatus,
@@ -23,6 +24,7 @@ import {
   selectUserProfileInvoicingFirstName,
   selectUserProfileInvoicingLastName,
   selectWhetherUserProfileFound,
+  selectUserProfileRolePriority,
 } from './../../../store/users/users.selectors';
 import {
   loadUserProfileRequestedAction,
@@ -112,6 +114,10 @@ export class UserContainer implements OnInit, OnDestroy {
   );
   invoicingLastName$: Observable<string> = this.store.pipe(
     select(selectUserProfileInvoicingLastName)
+  );
+
+  userRolePriority$: Observable<UserRolesPriorities> = this.store.pipe(
+    select(selectUserProfileRolePriority)
   );
 
   userId: string;

@@ -150,3 +150,13 @@ class AuthTokenSerializer(AuthTokenSerializerBase):
         except TypeError:
             msg = _('Unable to log in with provided credentials.')
             raise serializers.ValidationError(msg, code='authorization')
+
+    def create(self, validated_data):
+        """
+        Create is prohibited for the Token
+        """
+
+    def update(self, instance, validated_data):
+        """
+        Update is prohibited for the Token
+        """

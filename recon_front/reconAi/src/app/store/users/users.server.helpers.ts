@@ -1,9 +1,10 @@
+import { getUserPriorityByRole } from './../../core/helpers/priorities';
 import { ResetPasswordInterface } from './../../constants/types/resetPassword';
 import { SignUpRequestInterface } from './../signUp/signUp.server.helpers';
 import {
   UserProfileFormUserInterface,
-  CredentialsRequestInterface,
   UpdateUserServerRequestInterface,
+  CLIENT_ROLE,
 } from './../../constants/types/user';
 import { ActivationInterface } from './../../constants/types/activation';
 import {
@@ -14,6 +15,7 @@ import {
   ServerUserInterface,
   ServerUserOrganizationInterface,
   UserProfileFormInterface,
+  UserRoleTypes,
 } from 'app/constants/types';
 import moment from 'moment';
 
@@ -96,6 +98,7 @@ export const transformUserProfileResponseFromServer = (
   profile: {
     id: response.id,
     username: response.username,
+    rolePriority: getUserPriorityByRole(response?.group?.name),
   },
 });
 
@@ -192,3 +195,9 @@ export const transformUpdateUserToServer = (
   address: user.address,
   phone: user.phone,
 });
+
+export const getTitleOfInvitedRegistration = (roleName: UserRoleTypes): string => {
+  return roleName === CLIENT_ROLE
+    ? `Client's registration`
+    : `Registration for invited ${roleName}`;
+};
