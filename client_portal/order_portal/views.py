@@ -2,6 +2,7 @@
 Ordre portal views set
 """
 from django.conf import settings
+from django.db.models import Count
 from django.db.transaction import atomic
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
@@ -69,8 +70,9 @@ class CategoryList(CategoryOperator, ListCreateAPIView):
         )
 
     def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-
+        queryset = self.filter_queryset(self.get_queryset()).annotate(
+            manufacturers_count=Count('manufacturer')
+        )
         return JsonResponse({
             'data': self.get_serializer(queryset, many=True).data
         })

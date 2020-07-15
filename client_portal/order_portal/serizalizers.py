@@ -18,12 +18,19 @@ class CategorySerializer(ModelSerializer):
     """
     Category serializer for displays
     """
+
+    manufacturers_count = serializers.SerializerMethodField('get_manufacturers_cnt')
+
     class Meta:
         """
         Id and name should be shown
         """
         model = Category
-        fields = ('id', 'name',)
+        fields = ('id', 'name', 'manufacturers_count')
+
+    @staticmethod
+    def get_manufacturers_cnt(category: Category) -> int:
+        return category.manufacturers_count
 
 
 class SynchronizeCategorySerializer(CategorySerializer):
