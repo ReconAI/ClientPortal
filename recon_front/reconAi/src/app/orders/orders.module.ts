@@ -9,12 +9,14 @@ import { OrdersRoutingModule } from './orders-routing.module';
 import { OrdersListComponent } from './orders-list/orders-list.component';
 import { OrderItemComponent } from './orders-list/order-item/order-item.component';
 import { CreateDeviceComponent } from './components/devices/create-device/create-device.component';
+import { CreateManufactureComponent } from './components/devices/create-device/create-manufacture/create-manufacture.component';
 
 @NgModule({
   declarations: [
     OrdersListComponent,
     OrderItemComponent,
     CreateDeviceComponent,
+    CreateManufactureComponent,
   ],
   imports: [
     CommonModule,

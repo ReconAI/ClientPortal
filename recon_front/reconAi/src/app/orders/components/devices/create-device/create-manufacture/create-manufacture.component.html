@@ -1,0 +1,91 @@
+<div class="recon-modal-title">
+  <h3>Add new manufacture</h3>
+  <mat-icon [mat-dialog-close]="true">close</mat-icon>
+</div>
+
+<form [formGroup]="manufactureForm">
+  <mat-form-field>
+    <mat-label>Manufacturer name</mat-label>
+    <input
+      matInput
+      placeholder="Manufacturer name"
+      type="text"
+      formControlName="name"
+      required
+      autocomplete="on"
+      id="manufacturer-name"
+    />
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>VAT number</mat-label>
+    <input
+      matInput
+      placeholder="VAT number"
+      type="text"
+      formControlName="vat"
+      required
+      autocomplete="on"
+      id="vat"
+    />
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Contact person</mat-label>
+    <input
+      matInput
+      placeholder="Contact person"
+      type="text"
+      formControlName="contactPerson"
+      required
+      autocomplete="on"
+      id="contactPerson"
+    />
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Phone</mat-label>
+    <input
+      matInput
+      placeholder="Phone"
+      type="text"
+      formControlName="phone"
+      required
+      autocomplete="on"
+      id="phone"
+    />
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Address</mat-label>
+    <input
+      matInput
+      placeholder="Address"
+      type="text"
+      formControlName="address"
+      required
+      autocomplete="on"
+      id="address"
+    />
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Order email</mat-label>
+    <input
+      matInput
+      placeholder="Order email"
+      type="text"
+      formControlName="orderEmail"
+      required
+      autocomplete="on"
+      id="order-email"
+    />
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Support email</mat-label>
+    <input
+      matInput
+      placeholder="Support email"
+      type="text"
+      formControlName="supportEmail"
+      required
+      autocomplete="on"
+      id="support-email"
+    />
+  </mat-form-field>
+</form>

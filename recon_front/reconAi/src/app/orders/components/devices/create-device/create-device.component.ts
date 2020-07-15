@@ -1,3 +1,5 @@
+import { CreateManufactureComponent } from './create-manufacture/create-manufacture.component';
+import { MatDialog } from '@angular/material/dialog';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 
@@ -8,7 +10,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class CreateDeviceComponent implements OnInit {
   deviceForm: FormGroup;
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder, private dialog: MatDialog) {}
 
   ngOnInit(): void {
     this.deviceForm = this.fb.group({
@@ -23,6 +25,13 @@ export class CreateDeviceComponent implements OnInit {
       seoTitle: ['', Validators.required],
       seoDescription: ['', Validators.required],
       category: ['', Validators.required],
+    });
+  }
+
+  openCreateManufactureDialog(): void {
+    this.dialog.open(CreateManufactureComponent, {
+      width: '470px',
+      height: '700px',
     });
   }
 

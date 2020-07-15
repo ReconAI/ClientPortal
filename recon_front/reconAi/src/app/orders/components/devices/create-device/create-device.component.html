@@ -13,7 +13,9 @@
   >
   </recon-form-select>
   <div>
-    <span class="add-manufacture-label">+ Add new manufacture</span>
+    <span class="add-manufacture-label" (click)="openCreateManufactureDialog()"
+      >+ Add new manufacture</span
+    >
   </div>
   <recon-form-file-with-list
     accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*"
