@@ -7,7 +7,7 @@ const routes: Routes = [
   {
     path: '',
     data: {
-      title: 'Users management',
+      title: 'User management',
     },
     component: ManagementContainer,
   },
