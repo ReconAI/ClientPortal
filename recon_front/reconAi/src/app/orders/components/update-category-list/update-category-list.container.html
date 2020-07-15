@@ -1,3 +1,8 @@
-<recon-update-category-list
-  [parentCategories]="categoriesList$ | async"
-></recon-update-category-list>
+<ng-container *ngIf="loadingStatus; else loaded">Loading...</ng-container>
+<ng-template #loaded>
+  <recon-update-category-list
+    [parentCategories]="categoriesList$ | async"
+    [loadingUpdateStatus]="loadingUpdatingStatus$ | async"
+    (sendCategories$)="sendCategories($event)"
+  ></recon-update-category-list>
+</ng-template>

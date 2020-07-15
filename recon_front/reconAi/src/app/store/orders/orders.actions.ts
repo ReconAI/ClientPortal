@@ -5,6 +5,10 @@ export enum OrdersActionTypes {
   LOAD_CATEGORIES_REQUESTED = '[Orders] Load Categories Requested',
   LOAD_CATEGORIES_SUCCEEDED = '[Orders] Load Categories Succeeded',
   LOAD_CATEGORIES_ERROR = '[Orders] Load Categories Error',
+
+  UPDATE_CATEGORIES_REQUESTED = '[Orders] Update Categories Requested',
+  UPDATE_CATEGORIES_SUCCEEDED = '[Orders] Update Categories Succeeded',
+  UPDATE_CATEGORIES_ERROR = '[Orders] Update Categories Error',
 }
 
 export const loadCategoriesRequestedAction = createAction(
@@ -18,4 +22,17 @@ export const loadCategoriesSucceededAction = createAction(
 
 export const loadCategoriesErrorAction = createAction(
   OrdersActionTypes.LOAD_CATEGORIES_ERROR
+);
+
+export const updateCategoriesRequestedAction = createAction(
+  OrdersActionTypes.UPDATE_CATEGORIES_REQUESTED,
+  props<CategoriesClientInterface>()
+);
+
+export const updateCategoriesSucceededAction = createAction(
+  OrdersActionTypes.UPDATE_CATEGORIES_SUCCEEDED
+);
+
+export const updateCategoriesErrorAction = createAction(
+  OrdersActionTypes.UPDATE_CATEGORIES_ERROR
 );

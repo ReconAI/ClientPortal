@@ -20,6 +20,7 @@ export enum LoadersActionTypes {
   SET_UPDATE_CURRENT_USER_LOADING_STATUS = '[Loaders] Set Update Current User Loading Status',
   SET_UPDATE_USER_LOADING_STATUS = '[Loaders] Set Update User Loading Status',
   SET_CATEGORIES_LIST_LOADING_STATUS = '[Loaders | Orders] Set Categories List Loading Status',
+  SET_UPDATE_CATEGORIES_LIST_LOADING_STATUS = '[Loaders | Orders] Set Update Categories List Loading Status',
 }
 
 export interface LoaderInterface {
@@ -114,5 +115,10 @@ export const setUpdateUserLoadingStatusAction = createAction(
 // orders
 export const setCategoriesListLoadingStatusAction = createAction(
   LoadersActionTypes.SET_CATEGORIES_LIST_LOADING_STATUS,
+  props<LoaderInterface>()
+);
+
+export const setUpdateCategoriesListLoadingStatusAction = createAction(
+  LoadersActionTypes.SET_UPDATE_CATEGORIES_LIST_LOADING_STATUS,
   props<LoaderInterface>()
 );

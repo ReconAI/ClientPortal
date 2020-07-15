@@ -1,6 +1,8 @@
+import { CategoryInterface } from './../../orders/constants/types/category';
 import {
   CategoriesServerResponseInterface,
   transformCategoriesFromServer,
+  CategoriesClientInterface,
 } from './orders.server.helpers';
 import { Router } from '@angular/router';
 import { Action, Store, select } from '@ngrx/store';
@@ -14,8 +16,13 @@ import {
   OrdersActionTypes,
   loadCategoriesSucceededAction,
   loadCategoriesErrorAction,
+  updateCategoriesSucceededAction,
+  updateCategoriesErrorAction,
 } from './orders.actions';
-import { setCategoriesListLoadingStatusAction } from '../loaders';
+import {
+  setCategoriesListLoadingStatusAction,
+  setUpdateCategoriesListLoadingStatusAction,
+} from '../loaders';
 
 @Injectable()
 export class OrdersEffects {
@@ -37,25 +44,53 @@ export class OrdersEffects {
         );
       }),
       switchMap(() =>
-        this.httpClient
-          .get<CategoriesServerResponseInterface>(`/order-api/categories?page=${1}`)
-          .pipe(
-            map((categories) =>
-              loadCategoriesSucceededAction(
-                transformCategoriesFromServer(categories)
-              )
-            ),
-            catchError((error) => {
-              return of(loadCategoriesErrorAction());
-            }),
-            finalize(() => {
-              this.store.dispatch(
-                setCategoriesListLoadingStatusAction({
-                  status: false,
-                })
-              );
-            })
-          )
+        this.httpClient.get<CategoryInterface[]>('/order-api/categories').pipe(
+          map((categories) =>
+            loadCategoriesSucceededAction(
+              transformCategoriesFromServer(categories)
+            )
+          ),
+          catchError((error) => {
+            return of(loadCategoriesErrorAction());
+          }),
+          finalize(() => {
+            this.store.dispatch(
+              setCategoriesListLoadingStatusAction({
+                status: false,
+              })
+            );
+          })
+        )
+      )
+    )
+  );
+
+  updateCategories$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action & CategoriesClientInterface>(
+        OrdersActionTypes.UPDATE_CATEGORIES_REQUESTED
+      ),
+      tap(() => {
+        this.store.dispatch(
+          setUpdateCategoriesListLoadingStatusAction({
+            status: true,
+          })
+        );
+      }),
+      switchMap((categories) =>
+        this.httpClient.post<void>('/order-api/categories', categories).pipe(
+          map(() => updateCategoriesSucceededAction()),
+          catchError((error) => {
+            return of(updateCategoriesErrorAction());
+          }),
+          finalize(() => {
+            this.store.dispatch(
+              setUpdateCategoriesListLoadingStatusAction({
+                status: false,
+              })
+            );
+          })
+        )
       )
     )
   );

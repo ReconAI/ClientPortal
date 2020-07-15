@@ -20,9 +20,13 @@
     <button
       mat-raised-button
       color="primary"
-      [disabled]="!categoriesForm.valid"
+      [disabled]="loadingUpdateStatus || !categoriesForm.valid"
+      (click)="sendCategories()"
     >
-      Save
+      <mat-icon *ngIf="loadingUpdateStatus; else loaded">
+        <mat-spinner color="primary" diameter="20"></mat-spinner>
+      </mat-icon>
+      <ng-template #loaded>SAVE</ng-template>
     </button>
   </div>
 </form>

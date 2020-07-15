@@ -2,7 +2,10 @@ import {
   CategoriesServerResponseInterface,
   CategoriesClientInterface,
 } from './orders.server.helpers';
-import { loadCategoriesSucceededAction } from './orders.actions';
+import {
+  loadCategoriesSucceededAction,
+  updateCategoriesSucceededAction,
+} from './orders.actions';
 import { CategoryInterface } from './../../orders/constants/types/category';
 import { ActivationInterface } from './../../constants/types/activation';
 import { UserState } from './../user/user.reducer';
