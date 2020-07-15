@@ -33,8 +33,16 @@ class CategorySerializer(ModelSerializer):
         return category.manufacturers_count
 
 
-class SynchronizeCategorySerializer(CategorySerializer):
+class SynchronizeCategorySerializer(ModelSerializer):
     id = serializers.IntegerField(required=False, allow_null=True, min_value=1)
+
+    class Meta:
+        """
+        Id and name should be shown
+        """
+        model = Category
+        fields = ('id', 'name')
+
 
 
 class CategoryCollectionSerializer(Serializer):
@@ -49,6 +57,9 @@ class CategoryCollectionSerializer(Serializer):
 
         if incoming_ids and len(Category.objects.filter(pk__in=incoming_ids)) != len(incoming_ids):
             raise ValidationError('Not all categories passed are present')
+
+        if self.__are_categories_assigned(categories):
+            raise ValidationError('You try to delete categories attached to manufacturers')
 
         return categories
 
@@ -80,10 +91,10 @@ class CategoryCollectionSerializer(Serializer):
         validated_categories = self.validated_data['categories']
 
         self.delete(validated_categories)
-        self.create(self.__categories_for_insert(validated_categories))
-        self.update(self.__categories_for_update(validated_categories))
+        created = self.create(self.__categories_for_insert(validated_categories))
+        updated = self.update(self.__categories_for_update(validated_categories))
 
-        return self.validated_data.items()
+        return created + updated
 
     def create(self, categories_list: List[dict]) -> List[Category]:
         """
@@ -98,17 +109,28 @@ class CategoryCollectionSerializer(Serializer):
         ])
 
     def update(self, categories_list: List[dict]):
-        return Category.objects.bulk_update([
-            Category(**category)
-            for category
-            in categories_list
-        ], ['name'])
+        categories = []
 
+        for category in categories_list:
+            category = Category(**category)
+            category.save()
+            categories.append(category)
+
+        return categories
 
     def delete(self, validated_data):
         ids_for_delete = self.__categories_for_delete_ids(validated_data)
 
         return Category.objects.filter(pk__in=ids_for_delete).delete()
+
+    def __are_categories_assigned(self, categories):
+        categories_for_delete = self.__categories_for_delete_ids(categories)
+
+        return Category.objects.select_related(
+            'manufacturer_set'
+        ).filter(
+            manufacturer__categories__in=categories_for_delete
+        ).exists()
 
     @staticmethod
     def __categories_for_update(categories_list: List[dict]):
