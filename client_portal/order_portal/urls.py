@@ -21,13 +21,14 @@ from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 
 from order_portal.views import CategoryList, CategoryItem, ManufacturerList, \
-    ManufacturerItem
+    ManufacturerItem, DeviceList
 
 urlpatterns = [
     path('categories', CategoryList.as_view(), name='categories.list'),
     path('categories/<int:pk>', CategoryItem.as_view(), name='categories.item'),
     path('manufacturers', ManufacturerList.as_view(), name='manufacturers.list'),
-    path('manufacturers/<int:pk>', ManufacturerItem.as_view(), name='manufacturers.item')
+    path('manufacturers/<int:pk>', ManufacturerItem.as_view(), name='manufacturers.item'),
+    path('devices', DeviceList.as_view(), name='devices.item')
 ]
 
 if settings.DEBUG:

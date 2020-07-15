@@ -1402,11 +1402,19 @@ class Device(models.Model):
     Device model
     """
     id = models.BigAutoField(primary_key=True)
-    name = models.CharField(max_length=255)
-    price = models.DecimalField(max_digits=16, decimal_places=2)
-    description = models.TextField()
+    name = models.CharField(max_length=255, blank=False)
+    product_number = models.CharField(max_length=255, blank=False)
+    buying_price = models.DecimalField(max_digits=16, blank=False, decimal_places=2, db_column='buyingPrice')
+    sales_price = models.DecimalField(max_digits=16, blank=False, decimal_places=2, db_column='salesPrice')
+    description = models.TextField(null=True)
     manufacturer = models.ForeignKey(Manufacturer, on_delete=models.PROTECT,
                                      db_column='manufacturerId')
+    seo_title = models.CharField(max_length=255, null=True, db_column='seoTitle')
+    seo_keywords = models.CharField(max_length=255, null=True, db_column='seoKeywords')
+    seo_description = models.TextField(null=True, db_column='seoDescription')
+    published = models.BooleanField(default=True)
+    images = JSONField(null=True)
+    created_dt = models.DateTimeField(null=True, auto_now_add=True)
 
     class Meta:
         db_table = 'Devices'

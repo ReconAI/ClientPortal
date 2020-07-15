@@ -5,8 +5,9 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 
 from order_portal.serizalizers import CategorySerializer, \
-    ReadManufacturerSerializer, WriteManufacturerSerializer
-from recon_db_manager.models import Category, Manufacturer
+    ReadManufacturerSerializer, WriteManufacturerSerializer, \
+    ReadDeviceSerializer
+from recon_db_manager.models import Category, Manufacturer, Device
 from shared.permissions import IsActive, IsSuperUser, PaymentRequired
 from shared.swagger.headers import token_header
 from shared.swagger.responses import get_responses, http401, http404, \
@@ -212,3 +213,16 @@ class ManufacturerItem(ManufacturerOperator, RetrieveUpdateDestroyAPIView):
     read_serializer_class = ReadManufacturerSerializer
 
     update_success_message = _('Manufacturer is updated successfully')
+
+
+class DeviceOperator:
+    serializer_class = ReadDeviceSerializer
+
+    write_serializer_class = ReadDeviceSerializer
+
+    queryset = Device.objects.prefetch_related(
+        'manufacturer__categories').filter(published=True).all()
+
+
+class DeviceList(DeviceOperator, ListCreateAPIView):
+    create_success_message = _('Device is created successfully')

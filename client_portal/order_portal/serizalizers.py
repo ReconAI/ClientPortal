@@ -5,7 +5,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.fields import ListField
 from rest_framework.serializers import ModelSerializer
 
-from recon_db_manager.models import Category, Manufacturer
+from recon_db_manager.models import Category, Manufacturer, Device
 
 
 class CategorySerializer(ModelSerializer):
@@ -20,7 +20,7 @@ class ReadManufacturerSerializer(ModelSerializer):
 
     class Meta:
         model = Manufacturer
-        fields = ('name', 'categories')
+        fields = ('id', 'name', 'categories')
 
 
 class WriteManufacturerSerializer(ModelSerializer):
@@ -61,3 +61,19 @@ class WriteManufacturerSerializer(ModelSerializer):
         manufacturer.categories.set(categories)
 
         return manufacturer
+
+
+class ReadDeviceSerializer(ModelSerializer):
+    seo_keywords = serializers.SerializerMethodField('format_seo_keywords')
+    manufacturer = ReadManufacturerSerializer()
+
+    class Meta:
+        model = Device
+        fields = (
+            'id', 'name', 'description', 'manufacturer', 'buying_price',
+            'sales_price', 'product_number', 'seo_title', 'seo_keywords',
+            'seo_description', 'published', 'images', 'created_dt'
+        )
+
+    def format_seo_keywords(self, device: Device) -> List[str]:
+        return device.seo_keywords.split(', ')
