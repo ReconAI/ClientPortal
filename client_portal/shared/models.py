@@ -242,10 +242,14 @@ class User(CommonUser, PermissionsMixin):
 class UserGroup(models.Model):
     """
     UserGroup model
+
     Responsible for one-to-one relation Group - User
     """
 
     class Meta:
+        """
+        User group model's meta specification
+        """
         db_table = 'UserGroups'
 
     id = models.BigAutoField(primary_key=True)
@@ -260,6 +264,9 @@ class Token(models.Model):
     """
 
     class Meta:
+        """
+        Token model's meta specification
+        """
         db_table = 'Tokens'
 
     key = models.CharField(_("Key"), max_length=40, primary_key=True)
