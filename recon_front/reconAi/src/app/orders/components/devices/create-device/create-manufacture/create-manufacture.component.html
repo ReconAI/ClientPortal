@@ -88,4 +88,33 @@
       id="support-email"
     />
   </mat-form-field>
+  <mat-form-field>
+    <mat-chip-list #chipList>
+      <mat-chip
+        *ngFor="let category of selectedCategories"
+        [selectable]="true"
+        [removable]="true"
+        (removed)="remove(category)"
+      >
+        {{ category }}
+        <span matChipRemove class="close-chip">&times;</span>
+      </mat-chip>
+      <input
+        placeholder="Category"
+        #categoryInput
+        [matAutocomplete]="auto"
+        [matChipInputFor]="chipList"
+        [matChipInputSeparatorKeyCodes]="[]"
+        (matChipInputTokenEnd)="add($event)"
+      />
+    </mat-chip-list>
+    <mat-autocomplete
+      #auto="matAutocomplete"
+      (optionSelected)="selected($event)"
+    >
+      <mat-option *ngFor="let category of allCategories" [value]="category" (click)="optionClick($event)">
+        {{ category }}
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
 </form>

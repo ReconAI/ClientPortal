@@ -18,6 +18,8 @@ import { MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+
 @NgModule({
   imports: [
     CommonModule,
@@ -38,6 +40,7 @@ import { MatChipsModule } from '@angular/material/chips';
     MatCardModule,
     MatSelectModule,
     MatChipsModule,
+    MatAutocompleteModule,
   ],
   exports: [
     MatToolbarModule,
@@ -57,6 +60,7 @@ import { MatChipsModule } from '@angular/material/chips';
     MatCardModule,
     MatSelectModule,
     MatChipsModule,
+    MatAutocompleteModule,
   ],
   providers: [],
 })
