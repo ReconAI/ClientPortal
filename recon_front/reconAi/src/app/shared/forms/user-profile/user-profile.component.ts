@@ -21,6 +21,8 @@ export class UserProfileComponent implements OnInit {
   @Input() showTerms = false;
   @Input() isInvitation = false;
 
+  @Input() hideInvoicing = false;
+
   @Input() disabledButton = false;
   @Input() disabledUserEmail = false;
   @Input() disabledOrganization = false;
@@ -77,6 +79,45 @@ export class UserProfileComponent implements OnInit {
       ],
     });
 
+    const invoicingGroup =
+      !this.hideInvoicing &&
+      this.fb.group({
+        firstName: [
+          {
+            value: this.invoicingFirstName || '',
+            disabled: this.disabledInvoicing,
+          },
+          Validators.required,
+        ],
+        lastName: [
+          {
+            value: this.invoicingLastName || '',
+            disabled: this.disabledInvoicing,
+          },
+          Validators.required,
+        ],
+        address: [
+          {
+            value: this.invoicingAddress || '',
+            disabled: this.disabledInvoicing,
+          },
+          Validators.required,
+        ],
+        phone: [
+          {
+            value: this.invoicingPhone || '',
+            disabled: this.disabledInvoicing,
+          },
+          Validators.required,
+        ],
+        email: [
+          {
+            value: this.invoicingEmail || '',
+            disabled: this.disabledInvoicing,
+          },
+          Validators.required,
+        ],
+      });
     return this.fb.group(
       this.isInvitation
         ? {
@@ -140,43 +181,7 @@ export class UserProfileComponent implements OnInit {
                 Validators.required,
               ],
             }),
-            invoicing: this.fb.group({
-              firstName: [
-                {
-                  value: this.invoicingFirstName || '',
-                  disabled: this.disabledInvoicing,
-                },
-                Validators.required,
-              ],
-              lastName: [
-                {
-                  value: this.invoicingLastName || '',
-                  disabled: this.disabledInvoicing,
-                },
-                Validators.required,
-              ],
-              address: [
-                {
-                  value: this.invoicingAddress || '',
-                  disabled: this.disabledInvoicing,
-                },
-                Validators.required,
-              ],
-              phone: [
-                {
-                  value: this.invoicingPhone || '',
-                  disabled: this.disabledInvoicing,
-                },
-                Validators.required,
-              ],
-              email: [
-                {
-                  value: this.invoicingEmail || '',
-                  disabled: this.disabledInvoicing,
-                },
-                Validators.required,
-              ],
-            }),
+            ...(this.hideInvoicing ? {} : { invoicing: invoicingGroup }),
           }
     );
   }
@@ -191,7 +196,8 @@ export class UserProfileComponent implements OnInit {
     const isInvoicingValid =
       this.isInvitation ||
       this.disabledInvoicing ||
-      this.profileForm.controls.invoicing.valid;
+      this.hideInvoicing ||
+      this.profileForm?.controls?.invoicing?.valid;
     const isUserValid = this.profileForm.controls.user.valid;
 
     const isProfileValid =

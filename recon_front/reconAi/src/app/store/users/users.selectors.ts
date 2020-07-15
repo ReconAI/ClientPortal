@@ -1,3 +1,4 @@
+import { UserRolesPriorities } from './../../constants/types/user';
 import { ActivationInterface } from './../../constants/types/activation';
 import { createSelector } from '@ngrx/store';
 
@@ -43,6 +44,12 @@ export const selectUserProfile = createSelector(
 export const selectUserProfileId = createSelector(
   selectUserProfile,
   (user: UserProfileFormInterface) => user?.profile?.id
+);
+
+export const selectUserProfileRolePriority = createSelector(
+  selectUserProfile,
+  (user: UserProfileFormInterface): UserRolesPriorities =>
+    user?.profile?.rolePriority
 );
 
 // User Profile
