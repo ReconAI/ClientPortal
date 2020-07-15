@@ -28,6 +28,7 @@
         [matTooltip]="closeTooltip || ''"
         matTooltipPosition="right"
         class="close-icon-container"
+        [ngClass]="{ 'disabled-icon': disabledCloseIcon }"
         *ngIf="isWithCloseIcon"
         (click)="pressIcon()"
       >

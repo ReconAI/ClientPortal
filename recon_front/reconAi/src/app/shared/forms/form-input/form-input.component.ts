@@ -35,6 +35,7 @@ export class FormInputComponent implements ControlValueAccessor, OnInit {
   @Input() disabled = false;
   @Input() showRequiredSymbol = false;
   @Input() isWithCloseIcon = false;
+  @Input() disabledCloseIcon = false;
   // add types
   @Input() fieldType: 'text' | 'textarea' | 'password' = 'text';
   @Output() changeVal = new EventEmitter<any>();

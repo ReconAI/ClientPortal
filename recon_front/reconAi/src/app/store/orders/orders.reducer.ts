@@ -31,9 +31,15 @@ const loadCategoriesSucceededReducer = (
   { type, categories }: Action & CategoriesClientInterface
 ): OrdersState => ({ ...state, categories });
 
+const updateCategoriesSucceededReducer = (
+  state: OrdersState,
+  { type, categories }: Action & CategoriesClientInterface
+): OrdersState => ({ ...state, categories });
+
 const ordersReducer = createReducer(
   initialState,
-  on(loadCategoriesSucceededAction, loadCategoriesSucceededReducer)
+  on(loadCategoriesSucceededAction, loadCategoriesSucceededReducer),
+  on(updateCategoriesSucceededAction, updateCategoriesSucceededReducer)
 );
 
 export function reducer(state: OrdersState | undefined, action: Action) {

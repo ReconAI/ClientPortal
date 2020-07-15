@@ -30,7 +30,8 @@ export const updateCategoriesRequestedAction = createAction(
 );
 
 export const updateCategoriesSucceededAction = createAction(
-  OrdersActionTypes.UPDATE_CATEGORIES_SUCCEEDED
+  OrdersActionTypes.UPDATE_CATEGORIES_SUCCEEDED,
+  props<CategoriesClientInterface>()
 );
 
 export const updateCategoriesErrorAction = createAction(

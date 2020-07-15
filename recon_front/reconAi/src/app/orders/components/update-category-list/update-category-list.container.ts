@@ -23,33 +23,20 @@ export class UpdateCategoryListContainer implements OnInit, OnDestroy {
   loadingStatus = true;
   loadingStatusSubscription: Subscription;
 
-  categoriesList$: Observable<string[]> = this.store.pipe(
-    select(selectOrderCategoriesList),
-    tap((cat) => console.log(cat, 'BEFORE')),
-    map((categories: CategoryInterface[]) =>
-      categories.map(({ name }: CategoryInterface): string => name)
-    ),
-    tap((cat) => console.log(cat, 'AFTER'))
+  categoriesList$: Observable<CategoryInterface[]> = this.store.pipe(
+    select(selectOrderCategoriesList)
   );
 
   loadingStatus$: Observable<boolean> = this.store.pipe(
     select(selectCategoriesListLoadingStatus),
-    tap((status) => console.log(status, 'STATUS'))
   );
 
   loadingUpdatingStatus$: Observable<boolean> = this.store.pipe(
     select(selectUpdateCategoriesListLoadingStatus),
-    tap((status) => console.log(status, 'STATUS UPDATING'))
   );
 
-  sendCategories({ categories }: CategoriesFormInterface): void {
-    this.store.dispatch(
-      updateCategoriesRequestedAction({
-        categories: Array.from(categories).map((category) => ({
-          name: category,
-        })),
-      })
-    );
+  sendCategories(categories: CategoriesClientInterface): void {
+    this.store.dispatch(updateCategoriesRequestedAction(categories));
   }
 
   ngOnInit(): void {

@@ -10,9 +10,11 @@ export interface CategoriesClientInterface {
 
 export const transformCategoriesFromServer = (
   response: CategoryInterface[]
-): CategoriesClientInterface => ({
-  categories: response,
-});
+): CategoriesClientInterface => {
+  return {
+    categories: response,
+  };
+};
 
 export interface CategoriesFormInterface {
   categories: string[];

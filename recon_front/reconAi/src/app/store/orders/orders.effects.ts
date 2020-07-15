@@ -78,19 +78,25 @@ export class OrdersEffects {
         );
       }),
       switchMap((categories) =>
-        this.httpClient.post<void>('/order-api/categories', categories).pipe(
-          map(() => updateCategoriesSucceededAction()),
-          catchError((error) => {
-            return of(updateCategoriesErrorAction());
-          }),
-          finalize(() => {
-            this.store.dispatch(
-              setUpdateCategoriesListLoadingStatusAction({
-                status: false,
-              })
-            );
-          })
-        )
+        this.httpClient
+          .post<CategoryInterface[]>('/order-api/categories', categories)
+          .pipe(
+            map((updatedCategories) =>
+              updateCategoriesSucceededAction(
+                transformCategoriesFromServer(updatedCategories)
+              )
+            ),
+            catchError((error) => {
+              return of(updateCategoriesErrorAction());
+            }),
+            finalize(() => {
+              this.store.dispatch(
+                setUpdateCategoriesListLoadingStatusAction({
+                  status: false,
+                })
+              );
+            })
+          )
       )
     )
   );

@@ -1,15 +1,20 @@
 <form [formGroup]="categoriesForm">
   <ng-container
-    *ngFor="let link of categories.controls; let i = index"
+    *ngFor="let category of categories.controls; let i = index"
     formArrayName="categories"
   >
-    <recon-form-input
-      label=""
-      [formControlName]="i"
-      [isWithCloseIcon]="true"
-      [closeTooltip]="closeTooltip"
-      (clickIcon)="removeCategory(i)"
-    ></recon-form-input>
+    <ng-container [formGroupName]="i">
+      <recon-form-input
+        label=""
+        formControlName="name"
+        [isWithCloseIcon]="true"
+        [closeTooltip]="
+          category?.get('manufacturers_count')?.value ? closeTooltip : null
+        "
+        [disabledCloseIcon]="!!category?.get('manufacturers_count')?.value"
+        (clickIcon)="removeCategory(i, category.value)"
+      ></recon-form-input>
+    </ng-container>
   </ng-container>
 
   <div class="add-item-to-list-container">
@@ -20,7 +25,7 @@
     <button
       mat-raised-button
       color="primary"
-      [disabled]="loadingUpdateStatus || !categoriesForm.valid"
+      [disabled]="!categories.length || loadingUpdateStatus || !categoriesForm.valid"
       (click)="sendCategories()"
     >
       <mat-icon *ngIf="loadingUpdateStatus; else loaded">
