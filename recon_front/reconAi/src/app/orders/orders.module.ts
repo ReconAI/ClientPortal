@@ -8,12 +8,14 @@ import { OrdersRoutingModule } from './orders-routing.module';
 import { OrdersListComponent } from './orders-list/orders-list.component';
 import { OrderItemComponent } from './orders-list/order-item/order-item.component';
 import { UpdateCategoryListComponent } from './components/update-category-list/update-category-list.component';
+import { UpdateCategoryListContainer } from './components/update-category-list/update-category-list.container';
 
 @NgModule({
   declarations: [
     OrdersListComponent,
     OrderItemComponent,
     UpdateCategoryListComponent,
+    UpdateCategoryListContainer,
   ],
   imports: [
     CommonModule,

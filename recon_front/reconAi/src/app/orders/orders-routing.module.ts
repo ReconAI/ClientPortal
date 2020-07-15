@@ -1,7 +1,7 @@
-import { UpdateCategoryListComponent } from './components/update-category-list/update-category-list.component';
 import { OrdersListComponent } from './orders-list/orders-list.component';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { UpdateCategoryListContainer } from './components/update-category-list/update-category-list.container';
 
 const routes: Routes = [
   {
@@ -17,7 +17,7 @@ const routes: Routes = [
     data: {
       title: 'Categories',
     },
-    component: UpdateCategoryListComponent,
+    component: UpdateCategoryListContainer,
   },
 ];
 
