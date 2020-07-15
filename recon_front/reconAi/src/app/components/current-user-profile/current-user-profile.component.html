@@ -1,7 +1,8 @@
 <recon-user-profile
-  [disabledInvoicing]="disablingBlocks()"
+  [disabledInvoicing]="isClient"
   [disabledUserEmail]="true"
-  [disabledOrganization]="disablingBlocks()"
+  [disabledOrganization]="isClient"
+  [hideInvoicing]="isClient"
   [organizationName]="organizationName"
   [organizationPhone]="organizationPhone"
   [organizationEmail]="organizationEmail"

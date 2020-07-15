@@ -3,6 +3,8 @@ from typing import List
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import ListField
+from rest_framework.serializers import ListSerializer, \
+    Serializer
 from rest_framework.serializers import ModelSerializer
 
 from recon_db_manager.models import Category, Manufacturer
@@ -12,6 +14,18 @@ class CategorySerializer(ModelSerializer):
     class Meta:
         model = Category
         fields = ('id', 'name',)
+
+
+class CategoryCollectionSerializer(Serializer):
+    categories = ListSerializer(child=CategorySerializer(), allow_null=False,
+                                allow_empty=False)
+
+    def create(self, validated_data: List[dict]):
+        return [
+            Category.objects.create(**category_data)
+            for category_data
+            in validated_data.get('categories', [])
+        ]
 
 
 class ReadManufacturerSerializer(ModelSerializer):

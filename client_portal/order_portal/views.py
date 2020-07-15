@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from drf_yasg.utils import swagger_auto_schema
@@ -5,7 +6,8 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 
 from order_portal.serizalizers import CategorySerializer, \
-    ReadManufacturerSerializer, WriteManufacturerSerializer
+    ReadManufacturerSerializer, WriteManufacturerSerializer, \
+    CategoryCollectionSerializer
 from recon_db_manager.models import Category, Manufacturer
 from shared.permissions import IsActive, IsSuperUser, PaymentRequired
 from shared.swagger.headers import token_header
@@ -54,7 +56,20 @@ class CategoryOperator:
     ]
 ))
 class CategoryList(CategoryOperator, ListCreateAPIView):
-    create_success_message = _('Category is created successfully')
+    create_success_message = _('Categories were added')
+
+    def create(self, request, *args, **kwargs):
+        return self.save_or_error(
+            self.create_success_message,
+            CategoryCollectionSerializer(data=request.data)
+        )
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        return JsonResponse({
+            'data': self.get_serializer(queryset, many=True).data
+        })
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(

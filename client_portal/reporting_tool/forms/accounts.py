@@ -210,6 +210,7 @@ class SignupForm(SendEmailMixin):
         return {
             'user': user,
             'site_name': get_current_site(request),
+            'app_name': settings.APP_NAME,
             'activation_link': Router(
                 settings.CLIENT_APP_SHEMA_HOST_PORT
             ).reverse_full(
