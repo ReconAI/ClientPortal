@@ -50,6 +50,9 @@ class CategoryCollectionSerializer(Serializer):
         if incoming_ids and len(Category.objects.filter(pk__in=incoming_ids)) != len(incoming_ids):
             raise ValidationError('Not all categories passed are present')
 
+        if self.__are_categories_assigned(categories):
+            raise ValidationError('You try to delete categories attached to manufacturers')
+
         return categories
 
     def save(self, **kwargs):
@@ -104,11 +107,19 @@ class CategoryCollectionSerializer(Serializer):
             in categories_list
         ], ['name'])
 
-
     def delete(self, validated_data):
         ids_for_delete = self.__categories_for_delete_ids(validated_data)
 
         return Category.objects.filter(pk__in=ids_for_delete).delete()
+
+    def __are_categories_assigned(self, categories):
+        categories_for_delete = self.__categories_for_delete_ids(categories)
+
+        return Category.objects.select_related(
+            'manufacturer_set'
+        ).filter(
+            manufacturer__categories__in=categories_for_delete
+        ).exists()
 
     @staticmethod
     def __categories_for_update(categories_list: List[dict]):
