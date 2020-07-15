@@ -1381,6 +1381,9 @@ class Category(models.Model):
     name = models.CharField(max_length=255)
 
     class Meta:
+        """
+        Manufacturer category model's Meta class specification
+        """
         db_table = 'Categories'
 
 
@@ -1394,6 +1397,9 @@ class Manufacturer(models.Model):
                                         db_table='ManufacturerCategories')
 
     class Meta:
+        """
+        Manufacturer model's Meta class specification
+        """
         db_table = 'Manufacturers'
 
 
@@ -1409,4 +1415,7 @@ class Device(models.Model):
                                      db_column='manufacturerId')
 
     class Meta:
+        """
+        Device model's Meta class specification
+        """
         db_table = 'Devices'

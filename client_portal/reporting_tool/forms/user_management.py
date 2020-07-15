@@ -14,8 +14,8 @@ from reporting_tool.forms.accounts import UserForm
 from reporting_tool.forms.utils import CheckUserTokenForm, RoleFieldMixin, \
     SendEmailMixin
 from reporting_tool.frontend.router import Router
-from shared.models import User, UserGroup
 from reporting_tool.tokens import InvitationTokenGenerator
+from shared.models import User, UserGroup
 
 
 class UserEditForm(ModelForm):
