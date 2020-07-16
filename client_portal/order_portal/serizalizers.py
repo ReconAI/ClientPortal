@@ -123,6 +123,20 @@ class CategoryCollectionSerializer(Serializer):
 
         return Category.objects.filter(pk__in=ids_for_delete).delete()
 
+    @property
+    def errors(self) -> list:
+        errors = {}
+        category_errors = super().errors.get('categories', [])
+
+        for category_error in category_errors:
+            if category_error:
+                for error_attr, error_msg in category_error.items():
+                    attr_errors = errors.get(error_attr, [])
+                    attr_errors += error_msg
+                    errors[error_attr] = attr_errors
+
+        return errors
+
     def __are_categories_assigned(self, categories):
         categories_for_delete = self.__categories_for_delete_ids(categories)
 
@@ -194,7 +208,8 @@ class WriteManufacturerSerializer(ModelSerializer):
         Name and categories are required for the creation process
         """
         model = Manufacturer
-        fields = ('name', 'category_ids')
+        fields = ('name', 'address', 'contact_person', 'order_email', 'phone',
+                  'support_email', 'vat', 'category_ids')
 
     @staticmethod
     def validate_category_ids(category_ids: List[int]) -> List[Category]:
