@@ -38,7 +38,7 @@ export class UpdateCategoryListComponent implements OnInit {
   addCategory(): void {
     this.categories.push(
       this.fb.group({
-        name: '',
+        name: ['', Validators.required],
       })
     );
   }
