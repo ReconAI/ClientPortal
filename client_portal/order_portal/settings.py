@@ -151,6 +151,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STORAGE_ROOT = '{}/{}/'.format(BASE_DIR, 'data')
+MEDIA_ROOT = '{}/{}/'.format(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 
 # Enable/Disable http requests service data capturing
 LOG_HTTP = os.environ.get('LOG_HTTP', 'False') in ['True', '1']
@@ -161,3 +163,25 @@ AWS_EXPORT_HTTP_LOG_KEY = os.environ.get('AWS_EXPORT_HTTP_LOG_KEY')
 
 CLIENT_APP_SHEMA_HOST_PORT = os.environ.get(
     'CLIENT_APP_SHEMA_HOST_PORT')  # like http://127.0.0.1:8000
+
+LOGGING = {
+    'version': 1,
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        }
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+        }
+    },
+    'loggers': {
+        'django.db.backends': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+        }
+    }
+}

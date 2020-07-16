@@ -1,7 +1,7 @@
 """
 Recon db mangaer are defined here
 """
-
+from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.db.models import ImageField
@@ -1415,11 +1415,18 @@ class Device(models.Model):
     Device model
     """
     id = models.BigAutoField(primary_key=True)
-    name = models.CharField(max_length=255)
-    price = models.DecimalField(max_digits=16, decimal_places=2)
-    description = models.TextField()
+    name = models.CharField(max_length=255, blank=False)
+    product_number = models.CharField(max_length=255, blank=False)
+    buying_price = models.DecimalField(max_digits=16, blank=False, decimal_places=2, db_column='buyingPrice')
+    sales_price = models.DecimalField(max_digits=16, blank=False, decimal_places=2, db_column='salesPrice')
+    description = models.TextField(null=True)
     manufacturer = models.ForeignKey(Manufacturer, on_delete=models.PROTECT,
                                      db_column='manufacturerId')
+    seo_title = models.CharField(max_length=255, null=True, db_column='seoTitle')
+    seo_keywords = models.CharField(max_length=255, null=True, db_column='seoKeywords')
+    seo_description = models.TextField(null=True, db_column='seoDescription')
+    published = models.BooleanField(default=True)
+    created_dt = models.DateTimeField(null=True, auto_now_add=True)
 
     class Meta:
         """
@@ -1428,7 +1435,18 @@ class Device(models.Model):
         db_table = 'Devices'
 
 
+def _device_img_save_path(image: 'DeviceImage', filename: str) -> str:
+    return 'devices/{}/{}'.format(image.device.id, filename)
+
+
 class DeviceImage(models.Model):
     id = models.BigAutoField(primary_key=True)
-    path = ImageField()
-    device = models.ForeignKey(Device, on_delete=models.CASCADE)
+    path = ImageField(upload_to=_device_img_save_path)
+    device = models.ForeignKey(Device, on_delete=models.CASCADE, related_name='images')
+
+    class Meta:
+        """
+        Device model's Meta class specification
+        """
+        db_table = 'DeviceImages'
+
