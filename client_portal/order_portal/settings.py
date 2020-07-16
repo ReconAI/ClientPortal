@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'order_portal',
     'recon_db_manager',
     'drf_yasg',
-    'shared'
+    'shared',
+    'django_cleanup'
 ]
 
 MIDDLEWARE = [

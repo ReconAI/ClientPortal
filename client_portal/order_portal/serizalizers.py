@@ -1,15 +1,14 @@
 """
 Order portal serializers range
 """
-import base64
 from typing import List
 
 from django.core.files.base import ContentFile
-from django.core.files.storage import default_storage
-from django.core.validators import FileExtensionValidator
+from django.core.validators import FileExtensionValidator, MaxLengthValidator
+from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-from rest_framework.fields import ListField, CharField, ImageField
+from rest_framework.fields import ListField, CharField, IntegerField
 from rest_framework.serializers import ListSerializer, \
     Serializer
 from rest_framework.serializers import ModelSerializer
@@ -250,7 +249,9 @@ class WriteManufacturerSerializer(ModelSerializer):
         return manufacturer
 
 
-class WriteDeviceSerializer(ModelSerializer):
+class CreateDeviceSerializer(ModelSerializer):
+    MAX_IMAGES = 5
+
     manufacturer = serializers.PrimaryKeyRelatedField(
         queryset=Manufacturer.objects.all()
     )
@@ -263,7 +264,10 @@ class WriteDeviceSerializer(ModelSerializer):
             validators=[
                 FileExtensionValidator(allowed_extensions=['jpeg', 'jpg', 'png'])
             ]
-        )
+        ),
+        validators=[
+            MaxLengthValidator(MAX_IMAGES)
+        ]
     )
 
     class Meta:
@@ -278,17 +282,54 @@ class WriteDeviceSerializer(ModelSerializer):
     def validate_seo_keywords(keywords: List[str]) -> str:
         return ', '.join(keywords)
 
-    def create(self, validated_data):
-        images = validated_data.pop('images')
-        device = super().create(validated_data)
-
+    @staticmethod
+    def _upload_images(device: Device, images: List[ContentFile]):
         for image in images:
             dvi = DeviceImage(device=device)
             dvi.save()
             dvi.path = image
             dvi.save()
 
+    def create(self, validated_data):
+        images = validated_data.pop('images')
+        device = super().create(validated_data)
+
+        self._upload_images(device, images)
+
         return device
+
+
+class UpdateDeviceSerializer(CreateDeviceSerializer):
+    delete_images = ListSerializer(
+        child=IntegerField(min_value=1),
+        allow_null=True,
+        allow_empty=True,
+        required=False
+    )
+
+    class Meta:
+        model = Device
+        fields = (
+            'name', 'description', 'manufacturer', 'buying_price',
+            'sales_price', 'product_number', 'seo_title', 'seo_keywords',
+            'seo_description', 'images', 'delete_images'
+        )
+
+    def update(self, device: Device, validated_data):
+        images = validated_data.pop('images')
+        delete_images = validated_data.pop('delete_images')
+
+        device = super().update(device, validated_data)
+        device.images.filter(pk__in=delete_images).delete()
+        self._upload_images(device, images)
+
+        return device
+
+    def validate_delete_images(self, images):
+        if len(self.initial_data.get('images', [])) + len(self.instance.images.all()) - len(images) > self.MAX_IMAGES:
+            raise ValidationError(_('You can not load mor than {} image(s)').format(self.MAX_IMAGES))
+
+        return images
 
 
 class DeviceImageSerializer(ModelSerializer):
