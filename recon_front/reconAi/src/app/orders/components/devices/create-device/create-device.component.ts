@@ -1,5 +1,5 @@
+import { CreateManufactureContainer } from './create-manufacture/create-manufacture.container';
 import { CategoryInterface } from './../../../constants/types/category';
-import { CreateManufactureComponent } from './create-manufacture/create-manufacture.component';
 import { MatDialog } from '@angular/material/dialog';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Component, OnInit, Input } from '@angular/core';
@@ -31,7 +31,7 @@ export class CreateDeviceComponent implements OnInit {
   }
 
   openCreateManufactureDialog(): void {
-    this.dialog.open(CreateManufactureComponent, {
+    this.dialog.open(CreateManufactureContainer, {
       width: '470px',
       height: '650px',
     });

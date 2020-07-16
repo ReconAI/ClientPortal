@@ -4,6 +4,9 @@
 </div>
 
 <form [formGroup]="manufactureForm">
+  <mat-error *ngIf="validationError">
+    {{ validationErrors }}
+  </mat-error>
   <mat-form-field>
     <mat-label>Manufacturer name</mat-label>
     <input
@@ -96,11 +99,11 @@
         [removable]="true"
         (removed)="removeCategory(i)"
       >
-        {{ category.value }}
+        {{ category.value.name }}
         <span matChipRemove class="close-chip">&times;</span>
       </mat-chip>
       <input
-        placeholder="Category"
+        placeholder="Category *"
         #categoryInput
         #trigger="matAutocompleteTrigger"
         [formControl]="categoryControl"
@@ -118,14 +121,22 @@
       <!-- this (click) handler is used to open pop up after click on option -->
       <mat-option
         *ngFor="let category of filteredCategories"
-        [value]="category"
+        [value]="category.id"
         (click)="$event.stopPropagation(); trigger.openPanel()"
       >
-        {{ category }}
+        {{ category.name }}
       </mat-option>
     </mat-autocomplete>
   </mat-form-field>
-  <button mat-raised-button color="primary" (click)="sendManufacturer()">
-    SAVE
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="sendManufacturer()"
+    [disabled]="loadingStatus || !manufactureForm.valid"
+  >
+    <mat-icon *ngIf="loadingStatus; else loaded">
+      <mat-spinner color="primary" diameter="20"></mat-spinner>
+    </mat-icon>
+    <ng-template #loaded>SAVE</ng-template>
   </button>
 </form>

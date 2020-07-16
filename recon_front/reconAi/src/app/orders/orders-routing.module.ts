@@ -21,6 +21,7 @@ const routes: Routes = [
     path: 'create-device',
     data: {
       title: 'Create device',
+      expectedRolePriority: UserRolesPriorities.SUPER_ADMIN_ROLE,
     },
     component: CreateDeviceContainer,
   },

@@ -99,3 +99,8 @@ export const selectUpdateCategoriesListLoadingStatus = createSelector(
   selectLoaders,
   (loaders: LoadersState): boolean => loaders.updateCategoriesList
 );
+
+export const selectCreateManufacturerLoadingStatus = createSelector(
+  selectLoaders,
+  (loaders: LoadersState): boolean => loaders.createManufacturer
+);

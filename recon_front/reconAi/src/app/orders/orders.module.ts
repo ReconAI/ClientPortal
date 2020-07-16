@@ -1,3 +1,4 @@
+import { CreateManufactureContainer } from './components/devices/create-device/create-manufacture/create-manufacture.container';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CoreModule } from './../core/core.module';
 import { SharedModule } from './../shared/shared.module';
@@ -22,6 +23,7 @@ import { CreateDeviceContainer } from './components/devices/create-device/create
     CreateDeviceComponent,
     CreateDeviceContainer,
     CreateManufactureComponent,
+    CreateManufactureContainer,
     UpdateCategoryListComponent,
     UpdateCategoryListContainer,
   ],

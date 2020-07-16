@@ -1,8 +1,13 @@
+import { generalTransformFormErrorToObject } from './../../core/helpers/generalFormsErrorsTransformation';
+import { generalTransformFormErrorToString } from 'app/core/helpers/generalFormsErrorsTransformation';
 import { CategoryInterface } from './../../orders/constants/types/category';
 import {
   CategoriesServerResponseInterface,
   transformCategoriesFromServer,
   CategoriesClientInterface,
+  CreateManufacturerRequestClientInterface,
+  transformCreateManufacturerRequestToServerInterface,
+  manufacturerFormFieldLabels,
 } from './orders.server.helpers';
 import { Router } from '@angular/router';
 import { Action, Store, select } from '@ngrx/store';
@@ -18,10 +23,13 @@ import {
   loadCategoriesErrorAction,
   updateCategoriesSucceededAction,
   updateCategoriesErrorAction,
+  createManufacturerSucceededAction,
+  createManufacturerErrorAction,
 } from './orders.actions';
 import {
   setCategoriesListLoadingStatusAction,
   setUpdateCategoriesListLoadingStatusAction,
+  setCreateManufacturerLoadingStatusAction,
 } from '../loaders';
 
 @Injectable()
@@ -92,6 +100,48 @@ export class OrdersEffects {
             finalize(() => {
               this.store.dispatch(
                 setUpdateCategoriesListLoadingStatusAction({
+                  status: false,
+                })
+              );
+            })
+          )
+      )
+    )
+  );
+
+  createManufacturer$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action & CreateManufacturerRequestClientInterface>(
+        OrdersActionTypes.CREATE_MANUFACTURER_REQUESTED
+      ),
+      tap(() => {
+        this.store.dispatch(
+          setCreateManufacturerLoadingStatusAction({
+            status: true,
+          })
+        );
+      }),
+      switchMap(({ manufacturer }) =>
+        this.httpClient
+          .post<void>(
+            '/order-api/manufacturers',
+            transformCreateManufacturerRequestToServerInterface(manufacturer)
+          )
+          .pipe(
+            map(() => createManufacturerSucceededAction()),
+            catchError((error) =>
+              of(
+                createManufacturerErrorAction(
+                  generalTransformFormErrorToObject(
+                    error,
+                    manufacturerFormFieldLabels
+                  )
+                )
+              )
+            ),
+            finalize(() => {
+              this.store.dispatch(
+                setCreateManufacturerLoadingStatusAction({
                   status: false,
                 })
               );
