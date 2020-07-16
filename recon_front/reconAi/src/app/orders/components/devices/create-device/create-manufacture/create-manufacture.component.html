@@ -88,15 +88,15 @@
       id="support-email"
     />
   </mat-form-field>
-  <mat-form-field>
+  <mat-form-field formArrayName="categories">
     <mat-chip-list #chipList>
       <mat-chip
-        *ngFor="let category of selectedCategories"
+        *ngFor="let category of categories.controls; let i = index"
         [selectable]="true"
         [removable]="true"
-        (removed)="remove(category)"
+        (removed)="removeCategory(i)"
       >
-        {{ category }}
+        {{ category.value }}
         <span matChipRemove class="close-chip">&times;</span>
       </mat-chip>
       <input
@@ -107,7 +107,6 @@
         [matAutocomplete]="auto"
         [matChipInputFor]="chipList"
         [matChipInputSeparatorKeyCodes]="[]"
-        (matChipInputTokenEnd)="add($event)"
         (keydown.enter)="$event.stopPropagation(); trigger.openPanel()"
       />
     </mat-chip-list>
@@ -118,13 +117,15 @@
     >
       <!-- this (click) handler is used to open pop up after click on option -->
       <mat-option
-        *ngFor="let category of allCategories"
+        *ngFor="let category of filteredCategories"
         [value]="category"
         (click)="$event.stopPropagation(); trigger.openPanel()"
-   
       >
         {{ category }}
       </mat-option>
     </mat-autocomplete>
   </mat-form-field>
+  <button mat-raised-button color="primary" (click)="sendManufacturer()">
+    SAVE
+  </button>
 </form>
