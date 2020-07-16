@@ -21,7 +21,7 @@ export interface CategoriesFormInterface {
   categories: string[];
 }
 
-export interface CreateManufacturerRequestServerInterface {
+export interface ManufacturerServerInterface {
   name: string;
   address: string;
   contact_person: string;
@@ -29,7 +29,9 @@ export interface CreateManufacturerRequestServerInterface {
   phone: string;
   support_email: string;
   vat: string; // check its type later
-  category_ids: number[];
+  category_ids?: number[];
+  categories?: CategoryInterface[];
+  id?: number;
 }
 
 export interface CreateManufacturerRequestClientInterface {
@@ -40,9 +42,9 @@ export interface ManufacturerListResponseClientInterface {
   manufacturers: ManufacturerInterface[];
 }
 
-export const transformCreateManufacturerRequestToServerInterface = (
+export const transformCreateManufacturerRequestToServer = (
   manufacturer: ManufacturerInterface
-): CreateManufacturerRequestServerInterface => ({
+): ManufacturerServerInterface => ({
   name: manufacturer.name,
   address: manufacturer.address,
   contact_person: manufacturer.contactPerson,
@@ -51,6 +53,22 @@ export const transformCreateManufacturerRequestToServerInterface = (
   support_email: manufacturer.supportEmail,
   vat: manufacturer.vat,
   category_ids: manufacturer.categories.map(({ id }) => id),
+});
+
+export const transformManufactureListFromServer = (
+  manufacturers: ManufacturerServerInterface[]
+): ManufacturerListResponseClientInterface => ({
+  manufacturers: manufacturers.map((manufacturer) => ({
+    name: manufacturer.name,
+    address: manufacturer.address,
+    contactPerson: manufacturer.contact_person,
+    orderEmail: manufacturer.order_email,
+    phone: manufacturer.phone,
+    supportEmail: manufacturer.support_email,
+    vat: manufacturer.vat,
+    categories: manufacturer.categories,
+    id: manufacturer.id,
+  })),
 });
 
 export const manufacturerFormFieldLabels = {

@@ -1,3 +1,4 @@
+import { ManufacturerInterface } from './../../orders/constants/types/manufacturers';
 import { FormServerErrorInterface } from 'app/constants/types/requests';
 import { CategoryInterface } from './../../orders/constants/types/category';
 import { createSelector } from '@ngrx/store';
@@ -15,4 +16,9 @@ export const selectCreateManufacturerError = createSelector(
   selectOrders,
   (orders: OrdersState): FormServerErrorInterface =>
     orders?.errors?.createManufacturer || null
+);
+
+export const selectManufacturerList = createSelector(
+  selectOrders,
+  (orders: OrdersState): ManufacturerInterface[] => orders?.manufacturers || []
 );

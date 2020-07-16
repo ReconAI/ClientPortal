@@ -1,13 +1,13 @@
 import { generalTransformFormErrorToObject } from './../../core/helpers/generalFormsErrorsTransformation';
-import { generalTransformFormErrorToString } from 'app/core/helpers/generalFormsErrorsTransformation';
 import { CategoryInterface } from './../../orders/constants/types/category';
 import {
-  CategoriesServerResponseInterface,
   transformCategoriesFromServer,
   CategoriesClientInterface,
   CreateManufacturerRequestClientInterface,
-  transformCreateManufacturerRequestToServerInterface,
   manufacturerFormFieldLabels,
+  transformManufactureListFromServer,
+  ManufacturerServerInterface,
+  transformCreateManufacturerRequestToServer,
 } from './orders.server.helpers';
 import { Router } from '@angular/router';
 import { Action, Store, select } from '@ngrx/store';
@@ -25,11 +25,15 @@ import {
   updateCategoriesErrorAction,
   createManufacturerSucceededAction,
   createManufacturerErrorAction,
+  loadManufacturerListSucceededAction,
+  loadManufacturerListErrorAction,
+  loadManufacturerListRequestedAction,
 } from './orders.actions';
 import {
   setCategoriesListLoadingStatusAction,
   setUpdateCategoriesListLoadingStatusAction,
   setCreateManufacturerLoadingStatusAction,
+  setManufacturerListLoadingStatusAction,
 } from '../loaders';
 
 @Injectable()
@@ -125,10 +129,13 @@ export class OrdersEffects {
         this.httpClient
           .post<void>(
             '/order-api/manufacturers',
-            transformCreateManufacturerRequestToServerInterface(manufacturer)
+            transformCreateManufacturerRequestToServer(manufacturer)
           )
           .pipe(
             map(() => createManufacturerSucceededAction()),
+            tap(() => {
+              this.store.dispatch(loadManufacturerListRequestedAction());
+            }),
             catchError((error) =>
               of(
                 createManufacturerErrorAction(
@@ -142,6 +149,38 @@ export class OrdersEffects {
             finalize(() => {
               this.store.dispatch(
                 setCreateManufacturerLoadingStatusAction({
+                  status: false,
+                })
+              );
+            })
+          )
+      )
+    )
+  );
+
+  loadManufacturers$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action>(OrdersActionTypes.LOAD_MANUFACTURER_LIST_REQUESTED),
+      tap(() => {
+        this.store.dispatch(
+          setManufacturerListLoadingStatusAction({
+            status: true,
+          })
+        );
+      }),
+      switchMap(() =>
+        this.httpClient
+          .get<ManufacturerServerInterface[]>('/order-api/manufacturers')
+          .pipe(
+            map((manufacturers) =>
+              loadManufacturerListSucceededAction(
+                transformManufactureListFromServer(manufacturers)
+              )
+            ),
+            catchError((error) => of(loadManufacturerListErrorAction())),
+            finalize(() => {
+              this.store.dispatch(
+                setCategoriesListLoadingStatusAction({
                   status: false,
                 })
               );

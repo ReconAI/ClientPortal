@@ -1,7 +1,6 @@
 import { UserTransformationResponse } from './../user/user.server.helpers';
 import { ActivationInterface } from './../../constants/types/activation';
 import {
-  UsersListRequestInterface,
   StoreUsersListInterface,
   UserProfileRequestInterface,
 } from './users.server.helpers';
@@ -15,6 +14,7 @@ import { AddUserInterface } from 'app/users/constants';
 import {
   FormServerErrorInterface,
   ObjectFormErrorInterface,
+  PaginationRequestInterface,
 } from 'app/constants/types/requests';
 
 export enum UsersActionTypes {
@@ -53,7 +53,7 @@ export enum UsersActionTypes {
 
 export const loadUsersListRequestedAction = createAction(
   UsersActionTypes.LOAD_USERS_LIST_REQUESTED,
-  props<UsersListRequestInterface>()
+  props<PaginationRequestInterface>()
 );
 
 export const loadUsersListSucceededAction = createAction(

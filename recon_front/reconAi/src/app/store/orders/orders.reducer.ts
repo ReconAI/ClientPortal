@@ -1,12 +1,14 @@
 import {
   CategoriesServerResponseInterface,
   CategoriesClientInterface,
+  ManufacturerListResponseClientInterface,
 } from './orders.server.helpers';
 import {
   loadCategoriesSucceededAction,
   updateCategoriesSucceededAction,
   resetCreateManufacturerErrorAction,
   createManufacturerErrorAction,
+  loadManufacturerListSucceededAction,
 } from './orders.actions';
 import { CategoryInterface } from './../../orders/constants/types/category';
 import { ActivationInterface } from './../../constants/types/activation';
@@ -69,12 +71,21 @@ const createManufacturerErrorReducer = (
   },
 });
 
+const loadManufacturerListSucceededReducer = (
+  state: OrdersState,
+  { type, manufacturers }: Action & ManufacturerListResponseClientInterface
+): OrdersState => ({
+  ...state,
+  manufacturers
+});
+
 const ordersReducer = createReducer(
   initialState,
   on(loadCategoriesSucceededAction, loadCategoriesSucceededReducer),
   on(updateCategoriesSucceededAction, updateCategoriesSucceededReducer),
   on(createManufacturerErrorAction, createManufacturerErrorReducer),
   on(resetCreateManufacturerErrorAction, resetCreateManufacturerErrorReducer),
+  on(loadManufacturerListSucceededAction, loadManufacturerListSucceededReducer)
 );
 
 export function reducer(state: OrdersState | undefined, action: Action) {
