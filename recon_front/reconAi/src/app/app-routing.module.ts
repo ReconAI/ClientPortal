@@ -18,6 +18,11 @@ import { AuthRoleGuard } from './core/guards/auth-role-guard/auth-role.guard';
 
 const routes: Routes = [
   {
+    path: '',
+    redirectTo: '/orders',
+    pathMatch: 'full',
+  },
+  {
     path: 'catalog',
     canActivate: [AuthRoleGuard],
     data: {
@@ -34,6 +39,11 @@ const routes: Routes = [
     },
     loadChildren: () =>
       import('./users/users.module').then((m) => m.UsersModule),
+  },
+  {
+    path: 'orders',
+    loadChildren: () =>
+      import('./orders/orders.module').then((m) => m.OrdersModule),
   },
   {
     path: 'registration',
@@ -81,6 +91,11 @@ const routes: Routes = [
   {
     path: 'invite/:uidb/:token',
     component: InvitationUserContainer,
+  },
+  {
+    path: 'orders',
+    loadChildren: () =>
+      import('./orders/orders.module').then((m) => m.OrdersModule),
   },
   {
     path: '**',

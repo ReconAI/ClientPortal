@@ -52,7 +52,7 @@ export const transformUsersListResponseFromServer = (
     email: user.email,
     role: user.group.name.charAt(0).toUpperCase() + user.group.name.slice(1),
     isActive: user.is_active,
-    createdDT: moment(user.created_dt).format('DD.MM.YYYY'),
+    createdDT: moment(user.created_dt).format('YYYY.MM.DD'),
   })),
   meta: {
     count: response.count,

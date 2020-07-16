@@ -1,0 +1,50 @@
+@import "../../../../variables.less";
+
+div.order-container {
+    width: 370px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    margin: 20px 5px;
+    border: 1px solid transparent;
+
+    div:first-child {
+        margin-left: auto;
+
+        .mat-icon {
+            color: @recon-light-gray;
+
+            &.active-icon {
+                color: @recon-black;
+            }
+        }
+    }
+
+    &>span {
+        margin-top: 10px;
+        max-width: 80%;
+
+        b {
+            color: @recon-primary-green;
+        }
+
+        &:last-child {
+            margin-bottom: 10px;
+        }
+    }
+
+    img {
+        max-width: 350px;
+        max-height: 220px;
+    }
+
+    &:hover {
+        -webkit-box-shadow: 0px 0px 10px 0px rgba(207, 207, 207, 1);
+        -moz-box-shadow: 0px 0px 10px 0px rgba(207, 207, 207, 1);
+        box-shadow: 0px 0px 10px 0px rgba(207, 207, 207, 1);
+        border: 1px solid @recon-border-input;
+    }
+}

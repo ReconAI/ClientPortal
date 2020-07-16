@@ -88,3 +88,14 @@ export const selectUpdateUserLoadingStatus = createSelector(
   selectLoaders,
   (loaders: LoadersState): boolean => loaders.updateUser
 );
+
+// orders
+export const selectCategoriesListLoadingStatus = createSelector(
+  selectLoaders,
+  (loaders: LoadersState): boolean => loaders.categoriesList
+);
+
+export const selectUpdateCategoriesListLoadingStatus = createSelector(
+  selectLoaders,
+  (loaders: LoadersState): boolean => loaders.updateCategoriesList
+);
