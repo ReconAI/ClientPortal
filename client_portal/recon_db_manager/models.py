@@ -4,6 +4,7 @@ Recon db mangaer are defined here
 
 from django.contrib.postgres.fields import JSONField
 from django.db import models
+from django.db.models import ImageField
 
 
 class Organization(models.Model):
@@ -1393,6 +1394,12 @@ class Manufacturer(models.Model):
     """
     id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=255)
+    vat = models.IntegerField(null=True, blank=True)
+    contact_person = models.CharField(max_length=255, null=True, blank=True)
+    phone = models.CharField(max_length=255, null=True, blank=True)
+    address = models.CharField(max_length=255, null=True, blank=True)
+    order_email = models.EmailField(null=True, blank=True)
+    support_email = models.EmailField(null=True, blank=True)
     categories = models.ManyToManyField(Category,
                                         db_table='ManufacturerCategories')
 
@@ -1419,3 +1426,9 @@ class Device(models.Model):
         Device model's Meta class specification
         """
         db_table = 'Devices'
+
+
+class DeviceImage(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    path = ImageField()
+    device = models.ForeignKey(Device, on_delete=models.CASCADE)
