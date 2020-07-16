@@ -12,7 +12,6 @@ import {
 export class ClickOutsideDirective {
   @Output() reconClickOutside = new EventEmitter<void>();
   constructor(private elementRef: ElementRef) {
-    console.log(elementRef, 'ref');
   }
 
   @HostListener('document:click', ['$event.target'])
