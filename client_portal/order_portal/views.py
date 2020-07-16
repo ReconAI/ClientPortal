@@ -16,7 +16,7 @@ from rest_framework.response import Response
 
 from order_portal.serizalizers import CategorySerializer, \
     ReadManufacturerSerializer, WriteManufacturerSerializer, \
-    ReadDeviceSerializer, CategoryCollectionSerializer
+    ReadDeviceSerializer, CategoryCollectionSerializer, WriteDeviceSerializer
 from recon_db_manager.models import Category, Manufacturer
 from recon_db_manager.models import Device
 from shared.permissions import IsActive, IsSuperUser, PaymentRequired
@@ -217,7 +217,7 @@ class ManufacturerItem(ManufacturerOperator, RetrieveUpdateDestroyAPIView):
 class DeviceOperator:
     serializer_class = ReadDeviceSerializer
 
-    write_serializer_class = ReadDeviceSerializer
+    write_serializer_class = WriteDeviceSerializer
 
     queryset = Device.objects.prefetch_related(
         'manufacturer__categories').filter(published=True).all()
@@ -225,3 +225,9 @@ class DeviceOperator:
 
 class DeviceList(DeviceOperator, ListCreateAPIView):
     create_success_message = _('Device is created successfully')
+
+    def post(self, request: Request, *args, **kwargs) -> Response:
+        return self.save_or_error(
+            self.create_success_message,
+            self.write_serializer_class(data=request.data)
+        )

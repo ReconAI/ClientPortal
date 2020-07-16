@@ -1,12 +1,14 @@
 """
 Order portal serializers range
 """
+import base64
+from typing import List
 
-from typing import List, Dict
-
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-from rest_framework.fields import ListField
+from rest_framework.fields import ListField, CharField, ImageField
 from rest_framework.serializers import ListSerializer, \
     Serializer
 from rest_framework.serializers import ModelSerializer
@@ -42,7 +44,6 @@ class SynchronizeCategorySerializer(ModelSerializer):
         """
         model = Category
         fields = ('id', 'name')
-
 
 
 class CategoryCollectionSerializer(Serializer):
@@ -123,6 +124,12 @@ class CategoryCollectionSerializer(Serializer):
 
         return Category.objects.filter(pk__in=ids_for_delete).delete()
 
+    @property
+    def errors(self):
+        errors = super().errors
+
+        return errors
+
     def __are_categories_assigned(self, categories):
         categories_for_delete = self.__categories_for_delete_ids(categories)
 
@@ -167,7 +174,7 @@ class ReadManufacturerSerializer(ModelSerializer):
     """
     Manufacturer serializer for show
     """
-    categories = CategorySerializer(many=True, allow_null=True)
+    categories = SynchronizeCategorySerializer(many=True, allow_null=True)
     category_ids = serializers.ListSerializer
 
     class Meta:
@@ -231,6 +238,52 @@ class WriteManufacturerSerializer(ModelSerializer):
         return manufacturer
 
 
+class ImgField(ImageField):
+    def to_internal_value(self, data):
+        _format, _img_str = data.split(';base64,')
+        _name, ext = _format.split('/')
+        name = _name.split(":")[-1]
+
+        file = ContentFile(base64.b64decode(_img_str),
+                           name='{}.{}'.format(name, ext))
+
+        return super().to_internal_value(file)
+
+
+class WriteDeviceSerializer(ModelSerializer):
+    manufacturer = serializers.PrimaryKeyRelatedField(
+        queryset=Manufacturer.objects.all()
+    )
+    seo_keywords = serializers.ListSerializer(
+        child=CharField(required=True, allow_blank=False)
+    )
+    images = serializers.ListSerializer(
+        child=ImgField(allow_empty_file=False)
+    )
+
+    class Meta:
+        model = Device
+        fields = (
+            'name', 'description', 'manufacturer', 'buying_price',
+            'sales_price', 'product_number', 'seo_title', 'seo_keywords',
+            'seo_description', 'images'
+        )
+
+    @staticmethod
+    def validate_seo_keywords(keywords: List[str]) -> str:
+        return ', '.join(keywords)
+
+    def create(self, validated_data):
+        images = validated_data.pop('images')
+
+        for image in images:
+            fs = default_storage
+            filename = fs.save(image.name, image)
+            uploaded_file_url = fs.url(filename)
+
+        return super().create(validated_data)
+
+
 class ReadDeviceSerializer(ModelSerializer):
     seo_keywords = serializers.SerializerMethodField('format_seo_keywords')
     manufacturer = ReadManufacturerSerializer()
@@ -243,5 +296,6 @@ class ReadDeviceSerializer(ModelSerializer):
             'seo_description', 'published', 'images', 'created_dt'
         )
 
-    def format_seo_keywords(self, device: Device) -> List[str]:
+    @staticmethod
+    def format_seo_keywords(device: Device) -> List[str]:
         return device.seo_keywords.split(', ')
