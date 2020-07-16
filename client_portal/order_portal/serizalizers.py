@@ -181,7 +181,7 @@ class ReadManufacturerSerializer(ModelSerializer):
     """
     Manufacturer serializer for show
     """
-    categories = CategorySerializer(many=True, allow_null=True)
+    categories = SynchronizeCategorySerializer(many=True, allow_null=True)
     category_ids = serializers.ListSerializer
 
     class Meta:
@@ -189,7 +189,8 @@ class ReadManufacturerSerializer(ModelSerializer):
         Manufacturer name and related categories must be displayed
         """
         model = Manufacturer
-        fields = ('name', 'categories')
+        fields = ('id', 'name', 'address', 'contact_person', 'order_email',
+                  'phone', 'support_email', 'vat', 'categories')
 
 
 class WriteManufacturerSerializer(ModelSerializer):
