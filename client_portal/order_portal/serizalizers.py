@@ -190,7 +190,8 @@ class ReadManufacturerSerializer(ModelSerializer):
         Manufacturer name and related categories must be displayed
         """
         model = Manufacturer
-        fields = ('id', 'name', 'categories')
+        fields = ('id', 'name', 'address', 'contact_person', 'order_email',
+                  'phone', 'support_email', 'vat', 'categories')
 
 
 class WriteManufacturerSerializer(ModelSerializer):

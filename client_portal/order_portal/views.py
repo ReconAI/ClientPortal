@@ -9,7 +9,7 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
-from rest_framework.generics import RetrieveDestroyAPIView
+from rest_framework.generics import RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -106,7 +106,7 @@ class CategoryList(CategoryOperator, ListCreateAPIView):
         token_header(),
     ]
 ))
-class CategoryItem(CategoryOperator, RetrieveDestroyAPIView):
+class CategoryItem(CategoryOperator, RetrieveAPIView):
     """
     Category retrieve, update and delete view
     """
@@ -125,7 +125,14 @@ class ManufacturerOperator:
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
-    responses=DEFAULT_GET_REQUESTS_RESPONSES,
+    responses={
+        status.HTTP_200_OK: data_serializer(ReadManufacturerSerializer),
+        status.HTTP_401_UNAUTHORIZED: http401(),
+        status.HTTP_403_FORBIDDEN: http403(),
+        status.HTTP_404_NOT_FOUND: http404(),
+        status.HTTP_405_METHOD_NOT_ALLOWED: http405(),
+        status.HTTP_422_UNPROCESSABLE_ENTITY: http422(),
+    },
     tags=['Manufacturer'],
     operation_summary="List of manufacturers",
     operation_description='Returns list of manufacturers with categories',
@@ -168,6 +175,22 @@ class ManufacturerList(ManufacturerOperator, ListCreateAPIView):
                 data=self.request.data
             )
         )
+
+    def get(self, request, *args, **kwargs) -> Response:
+        """
+        Generic list view
+
+        :type request: Request
+
+        :rtype: Response
+        """
+        queryset = self.filter_queryset(self.get_queryset())
+
+        serializer = self.get_serializer(queryset, many=True)
+
+        return Response({
+            'data': serializer.data
+        })
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
