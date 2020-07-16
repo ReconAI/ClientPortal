@@ -1,13 +1,16 @@
 """
 Ordre portal views set
 """
-
+from django.conf import settings
+from django.db.models import Count
+from django.db.transaction import atomic
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from drf_yasg.utils import swagger_auto_schema
 from requests import Request
 from rest_framework import status
+from rest_framework.generics import RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -17,9 +20,10 @@ from order_portal.serizalizers import CategorySerializer, \
 from recon_db_manager.models import Category, Manufacturer
 from shared.permissions import IsActive, IsSuperUser, PaymentRequired
 from shared.swagger.headers import token_header
-from shared.swagger.responses import get_responses, http401, http404, \
+from shared.swagger.responses import http401, http404, \
     http403, http405, DEFAULT_UNSAFE_REQUEST_RESPONSES, \
-    DEFAULT_DELETE_REQUEST_RESPONSES, DEFAULT_GET_REQUESTS_RESPONSES
+    DEFAULT_DELETE_REQUEST_RESPONSES, DEFAULT_GET_REQUESTS_RESPONSES, \
+    data_serializer, http422
 from shared.views.utils import RetrieveUpdateDestroyAPIView, \
     ListCreateAPIView
 
@@ -37,7 +41,15 @@ class CategoryOperator:
 
 
 @method_decorator(name='post', decorator=swagger_auto_schema(
-    responses=DEFAULT_UNSAFE_REQUEST_RESPONSES,
+    responses={
+        status.HTTP_200_OK: data_serializer(CategorySerializer),
+        status.HTTP_401_UNAUTHORIZED: http401(),
+        status.HTTP_403_FORBIDDEN: http403(),
+        status.HTTP_404_NOT_FOUND: http404(),
+        status.HTTP_405_METHOD_NOT_ALLOWED: http405(),
+        status.HTTP_422_UNPROCESSABLE_ENTITY: http422(),
+    },
+    request_body=CategoryCollectionSerializer,
     tags=['Category'],
     operation_summary="Creates a category",
     manual_parameters=[
@@ -56,16 +68,23 @@ class CategoryList(CategoryOperator, ListCreateAPIView):
     """
     User create and get list views set
     """
-    create_success_message = _('Categories were added')
-
+    @atomic(settings.RECON_AI_CONNECTION_NAME)
     def post(self, request, *args, **kwargs):
-        return self.save_or_error(
-            self.create_success_message,
-            CategoryCollectionSerializer(data=request.data)
-        )
+        serializer = CategoryCollectionSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+
+            return self.list(request)
+
+        return Response({
+            'errors': serializer.errors
+        }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
     def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
+        queryset = self.filter_queryset(self.get_queryset()).annotate(
+            manufacturers_count=Count('manufacturer')
+        )
 
         return JsonResponse({
             'data': self.get_serializer(queryset, many=True).data
@@ -86,27 +105,10 @@ class CategoryList(CategoryOperator, ListCreateAPIView):
         token_header(),
     ]
 ))
-@method_decorator(name='put', decorator=swagger_auto_schema(
-    responses=DEFAULT_UNSAFE_REQUEST_RESPONSES,
-    tags=['Category'],
-    operation_summary="Updates a category",
-    manual_parameters=[
-        token_header(),
-    ]
-))
-@method_decorator(name='delete', decorator=swagger_auto_schema(
-    responses=DEFAULT_DELETE_REQUEST_RESPONSES,
-    tags=['Category'],
-    operation_summary="Deletes a category",
-    manual_parameters=[
-        token_header(),
-    ]
-))
-class CategoryItem(CategoryOperator, RetrieveUpdateDestroyAPIView):
+class CategoryItem(CategoryOperator, RetrieveAPIView):
     """
     Category retrieve, update and delete view
     """
-    update_success_message = _('Category is updated successfully')
 
 
 class ManufacturerOperator:
@@ -122,7 +124,14 @@ class ManufacturerOperator:
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
-    responses=DEFAULT_GET_REQUESTS_RESPONSES,
+    responses={
+        status.HTTP_200_OK: data_serializer(ReadManufacturerSerializer),
+        status.HTTP_401_UNAUTHORIZED: http401(),
+        status.HTTP_403_FORBIDDEN: http403(),
+        status.HTTP_404_NOT_FOUND: http404(),
+        status.HTTP_405_METHOD_NOT_ALLOWED: http405(),
+        status.HTTP_422_UNPROCESSABLE_ENTITY: http422(),
+    },
     tags=['Manufacturer'],
     operation_summary="List of manufacturers",
     operation_description='Returns list of manufacturers with categories',
@@ -165,6 +174,22 @@ class ManufacturerList(ManufacturerOperator, ListCreateAPIView):
                 data=self.request.data
             )
         )
+
+    def get(self, request, *args, **kwargs) -> Response:
+        """
+        Generic list view
+
+        :type request: Request
+
+        :rtype: Response
+        """
+        queryset = self.filter_queryset(self.get_queryset())
+
+        serializer = self.get_serializer(queryset, many=True)
+
+        return Response({
+            'data': serializer.data
+        })
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(

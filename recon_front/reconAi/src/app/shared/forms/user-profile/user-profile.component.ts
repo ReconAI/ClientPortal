@@ -1,3 +1,5 @@
+import { PASSWORD_RULES_TOOLTIP } from './../../../constants/labels/password';
+import { LOGIN_RULES_TOOLTIP } from './../../../constants/labels/login';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import {
   Component,
@@ -53,6 +55,8 @@ export class UserProfileComponent implements OnInit {
 
   @Output() sendUserInfo$ = new EventEmitter<UserProfileFormInterface>();
 
+  readonly loginTooltipText = LOGIN_RULES_TOOLTIP;
+  readonly passwordTooltipText = PASSWORD_RULES_TOOLTIP;
   profileForm: FormGroup;
   get validationErrors(): string {
     return (

@@ -1,0 +1,86 @@
+<form [formGroup]="deviceForm">
+  <recon-form-input
+    label="Name"
+    placeholder="Name"
+    formControlName="name"
+    [showRequiredSymbol]="true"
+  ></recon-form-input>
+
+  <recon-form-select
+    formControlName="manufacture"
+    [showRequiredSymbol]="true"
+    label="Manufacture"
+  >
+  </recon-form-select>
+  <div>
+    <span class="add-manufacture-label" (click)="openCreateManufactureDialog()"
+      >+ Add new manufacture</span
+    >
+  </div>
+  <recon-form-file-with-list
+    accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*"
+    [parentForm]="deviceForm"
+    [maxCountOfFiles]="5"
+    field="image"
+    label="Add image"
+  ></recon-form-file-with-list>
+  <recon-form-input
+    label="Product number"
+    placeholder="Product number"
+    formControlName="product"
+    [showRequiredSymbol]="true"
+  ></recon-form-input>
+  <recon-form-input
+    label="Technical description"
+    placeholder="Technical description"
+    formControlName="description"
+    [showRequiredSymbol]="true"
+    fieldType="textarea"
+  ></recon-form-input>
+  <div class="price-container">
+    <div>
+      <recon-form-input
+        label="Buying price per device"
+        placeholder="Buying price"
+        formControlName="buyingPrice"
+        [showRequiredSymbol]="true"
+      ></recon-form-input>
+    </div>
+    <div>
+      <recon-form-input
+        label="Sales price per device"
+        placeholder="Sales price"
+        formControlName="salesPrice"
+        [showRequiredSymbol]="true"
+      ></recon-form-input>
+    </div>
+  </div>
+  <recon-form-chips
+    [parentForm]="deviceForm"
+    field="seoTags"
+    label="SEO tags"
+    placeholder="Add tag..."
+    [showRequiredSymbol]="true"
+  ></recon-form-chips>
+  <recon-form-input
+    label="Seo title"
+    placeholder="Seo title"
+    formControlName="seoTitle"
+    [showRequiredSymbol]="true"
+  ></recon-form-input>
+  <recon-form-input
+    label="Seo description"
+    placeholder="Seo description"
+    formControlName="seoDescription"
+    [showRequiredSymbol]="true"
+    fieldType="textarea"
+  ></recon-form-input>
+
+  <recon-form-select
+    formControlName="category"
+    [showRequiredSymbol]="true"
+    label="Device category"
+  ></recon-form-select>
+</form>
+
+{{ jsonValue }}

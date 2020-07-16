@@ -1,0 +1,14 @@
+<div class="container" [formGroup]="parentForm">
+  <span>{{ label }}<span *ngIf="showRequiredSymbol">*</span> </span>
+  <div class="tag-container" [formArrayName]="field">
+    <div class="tag" *ngFor="let chip of chips.controls; let i = index">
+      <span>{{ chip.value }}</span
+      ><span (click)="removeChip(i)">&times;</span>
+    </div>
+    <input
+      (keydown.enter)="addChip(chipText.value); chipText.value = ''"
+      [placeholder]="placeholder"
+      #chipText
+    />
+  </div>
+</div>

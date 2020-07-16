@@ -18,47 +18,170 @@ class CategorySerializer(ModelSerializer):
     """
     Category serializer for displays
     """
+
+    manufacturers_count = serializers.SerializerMethodField('get_manufacturers_cnt')
+
     class Meta:
         """
         Id and name should be shown
         """
         model = Category
-        fields = ('id', 'name',)
+        fields = ('id', 'name', 'manufacturers_count')
+
+    @staticmethod
+    def get_manufacturers_cnt(category: Category) -> int:
+        return category.manufacturers_count
+
+
+class SynchronizeCategorySerializer(ModelSerializer):
+    id = serializers.IntegerField(required=False, allow_null=True, min_value=1)
+
+    class Meta:
+        """
+        Id and name should be shown
+        """
+        model = Category
+        fields = ('id', 'name')
+
 
 
 class CategoryCollectionSerializer(Serializer):
     """
     Category collection `create` serializer
     """
-    categories = ListSerializer(child=CategorySerializer(), allow_null=False,
+    categories = ListSerializer(child=SynchronizeCategorySerializer(), allow_null=False,
                                 allow_empty=False)
 
-    def create(self, validated_data: Dict[str, List[dict]]) -> List[Category]:
+    def validate_categories(self, categories: List[dict]) -> List[dict]:
+        incoming_ids = self.__categories_for_update_ids(categories)
+
+        if incoming_ids and len(Category.objects.filter(pk__in=incoming_ids)) != len(incoming_ids):
+            raise ValidationError('Not all categories passed are present')
+
+        if self.__are_categories_assigned(categories):
+            raise ValidationError('You try to delete categories attached to manufacturers')
+
+        return categories
+
+    def save(self, **kwargs):
+        assert hasattr(self, '_errors'), (
+            'You must call `.is_valid()` before calling `.save()`.'
+        )
+
+        assert not self.errors, (
+            'You cannot call `.save()` on a serializer with invalid data.'
+        )
+
+        # Guard against incorrect use of `serializer.save(commit=False)`
+        assert 'commit' not in kwargs, (
+            "'commit' is not a valid keyword argument to the 'save()' method. "
+            "If you need to access data before committing to the database then "
+            "inspect 'serializer.validated_data' instead. "
+            "You can also pass additional keyword arguments to 'save()' if you "
+            "need to set extra attributes on the saved model instance. "
+            "For example: 'serializer.save(owner=request.user)'.'"
+        )
+
+        assert not hasattr(self, '_data'), (
+            "You cannot call `.save()` after accessing `serializer.data`."
+            "If you need to access data before committing to the database then "
+            "inspect 'serializer.validated_data' instead. "
+        )
+
+        validated_categories = self.validated_data['categories']
+
+        self.delete(validated_categories)
+        created = self.create(self.__categories_for_insert(validated_categories))
+        updated = self.update(self.__categories_for_update(validated_categories))
+
+        return created + updated
+
+    def create(self, categories_list: List[dict]) -> List[Category]:
         """
         :rtype validated_data: Dict[str, List[dict]]
 
         :rtype: List[Category]
         """
+        return Category.objects.bulk_create([
+            Category(**category)
+            for category
+            in categories_list
+        ])
+
+    def update(self, categories_list: List[dict]):
+        categories = []
+
+        for category in categories_list:
+            category = Category(**category)
+            category.save()
+            categories.append(category)
+
+        return categories
+
+    def delete(self, validated_data):
+        ids_for_delete = self.__categories_for_delete_ids(validated_data)
+
+        return Category.objects.filter(pk__in=ids_for_delete).delete()
+
+    @property
+    def errors(self) -> list:
+        errors = {}
+        category_errors = super().errors.get('categories', [])
+
+        for category_error in category_errors:
+            if category_error:
+                for error_attr, error_msg in category_error.items():
+                    attr_errors = errors.get(error_attr, [])
+                    attr_errors += error_msg
+                    errors[error_attr] = attr_errors
+
+        return errors
+
+    def __are_categories_assigned(self, categories):
+        categories_for_delete = self.__categories_for_delete_ids(categories)
+
+        return Category.objects.select_related(
+            'manufacturer_set'
+        ).filter(
+            manufacturer__categories__in=categories_for_delete
+        ).exists()
+
+    @staticmethod
+    def __categories_for_update(categories_list: List[dict]):
         return [
-            Category.objects.create(**category_data)
-            for category_data
-            in validated_data.get('categories', [])
+            category
+            for category
+            in categories_list
+            if 'id' in category
         ]
 
-    def update(self, instance: Category, validated_data):
-        """
-        Update is not valid for the serializer
+    def __categories_for_update_ids(self, categories_list: List[dict]):
+        return set([
+            category['id']
+            for category
+            in self.__categories_for_update(categories_list)
+        ])
 
-        :type instance: Category
-        :type validated_data: dict
-        """
+    def __categories_for_delete_ids(self, categories_list: List[dict]):
+        existing_ids = self.__categories_for_update_ids(categories_list)
+
+        return list(Category.objects.exclude(pk__in=existing_ids).values_list('pk', flat=True))
+
+    @staticmethod
+    def __categories_for_insert(categories_list: List[dict]):
+        return [
+            category
+            for category
+            in categories_list
+            if 'id' not in category
+        ]
 
 
 class ReadManufacturerSerializer(ModelSerializer):
     """
     Manufacturer serializer for show
     """
-    categories = CategorySerializer(many=True, allow_null=True)
+    categories = SynchronizeCategorySerializer(many=True, allow_null=True)
     category_ids = serializers.ListSerializer
 
     class Meta:
@@ -66,7 +189,8 @@ class ReadManufacturerSerializer(ModelSerializer):
         Manufacturer name and related categories must be displayed
         """
         model = Manufacturer
-        fields = ('name', 'categories')
+        fields = ('id', 'name', 'address', 'contact_person', 'order_email',
+                  'phone', 'support_email', 'vat', 'categories')
 
 
 class WriteManufacturerSerializer(ModelSerializer):
@@ -85,7 +209,8 @@ class WriteManufacturerSerializer(ModelSerializer):
         Name and categories are required for the creation process
         """
         model = Manufacturer
-        fields = ('name', 'category_ids')
+        fields = ('name', 'address', 'contact_person', 'order_email', 'phone',
+                  'support_email', 'vat', 'category_ids')
 
     @staticmethod
     def validate_category_ids(category_ids: List[int]) -> List[Category]:

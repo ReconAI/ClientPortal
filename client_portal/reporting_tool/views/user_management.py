@@ -75,7 +75,7 @@ class UserList(ListCreateAPIView, FormMixin):
         """
         return queryset.filter(
             organization_id=self.request.user.organization_id
-        ).exclude(id=self.request.user.pk)
+        )
 
     @atomic(using='default')
     @atomic(using=RECON_AI_CONNECTION_NAME)

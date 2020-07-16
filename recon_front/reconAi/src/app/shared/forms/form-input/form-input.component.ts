@@ -29,11 +29,15 @@ export class FormInputComponent implements ControlValueAccessor, OnInit {
   uniqueId: string;
 
   @Input() label = '';
+  @Input() closeTooltip = '';
   @Input() placeholder = '';
   @Input() errorMessages: { [key: string]: string } = {};
   @Input() disabled = false;
   @Input() showRequiredSymbol = false;
   @Input() isWithCloseIcon = false;
+  @Input() disabledCloseIcon = false;
+  @Input() rightIcon = '';
+  @Input() rightIconTooltip = '';
   // add types
   @Input() fieldType: 'text' | 'textarea' | 'password' = 'text';
   @Output() changeVal = new EventEmitter<any>();

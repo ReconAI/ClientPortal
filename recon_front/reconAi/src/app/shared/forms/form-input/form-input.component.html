@@ -25,11 +25,22 @@
         (blur)="onTouched()"
       />
       <div
+        [matTooltip]="closeTooltip || ''"
+        matTooltipPosition="right"
         class="close-icon-container"
+        [ngClass]="{ 'disabled-icon': disabledCloseIcon }"
         *ngIf="isWithCloseIcon"
         (click)="pressIcon()"
       >
         <span>&times;</span>
+      </div>
+      <div
+        [matTooltip]="rightIconTooltip || ''"
+        matTooltipPosition="right"
+        class="icon-container"
+        *ngIf="rightIcon"
+      >
+        <mat-icon>{{ rightIcon }}</mat-icon>
       </div>
     </div>
   </ng-container>
