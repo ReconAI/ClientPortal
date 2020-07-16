@@ -1,6 +1,9 @@
 import { FormServerErrorInterface } from 'app/constants/types/requests';
 import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
-import { UserProfileFormInterface } from 'app/constants/types';
+import {
+  UserProfileFormInterface,
+  UserRolesPriorities,
+} from 'app/constants/types';
 
 @Component({
   selector: 'recon-user',
@@ -34,9 +37,12 @@ export class UserComponent {
   @Input() invoicingLastName: string;
 
   @Input() isUpdating: boolean;
-
+  @Input() rolePriority: UserRolesPriorities;
   @Output() sendUser$ = new EventEmitter<UserProfileFormInterface>();
 
+  get hideInvoicing() {
+    return this.rolePriority < UserRolesPriorities.ADMIN_ROLE;
+  }
   sendUser(user: UserProfileFormInterface): void {
     this.sendUser$.emit(user);
   }

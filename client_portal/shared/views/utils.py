@@ -1,11 +1,17 @@
 """
 Contains views helpers
 """
+from typing import Optional
+
 from django.forms import BaseForm
 from django.http import JsonResponse
 from django.utils.translation import gettext_lazy as _
 from django.views.generic.edit import FormMixin as FormMixinBase
-from rest_framework import status
+from rest_framework import status, mixins
+from rest_framework.generics import GenericAPIView
+from rest_framework.request import Request
+from rest_framework.response import Response
+from rest_framework.serializers import Serializer
 
 from shared.serializers import UserSerializer
 
@@ -75,3 +81,110 @@ class FormMixin(FormMixinBase):
         return JsonResponse({
             'errors': form.errors
         }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+
+class SerializerMixin:
+    """
+    Generic save_or_error method
+    """
+
+    def save_or_error(self, success_message: str,
+                      serializer: Optional[Serializer] = None) -> Response:
+        """
+        :type success_message: str
+        :type serializer: Optional[Serializer]
+
+        :rtype: Response
+        """
+        if serializer is None:
+            try:
+                instance = self.get_object()
+            except AssertionError:
+                instance = None
+
+            serializer = self.get_serializer(
+                instance,
+                data=self.request.data
+            )
+
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response({
+                'message': success_message
+            }, status=status.HTTP_200_OK)
+
+        return Response({
+            'errors': serializer.errors
+        }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+
+class RetrieveUpdateDestroyAPIView(SerializerMixin,
+                                   mixins.RetrieveModelMixin,
+                                   mixins.UpdateModelMixin,
+                                   mixins.DestroyModelMixin,
+                                   GenericAPIView):
+    """
+    Item retrieve, update and delete views set
+    """
+
+    update_success_message = ''
+
+    def get(self, request: Request, *args, **kwargs) -> Response:
+        """
+        Generic get item view
+
+        :type request: Request
+
+        :rtype: Response
+        """
+        return self.retrieve(request, *args, **kwargs)
+
+    def put(self, *args, **kwargs) -> Response:
+        """
+        Generic update view
+
+        :rtype: Response
+        """
+        return self.save_or_error(self.update_success_message)
+
+    def delete(self, *args, **kwargs) -> Response:
+        """
+        Generic delete view
+
+        :rtype: Response
+        """
+        self.get_object().delete()
+
+        return Response(status=status.HTTP_200_OK)
+
+
+class ListCreateAPIView(SerializerMixin,
+                        mixins.ListModelMixin,
+                        mixins.CreateModelMixin,
+                        GenericAPIView):
+    """
+    List and create views set
+    """
+
+    create_success_message = ''
+
+    def get(self, request, *args, **kwargs) -> Response:
+        """
+        Generic list view
+
+        :type request: Request
+
+        :rtype: Response
+        """
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request: Request, *args, **kwargs) -> Response:
+        """
+        Generic create view
+
+        :type request: Request
+
+        :rtype: Response
+        """
+        return self.save_or_error(self.create_success_message)

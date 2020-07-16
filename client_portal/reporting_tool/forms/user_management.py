@@ -14,8 +14,8 @@ from reporting_tool.forms.accounts import UserForm
 from reporting_tool.forms.utils import CheckUserTokenForm, RoleFieldMixin, \
     SendEmailMixin
 from reporting_tool.frontend.router import Router
-from shared.models import User, UserGroup
 from reporting_tool.tokens import InvitationTokenGenerator
+from shared.models import User, UserGroup
 
 
 class UserEditForm(ModelForm):
@@ -63,7 +63,6 @@ class UserInvitationForm(ModelForm, RoleFieldMixin, SendEmailMixin):
         :rtype: User
         """
         user = super().save(False)
-        user.is_active = True
         user.organization_id = self.__organization_id
         user.username = self.__generate_username(user.firstname, user.lastname)
 
@@ -164,5 +163,6 @@ class FollowInvitationForm(UserForm, CheckUserInvitationTokenForm):
         :rtype: User
         """
         self.instance.set_password(self.cleaned_data['password2'])
+        self.instance.is_active = True
 
         return self.instance.save()

@@ -66,11 +66,11 @@
         ></recon-form-input>
       </div>
     </div>
-    <p *ngIf="!isInvitation">INVOICING INFORMATION</p>
+    <p *ngIf="!isInvitation && !hideInvoicing">INVOICING INFORMATION</p>
     <div
       class="block-container"
       formGroupName="invoicing"
-      *ngIf="!isInvitation"
+      *ngIf="!isInvitation && !hideInvoicing"
     >
       <div>
         <recon-form-input
@@ -162,6 +162,8 @@
       <div>
         <recon-form-input
           label="Password"
+          rightIcon="help_outline"
+          [rightIconTooltip]="passwordTooltipText"
           placeholder="Password"
           formControlName="password1"
           fieldType="password"
@@ -179,6 +181,8 @@
       </div>
       <div>
         <recon-form-input
+          rightIcon="help_outline"
+          [rightIconTooltip]="loginTooltipText"
           label="Login"
           placeholder="Login"
           formControlName="username"

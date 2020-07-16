@@ -10,6 +10,8 @@ import { OrdersListComponent } from './orders-list/orders-list.component';
 import { OrderItemComponent } from './orders-list/order-item/order-item.component';
 import { CreateDeviceComponent } from './components/devices/create-device/create-device.component';
 import { CreateManufactureComponent } from './components/devices/create-device/create-manufacture/create-manufacture.component';
+import { UpdateCategoryListComponent } from './components/update-category-list/update-category-list.component';
+import { UpdateCategoryListContainer } from './components/update-category-list/update-category-list.container';
 
 @NgModule({
   declarations: [
@@ -17,6 +19,8 @@ import { CreateManufactureComponent } from './components/devices/create-device/c
     OrderItemComponent,
     CreateDeviceComponent,
     CreateManufactureComponent,
+    UpdateCategoryListComponent,
+    UpdateCategoryListContainer,
   ],
   imports: [
     CommonModule,

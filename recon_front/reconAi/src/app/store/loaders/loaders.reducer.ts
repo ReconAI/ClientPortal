@@ -16,6 +16,8 @@ import {
   setInviteSignUpUserLoadingStatusAction,
   setUpdateCurrentUserLoadingStatusAction,
   setUpdateUserLoadingStatusAction,
+  setCategoriesListLoadingStatusAction,
+  setUpdateCategoriesListLoadingStatusAction,
 } from './loaders.actions';
 import { createReducer, on, Action } from '@ngrx/store';
 
@@ -38,6 +40,9 @@ export interface LoadersState {
   inviteSignUpUser: boolean;
   updateCurrentUser: boolean;
   updateUser: boolean;
+  // orders
+  categoriesList: boolean;
+  updateCategoriesList: boolean;
 }
 
 const initialState: LoadersState = {
@@ -58,6 +63,9 @@ const initialState: LoadersState = {
   inviteSignUpUser: false,
   updateCurrentUser: false,
   updateUser: false,
+  // orders
+  categoriesList: false,
+  updateCategoriesList: false,
 };
 
 const setCurrentUserLoadingStatusReducer = (
@@ -140,6 +148,17 @@ const setUpdateUserLoadingStatusReducer = (
   { status }: Action & LoaderInterface
 ): LoadersState => ({ ...state, updateUser: status });
 
+// orders
+const setCategoriesListLoadingStatusReducer = (
+  state: LoadersState,
+  { status }: Action & LoaderInterface
+): LoadersState => ({ ...state, categoriesList: status });
+
+const setUpdateCategoriesListLoadingStatusReducer = (
+  state: LoadersState,
+  { status }: Action & LoaderInterface
+): LoadersState => ({ ...state, updateCategoriesList: status });
+
 const loadersReducer = createReducer(
   initialState,
   on(setCurrentUserLoadingStatusAction, setCurrentUserLoadingStatusReducer),
@@ -166,7 +185,16 @@ const loadersReducer = createReducer(
     setUpdateCurrentUserLoadingStatusAction,
     setUpdateCurrentUserLoadingStatusReducer
   ),
-  on(setUpdateUserLoadingStatusAction, setUpdateUserLoadingStatusReducer)
+  on(setUpdateUserLoadingStatusAction, setUpdateUserLoadingStatusReducer),
+  // orders
+  on(
+    setCategoriesListLoadingStatusAction,
+    setCategoriesListLoadingStatusReducer
+  ),
+  on(
+    setUpdateCategoriesListLoadingStatusAction,
+    setUpdateCategoriesListLoadingStatusReducer
+  )
 );
 
 export function reducer(state: LoadersState | undefined, action: Action) {

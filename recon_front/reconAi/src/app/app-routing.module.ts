@@ -35,7 +35,7 @@ const routes: Routes = [
     path: 'users',
     canActivate: [AuthRoleGuard],
     data: {
-      expectedRolePriority: UserRolesPriorities.ADMIN_ROLE,
+      expectedRolePriority: UserRolesPriorities.DEVELOPER_ROLE,
     },
     loadChildren: () =>
       import('./users/users.module').then((m) => m.UsersModule),

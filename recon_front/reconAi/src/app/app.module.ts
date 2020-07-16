@@ -1,3 +1,4 @@
+import { OrdersEffects } from './store/orders/orders.effects';
 import { CurrentUserProfileContainer } from './components/current-user-profile/current-user-profile.container';
 import { InvitationUserContainer } from './components/invitation-user/invitation-user.container';
 import { UsersEffects } from './store/users/users.effects';
@@ -93,7 +94,12 @@ import { CurrentUserProfileComponent } from './components/current-user-profile/c
     CoreModule,
     SharedModule, // remove later
     StoreRouterConnectingModule.forRoot(),
-    EffectsModule.forRoot([UserEffects, SignUpEffects, UsersEffects]),
+    EffectsModule.forRoot([
+      UserEffects,
+      SignUpEffects,
+      UsersEffects,
+      OrdersEffects,
+    ]),
   ],
   providers: [
     // token and headers

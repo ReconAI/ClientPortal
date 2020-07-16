@@ -56,6 +56,7 @@ export interface CredentialsRequestInterface {
   password1?: string;
   password2?: string;
   id?: string;
+  rolePriority?: UserRolesPriorities;
 }
 
 export interface UserProfileFormUserInterface {

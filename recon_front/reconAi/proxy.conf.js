@@ -9,12 +9,12 @@ const PROXY_CONFIG = [
     },
   },
   {
-    context: ["/rep-api"],
+    context: ["/order-api"],
     target: process.env.ORDER_PORTAL_API_URL || "http://127.0.0.1:8081/",
     secure: true,
     "changeOrigin": true,
     pathRewrite: {
-      "^/rep-api": "",
+      "^/order-api": "",
     },
   },
 ];

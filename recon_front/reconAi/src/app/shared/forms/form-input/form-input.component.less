@@ -3,6 +3,7 @@
 
 .field-container {
     width: 100%;
+    position: relative;
 
     textarea.recon-input,
     input.recon-input,
@@ -41,6 +42,15 @@
         span {
             font-size: 25px;
         }
+
+        &:hover {
+            color: @recon-light-gray;
+        }
+
+        &.disabled-icon {
+            color: @recon-light-gray;
+            cursor: default;
+        }
     }
 
     textarea.recon-input {
@@ -49,6 +59,13 @@
 
     &.disabled-field {
         opacity: 75%;
+    }
+
+    .icon-container {
+        position: absolute;
+        right: 5px;
+        top: 38px;
+        cursor: pointer;
     }
 
 }
