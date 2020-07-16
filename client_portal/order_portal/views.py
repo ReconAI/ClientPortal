@@ -10,6 +10,7 @@ from django.utils.translation import gettext_lazy as _
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.generics import RetrieveAPIView
+from rest_framework.parsers import FileUploadParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -242,10 +243,32 @@ class DeviceOperator:
 
     write_serializer_class = WriteDeviceSerializer
 
+    permission_classes = (IsAuthenticated, IsActive,
+                          IsSuperUser, PaymentRequired)
+
     queryset = Device.objects.prefetch_related(
         'manufacturer__categories').filter(published=True).all()
 
 
+@method_decorator(name='post', decorator=swagger_auto_schema(
+    responses=DEFAULT_UNSAFE_REQUEST_RESPONSES,
+    request_body=WriteDeviceSerializer,
+    tags=['Device'],
+    operation_summary="Creates a device",
+    operation_description='Creatd a device with images',
+    manual_parameters=[
+        token_header(),
+    ]
+))
+@method_decorator(name='get', decorator=swagger_auto_schema(
+    responses=DEFAULT_GET_REQUESTS_RESPONSES,
+    tags=['Device'],
+    operation_summary="Device list",
+    operation_description='Gets a list of devices',
+    manual_parameters=[
+        token_header(),
+    ]
+))
 class DeviceList(DeviceOperator, ListCreateAPIView):
     create_success_message = _('Device is created successfully')
 

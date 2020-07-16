@@ -6,6 +6,7 @@ from typing import List
 
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
+from django.core.validators import FileExtensionValidator
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import ListField, CharField, ImageField
@@ -13,7 +14,8 @@ from rest_framework.serializers import ListSerializer, \
     Serializer
 from rest_framework.serializers import ModelSerializer
 
-from recon_db_manager.models import Category, Manufacturer, Device
+from order_portal.fields import ImgField
+from recon_db_manager.models import Category, Manufacturer, Device, DeviceImage
 
 
 class CategorySerializer(ModelSerializer):
@@ -248,18 +250,6 @@ class WriteManufacturerSerializer(ModelSerializer):
         return manufacturer
 
 
-class ImgField(ImageField):
-    def to_internal_value(self, data):
-        _format, _img_str = data.split(';base64,')
-        _name, ext = _format.split('/')
-        name = _name.split(":")[-1]
-
-        file = ContentFile(base64.b64decode(_img_str),
-                           name='{}.{}'.format(name, ext))
-
-        return super().to_internal_value(file)
-
-
 class WriteDeviceSerializer(ModelSerializer):
     manufacturer = serializers.PrimaryKeyRelatedField(
         queryset=Manufacturer.objects.all()
@@ -268,7 +258,12 @@ class WriteDeviceSerializer(ModelSerializer):
         child=CharField(required=True, allow_blank=False)
     )
     images = serializers.ListSerializer(
-        child=ImgField(allow_empty_file=False)
+        child=ImgField(
+            allow_empty_file=False,
+            validators=[
+                FileExtensionValidator(allowed_extensions=['jpeg', 'jpg', 'png'])
+            ]
+        )
     )
 
     class Meta:
@@ -285,18 +280,27 @@ class WriteDeviceSerializer(ModelSerializer):
 
     def create(self, validated_data):
         images = validated_data.pop('images')
+        device = super().create(validated_data)
 
         for image in images:
-            fs = default_storage
-            filename = fs.save(image.name, image)
-            uploaded_file_url = fs.url(filename)
+            dvi = DeviceImage(device=device)
+            dvi.save()
+            dvi.path = image
+            dvi.save()
 
-        return super().create(validated_data)
+        return device
+
+
+class DeviceImageSerializer(ModelSerializer):
+    class Meta:
+        model = DeviceImage
+        fields = ('id', 'path')
 
 
 class ReadDeviceSerializer(ModelSerializer):
     seo_keywords = serializers.SerializerMethodField('format_seo_keywords')
     manufacturer = ReadManufacturerSerializer()
+    images = DeviceImageSerializer(many=True)
 
     class Meta:
         model = Device

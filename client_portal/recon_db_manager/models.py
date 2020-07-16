@@ -1,7 +1,7 @@
 """
 Recon db mangaer are defined here
 """
-
+from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.db.models import ImageField
@@ -1426,7 +1426,6 @@ class Device(models.Model):
     seo_keywords = models.CharField(max_length=255, null=True, db_column='seoKeywords')
     seo_description = models.TextField(null=True, db_column='seoDescription')
     published = models.BooleanField(default=True)
-    images = JSONField(null=True)
     created_dt = models.DateTimeField(null=True, auto_now_add=True)
 
     class Meta:
@@ -1436,7 +1435,18 @@ class Device(models.Model):
         db_table = 'Devices'
 
 
+def _device_img_save_path(image: 'DeviceImage', filename: str) -> str:
+    return 'devices/{}/{}'.format(image.device.id, filename)
+
+
 class DeviceImage(models.Model):
     id = models.BigAutoField(primary_key=True)
-    path = ImageField()
-    device = models.ForeignKey(Device, on_delete=models.CASCADE)
+    path = ImageField(upload_to=_device_img_save_path)
+    device = models.ForeignKey(Device, on_delete=models.CASCADE, related_name='images')
+
+    class Meta:
+        """
+        Device model's Meta class specification
+        """
+        db_table = 'DeviceImages'
+

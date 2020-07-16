@@ -15,6 +15,8 @@ Including another URLconf
 """
 from django.conf import settings
 from django.conf.urls import url
+from django.conf.urls.static import static
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import path
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
@@ -28,8 +30,13 @@ urlpatterns = [
     path('categories/<int:pk>', CategoryItem.as_view(), name='categories.item'),
     path('manufacturers', ManufacturerList.as_view(), name='manufacturers.list'),
     path('manufacturers/<int:pk>', ManufacturerItem.as_view(), name='manufacturers.item'),
-    path('devices', DeviceList.as_view(), name='devices.item')
+    path('devices', DeviceList.as_view(), name='devices.item'),
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+urlpatterns += staticfiles_urlpatterns()
 
 if settings.DEBUG:
     schema_view = get_schema_view(
