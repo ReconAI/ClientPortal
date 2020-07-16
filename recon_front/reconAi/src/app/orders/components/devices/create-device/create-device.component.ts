@@ -1,7 +1,8 @@
+import { CategoryInterface } from './../../../constants/types/category';
 import { CreateManufactureComponent } from './create-manufacture/create-manufacture.component';
 import { MatDialog } from '@angular/material/dialog';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
   selector: 'recon-create-device',
@@ -9,6 +10,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./create-device.component.less'],
 })
 export class CreateDeviceComponent implements OnInit {
+  @Input() allCategories: CategoryInterface[];
   deviceForm: FormGroup;
   constructor(private fb: FormBuilder, private dialog: MatDialog) {}
 
@@ -31,7 +33,7 @@ export class CreateDeviceComponent implements OnInit {
   openCreateManufactureDialog(): void {
     this.dialog.open(CreateManufactureComponent, {
       width: '470px',
-      height: '700px',
+      height: '650px',
     });
   }
 

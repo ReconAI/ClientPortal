@@ -1,3 +1,4 @@
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CoreModule } from './../core/core.module';
 import { SharedModule } from './../shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -12,12 +13,14 @@ import { CreateDeviceComponent } from './components/devices/create-device/create
 import { CreateManufactureComponent } from './components/devices/create-device/create-manufacture/create-manufacture.component';
 import { UpdateCategoryListComponent } from './components/update-category-list/update-category-list.component';
 import { UpdateCategoryListContainer } from './components/update-category-list/update-category-list.container';
+import { CreateDeviceContainer } from './components/devices/create-device/create-device.container';
 
 @NgModule({
   declarations: [
     OrdersListComponent,
     OrderItemComponent,
     CreateDeviceComponent,
+    CreateDeviceContainer,
     CreateManufactureComponent,
     UpdateCategoryListComponent,
     UpdateCategoryListContainer,
@@ -30,6 +33,10 @@ import { UpdateCategoryListContainer } from './components/update-category-list/u
     FormsModule,
     SharedModule,
     ReactiveFormsModule,
+  ],
+  providers: [
+    { provide: MatDialogRef, useValue: {} },
+    { provide: MAT_DIALOG_DATA, useValue: {} },
   ],
 })
 export class OrdersModule {}

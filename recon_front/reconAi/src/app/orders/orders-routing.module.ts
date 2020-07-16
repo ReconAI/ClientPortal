@@ -1,4 +1,4 @@
-import { CreateDeviceComponent } from './components/devices/create-device/create-device.component';
+import { CreateDeviceContainer } from './components/devices/create-device/create-device.container';
 import { OrdersListComponent } from './orders-list/orders-list.component';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
@@ -18,7 +18,7 @@ const routes: Routes = [
     data: {
       title: 'Create device',
     },
-    component: CreateDeviceComponent,
+    component: CreateDeviceContainer,
   },
   {
     path: 'categories',

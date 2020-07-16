@@ -44,7 +44,6 @@ export class UpdateCategoryListComponent implements OnInit {
   }
 
   sendCategories(): void {
-    console.log(this.categoriesForm.value, 'VALUE');
     this.sendCategories$.emit(this.categoriesForm.value);
   }
 

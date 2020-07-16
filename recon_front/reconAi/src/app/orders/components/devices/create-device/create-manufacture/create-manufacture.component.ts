@@ -1,4 +1,3 @@
-import { Observable } from 'rxjs';
 import {
   FormBuilder,
   FormGroup,
@@ -6,19 +5,11 @@ import {
   FormControl,
   FormArray,
 } from '@angular/forms';
-import {
-  Component,
-  OnInit,
-  ElementRef,
-  ViewChild,
-  HostListener,
-} from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import {
   MatAutocomplete,
   MatAutocompleteSelectedEvent,
 } from '@angular/material/autocomplete';
-import { MatChipInputEvent } from '@angular/material/chips';
-import { startWith, map } from 'rxjs/operators';
 
 @Component({
   selector: 'recon-create-manufacture',
