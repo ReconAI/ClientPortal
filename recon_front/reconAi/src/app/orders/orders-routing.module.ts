@@ -1,3 +1,7 @@
+import {
+  SUPER_ADMIN_ROLE,
+  UserRolesPriorities,
+} from './../constants/types/user';
 import { CreateDeviceContainer } from './components/devices/create-device/create-device.container';
 import { OrdersListComponent } from './orders-list/orders-list.component';
 import { NgModule } from '@angular/core';
@@ -24,6 +28,7 @@ const routes: Routes = [
     path: 'categories',
     data: {
       title: 'Categories',
+      expectedRolePriority: UserRolesPriorities.SUPER_ADMIN_ROLE,
     },
     component: UpdateCategoryListContainer,
   },
