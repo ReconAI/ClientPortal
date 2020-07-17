@@ -13,3 +13,25 @@ span {
 .sign-in-label {
     color: @recon-primary-green;
 }
+
+div.user-menu-container {
+    padding: 0 5px;
+    border-radius: 5px;
+    div.user-menu-button {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+
+        div {
+            margin: 0 5px;
+            display: flex;
+            flex-direction: column;
+
+            span.role-label {
+                margin-top: -18px;
+                color: @recon-gray;
+                font-size: 12px;
+            }
+        }
+    }
+}

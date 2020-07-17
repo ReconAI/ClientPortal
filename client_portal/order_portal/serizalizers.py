@@ -1,17 +1,20 @@
 """
 Order portal serializers range
 """
+from typing import List
 
-from typing import List, Dict
-
+from django.core.files.base import ContentFile
+from django.core.validators import FileExtensionValidator, MaxLengthValidator
+from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-from rest_framework.fields import ListField
+from rest_framework.fields import ListField, CharField, IntegerField
 from rest_framework.serializers import ListSerializer, \
     Serializer
 from rest_framework.serializers import ModelSerializer
 
-from recon_db_manager.models import Category, Manufacturer
+from order_portal.fields import ImgField
+from recon_db_manager.models import Category, Manufacturer, Device, DeviceImage
 
 
 class CategorySerializer(ModelSerializer):
@@ -42,7 +45,6 @@ class SynchronizeCategorySerializer(ModelSerializer):
         """
         model = Category
         fields = ('id', 'name')
-
 
 
 class CategoryCollectionSerializer(Serializer):
@@ -245,3 +247,110 @@ class WriteManufacturerSerializer(ModelSerializer):
         manufacturer.categories.set(categories)
 
         return manufacturer
+
+
+class CreateDeviceSerializer(ModelSerializer):
+    MAX_IMAGES = 5
+
+    manufacturer = serializers.PrimaryKeyRelatedField(
+        queryset=Manufacturer.objects.all()
+    )
+    seo_keywords = serializers.ListSerializer(
+        child=CharField(required=True, allow_blank=False)
+    )
+    images = serializers.ListSerializer(
+        child=ImgField(
+            allow_empty_file=False,
+            validators=[
+                FileExtensionValidator(allowed_extensions=['jpeg', 'jpg', 'png'])
+            ]
+        ),
+        validators=[
+            MaxLengthValidator(MAX_IMAGES)
+        ]
+    )
+
+    class Meta:
+        model = Device
+        fields = (
+            'name', 'description', 'manufacturer', 'buying_price',
+            'sales_price', 'product_number', 'seo_title', 'seo_keywords',
+            'seo_description', 'images'
+        )
+
+    @staticmethod
+    def validate_seo_keywords(keywords: List[str]) -> str:
+        return ', '.join(keywords)
+
+    @staticmethod
+    def _upload_images(device: Device, images: List[ContentFile]):
+        for image in images:
+            dvi = DeviceImage(device=device)
+            dvi.save()
+            dvi.path = image
+            dvi.save()
+
+    def create(self, validated_data):
+        images = validated_data.pop('images')
+        device = super().create(validated_data)
+
+        self._upload_images(device, images)
+
+        return device
+
+
+class UpdateDeviceSerializer(CreateDeviceSerializer):
+    delete_images = ListSerializer(
+        child=IntegerField(min_value=1),
+        allow_null=True,
+        allow_empty=True,
+        required=False
+    )
+
+    class Meta:
+        model = Device
+        fields = (
+            'name', 'description', 'manufacturer', 'buying_price',
+            'sales_price', 'product_number', 'seo_title', 'seo_keywords',
+            'seo_description', 'images', 'delete_images'
+        )
+
+    def update(self, device: Device, validated_data):
+        images = validated_data.pop('images')
+        delete_images = validated_data.pop('delete_images')
+
+        device = super().update(device, validated_data)
+        device.images.filter(pk__in=delete_images).delete()
+        self._upload_images(device, images)
+
+        return device
+
+    def validate_delete_images(self, images):
+        if len(self.initial_data.get('images', [])) + len(self.instance.images.all()) - len(images) > self.MAX_IMAGES:
+            raise ValidationError(_('You can not load mor than {} image(s)').format(self.MAX_IMAGES))
+
+        return images
+
+
+class DeviceImageSerializer(ModelSerializer):
+    class Meta:
+        model = DeviceImage
+        fields = ('id', 'path')
+
+
+class ReadDeviceSerializer(ModelSerializer):
+    seo_keywords = serializers.SerializerMethodField('format_seo_keywords')
+    manufacturer = ReadManufacturerSerializer()
+    images = DeviceImageSerializer(many=True)
+
+    class Meta:
+        model = Device
+        fields = (
+            'id', 'name', 'description', 'manufacturer', 'buying_price',
+            'sales_price', 'product_number', 'seo_title', 'seo_keywords',
+            'seo_description', 'published', 'images', 'created_dt'
+        )
+
+    @staticmethod
+    def format_seo_keywords(device: Device) -> List[str]:
+        return device.seo_keywords.split(', ')

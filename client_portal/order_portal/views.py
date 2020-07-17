@@ -8,16 +8,18 @@ from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from drf_yasg.utils import swagger_auto_schema
-from requests import Request
 from rest_framework import status
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.request import Request
 from rest_framework.response import Response
 
 from order_portal.serizalizers import CategorySerializer, \
     ReadManufacturerSerializer, WriteManufacturerSerializer, \
-    CategoryCollectionSerializer
+    ReadDeviceSerializer, CategoryCollectionSerializer, CreateDeviceSerializer, \
+    UpdateDeviceSerializer
 from recon_db_manager.models import Category, Manufacturer
+from recon_db_manager.models import Device
 from shared.permissions import IsActive, IsSuperUser, PaymentRequired
 from shared.swagger.headers import token_header
 from shared.swagger.responses import http401, http404, \
@@ -129,8 +131,7 @@ class ManufacturerOperator:
         status.HTTP_401_UNAUTHORIZED: http401(),
         status.HTTP_403_FORBIDDEN: http403(),
         status.HTTP_404_NOT_FOUND: http404(),
-        status.HTTP_405_METHOD_NOT_ALLOWED: http405(),
-        status.HTTP_422_UNPROCESSABLE_ENTITY: http422(),
+        status.HTTP_405_METHOD_NOT_ALLOWED: http405()
     },
     tags=['Manufacturer'],
     operation_summary="List of manufacturers",
@@ -234,3 +235,96 @@ class ManufacturerItem(ManufacturerOperator, RetrieveUpdateDestroyAPIView):
     read_serializer_class = ReadManufacturerSerializer
 
     update_success_message = _('Manufacturer is updated successfully')
+
+
+class DeviceOperator:
+    serializer_class = ReadDeviceSerializer
+
+    write_serializer_class = CreateDeviceSerializer
+
+    permission_classes = (IsAuthenticated, IsActive,
+                          IsSuperUser, PaymentRequired)
+
+    queryset = Device.objects.prefetch_related(
+        'manufacturer__categories', 'images').filter(published=True).all()
+
+
+@method_decorator(name='post', decorator=swagger_auto_schema(
+    responses=DEFAULT_UNSAFE_REQUEST_RESPONSES,
+    request_body=CreateDeviceSerializer,
+    tags=['Device'],
+    operation_summary="Creates a device",
+    operation_description='Creates a device with images',
+    manual_parameters=[
+        token_header(),
+    ]
+))
+@method_decorator(name='get', decorator=swagger_auto_schema(
+    responses=DEFAULT_GET_REQUESTS_RESPONSES,
+    tags=['Device'],
+    operation_summary="Device list",
+    operation_description='Gets a list of devices',
+    manual_parameters=[
+        token_header(),
+    ]
+))
+class DeviceList(DeviceOperator, ListCreateAPIView):
+    create_success_message = _('Device is created successfully')
+
+    @atomic(settings.RECON_AI_CONNECTION_NAME)
+    def post(self, request: Request, *args, **kwargs) -> Response:
+        return self.save_or_error(
+            self.create_success_message,
+            self.write_serializer_class(data=request.data)
+        )
+
+
+@method_decorator(name='get', decorator=swagger_auto_schema(
+    responses={
+        status.HTTP_200_OK: data_serializer(ReadDeviceSerializer),
+        status.HTTP_401_UNAUTHORIZED: http401(),
+        status.HTTP_403_FORBIDDEN: http403(),
+        status.HTTP_404_NOT_FOUND: http404(),
+        status.HTTP_405_METHOD_NOT_ALLOWED: http405()
+    },
+    tags=['Device'],
+    operation_summary="Gets a device",
+    operation_description='Retrieves a device with images and manufacturer',
+    manual_parameters=[
+        token_header(),
+    ]
+))
+@method_decorator(name='put', decorator=swagger_auto_schema(
+    responses=DEFAULT_UNSAFE_REQUEST_RESPONSES,
+    request_body=UpdateDeviceSerializer,
+    tags=['Device'],
+    operation_summary="Updates a device",
+    operation_description='Updates a device with images',
+    manual_parameters=[
+        token_header(),
+    ]
+))
+@method_decorator(name='delete', decorator=swagger_auto_schema(
+    responses=DEFAULT_DELETE_REQUEST_RESPONSES,
+    tags=['Device'],
+    operation_summary="Deletes a device",
+    operation_description='Deletes a device with images',
+    manual_parameters=[
+        token_header(),
+    ]
+))
+class DeviceItem(DeviceOperator, RetrieveUpdateDestroyAPIView):
+    update_success_message = _('Device is updated successfully')
+
+    write_serializer_class = UpdateDeviceSerializer
+
+    @atomic(settings.RECON_AI_CONNECTION_NAME)
+    def put(self, *args, **kwargs) -> Response:
+        return self.save_or_error(
+            self.update_success_message,
+            self.write_serializer_class(data=self.request.data, instance=self.get_object())
+        )
+
+    @atomic(settings.RECON_AI_CONNECTION_NAME)
+    def delete(self, *args, **kwargs) -> Response:
+        return super().delete(*args, **kwargs)

@@ -19,7 +19,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-
+import { MatRippleModule } from '@angular/material/core';
 @NgModule({
   imports: [
     CommonModule,
@@ -41,6 +41,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     MatSelectModule,
     MatChipsModule,
     MatAutocompleteModule,
+    MatRippleModule,
   ],
   exports: [
     MatToolbarModule,
@@ -61,6 +62,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     MatSelectModule,
     MatChipsModule,
     MatAutocompleteModule,
+    MatRippleModule,
   ],
   providers: [],
 })

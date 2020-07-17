@@ -26,7 +26,7 @@ export const selectIsNotAuthenticated = createSelector(
 
 export const selectUserRole = createSelector(
   selectUser,
-  (user: UserState): UserRoleTypes | null => user.role
+  (user: UserState): UserRoleTypes => user.role
 );
 
 export const selectUserRolePriority = createSelector(

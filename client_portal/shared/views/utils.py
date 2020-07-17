@@ -156,7 +156,9 @@ class RetrieveUpdateDestroyAPIView(SerializerMixin,
         """
         self.get_object().delete()
 
-        return Response(status=status.HTTP_200_OK)
+        return Response({
+            'message': 'Deleted successfully'
+        }, status=status.HTTP_200_OK)
 
 
 class ListCreateAPIView(SerializerMixin,

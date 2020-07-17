@@ -104,3 +104,13 @@ export const selectCreateManufacturerLoadingStatus = createSelector(
   selectLoaders,
   (loaders: LoadersState): boolean => loaders.createManufacturer
 );
+
+export const selectManufacturerListLoadingStatus = createSelector(
+  selectLoaders,
+  (loaders: LoadersState): boolean => loaders.manufacturerList
+);
+
+export const selectCreateDeviceLoadingStatus = createSelector(
+  selectLoaders,
+  (loaders: LoadersState): boolean => loaders.createDevice
+);

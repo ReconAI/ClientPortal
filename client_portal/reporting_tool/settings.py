@@ -202,7 +202,6 @@ CLIENT_APP_SHEMA_HOST_PORT = os.environ.get(
 # Payments settings
 TRIAL_PERIOD_DAYS = 30
 
-
 LOGGING = {
     'version': 1,
     'filters': {

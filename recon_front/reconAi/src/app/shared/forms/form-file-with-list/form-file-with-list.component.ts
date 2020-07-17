@@ -31,6 +31,7 @@ export class FormFileWithListComponent implements OnInit {
       ...(this.files?.value || []),
     ].slice(0, this.maxCountOfFiles);
     this.files.clear();
+
     if (newFiles?.length) {
       for (let i = 0; i < newFiles.length; i++) {
         this.files.push(this.fb.control(newFiles[i]));

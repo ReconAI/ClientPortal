@@ -1,14 +1,24 @@
-<div *ngIf="userPriority >= userRolePriorities.CLIENT_ROLE; else elseBlock">
-  <button mat-button [matMenuTriggerFor]="menu" #trigger="matMenuTrigger">
+<div
+  *ngIf="userPriority >= userRolePriorities.CLIENT_ROLE; else elseBlock"
+  matRipple
+  class="user-menu-container"
+>
+  <div
+    [matMenuTriggerFor]="menu"
+    #trigger="matMenuTrigger"
+    class="user-menu-button"
+  >
     <mat-icon aria-hidden="false" aria-label="person" class="person_icon"
       >person_outline</mat-icon
     >
-    <span>{{ userName }}</span>
-    <!-- <span>{{userRole}}</span> -->
+    <div>
+      <span>{{ userName }}</span>
+      <span class="role-label">{{ userRole }}</span>
+    </div>
     <mat-icon aria-hidden="false" aria-label="person">{{
       trigger.menuOpen ? "keyboard_arrow_up" : "keyboard_arrow_down"
     }}</mat-icon>
-  </button>
+  </div>
   <mat-menu #menu="matMenu" xPosition="before" class="recon-menu">
     <button mat-menu-item (click)="onNavigate('profile')">Profile</button>
     <mat-divider></mat-divider>

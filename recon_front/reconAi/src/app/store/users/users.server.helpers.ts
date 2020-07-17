@@ -19,10 +19,6 @@ import {
 } from 'app/constants/types';
 import moment from 'moment';
 
-export interface UsersListRequestInterface {
-  page: number;
-}
-
 export interface UsersListResponseInterface {
   count: number;
   current: number;
