@@ -1,0 +1,31 @@
+@import "../../../../variables.less";
+
+div.footer-container {
+    height: 80px;
+    background-color: @recon-black;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+
+    span {
+        color: white;
+        cursor: pointer;
+
+        &:not(:first-child) {
+            margin-left: 15px;
+        }
+    }
+
+    .button-container {
+        button {
+            font-size: 14px;
+        }
+
+        button:first-child {
+            padding: 0 20px;
+            margin-right: 10px;
+            font-weight: 500;
+            border: 0;
+        }
+    }
+}

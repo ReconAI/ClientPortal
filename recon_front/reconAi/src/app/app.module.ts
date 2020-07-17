@@ -48,6 +48,7 @@ import { NewFeatureComponent } from './components/new-feature/new-feature.compon
 import { NewFeatureContainer } from './components/new-feature/new-feature.container';
 import { InvitationUserComponent } from './components/invitation-user/invitation-user.component';
 import { CurrentUserProfileComponent } from './components/current-user-profile/current-user-profile.component';
+import { FooterComponent } from './components/landing-page/footer/footer.component';
 
 @NgModule({
   declarations: [
@@ -76,6 +77,7 @@ import { CurrentUserProfileComponent } from './components/current-user-profile/c
     InvitationUserContainer,
     CurrentUserProfileComponent,
     CurrentUserProfileContainer,
+    FooterComponent,
   ],
   imports: [
     BrowserModule,
