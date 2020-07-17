@@ -37,4 +37,4 @@ max-line-length=79
 #
 # Kubeflow disables string-interpolation because we are starting to use f
 # style strings
-disable=no-member,unused-argument,import-outside-toplevel
+disable=no-member,unused-argument,import-outside-toplevel,too-many-ancestors, protected-access

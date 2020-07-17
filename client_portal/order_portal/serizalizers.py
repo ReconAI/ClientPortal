@@ -1,13 +1,13 @@
 """
 Order portal serializers range
 """
-from typing import List
+from typing import List, Tuple
 
 from django.core.files.base import ContentFile
 from django.core.validators import FileExtensionValidator, MaxLengthValidator
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, ErrorDetail
 from rest_framework.fields import ListField, CharField, IntegerField
 from rest_framework.serializers import ListSerializer, \
     Serializer
@@ -22,7 +22,9 @@ class CategorySerializer(ModelSerializer):
     Category serializer for displays
     """
 
-    manufacturers_count = serializers.SerializerMethodField('get_manufacturers_cnt')
+    manufacturers_count = serializers.SerializerMethodField(
+        'get_manufacturers_cnt'
+    )
 
     class Meta:
         """
@@ -33,10 +35,19 @@ class CategorySerializer(ModelSerializer):
 
     @staticmethod
     def get_manufacturers_cnt(category: Category) -> int:
+        """
+        :type category: Category
+
+        :rtype: int
+        """
         return category.manufacturers_count
 
 
 class SynchronizeCategorySerializer(ModelSerializer):
+    """
+    Category serializer for create operation
+    """
+
     id = serializers.IntegerField(required=False, allow_null=True, min_value=1)
 
     class Meta:
@@ -51,17 +62,33 @@ class CategoryCollectionSerializer(Serializer):
     """
     Category collection `create` serializer
     """
-    categories = ListSerializer(child=SynchronizeCategorySerializer(), allow_null=False,
-                                allow_empty=False)
+    categories = ListSerializer(
+        child=SynchronizeCategorySerializer(),
+        allow_null=False,
+        allow_empty=False
+    )
 
     def validate_categories(self, categories: List[dict]) -> List[dict]:
+        """
+        Validates incoming categories data
+
+        :type categories: List[dict]
+
+        :rtype: List[dict]
+        """
         incoming_ids = self.__categories_for_update_ids(categories)
 
-        if incoming_ids and len(Category.objects.filter(pk__in=incoming_ids)) != len(incoming_ids):
+        len_incoming = len(Category.objects.filter(pk__in=incoming_ids))
+
+        # All incoming categories should be present in db
+        if incoming_ids and len_incoming != len(incoming_ids):
             raise ValidationError('Not all categories passed are present')
 
         if self.__are_categories_assigned(categories):
-            raise ValidationError('You try to delete categories attached to manufacturers')
+            raise ValidationError(
+                'You try to delete categories attached to manufacturers',
+                code='delete_prohibition'
+            )
 
         return categories
 
@@ -77,24 +104,28 @@ class CategoryCollectionSerializer(Serializer):
         # Guard against incorrect use of `serializer.save(commit=False)`
         assert 'commit' not in kwargs, (
             "'commit' is not a valid keyword argument to the 'save()' method. "
-            "If you need to access data before committing to the database then "
-            "inspect 'serializer.validated_data' instead. "
-            "You can also pass additional keyword arguments to 'save()' if you "
-            "need to set extra attributes on the saved model instance. "
+            "If you need to access data before committing to the database "
+            "then inspect 'serializer.validated_data' instead. "
+            "You can also pass additional keyword arguments to 'save()' if "
+            "you need to set extra attributes on the saved model instance. "
             "For example: 'serializer.save(owner=request.user)'.'"
         )
 
         assert not hasattr(self, '_data'), (
-            "You cannot call `.save()` after accessing `serializer.data`."
-            "If you need to access data before committing to the database then "
+            "You cannot call `.save()` after accessing `serializer.data`.If "
+            "you need to access data before committing to the database then "
             "inspect 'serializer.validated_data' instead. "
         )
 
         validated_categories = self.validated_data['categories']
 
         self.delete(validated_categories)
-        created = self.create(self.__categories_for_insert(validated_categories))
-        updated = self.update(self.__categories_for_update(validated_categories))
+        created = self.create(
+            self.__categories_for_insert(validated_categories)
+        )
+        updated = self.update(
+            self.__categories_for_update(validated_categories)
+        )
 
         return created + updated
 
@@ -120,7 +151,12 @@ class CategoryCollectionSerializer(Serializer):
 
         return categories
 
-    def delete(self, validated_data):
+    def delete(self, validated_data: dict) -> Tuple[int, dict]:
+        """
+        :type validated_data: dict
+
+        :rtype: Tuple[int, dict]
+        """
         ids_for_delete = self.__categories_for_delete_ids(validated_data)
 
         return Category.objects.filter(pk__in=ids_for_delete).delete()
@@ -131,11 +167,13 @@ class CategoryCollectionSerializer(Serializer):
         category_errors = super().errors.get('categories', [])
 
         for category_error in category_errors:
-            if category_error:
+            if isinstance(category_error, dict):
                 for error_attr, error_msg in category_error.items():
                     attr_errors = errors.get(error_attr, [])
                     attr_errors += error_msg
                     errors[error_attr] = attr_errors
+            elif isinstance(category_error, ErrorDetail):
+                return super().errors
 
         return errors
 
@@ -158,16 +196,20 @@ class CategoryCollectionSerializer(Serializer):
         ]
 
     def __categories_for_update_ids(self, categories_list: List[dict]):
-        return set([
+        return {
             category['id']
             for category
             in self.__categories_for_update(categories_list)
-        ])
+        }
 
     def __categories_for_delete_ids(self, categories_list: List[dict]):
         existing_ids = self.__categories_for_update_ids(categories_list)
 
-        return list(Category.objects.exclude(pk__in=existing_ids).values_list('pk', flat=True))
+        return list(Category.objects.exclude(
+            pk__in=existing_ids
+        ).values_list(
+            'pk', flat=True
+        ))
 
     @staticmethod
     def __categories_for_insert(categories_list: List[dict]):
@@ -177,6 +219,21 @@ class CategoryCollectionSerializer(Serializer):
             in categories_list
             if 'id' not in category
         ]
+
+
+class BaseManufacturerSerializer(ModelSerializer):
+    """
+    Condensed view of manufacturer
+    """
+
+    categories = SynchronizeCategorySerializer(many=True, allow_null=True)
+
+    class Meta:
+        """
+        Manufacturer name and related categories must be displayed
+        """
+        model = Manufacturer
+        fields = ('id', 'name', 'categories')
 
 
 class ReadManufacturerSerializer(ModelSerializer):
@@ -249,7 +306,58 @@ class WriteManufacturerSerializer(ModelSerializer):
         return manufacturer
 
 
+class DeviceImageSerializer(ModelSerializer):
+    """
+    Image serializer definition
+    """
+
+    class Meta:
+        """
+        Id and path are to be exposed
+        """
+        model = DeviceImage
+        fields = ('id', 'path')
+
+
+class DeviceListSerializer(ModelSerializer):
+    """
+    Device list serializer
+    """
+
+    images = DeviceImageSerializer(many=True)
+
+    class Meta:
+        """
+        Limited range of fields can be shown on the list page
+        """
+        model = Device
+        fields = ('id', 'name', 'description',
+                  'sales_price', 'images', 'created_dt')
+
+
+class DeviceItemSerializer(DeviceListSerializer):
+    """
+    Device item fields specification
+    """
+
+    images = DeviceImageSerializer(many=True)
+    manufacturer = BaseManufacturerSerializer()
+
+    class Meta:
+        """
+        List of attributes are to be shown on device item page
+        """
+        model = Device
+        fields = ('id', 'name', 'description', 'sales_price', 'product_number',
+                  'images', 'seo_title', 'seo_keywords', 'seo_description',
+                  'manufacturer')
+
+
 class CreateDeviceSerializer(ModelSerializer):
+    """
+    Create device serializer
+    """
+
     MAX_IMAGES = 5
 
     manufacturer = serializers.PrimaryKeyRelatedField(
@@ -262,7 +370,9 @@ class CreateDeviceSerializer(ModelSerializer):
         child=ImgField(
             allow_empty_file=False,
             validators=[
-                FileExtensionValidator(allowed_extensions=['jpeg', 'jpg', 'png'])
+                FileExtensionValidator(
+                    allowed_extensions=['jpeg', 'jpg', 'png']
+                )
             ]
         ),
         validators=[
@@ -271,6 +381,9 @@ class CreateDeviceSerializer(ModelSerializer):
     )
 
     class Meta:
+        """
+        All of the device fields are updatable
+        """
         model = Device
         fields = (
             'name', 'description', 'manufacturer', 'buying_price',
@@ -280,6 +393,13 @@ class CreateDeviceSerializer(ModelSerializer):
 
     @staticmethod
     def validate_seo_keywords(keywords: List[str]) -> str:
+        """
+        Keywords list should be joined to string
+
+        :type keywords: List[str]
+
+        :rtype: str
+        """
         return ', '.join(keywords)
 
     @staticmethod
@@ -300,6 +420,10 @@ class CreateDeviceSerializer(ModelSerializer):
 
 
 class UpdateDeviceSerializer(CreateDeviceSerializer):
+    """
+    Device update serializer
+    """
+
     delete_images = ListSerializer(
         child=IntegerField(min_value=1),
         allow_null=True,
@@ -308,6 +432,9 @@ class UpdateDeviceSerializer(CreateDeviceSerializer):
     )
 
     class Meta:
+        """
+        All of the device fields are updatable
+        """
         model = Device
         fields = (
             'name', 'description', 'manufacturer', 'buying_price',
@@ -315,42 +442,78 @@ class UpdateDeviceSerializer(CreateDeviceSerializer):
             'seo_description', 'images', 'delete_images'
         )
 
-    def update(self, device: Device, validated_data):
+    def update(self, instance: Device, validated_data: dict) -> Device:
+        """
+        After instance update some images should be deleted if necessary
+        and new ones are to be uploaded
+
+        :type instance: Device
+        :type validated_data: dict
+
+        :rtype: Device
+        """
         images = validated_data.pop('images')
         delete_images = validated_data.pop('delete_images')
 
-        device = super().update(device, validated_data)
+        device = super().update(instance, validated_data)
         device.images.filter(pk__in=delete_images).delete()
         self._upload_images(device, images)
 
         return device
 
-    def validate_delete_images(self, images):
-        if len(self.initial_data.get('images', [])) + len(self.instance.images.all()) - len(images) > self.MAX_IMAGES:
-            raise ValidationError(_('You can not load mor than {} image(s)').format(self.MAX_IMAGES))
+    def validate_delete_images(self, images: List[int]) -> List[int]:
+        """
+        After images deletion and new ones upload user can not have
+        more than `MAX_IMAGES`
+
+        :type images: List[int]
+
+        :rtype: List[int]
+
+        :raise: ValidationError
+        """
+        final_imgs_count = (
+            len(self.initial_data.get('images', []))
+            + len(self.instance.images.all())
+            - len(images)
+        )
+
+        if final_imgs_count > self.MAX_IMAGES:
+            error_msg = _('You can not load mor than {} image(s)').format(
+                self.MAX_IMAGES
+            )
+
+            raise ValidationError(error_msg)
 
         return images
 
 
-class DeviceImageSerializer(ModelSerializer):
-    class Meta:
-        model = DeviceImage
-        fields = ('id', 'path')
+class FullViewDeviceSerializer(ModelSerializer):
+    """
+    Device serializer dedicated to device data modification
+    """
 
-
-class ReadDeviceSerializer(ModelSerializer):
     seo_keywords = serializers.SerializerMethodField('format_seo_keywords')
-    manufacturer = ReadManufacturerSerializer()
     images = DeviceImageSerializer(many=True)
 
     class Meta:
+        """
+        All of the fields are editable
+        """
         model = Device
         fields = (
-            'id', 'name', 'description', 'manufacturer', 'buying_price',
+            'id', 'name', 'description', 'manufacturer_id', 'buying_price',
             'sales_price', 'product_number', 'seo_title', 'seo_keywords',
-            'seo_description', 'published', 'images', 'created_dt'
+            'seo_description', 'images'
         )
 
     @staticmethod
     def format_seo_keywords(device: Device) -> List[str]:
+        """
+        Converts keyword string to list
+
+        :type device: Device
+
+        :rtype: List[str]
+        """
         return device.seo_keywords.split(', ')

@@ -119,26 +119,12 @@ class SerializerMixin:
         }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 
-class RetrieveUpdateDestroyAPIView(SerializerMixin,
-                                   mixins.RetrieveModelMixin,
-                                   mixins.UpdateModelMixin,
-                                   mixins.DestroyModelMixin,
-                                   GenericAPIView):
+class UpdateModelMixin(SerializerMixin):
     """
-    Item retrieve, update and delete views set
+    Generic update model mixin
     """
 
     update_success_message = ''
-
-    def get(self, request: Request, *args, **kwargs) -> Response:
-        """
-        Generic get item view
-
-        :type request: Request
-
-        :rtype: Response
-        """
-        return self.retrieve(request, *args, **kwargs)
 
     def put(self, *args, **kwargs) -> Response:
         """
@@ -147,6 +133,12 @@ class RetrieveUpdateDestroyAPIView(SerializerMixin,
         :rtype: Response
         """
         return self.save_or_error(self.update_success_message)
+
+
+class DestroyModelMixin:
+    """
+    Generic delete model mixin
+    """
 
     def delete(self, *args, **kwargs) -> Response:
         """
@@ -161,25 +153,30 @@ class RetrieveUpdateDestroyAPIView(SerializerMixin,
         }, status=status.HTTP_200_OK)
 
 
-class ListCreateAPIView(SerializerMixin,
-                        mixins.ListModelMixin,
-                        mixins.CreateModelMixin,
-                        GenericAPIView):
+class RetrieveModelMixin:
     """
-    List and create views set
+    Generic retrieve model mixin
+    """
+
+    def get(self, *args, **kwargs) -> Response:
+        """
+        :rtype: Response
+        """
+        instance = self.get_object()
+
+        serializer = self.get_serializer(instance)
+
+        return Response({
+            'data': serializer.data
+        })
+
+
+class CreateModelMixin(SerializerMixin):
+    """
+    Generic create model mixin
     """
 
     create_success_message = ''
-
-    def get(self, request, *args, **kwargs) -> Response:
-        """
-        Generic list view
-
-        :type request: Request
-
-        :rtype: Response
-        """
-        return self.list(request, *args, **kwargs)
 
     def post(self, request: Request, *args, **kwargs) -> Response:
         """
@@ -190,3 +187,47 @@ class ListCreateAPIView(SerializerMixin,
         :rtype: Response
         """
         return self.save_or_error(self.create_success_message)
+
+
+class RetrieveAPIView(RetrieveModelMixin, GenericAPIView):
+    """
+    Generic retrieve API view
+    """
+
+
+class RetrieveUpdateDestroyAPIView(RetrieveModelMixin, UpdateModelMixin,
+                                   DestroyModelMixin, GenericAPIView):
+    """
+    Generic retrieve, update and destroy API view
+    """
+
+
+class UpdateDestroyAPIView(UpdateModelMixin, DestroyModelMixin,
+                           GenericAPIView):
+    """
+    Generic update and destroy API view
+    """
+
+
+class CreateAPIView(CreateModelMixin, GenericAPIView):
+    """
+    Generic create API view
+    """
+
+
+class ListCreateAPIView(mixins.ListModelMixin,
+                        CreateModelMixin,
+                        GenericAPIView):
+    """
+    List and create views set
+    """
+
+    def get(self, request, *args, **kwargs) -> Response:
+        """
+        Generic list view
+
+        :type request: Request
+
+        :rtype: Response
+        """
+        return self.list(request, *args, **kwargs)
