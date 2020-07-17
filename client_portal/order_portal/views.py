@@ -31,6 +31,26 @@ from shared.views.utils import RetrieveUpdateDestroyAPIView, \
     ListCreateAPIView, CreateAPIView, RetrieveAPIView
 
 
+@method_decorator(name='get', decorator=swagger_auto_schema(
+    responses=DEFAULT_GET_REQUESTS_RESPONSES,
+    tags=['Category'],
+    operation_summary="List of categories",
+))
+class CategoryListView(ListAPIView):
+    queryset = Category.objects.all()
+
+    serializer_class = CategorySerializer
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset()).annotate(
+            manufacturers_count=Count('manufacturer')
+        )
+
+        return JsonResponse({
+            'data': self.get_serializer(queryset, many=True).data
+        })
+
+
 class CategoryOperator:
     """
     Base category views attributes
@@ -59,15 +79,7 @@ class CategoryOperator:
         token_header(),
     ]
 ))
-@method_decorator(name='get', decorator=swagger_auto_schema(
-    responses=DEFAULT_GET_REQUESTS_RESPONSES,
-    tags=['Category'],
-    operation_summary="List of categories",
-    manual_parameters=[
-        token_header(),
-    ]
-))
-class CategoryList(CategoryOperator, ListCreateAPIView):
+class CreateCategoriesView(CategoryOperator, CreateAPIView):
     """
     User create and get list views set
     """
@@ -83,15 +95,6 @@ class CategoryList(CategoryOperator, ListCreateAPIView):
         return Response({
             'errors': serializer.errors
         }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-
-    def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset()).annotate(
-            manufacturers_count=Count('manufacturer')
-        )
-
-        return JsonResponse({
-            'data': self.get_serializer(queryset, many=True).data
-        })
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
