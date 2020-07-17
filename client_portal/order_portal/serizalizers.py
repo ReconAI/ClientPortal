@@ -179,6 +179,17 @@ class CategoryCollectionSerializer(Serializer):
         ]
 
 
+class BaseManufacturerSerializer(ModelSerializer):
+    categories = SynchronizeCategorySerializer(many=True, allow_null=True)
+
+    class Meta:
+        """
+        Manufacturer name and related categories must be displayed
+        """
+        model = Manufacturer
+        fields = ('id', 'name', 'categories')
+
+
 class ReadManufacturerSerializer(ModelSerializer):
     """
     Manufacturer serializer for show
@@ -247,6 +258,31 @@ class WriteManufacturerSerializer(ModelSerializer):
         manufacturer.categories.set(categories)
 
         return manufacturer
+
+
+class DeviceImageSerializer(ModelSerializer):
+    class Meta:
+        model = DeviceImage
+        fields = ('id', 'path')
+
+
+class DeviceListSerializer(ModelSerializer):
+    images = DeviceImageSerializer(many=True)
+
+    class Meta:
+        model = Device
+        fields = ('id', 'name', 'description', 'sales_price', 'images')
+
+
+class DeviceItemSerializer(DeviceListSerializer):
+    images = DeviceImageSerializer(many=True)
+    manufacturer = BaseManufacturerSerializer()
+
+    class Meta:
+        model = Device
+        fields = ('id', 'name', 'description', 'sales_price', 'product_number',
+                  'images', 'seo_title', 'seo_keywords', 'seo_description',
+                  'manufacturer')
 
 
 class CreateDeviceSerializer(ModelSerializer):
@@ -332,21 +368,14 @@ class UpdateDeviceSerializer(CreateDeviceSerializer):
         return images
 
 
-class DeviceImageSerializer(ModelSerializer):
-    class Meta:
-        model = DeviceImage
-        fields = ('id', 'path')
-
-
-class ReadDeviceSerializer(ModelSerializer):
+class FullViewDeviceSerializer(ModelSerializer):
     seo_keywords = serializers.SerializerMethodField('format_seo_keywords')
-    manufacturer = ReadManufacturerSerializer()
     images = DeviceImageSerializer(many=True)
 
     class Meta:
         model = Device
         fields = (
-            'id', 'name', 'description', 'manufacturer', 'buying_price',
+            'id', 'name', 'description', 'manufacturer_id', 'buying_price',
             'sales_price', 'product_number', 'seo_title', 'seo_keywords',
             'seo_description', 'published', 'images', 'created_dt'
         )

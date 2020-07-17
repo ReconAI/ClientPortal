@@ -9,15 +9,16 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
-from rest_framework.generics import RetrieveAPIView
+from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 
 from order_portal.serizalizers import CategorySerializer, \
     ReadManufacturerSerializer, WriteManufacturerSerializer, \
-    ReadDeviceSerializer, CategoryCollectionSerializer, CreateDeviceSerializer, \
-    UpdateDeviceSerializer
+    CategoryCollectionSerializer, CreateDeviceSerializer, \
+    UpdateDeviceSerializer, FullViewDeviceSerializer, DeviceListSerializer, \
+    DeviceItemSerializer
 from recon_db_manager.models import Category, Manufacturer
 from recon_db_manager.models import Device
 from shared.permissions import IsActive, IsSuperUser, PaymentRequired
@@ -27,7 +28,7 @@ from shared.swagger.responses import http401, http404, \
     DEFAULT_DELETE_REQUEST_RESPONSES, DEFAULT_GET_REQUESTS_RESPONSES, \
     data_serializer, http422
 from shared.views.utils import RetrieveUpdateDestroyAPIView, \
-    ListCreateAPIView
+    ListCreateAPIView, CreateAPIView, RetrieveAPIView
 
 
 class CategoryOperator:
@@ -237,13 +238,27 @@ class ManufacturerItem(ManufacturerOperator, RetrieveUpdateDestroyAPIView):
     update_success_message = _('Manufacturer is updated successfully')
 
 
-class DeviceOperator:
-    serializer_class = ReadDeviceSerializer
+@method_decorator(name='get', decorator=swagger_auto_schema(
+    responses=DEFAULT_GET_REQUESTS_RESPONSES,
+    tags=['Device'],
+    operation_summary="Device list",
+    operation_description='Gets a list of devices'
+))
+class DeviceListView(ListAPIView):
+    serializer_class = DeviceListSerializer
 
-    write_serializer_class = CreateDeviceSerializer
+    queryset = Device.objects.prefetch_related(
+        'images').filter(published=True).all()
 
-    permission_classes = (IsAuthenticated, IsActive,
-                          IsSuperUser, PaymentRequired)
+
+@method_decorator(name='get', decorator=swagger_auto_schema(
+    responses=DEFAULT_GET_REQUESTS_RESPONSES,
+    tags=['Device'],
+    operation_summary="Gets a device",
+    operation_description='Retrieves a device with images and manufacturer',
+))
+class DeviceItemView(RetrieveAPIView):
+    serializer_class = DeviceItemSerializer
 
     queryset = Device.objects.prefetch_related(
         'manufacturer__categories', 'images').filter(published=True).all()
@@ -259,34 +274,21 @@ class DeviceOperator:
         token_header(),
     ]
 ))
-@method_decorator(name='get', decorator=swagger_auto_schema(
-    responses=DEFAULT_GET_REQUESTS_RESPONSES,
-    tags=['Device'],
-    operation_summary="Device list",
-    operation_description='Gets a list of devices',
-    manual_parameters=[
-        token_header(),
-    ]
-))
-class DeviceList(DeviceOperator, ListCreateAPIView):
+class CreateDeviceView(CreateAPIView):
+    serializer_class = CreateDeviceSerializer
+
+    permission_classes = (IsAuthenticated, IsActive,
+                          IsSuperUser, PaymentRequired)
+
     create_success_message = _('Device is created successfully')
 
     @atomic(settings.RECON_AI_CONNECTION_NAME)
     def post(self, request: Request, *args, **kwargs) -> Response:
-        return self.save_or_error(
-            self.create_success_message,
-            self.write_serializer_class(data=request.data)
-        )
+        return super().post(request, *args, **kwargs)
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
-    responses={
-        status.HTTP_200_OK: data_serializer(ReadDeviceSerializer),
-        status.HTTP_401_UNAUTHORIZED: http401(),
-        status.HTTP_403_FORBIDDEN: http403(),
-        status.HTTP_404_NOT_FOUND: http404(),
-        status.HTTP_405_METHOD_NOT_ALLOWED: http405()
-    },
+    responses=DEFAULT_GET_REQUESTS_RESPONSES,
     tags=['Device'],
     operation_summary="Gets a device",
     operation_description='Retrieves a device with images and manufacturer',
@@ -296,7 +298,6 @@ class DeviceList(DeviceOperator, ListCreateAPIView):
 ))
 @method_decorator(name='put', decorator=swagger_auto_schema(
     responses=DEFAULT_UNSAFE_REQUEST_RESPONSES,
-    request_body=UpdateDeviceSerializer,
     tags=['Device'],
     operation_summary="Updates a device",
     operation_description='Updates a device with images',
@@ -313,10 +314,18 @@ class DeviceList(DeviceOperator, ListCreateAPIView):
         token_header(),
     ]
 ))
-class DeviceItem(DeviceOperator, RetrieveUpdateDestroyAPIView):
-    update_success_message = _('Device is updated successfully')
-
+class ManagementDeviceItemView(RetrieveUpdateDestroyAPIView):
     write_serializer_class = UpdateDeviceSerializer
+
+    serializer_class = FullViewDeviceSerializer
+
+    permission_classes = (IsAuthenticated, IsActive,
+                          IsSuperUser, PaymentRequired)
+
+    queryset = Device.objects.prefetch_related(
+        'images').filter(published=True).all()
+
+    update_success_message = _('Device is updated successfully')
 
     @atomic(settings.RECON_AI_CONNECTION_NAME)
     def put(self, *args, **kwargs) -> Response:
