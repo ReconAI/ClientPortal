@@ -1,3 +1,4 @@
+import { AuthRoleGuard } from './../core/guards/auth-role-guard/auth-role.guard';
 import {
   SUPER_ADMIN_ROLE,
   UserRolesPriorities,
@@ -23,6 +24,7 @@ const routes: Routes = [
       title: 'Create device',
       expectedRolePriority: UserRolesPriorities.SUPER_ADMIN_ROLE,
     },
+    canActivate: [AuthRoleGuard],
     component: CreateDeviceContainer,
   },
   {
@@ -31,6 +33,7 @@ const routes: Routes = [
       title: 'Categories',
       expectedRolePriority: UserRolesPriorities.SUPER_ADMIN_ROLE,
     },
+    canActivate: [AuthRoleGuard],
     component: UpdateCategoryListContainer,
   },
 ];
