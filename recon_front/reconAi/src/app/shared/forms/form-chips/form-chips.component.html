@@ -3,7 +3,7 @@
   [ngClass]="{ 'focused-chips': focused, 'invalid-chips': !validationStatus }"
   [formGroup]="parentForm"
 >
-  <span>{{ label }}<span *ngIf="showRequiredSymbol">*</span> </span>
+  <span>{{ label }}<span *ngIf="showRequiredSymbol"> *</span> </span>
   <div class="tag-container" [formArrayName]="field">
     <div class="tag" *ngFor="let chip of chips.controls; let i = index">
       <span>{{ chip.value }}</span
