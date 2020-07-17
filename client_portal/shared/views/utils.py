@@ -120,6 +120,10 @@ class SerializerMixin:
 
 
 class UpdateModelMixin(SerializerMixin):
+    """
+    Generic update model mixin
+    """
+
     update_success_message = ''
 
     def put(self, *args, **kwargs) -> Response:
@@ -132,6 +136,10 @@ class UpdateModelMixin(SerializerMixin):
 
 
 class DestroyModelMixin:
+    """
+    Generic delete model mixin
+    """
+
     def delete(self, *args, **kwargs) -> Response:
         """
         Generic delete view
@@ -146,7 +154,14 @@ class DestroyModelMixin:
 
 
 class RetrieveModelMixin:
-    def get(self, *args, **kwargs):
+    """
+    Generic retrieve model mixin
+    """
+
+    def get(self, *args, **kwargs) -> Response:
+        """
+        :rtype: Response
+        """
         instance = self.get_object()
 
         serializer = self.get_serializer(instance)
@@ -157,6 +172,10 @@ class RetrieveModelMixin:
 
 
 class CreateModelMixin(SerializerMixin):
+    """
+    Generic create model mixin
+    """
+
     create_success_message = ''
 
     def post(self, request: Request, *args, **kwargs) -> Response:
@@ -170,27 +189,30 @@ class CreateModelMixin(SerializerMixin):
         return self.save_or_error(self.create_success_message)
 
 
-class RetrieveAPIView(RetrieveModelMixin,
-                      GenericAPIView):
-    pass
+class RetrieveAPIView(RetrieveModelMixin, GenericAPIView):
+    """
+    Generic retrieve API view
+    """
 
 
-class RetrieveUpdateDestroyAPIView(RetrieveModelMixin,
-                                   UpdateModelMixin,
-                                   DestroyModelMixin,
-                                   GenericAPIView):
-    pass
+class RetrieveUpdateDestroyAPIView(RetrieveModelMixin, UpdateModelMixin,
+                                   DestroyModelMixin, GenericAPIView):
+    """
+    Generic retrieve, update and destroy API view
+    """
 
 
-class UpdateDestroyAPIView(UpdateModelMixin,
-                           DestroyModelMixin,
+class UpdateDestroyAPIView(UpdateModelMixin, DestroyModelMixin,
                            GenericAPIView):
-    pass
+    """
+    Generic update and destroy API view
+    """
 
 
-class CreateAPIView(CreateModelMixin,
-                    GenericAPIView):
-    pass
+class CreateAPIView(CreateModelMixin, GenericAPIView):
+    """
+    Generic create API view
+    """
 
 
 class ListCreateAPIView(mixins.ListModelMixin,

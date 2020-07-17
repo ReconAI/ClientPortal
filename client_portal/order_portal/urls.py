@@ -22,22 +22,19 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 
-from order_portal.views import CategoryItem, ManufacturerList, \
-    ManufacturerItem, CreateDeviceView, ManagementDeviceItemView, \
-    DeviceListView, DeviceItemView, CategoryListView, CreateCategoriesView
+from order_portal.views import catalogue, management
 
 urlpatterns = [
-    path('management/categories', CreateCategoriesView.as_view(), name='management.categories.list'),
-    path('management/categories/<int:pk>', CategoryItem.as_view(), name='management.categories.item'),
-    path('management/manufacturers', ManufacturerList.as_view(), name='management.manufacturers.list'),
-    path('management/manufacturers/<int:pk>', ManufacturerItem.as_view(), name='management.manufacturers.item'),
-    path('management/devices', CreateDeviceView.as_view(), name='management.devices.list'),
-    path('management/devices/<int:pk>', ManagementDeviceItemView.as_view(), name='management.devices.item'),
+    path('management/categories', management.SyncCategoriesView.as_view(), name='management.categories.list'),
+    path('management/manufacturers', management.ManufacturerListView.as_view(), name='management.manufacturers.list'),
+    path('management/manufacturers/<int:pk>', management.ManufacturerItemView.as_view(), name='management.manufacturers.item'),
+    path('management/devices', management.CreateDeviceView.as_view(), name='management.devices.list'),
+    path('management/devices/<int:pk>', management.DeviceItemView.as_view(), name='management.devices.item'),
 
-    path('categories', CategoryListView.as_view(), name='categories.list'),
+    path('categories', catalogue.CategoryListView.as_view(), name='categories.list'),
 
-    path('devices', DeviceListView.as_view(), name='devices.list'),
-    path('devices/<int:pk>', DeviceItemView.as_view(), name='devices.item'),
+    path('devices', catalogue.DeviceListView.as_view(), name='devices.list'),
+    path('devices/<int:pk>', catalogue.DeviceItemView.as_view(), name='devices.item'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

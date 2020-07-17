@@ -1,3 +1,7 @@
+"""
+Custom serializer fields range
+"""
+
 import base64
 
 from django.core.files.base import ContentFile
@@ -5,7 +9,15 @@ from rest_framework.fields import ImageField
 
 
 class ImgField(ImageField):
-    def to_internal_value(self, data):
+    """
+    Takes base64 encoded string image and converts to ContentFile
+    """
+    def to_internal_value(self, data: str) -> ContentFile:
+        """
+        :type data: str
+
+        :rtype: ContentFile
+        """
         _format, _img_str = data.split(';base64,')
         _name, ext = _format.split('/')
         name = _name.split(":")[-1]

@@ -1,17 +1,16 @@
 """
-Ordre portal views set
+Order portal management views set
 """
+
 from django.conf import settings
 from django.db.models import Count
+from django.db.models.query import QuerySet
 from django.db.transaction import atomic
-from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
-from django_filters.rest_framework import DjangoFilterBackend
-from drf_yasg.openapi import Parameter, TYPE_STRING, IN_QUERY
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import status, filters
-from rest_framework.generics import ListAPIView
+from rest_framework import status
+from rest_framework.mixins import ListModelMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -19,8 +18,7 @@ from rest_framework.response import Response
 from order_portal.serizalizers import CategorySerializer, \
     ReadManufacturerSerializer, WriteManufacturerSerializer, \
     CategoryCollectionSerializer, CreateDeviceSerializer, \
-    UpdateDeviceSerializer, FullViewDeviceSerializer, DeviceListSerializer, \
-    DeviceItemSerializer
+    UpdateDeviceSerializer, FullViewDeviceSerializer
 from recon_db_manager.models import Category, Manufacturer
 from recon_db_manager.models import Device
 from shared.permissions import IsActive, IsSuperUser, PaymentRequired
@@ -30,45 +28,7 @@ from shared.swagger.responses import http401, http404, \
     DEFAULT_DELETE_REQUEST_RESPONSES, DEFAULT_GET_REQUESTS_RESPONSES, \
     data_serializer, http422
 from shared.views.utils import RetrieveUpdateDestroyAPIView, \
-    ListCreateAPIView, CreateAPIView, RetrieveAPIView
-
-
-@method_decorator(name='get', decorator=swagger_auto_schema(
-    responses={
-        status.HTTP_200_OK: data_serializer(CategorySerializer),
-        status.HTTP_401_UNAUTHORIZED: http401(),
-        status.HTTP_403_FORBIDDEN: http403(),
-        status.HTTP_404_NOT_FOUND: http404(),
-        status.HTTP_405_METHOD_NOT_ALLOWED: http405()
-    },
-    tags=['Category'],
-    operation_summary="List of categories",
-))
-class CategoryListView(ListAPIView):
-    queryset = Category.objects.all()
-
-    serializer_class = CategorySerializer
-
-    def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset()).annotate(
-            manufacturers_count=Count('manufacturer')
-        )
-
-        return JsonResponse({
-            'data': self.get_serializer(queryset, many=True).data
-        })
-
-
-class CategoryOperator:
-    """
-    Base category views attributes
-    """
-    serializer_class = CategorySerializer
-
-    permission_classes = (IsAuthenticated, IsActive,
-                          IsSuperUser, PaymentRequired)
-
-    queryset = Category.objects.all()
+    ListCreateAPIView, CreateAPIView
 
 
 @method_decorator(name='post', decorator=swagger_auto_schema(
@@ -88,10 +48,18 @@ class CategoryOperator:
         token_header(),
     ]
 ))
-class CreateCategoriesView(CategoryOperator, CreateAPIView):
+class SyncCategoriesView(ListModelMixin, CreateAPIView):
     """
     User create and get list views set
     """
+
+    serializer_class = CategorySerializer
+
+    permission_classes = (IsAuthenticated, IsActive,
+                          IsSuperUser, PaymentRequired)
+
+    queryset = Category.objects.all()
+
     @atomic(settings.RECON_AI_CONNECTION_NAME)
     def post(self, request, *args, **kwargs):
         serializer = CategoryCollectionSerializer(data=request.data)
@@ -105,26 +73,10 @@ class CreateCategoriesView(CategoryOperator, CreateAPIView):
             'errors': serializer.errors
         }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
-
-@method_decorator(name='get', decorator=swagger_auto_schema(
-    responses={
-        status.HTTP_200_OK: CategorySerializer,
-        status.HTTP_401_UNAUTHORIZED: http401(),
-        status.HTTP_403_FORBIDDEN: http403(),
-        status.HTTP_404_NOT_FOUND: http404(),
-        status.HTTP_405_METHOD_NOT_ALLOWED: http405()
-    },
-    tags=['Category'],
-    operation_summary="Gets a category",
-    operation_description='Gets a category view',
-    manual_parameters=[
-        token_header(),
-    ]
-))
-class CategoryItem(CategoryOperator, RetrieveAPIView):
-    """
-    Category retrieve, update and delete view
-    """
+    def filter_queryset(self, queryset: QuerySet) -> QuerySet:
+        return queryset.annotate(
+            manufacturers_count=Count('manufacturer')
+        )
 
 
 class ManufacturerOperator:
@@ -154,7 +106,7 @@ class ManufacturerOperator:
         token_header(),
     ]
 ))
-class ManufacturerList(ManufacturerOperator, ListCreateAPIView):
+class ManufacturerListView(ManufacturerOperator, ListCreateAPIView):
     """
     Manufacturer list view and create
     """
@@ -240,59 +192,16 @@ class ManufacturerList(ManufacturerOperator, ListCreateAPIView):
         token_header(),
     ]
 ))
-class ManufacturerItem(ManufacturerOperator, RetrieveUpdateDestroyAPIView):
+class ManufacturerItemView(ManufacturerOperator, RetrieveUpdateDestroyAPIView):
     """
     View for item retrieve, update and delete
     """
+
     serializer_class = WriteManufacturerSerializer
 
     read_serializer_class = ReadManufacturerSerializer
 
     update_success_message = _('Manufacturer is updated successfully')
-
-
-@method_decorator(name='get', decorator=swagger_auto_schema(
-    responses=DEFAULT_GET_REQUESTS_RESPONSES,
-    tags=['Device'],
-    operation_summary="Device list",
-    operation_description='Gets a list of devices',
-    manual_parameters=[
-        Parameter(
-            'ordering', IN_QUERY,
-            'Orders by (-)created_dt, (-)sales_price',
-            required=False, type=TYPE_STRING
-        ),
-        Parameter(
-            'manufacturer__categories__id', IN_QUERY,
-            'Filters by category id',
-            required=False, type=TYPE_STRING
-        )
-    ]
-))
-class DeviceListView(ListAPIView):
-    serializer_class = DeviceListSerializer
-
-    queryset = Device.objects.prefetch_related(
-        'images').filter(published=True).all()
-
-    filter_backends = [filters.OrderingFilter, DjangoFilterBackend]
-
-    search_fields = ['created_dt', 'sales_price']
-
-    filterset_fields = ['manufacturer__categories__id']
-
-
-@method_decorator(name='get', decorator=swagger_auto_schema(
-    responses=DEFAULT_GET_REQUESTS_RESPONSES,
-    tags=['Device'],
-    operation_summary="Gets a device",
-    operation_description='Retrieves a device with images and manufacturer',
-))
-class DeviceItemView(RetrieveAPIView):
-    serializer_class = DeviceItemSerializer
-
-    queryset = Device.objects.prefetch_related(
-        'manufacturer__categories', 'images').filter(published=True).all()
 
 
 @method_decorator(name='post', decorator=swagger_auto_schema(
@@ -306,6 +215,10 @@ class DeviceItemView(RetrieveAPIView):
     ]
 ))
 class CreateDeviceView(CreateAPIView):
+    """
+    Creates new device
+    """
+
     serializer_class = CreateDeviceSerializer
 
     permission_classes = (IsAuthenticated, IsActive,
@@ -345,7 +258,11 @@ class CreateDeviceView(CreateAPIView):
         token_header(),
     ]
 ))
-class ManagementDeviceItemView(RetrieveUpdateDestroyAPIView):
+class DeviceItemView(RetrieveUpdateDestroyAPIView):
+    """
+    Retrieves, updates and deletes device data
+    """
+
     write_serializer_class = UpdateDeviceSerializer
 
     serializer_class = FullViewDeviceSerializer
@@ -362,7 +279,10 @@ class ManagementDeviceItemView(RetrieveUpdateDestroyAPIView):
     def put(self, *args, **kwargs) -> Response:
         return self.save_or_error(
             self.update_success_message,
-            self.write_serializer_class(data=self.request.data, instance=self.get_object())
+            self.write_serializer_class(
+                data=self.request.data,
+                instance=self.get_object()
+            )
         )
 
     @atomic(settings.RECON_AI_CONNECTION_NAME)
