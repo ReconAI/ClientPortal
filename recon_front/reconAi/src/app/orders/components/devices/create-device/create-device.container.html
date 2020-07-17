@@ -1,4 +1,7 @@
 <recon-create-device
   [allCategories]="categories$ | async"
   [manufacturers]="manufacturers$ | async"
+  [loading]="creationStatus$ | async"
+  [validationError]="validationError$ | async"
+  (sendDevice$)="sendDevice($event)"
 ></recon-create-device>

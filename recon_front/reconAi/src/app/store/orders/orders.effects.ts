@@ -8,13 +8,23 @@ import {
   transformManufactureListFromServer,
   ManufacturerServerInterface,
   transformCreateManufacturerRequestToServer,
+  CreateDeviceRequestClientInterface,
+  transformCreateDeviceRequestToServer,
+  deviceFormFieldLabels,
 } from './orders.server.helpers';
 import { Router } from '@angular/router';
 import { Action, Store, select } from '@ngrx/store';
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of, Observable } from 'rxjs';
-import { map, catchError, switchMap, tap, finalize } from 'rxjs/operators';
+import {
+  map,
+  catchError,
+  switchMap,
+  tap,
+  finalize,
+  mergeMap,
+} from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { AppState } from '../reducers';
 import {
@@ -28,12 +38,15 @@ import {
   loadManufacturerListSucceededAction,
   loadManufacturerListErrorAction,
   loadManufacturerListRequestedAction,
+  createDeviceSucceededAction,
+  createDeviceErrorAction,
 } from './orders.actions';
 import {
   setCategoriesListLoadingStatusAction,
   setUpdateCategoriesListLoadingStatusAction,
   setCreateManufacturerLoadingStatusAction,
   setManufacturerListLoadingStatusAction,
+  setCreateDeviceLoadingStatusAction,
 } from '../loaders';
 
 @Injectable()
@@ -187,6 +200,52 @@ export class OrdersEffects {
             })
           )
       )
+    )
+  );
+
+  createDevice$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action & CreateDeviceRequestClientInterface>(
+        OrdersActionTypes.CREATE_DEVICE_REQUESTED
+      ),
+      tap(() => {
+        this.store.dispatch(
+          setCreateDeviceLoadingStatusAction({
+            status: true,
+          })
+        );
+      }),
+      // to form to base64 in async way
+      mergeMap(
+        async ({ device }) => await transformCreateDeviceRequestToServer(device)
+      ),
+      switchMap((formedDevice) => {
+        return this.httpClient
+          .post<void>('/order-api/devices', formedDevice)
+          .pipe(
+            map(() => createDeviceSucceededAction()),
+            tap(() => {
+              this.router.navigate(['/orders']);
+            }),
+            catchError((error) =>
+              of(
+                createDeviceErrorAction(
+                  generalTransformFormErrorToObject(
+                    error,
+                    deviceFormFieldLabels
+                  )
+                )
+              )
+            ),
+            finalize(() => {
+              this.store.dispatch(
+                setCreateDeviceLoadingStatusAction({
+                  status: false,
+                })
+              );
+            })
+          );
+      })
     )
   );
 }

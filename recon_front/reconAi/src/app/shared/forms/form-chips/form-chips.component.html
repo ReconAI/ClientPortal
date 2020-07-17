@@ -1,4 +1,8 @@
-<div class="container" [formGroup]="parentForm">
+<div
+  class="container"
+  [ngClass]="{ 'focused-chips': focused, 'invalid-chips': !validationStatus }"
+  [formGroup]="parentForm"
+>
   <span>{{ label }}<span *ngIf="showRequiredSymbol">*</span> </span>
   <div class="tag-container" [formArrayName]="field">
     <div class="tag" *ngFor="let chip of chips.controls; let i = index">
@@ -8,6 +12,8 @@
     <input
       (keydown.enter)="addChip(chipText.value); chipText.value = ''"
       [placeholder]="placeholder"
+      (blur)="touched = true; focused = false"
+      (focus)="focused = true"
       #chipText
     />
   </div>

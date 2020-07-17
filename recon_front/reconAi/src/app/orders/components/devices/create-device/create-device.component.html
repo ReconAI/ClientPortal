@@ -1,4 +1,7 @@
-<form [formGroup]="deviceForm">
+<form [formGroup]="deviceForm" (ngSubmit)="sendDevice()">
+  <mat-error *ngIf="validationError">
+    {{ formedValidationError }}
+  </mat-error>
   <recon-form-input
     label="Name"
     placeholder="Name"
@@ -9,7 +12,7 @@
   <recon-form-select
     formControlName="manufacturer"
     [showRequiredSymbol]="true"
-    [options]="categoryOptions"
+    [options]="manufactureOptions"
     label="Manufacture"
   >
   </recon-form-select>
@@ -19,10 +22,10 @@
     >
   </div>
   <recon-form-file-with-list
-    accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*"
+    accept=".jpg, .png, .jpeg, .bmp, .tif, .tiff|image/*"
     [parentForm]="deviceForm"
     [maxCountOfFiles]="5"
-    field="image"
+    field="images"
     label="Add image"
   ></recon-form-file-with-list>
   <recon-form-input
@@ -60,7 +63,7 @@
     [parentForm]="deviceForm"
     field="seoTags"
     label="SEO tags"
-    placeholder="Add tag..."
+    placeholder="Input and press Enter..."
     [showRequiredSymbol]="true"
   ></recon-form-chips>
   <recon-form-input
@@ -80,8 +83,21 @@
   <recon-form-select
     formControlName="category"
     [showRequiredSymbol]="true"
+    [options]="categoryOptions"
     label="Device category"
   ></recon-form-select>
-</form>
 
-{{ jsonValue }}
+  <div class="button-container">
+    <button
+      mat-raised-button
+      color="primary"
+      type="submit"
+      [disabled]="loading || !deviceForm.valid"
+    >
+    <mat-icon *ngIf="loading; else loaded">
+      <mat-spinner color="primary" diameter="20"></mat-spinner>
+    </mat-icon>
+    <ng-template #loaded>SAVE</ng-template>
+    </button>
+  </div>
+</form>

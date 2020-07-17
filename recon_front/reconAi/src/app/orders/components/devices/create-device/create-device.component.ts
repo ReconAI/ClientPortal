@@ -1,10 +1,13 @@
+import { generalTransformationObjectErrorsForComponent } from './../../../../core/helpers/generalFormsErrorsTransformation';
 import { ManufacturerInterface } from './../../../constants/types/manufacturers';
 import { CreateManufactureContainer } from './create-manufacture/create-manufacture.container';
 import { CategoryInterface } from './../../../constants/types/category';
 import { MatDialog } from '@angular/material/dialog';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 import { ReconSelectOption } from 'app/shared/types';
+import { DeviceFormInterface } from 'app/orders/constants';
+import { FormServerErrorInterface } from 'app/constants/types/requests';
 
 @Component({
   selector: 'recon-create-device',
@@ -14,6 +17,9 @@ import { ReconSelectOption } from 'app/shared/types';
 export class CreateDeviceComponent implements OnInit {
   @Input() allCategories: CategoryInterface[];
   @Input() manufacturers: ManufacturerInterface[] = [];
+  @Input() loading = false;
+  @Input() validationError: FormServerErrorInterface = null;
+  @Output() sendDevice$ = new EventEmitter<DeviceFormInterface>();
   deviceForm: FormGroup;
 
   constructor(private fb: FormBuilder, private dialog: MatDialog) {}
@@ -22,19 +28,19 @@ export class CreateDeviceComponent implements OnInit {
     this.deviceForm = this.fb.group({
       name: ['', Validators.required],
       manufacturer: ['', Validators.required],
-      image: this.fb.array([]),
+      images: this.fb.array([]),
       product: ['', Validators.required],
       description: ['', Validators.required],
       buyingPrice: ['', Validators.required],
       salesPrice: ['', Validators.required],
-      seoTags: this.fb.array([]),
+      seoTags: this.fb.array([], Validators.required),
       seoTitle: ['', Validators.required],
       seoDescription: ['', Validators.required],
       category: ['', Validators.required],
     });
   }
 
-  get categoryOptions(): ReconSelectOption[] {
+  get manufactureOptions(): ReconSelectOption[] {
     return this.manufacturers.map((manufacturer) => ({
       label: manufacturer.name,
       value: manufacturer.id,
@@ -48,7 +54,18 @@ export class CreateDeviceComponent implements OnInit {
     });
   }
 
-  get jsonValue(): string {
-    return JSON.stringify(this.deviceForm.value);
+  get categoryOptions(): ReconSelectOption[] {
+    return this.allCategories.map((category) => ({
+      label: category.name,
+      value: category.id,
+    }));
+  }
+
+  get formedValidationError(): string {
+    return generalTransformationObjectErrorsForComponent(this.validationError);
+  }
+
+  sendDevice(): void {
+    this.sendDevice$.emit(this.deviceForm.value);
   }
 }
