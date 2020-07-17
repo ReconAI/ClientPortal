@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { generalTransformationObjectErrorsForComponent } from './../../../../core/helpers/generalFormsErrorsTransformation';
 import { ManufacturerInterface } from './../../../constants/types/manufacturers';
 import { CreateManufactureContainer } from './create-manufacture/create-manufacture.container';
@@ -22,7 +23,11 @@ export class CreateDeviceComponent implements OnInit {
   @Output() sendDevice$ = new EventEmitter<DeviceFormInterface>();
   deviceForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private dialog: MatDialog) {}
+  constructor(
+    private fb: FormBuilder,
+    private dialog: MatDialog,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.deviceForm = this.fb.group({
@@ -67,5 +72,9 @@ export class CreateDeviceComponent implements OnInit {
 
   sendDevice(): void {
     this.sendDevice$.emit(this.deviceForm.value);
+  }
+
+  cancelClick(): void {
+    this.router.navigate(['/orders']);
   }
 }
