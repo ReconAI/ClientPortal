@@ -26,6 +26,13 @@ export const ROLES_AND_PRIORITIES_CONNECTIONS = {
   [SUPER_ADMIN_ROLE]: UserRolesPriorities.SUPER_ADMIN_ROLE,
 };
 
+export const ROLES_CONNECTIONS = {
+  [CLIENT_ROLE]: 'Client',
+  [ADMIN_ROLE]: 'Admin',
+  [DEVELOPER_ROLE]: 'Developer',
+  [SUPER_ADMIN_ROLE]: 'Super admin',
+};
+
 export type UserRoleTypes =
   | CLIENT_TYPE_ROLE
   | ADMIN_TYPE_ROLE

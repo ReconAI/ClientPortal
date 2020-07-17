@@ -1,3 +1,4 @@
+import { generalTransformationObjectErrorsForComponent } from './../../../core/helpers/generalFormsErrorsTransformation';
 import { PASSWORD_RULES_TOOLTIP } from './../../../constants/labels/password';
 import { LOGIN_RULES_TOOLTIP } from './../../../constants/labels/login';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
@@ -59,14 +60,7 @@ export class UserProfileComponent implements OnInit {
   readonly passwordTooltipText = PASSWORD_RULES_TOOLTIP;
   profileForm: FormGroup;
   get validationErrors(): string {
-    return (
-      (this.errors &&
-        Object.keys(this.errors)?.reduce(
-          (final, key) => `${final}\n${key}: ${this.errors[key]}`,
-          ''
-        )) ||
-      ''
-    );
+    return generalTransformationObjectErrorsForComponent(this.errors);
   }
 
   constructor(private fb: FormBuilder) {}

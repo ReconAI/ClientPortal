@@ -1,3 +1,8 @@
+import {
+  ROLES_AND_PRIORITIES_CONNECTIONS,
+  ROLES_CONNECTIONS,
+} from './../../../../constants/types/user';
+import { map, tap } from 'rxjs/operators';
 import { logoutUserRequestedAction } from './../../../../store/user/user.actions';
 import {
   selectUserRolePriority,
@@ -23,7 +28,10 @@ export class UserMenuContainer implements OnInit {
   );
 
   userName$ = this.store.pipe(select(selectCurrentUserName));
-  userRole$ = this.store.pipe(select(selectUserRole));
+  userRole$ = this.store.pipe(
+    select(selectUserRole),
+    map((serverRole) => ROLES_CONNECTIONS[serverRole] || serverRole)
+  );
 
   logout(): void {
     this.store.dispatch(logoutUserRequestedAction());

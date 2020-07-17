@@ -1,9 +1,11 @@
+@import "../../../../variables.less";
+
 .container {
     width: 100%;
 
     .tag-container {
-        border: 1px solid #E5E5E5;
-        background-color: #F9F9F9;
+        border: 1px solid @recon-border-input;
+        background-color: @recon-background-input;
         margin: 10px 0;
 
         padding: 5px 20px;
@@ -27,10 +29,22 @@
 
         input {
             flex: 1;
-            padding: 5px;
+            padding: 12px 0;
             outline: none;
-            background-color: #F9F9F9;
+            background-color:  @recon-background-input;
             border: 0;
+        }
+    }
+
+    &.invalid-chips {
+        .tag-container {
+            border: 1px solid  @recon-error-input-border;
+        }
+    }
+
+    &.focused-chips {
+        .tag-container {
+            border: 1px solid @recon-black;
         }
     }
 }

@@ -1,3 +1,7 @@
+import { generalTransformationObjectErrorsForComponent } from './../../../../../core/helpers/generalFormsErrorsTransformation';
+import { FormServerErrorInterface } from 'app/constants/types/requests';
+import { ManufacturerInterface } from './../../../../constants/types/manufacturers';
+import { CategoryInterface } from 'app/orders/constants';
 import {
   FormBuilder,
   FormGroup,
@@ -5,7 +9,15 @@ import {
   FormControl,
   FormArray,
 } from '@angular/forms';
-import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ElementRef,
+  ViewChild,
+  Input,
+  Output,
+  EventEmitter,
+} from '@angular/core';
 import {
   MatAutocomplete,
   MatAutocompleteSelectedEvent,
@@ -20,7 +32,10 @@ export class CreateManufactureComponent implements OnInit {
   manufactureForm: FormGroup;
   constructor(private fb: FormBuilder) {}
 
-  allCategories: string[] = ['d', 'g', 'h', 'r'];
+  @Input() allCategories: CategoryInterface[] = [];
+  @Input() loadingStatus = false;
+  @Input() validationError: FormServerErrorInterface = null;
+  @Output() sendManufacturer$ = new EventEmitter<ManufacturerInterface>();
   categoryControl = new FormControl();
 
   @ViewChild('categoryInput') categoryInput: ElementRef<HTMLInputElement>;
@@ -34,21 +49,27 @@ export class CreateManufactureComponent implements OnInit {
     return this.manufactureForm.get('categories') as FormArray;
   }
 
+  get validationErrors(): string {
+    return generalTransformationObjectErrorsForComponent(this.validationError);
+  }
+
   selected(event: MatAutocompleteSelectedEvent, trigger): void {
-    this.categories.push(this.fb.control(event.option.viewValue));
+    this.categories.push(
+      this.fb.group({ name: event.option.viewValue, id: event.option.value })
+    );
     this.categoryInput.nativeElement.value = '';
     this.categoryControl.setValue(null);
     trigger.openPanel();
   }
 
-  get filteredCategories(): string[] {
-    const selectedCategories = this.categories.value.map((category: string) =>
-      category.toLowerCase()
+  get filteredCategories(): CategoryInterface[] {
+    const selectedCategories = this.categories.value.map(
+      (category: CategoryInterface) => category.name.toLowerCase()
     );
     const inputValue =
       this?.categoryInput?.nativeElement?.value.toLowerCase() || '';
-    return this.allCategories.filter((category: string) => {
-      const lowerCasedCategory = category.toLowerCase();
+    return this.allCategories.filter(({ name }: CategoryInterface) => {
+      const lowerCasedCategory = name.toLowerCase();
 
       return (
         lowerCasedCategory.indexOf(inputValue) >= 0 &&
@@ -66,11 +87,11 @@ export class CreateManufactureComponent implements OnInit {
       address: ['', Validators.required],
       orderEmail: ['', Validators.required],
       supportEmail: ['', Validators.required],
-      categories: this.fb.array([]),
+      categories: this.fb.array([], Validators.required),
     });
   }
 
   sendManufacturer() {
-    console.log(this.manufactureForm.value, 'VALUE');
+    this.sendManufacturer$.emit(this.manufactureForm.value);
   }
 }

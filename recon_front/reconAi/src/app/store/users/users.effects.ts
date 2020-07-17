@@ -12,7 +12,6 @@ import { generalTransformFormErrorToString } from 'app/core/helpers/generalForms
 import {
   UsersListResponseInterface,
   transformUsersListResponseFromServer,
-  UsersListRequestInterface,
   UserProfileRequestInterface,
   transformUserProfileResponseFromServer,
   ServerUserProfileInterface,
@@ -74,6 +73,7 @@ import {
 } from './users.selectors';
 import { AddUserInterface } from 'app/users/constants';
 import { transformUserResponse } from '../user/user.server.helpers';
+import { PaginationRequestInterface } from 'app/constants/types/requests';
 
 @Injectable()
 export class UsersEffects {
@@ -86,7 +86,7 @@ export class UsersEffects {
 
   loadUsersList$: Observable<Action> = createEffect(() =>
     this.actions$.pipe(
-      ofType<Action & UsersListRequestInterface>(
+      ofType<Action & PaginationRequestInterface>(
         UsersActionTypes.LOAD_USERS_LIST_REQUESTED
       ),
       tap(() => {

@@ -1,4 +1,7 @@
-<form [formGroup]="deviceForm">
+<form [formGroup]="deviceForm" (ngSubmit)="sendDevice()">
+  <mat-error *ngIf="validationError">
+    {{ formedValidationError }}
+  </mat-error>
   <recon-form-input
     label="Name"
     placeholder="Name"
@@ -7,8 +10,9 @@
   ></recon-form-input>
 
   <recon-form-select
-    formControlName="manufacture"
+    formControlName="manufacturer"
     [showRequiredSymbol]="true"
+    [options]="manufactureOptions"
     label="Manufacture"
   >
   </recon-form-select>
@@ -18,10 +22,10 @@
     >
   </div>
   <recon-form-file-with-list
-    accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*"
+    accept=".jpg, .png, .jpeg, .bmp, .tif, .tiff|image/*"
     [parentForm]="deviceForm"
     [maxCountOfFiles]="5"
-    field="image"
+    field="images"
     label="Add image"
   ></recon-form-file-with-list>
   <recon-form-input
@@ -59,18 +63,18 @@
     [parentForm]="deviceForm"
     field="seoTags"
     label="SEO tags"
-    placeholder="Add tag..."
+    placeholder="Input and press Enter..."
     [showRequiredSymbol]="true"
   ></recon-form-chips>
   <recon-form-input
-    label="Seo title"
-    placeholder="Seo title"
+    label="SEO title"
+    placeholder="SEO title"
     formControlName="seoTitle"
     [showRequiredSymbol]="true"
   ></recon-form-input>
   <recon-form-input
-    label="Seo description"
-    placeholder="Seo description"
+    label="SEO description"
+    placeholder="SEO description"
     formControlName="seoDescription"
     [showRequiredSymbol]="true"
     fieldType="textarea"
@@ -79,8 +83,25 @@
   <recon-form-select
     formControlName="category"
     [showRequiredSymbol]="true"
+    [options]="categoryOptions"
     label="Device category"
   ></recon-form-select>
-</form>
 
-{{ jsonValue }}
+  <div class="button-container">
+    <button
+      mat-raised-button
+      color="primary"
+      type="submit"
+      [disabled]="loading || !deviceForm.valid"
+    >
+    <mat-icon *ngIf="loading; else loaded">
+      <mat-spinner color="primary" diameter="20"></mat-spinner>
+    </mat-icon>
+    <ng-template #loaded>SAVE</ng-template>
+    </button>
+    <button type="button" class="recon-white-button" (click)="cancelClick()" matRipple>
+      CANCEL
+    </button>
+    
+  </div>
+</form>

@@ -1,0 +1,6 @@
+<recon-create-manufacture
+  [allCategories]="categories$ | async"
+  [loadingStatus]="loadingStatus$ | async"
+  [validationError]="validationError$ | async"
+  (sendManufacturer$)="createManufacturer($event)"
+></recon-create-manufacture>

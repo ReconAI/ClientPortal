@@ -57,3 +57,13 @@ export const generalTransformFormErrorToObject = (
 
   return null;
 };
+
+export const generalTransformationObjectErrorsForComponent = (
+  error: FormServerErrorInterface
+): string =>
+  (error &&
+    Object.keys(error)?.reduce(
+      (final, key) => `${final}\n${key}: ${error[key]}`,
+      ''
+    )) ||
+  '';

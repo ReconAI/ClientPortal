@@ -1,3 +1,4 @@
+import { BasketContainer } from './components/landing-page/header/basket/basket.container';
 import { OrdersEffects } from './store/orders/orders.effects';
 import { CurrentUserProfileContainer } from './components/current-user-profile/current-user-profile.container';
 import { InvitationUserContainer } from './components/invitation-user/invitation-user.container';
@@ -48,6 +49,8 @@ import { NewFeatureComponent } from './components/new-feature/new-feature.compon
 import { NewFeatureContainer } from './components/new-feature/new-feature.container';
 import { InvitationUserComponent } from './components/invitation-user/invitation-user.component';
 import { CurrentUserProfileComponent } from './components/current-user-profile/current-user-profile.component';
+import { FooterComponent } from './components/landing-page/footer/footer.component';
+import { BasketComponent } from './components/landing-page/header/basket/basket.component';
 
 @NgModule({
   declarations: [
@@ -76,6 +79,9 @@ import { CurrentUserProfileComponent } from './components/current-user-profile/c
     InvitationUserContainer,
     CurrentUserProfileComponent,
     CurrentUserProfileContainer,
+    FooterComponent,
+    BasketComponent,
+    BasketContainer,
   ],
   imports: [
     BrowserModule,

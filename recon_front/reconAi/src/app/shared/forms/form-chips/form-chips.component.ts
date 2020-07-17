@@ -12,6 +12,8 @@ export class FormChipsComponent implements OnInit {
   @Input() placeholder = '';
   @Input() label = '';
   @Input() showRequiredSymbol = false;
+  touched = false;
+  focused = false;
   constructor(private fb: FormBuilder) {}
   ngOnInit(): void {}
 
@@ -19,6 +21,10 @@ export class FormChipsComponent implements OnInit {
     if (text) {
       this.chips.push(this.fb.control(text));
     }
+  }
+
+  get validationStatus(): boolean {
+    return !this.touched || this.chips.valid;
   }
 
   get chips(): FormArray {

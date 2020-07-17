@@ -10,3 +10,7 @@ export interface UrlInterceptorInterface {
   url: string;
   method?: string;
 }
+
+export interface PaginationRequestInterface {
+  page: number;
+}
