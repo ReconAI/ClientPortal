@@ -7,8 +7,9 @@ from django.db.transaction import atomic
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+from drf_yasg.openapi import Parameter, TYPE_STRING, IN_QUERY
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import status
+from rest_framework import status, filters
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
@@ -32,7 +33,13 @@ from shared.views.utils import RetrieveUpdateDestroyAPIView, \
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
-    responses=DEFAULT_GET_REQUESTS_RESPONSES,
+    responses={
+        status.HTTP_200_OK: data_serializer(CategorySerializer),
+        status.HTTP_401_UNAUTHORIZED: http401(),
+        status.HTTP_403_FORBIDDEN: http403(),
+        status.HTTP_404_NOT_FOUND: http404(),
+        status.HTTP_405_METHOD_NOT_ALLOWED: http405()
+    },
     tags=['Category'],
     operation_summary="List of categories",
 ))
@@ -74,7 +81,8 @@ class CategoryOperator:
     },
     request_body=CategoryCollectionSerializer,
     tags=['Category'],
-    operation_summary="Creates a category",
+    operation_summary='Creates a category',
+    operation_description='Synchronize categories set',
     manual_parameters=[
         token_header(),
     ]
@@ -107,6 +115,7 @@ class CreateCategoriesView(CategoryOperator, CreateAPIView):
     },
     tags=['Category'],
     operation_summary="Gets a category",
+    operation_description='Gets a category view',
     manual_parameters=[
         token_header(),
     ]
@@ -245,13 +254,23 @@ class ManufacturerItem(ManufacturerOperator, RetrieveUpdateDestroyAPIView):
     responses=DEFAULT_GET_REQUESTS_RESPONSES,
     tags=['Device'],
     operation_summary="Device list",
-    operation_description='Gets a list of devices'
+    operation_description='Gets a list of devices',
+    manual_parameters=[
+        Parameter(
+            'ordering', IN_QUERY,
+            'Orders by (-)created_dt, (-)sales_price', required=False, type=TYPE_STRING
+        )
+    ]
 ))
 class DeviceListView(ListAPIView):
     serializer_class = DeviceListSerializer
 
     queryset = Device.objects.prefetch_related(
         'images').filter(published=True).all()
+
+    filter_backends = [filters.OrderingFilter]
+
+    search_fields = ['created_dt', 'sales_price']
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
@@ -293,7 +312,7 @@ class CreateDeviceView(CreateAPIView):
 @method_decorator(name='get', decorator=swagger_auto_schema(
     responses=DEFAULT_GET_REQUESTS_RESPONSES,
     tags=['Device'],
-    operation_summary="Gets a device",
+    operation_summary="Gets a device for modification",
     operation_description='Retrieves a device with images and manufacturer',
     manual_parameters=[
         token_header(),

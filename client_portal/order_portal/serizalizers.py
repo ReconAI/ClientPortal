@@ -271,7 +271,7 @@ class DeviceListSerializer(ModelSerializer):
 
     class Meta:
         model = Device
-        fields = ('id', 'name', 'description', 'sales_price', 'images')
+        fields = ('id', 'name', 'description', 'sales_price', 'images', 'created_dt')
 
 
 class DeviceItemSerializer(DeviceListSerializer):
@@ -377,7 +377,7 @@ class FullViewDeviceSerializer(ModelSerializer):
         fields = (
             'id', 'name', 'description', 'manufacturer_id', 'buying_price',
             'sales_price', 'product_number', 'seo_title', 'seo_keywords',
-            'seo_description', 'published', 'images', 'created_dt'
+            'seo_description', 'images'
         )
 
     @staticmethod
