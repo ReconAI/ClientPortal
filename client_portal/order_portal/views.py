@@ -7,6 +7,7 @@ from django.db.transaction import atomic
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+from django_filters.rest_framework import DjangoFilterBackend
 from drf_yasg.openapi import Parameter, TYPE_STRING, IN_QUERY
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status, filters
@@ -258,7 +259,13 @@ class ManufacturerItem(ManufacturerOperator, RetrieveUpdateDestroyAPIView):
     manual_parameters=[
         Parameter(
             'ordering', IN_QUERY,
-            'Orders by (-)created_dt, (-)sales_price', required=False, type=TYPE_STRING
+            'Orders by (-)created_dt, (-)sales_price',
+            required=False, type=TYPE_STRING
+        ),
+        Parameter(
+            'manufacturer__categories__id', IN_QUERY,
+            'Filters by category id',
+            required=False, type=TYPE_STRING
         )
     ]
 ))
@@ -268,9 +275,11 @@ class DeviceListView(ListAPIView):
     queryset = Device.objects.prefetch_related(
         'images').filter(published=True).all()
 
-    filter_backends = [filters.OrderingFilter]
+    filter_backends = [filters.OrderingFilter, DjangoFilterBackend]
 
     search_fields = ['created_dt', 'sales_price']
+
+    filterset_fields = ['manufacturer__categories__id']
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
