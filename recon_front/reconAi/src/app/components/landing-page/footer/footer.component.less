@@ -7,13 +7,27 @@ div.footer-container {
     align-items: center;
     justify-content: space-around;
 
-    span {
-        color: white;
-        cursor: pointer;
 
-        &:not(:first-child) {
-            margin-left: 15px;
+    .text-container {
+        position: relative;
+
+        span:not(.copyright-label) {
+            color: white;
+            cursor: pointer;
+
+            &:not(:first-child) {
+                margin-left: 15px;
+            }
         }
+
+    }
+
+    .copyright-label {
+        font-size: 12px;
+        color: #929292;
+        position: absolute;
+        left: 0;
+        top: 20px;
     }
 
     .button-container {
