@@ -1,4 +1,7 @@
-import { setManagementDeviceLoadingStatusAction } from './../loaders/loaders.actions';
+import {
+  setManagementDeviceLoadingStatusAction,
+  setUpdateDeviceLoadingStatusAction,
+} from './../loaders/loaders.actions';
 import { generalTransformFormErrorToObject } from './../../core/helpers/generalFormsErrorsTransformation';
 import { CategoryInterface } from './../../orders/constants/types/category';
 import {
@@ -17,6 +20,7 @@ import {
   IdDeviceRequestInterface,
   DeviceListItemServerInterface,
   transformDeviceFromServer,
+  transformUpdateDeviceRequestToServer,
 } from './orders.server.helpers';
 import { Router } from '@angular/router';
 import { Action, Store, select } from '@ngrx/store';
@@ -55,6 +59,8 @@ import {
   updateDeviceListMetaAction,
   loadManagementDeviceSucceededAction,
   loadManagementDeviceErrorAction,
+  updateDeviceSucceededAction,
+  updateDeviceErrorAction,
 } from './orders.actions';
 import {
   setCategoriesListLoadingStatusAction,
@@ -80,6 +86,8 @@ import {
   selectDevices,
   selectDevicesMetaCurrentPage,
   selectDevicesMeta,
+  selectDeviceImages,
+  selectDeviceId,
 } from './orders.selectors';
 
 @Injectable()
@@ -231,7 +239,7 @@ export class OrdersEffects {
             catchError((error) => of(loadManufacturerListErrorAction())),
             finalize(() => {
               this.store.dispatch(
-                setCategoriesListLoadingStatusAction({
+                setManufacturerListLoadingStatusAction({
                   status: false,
                 })
               );
@@ -400,6 +408,55 @@ export class OrdersEffects {
             finalize(() => {
               this.store.dispatch(
                 setManagementDeviceLoadingStatusAction({
+                  status: false,
+                })
+              );
+            })
+          );
+      })
+    )
+  );
+
+  updateDevice$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action & CreateDeviceRequestClientInterface>(
+        OrdersActionTypes.UPDATE_DEVICE_REQUESTED
+      ),
+      tap(() => {
+        this.store.dispatch(
+          setUpdateDeviceLoadingStatusAction({
+            status: true,
+          })
+        );
+      }),
+      withLatestFrom(this.store.pipe(select(selectDeviceImages))),
+      // to form to base64 in async way
+      mergeMap(
+        async ([{ device }, oldImages]) =>
+          await transformUpdateDeviceRequestToServer(device, oldImages)
+      ),
+      withLatestFrom(this.store.pipe(select(selectDeviceId))),
+      switchMap(([formedDevice, id]) => {
+        return this.httpClient
+          .put<void>(`/order-api/management/devices/${id}`, formedDevice)
+          .pipe(
+            map(() => updateDeviceSucceededAction()),
+            tap(() => {
+              this.router.navigate(['/orders']);
+            }),
+            catchError((error) =>
+              of(
+                updateDeviceErrorAction(
+                  generalTransformFormErrorToObject(
+                    error,
+                    deviceFormFieldLabels
+                  )
+                )
+              )
+            ),
+            finalize(() => {
+              this.store.dispatch(
+                setUpdateDeviceLoadingStatusAction({
                   status: false,
                 })
               );

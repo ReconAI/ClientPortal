@@ -1,21 +1,30 @@
-<ng-container *ngIf="!(loadingStatus$ | async); else loaded">
-  <recon-create-device
-    [allCategories]="categories$ | async"
-    [manufacturers]="manufacturers$ | async"
-    [name]="name$ | async"
-    [manufacturerId]="manufacturerId$ | async"
-    [product]="product$ | async"
-    [description]="description$ | async"
-    [buyingPrice]="buyingPrice$ | async"
-    [salesPrice]="salesPrice$ | async"
-    [seoTags]="seoTags$ | async"
-    [seoTitle]="seoTitle$ | async"
-    [seoDescription]="seoDescription$ | async"
-    [images]="images$ | async"
-    (sendDevice$)="sendDevice($event)"
-  ></recon-create-device>
+<ng-container
+  *ngIf="!(loadingDeviceStatus$ | async) && !(loadingManufacturerListStatus$ | async); else loading"
+>
+  <ng-container *ngIf="isExist$ | async; else notFound">
+    <recon-create-device
+      [name]="name$ | async"
+      [images]="images$ | async"
+      [product]="product$ | async"
+      [seoTags]="seoTags$ | async"
+      [seoTitle]="seoTitle$ | async"
+      [salesPrice]="salesPrice$ | async"
+      [description]="description$ | async"
+      [buyingPrice]="buyingPrice$ | async"
+      [allCategories]="categories$ | async"
+      [manufacturers]="manufacturers$ | async"
+      [seoDescription]="seoDescription$ | async"
+      [validationError]="validationError$ | async"
+      [manufacturerId]="manufacturerId$ | async"
+      [loading]="isUpdating$ | async"
+      (sendDevice$)="sendDevice($event)"
+    ></recon-create-device>
+  </ng-container>
+  <ng-template #notFound>
+    Device is not found
+  </ng-template>
 </ng-container>
 
-<ng-template #loaded>
+<ng-template #loading>
   Loading...
 </ng-template>

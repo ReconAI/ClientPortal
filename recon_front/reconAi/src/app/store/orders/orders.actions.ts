@@ -1,8 +1,4 @@
-import {
-  FormServerErrorInterface,
-  ObjectFormErrorInterface,
-  PaginationRequestInterface,
-} from 'app/constants/types/requests';
+import { ObjectFormErrorInterface } from 'app/constants/types/requests';
 import {
   CategoriesClientInterface,
   CreateManufacturerRequestClientInterface,
@@ -14,8 +10,6 @@ import {
   DeviceRequestClientInterface,
 } from './orders.server.helpers';
 import { createAction, props } from '@ngrx/store';
-import { MetaStoreDevicesInterface } from './orders.reducer';
-import { DeviceFormInterface } from 'app/orders/constants';
 
 export enum OrdersActionTypes {
   LOAD_CATEGORIES_REQUESTED = '[Orders] Load Categories Requested',
@@ -44,6 +38,7 @@ export enum OrdersActionTypes {
   LOAD_DEVICE_LIST_SUCCEEDED = '[Orders] Load Device List Succeeded',
   LOAD_DEVICE_LIST_ERROR = '[Orders] Load Device List Error',
   UPDATE_DEVICE_LIST_META = '[Orders] Update Device List Meta',
+  RESET_DEVICE_LIST_META = '[Orders] Reset Device List Meta',
 
   DELETE_DEVICE_REQUESTED = '[Orders] Delete Device Requested',
   DELETE_DEVICE_SUCCEEDED = '[Orders] Delete Device Succeeded',
@@ -52,6 +47,11 @@ export enum OrdersActionTypes {
   LOAD_MANAGEMENT_DEVICE_REQUESTED = '[Orders] Load Management Device Requested',
   LOAD_MANAGEMENT_DEVICE_SUCCEEDED = '[Orders] Load Management Device Succeeded',
   LOAD_MANAGEMENT_DEVICE_ERROR = '[Orders] Load Management Device Error',
+
+  UPDATE_DEVICE_REQUESTED = '[Orders] Update Device Requested',
+  UPDATE_DEVICE_SUCCEEDED = '[Orders] Update Device Succeeded',
+  UPDATE_DEVICE_ERROR = '[Orders] Update Device Error',
+  RESET_UPDATE_DEVICE_ERROR = '[Orders] Reset Update Device Error',
 }
 
 export const loadCategoriesRequestedAction = createAction(
@@ -173,4 +173,26 @@ export const loadManagementDeviceErrorAction = createAction(
 export const updateDeviceListMetaAction = createAction(
   OrdersActionTypes.UPDATE_DEVICE_LIST_META,
   props<PaginatedDeviceListRequestInterface>()
+);
+
+export const resetDeviceListMetaAction = createAction(
+  OrdersActionTypes.RESET_DEVICE_LIST_META,
+);
+
+export const updateDeviceRequestedAction = createAction(
+  OrdersActionTypes.UPDATE_DEVICE_REQUESTED,
+  props<CreateDeviceRequestClientInterface>()
+);
+
+export const updateDeviceSucceededAction = createAction(
+  OrdersActionTypes.UPDATE_DEVICE_SUCCEEDED
+);
+
+export const updateDeviceErrorAction = createAction(
+  OrdersActionTypes.UPDATE_DEVICE_ERROR,
+  props<ObjectFormErrorInterface>()
+);
+
+export const resetUpdateDeviceErrorAction = createAction(
+  OrdersActionTypes.RESET_UPDATE_DEVICE_ERROR
 );

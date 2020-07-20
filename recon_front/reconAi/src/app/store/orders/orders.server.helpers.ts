@@ -126,6 +126,41 @@ export const transformCreateDeviceRequestToServer = async (
   };
 };
 
+export const transformUpdateDeviceRequestToServer = async (
+  device: DeviceFormInterface,
+  oldImages: ServerImageInterface[]
+): Promise<DeviceServerInterface> => {
+  const deviceImages = device.images;
+  const based64Images: string[] = [];
+  const imagesToDelete: number[] = oldImages
+    .filter(
+      (img) =>
+        deviceImages.findIndex((newImage) => newImage.id === img.id) === -1
+    )
+    .map(({ id }) => id);
+
+  // absence of id means this file exists on db
+  for (let i = 0; i < deviceImages.length; i++) {
+    if (!(deviceImages[i] as ServerImageInterface).id) {
+      based64Images.push((await getBase64(deviceImages[i] as File)).toString());
+    }
+  }
+
+  return {
+    name: device.name,
+    description: device.description,
+    manufacturer: device.manufacturer as string,
+    buying_price: device.buyingPrice,
+    sales_price: device.salesPrice,
+    product_number: device.product,
+    seo_title: device.seoTitle,
+    seo_keywords: device.seoTags,
+    seo_description: device.seoDescription,
+    images: based64Images,
+    delete_images: imagesToDelete,
+  };
+};
+
 export const deviceFormFieldLabels = {
   name: 'Name',
   description: 'Description',

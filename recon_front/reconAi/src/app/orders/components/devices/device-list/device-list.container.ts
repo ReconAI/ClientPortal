@@ -1,4 +1,7 @@
-import { updateDeviceListMetaAction } from './../../../../store/orders/orders.actions';
+import {
+  updateDeviceListMetaAction,
+  resetDeviceListMetaAction,
+} from './../../../../store/orders/orders.actions';
 import { map } from 'rxjs/operators';
 import { selectDeviceListLoadingStatus } from './../../../../store/loaders/loaders.selectors';
 import {
@@ -20,7 +23,7 @@ import {
   loadDeviceListRequestedAction,
 } from 'app/store/orders';
 import { Store, select } from '@ngrx/store';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AppState } from 'app/store/reducers';
 import { CategoryInterface, DeviceFormInterface } from 'app/orders/constants';
 import {
@@ -32,7 +35,7 @@ import {
   selector: 'recon-device-list-container',
   templateUrl: './device-list.container.html',
 })
-export class DeviceListContainer implements OnInit {
+export class DeviceListContainer implements OnInit, OnDestroy {
   constructor(private store: Store<AppState>) {}
   loadingStatus$: Observable<boolean> = this.store.pipe(
     select(selectDeviceListLoadingStatus)
@@ -69,5 +72,9 @@ export class DeviceListContainer implements OnInit {
   ngOnInit(): void {
     this.store.dispatch(loadCategoriesRequestedAction());
     this.loadDevices();
+  }
+
+  ngOnDestroy(): void {
+    this.store.dispatch(resetDeviceListMetaAction());
   }
 }

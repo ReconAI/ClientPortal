@@ -1,4 +1,9 @@
-import { selectManagementDeviceLoadingStatus } from './../../../../store/loaders/loaders.selectors';
+import { FormServerErrorInterface } from 'app/constants/types/requests';
+import {
+  selectManagementDeviceLoadingStatus,
+  selectManufacturerListLoadingStatus,
+  selectUpdateDeviceLoadingStatus,
+} from './../../../../store/loaders/loaders.selectors';
 import {
   selectManufacturerList,
   selectOrderCategoriesList,
@@ -12,6 +17,8 @@ import {
   selectDeviceSeoTags,
   selectDeviceSeoDescription,
   selectDeviceImages,
+  selectUpdateDeviceError,
+  selectDoesExistDevice,
 } from './../../../../store/orders/orders.selectors';
 import {
   ManufacturerInterface,
@@ -24,16 +31,18 @@ import {
   loadManagementDeviceRequestedAction,
   loadManufacturerListRequestedAction,
   loadCategoriesRequestedAction,
+  updateDeviceRequestedAction,
+  resetUpdateDeviceErrorAction,
 } from './../../../../store/orders/orders.actions';
 import { Store, select } from '@ngrx/store';
 import { AppState } from 'app/store/reducers';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 
 @Component({
   selector: 'recon-update-device-container',
   templateUrl: './update-device.container.html',
 })
-export class UpdateDeviceContainer implements OnInit {
+export class UpdateDeviceContainer implements OnInit, OnDestroy {
   id: number;
   constructor(
     private store: Store<AppState>,
@@ -46,6 +55,10 @@ export class UpdateDeviceContainer implements OnInit {
 
   manufacturers$: Observable<ManufacturerInterface[]> = this.store.pipe(
     select(selectManufacturerList)
+  );
+
+  validationError$: Observable<FormServerErrorInterface> = this.store.pipe(
+    select(selectUpdateDeviceError)
   );
 
   name$: Observable<string> = this.store.pipe(select(selectDeviceName));
@@ -71,8 +84,20 @@ export class UpdateDeviceContainer implements OnInit {
     select(selectDeviceImages)
   );
 
-  loadingStatus$: Observable<boolean> = this.store.pipe(
+  loadingDeviceStatus$: Observable<boolean> = this.store.pipe(
     select(selectManagementDeviceLoadingStatus)
+  );
+
+  loadingManufacturerListStatus$: Observable<boolean> = this.store.pipe(
+    select(selectManufacturerListLoadingStatus)
+  );
+
+  isExist$: Observable<boolean> = this.store.pipe(
+    select(selectDoesExistDevice)
+  );
+
+  isUpdating$: Observable<boolean> = this.store.pipe(
+    select(selectUpdateDeviceLoadingStatus)
   );
 
   ngOnInit(): void {
@@ -82,7 +107,11 @@ export class UpdateDeviceContainer implements OnInit {
     this.store.dispatch(loadManagementDeviceRequestedAction({ id: this.id }));
   }
 
+  ngOnDestroy(): void {
+    this.store.dispatch(resetUpdateDeviceErrorAction());
+  }
+
   sendDevice(device): void {
-    console.log(device, 'DEVICE');
+    this.store.dispatch(updateDeviceRequestedAction({ device }));
   }
 }

@@ -28,27 +28,32 @@
     </mat-select>
   </div>
 
-  <ng-container *ngIf="devices.length; else noData">
-    <div class="device-items-container">
-      <recon-device-item
-        *ngFor="let device of devices"
-        [imgUrl]="(device?.images)[0] || null"
-        [price]="device.salesPrice"
-        [name]="device.name"
-        [id]="device.id"
-      ></recon-device-item>
-    </div>
-    <div class="pagination-container">
-      <recon-pagination
-        [totalCount]="totalCount"
-        [currentPage]="currentPage"
-        [pageSize]="pageSize"
-        (changePage$)="changePage($event)"
-      >
-      </recon-pagination>
-    </div>
+  <ng-container *ngIf="loadingStatus; else loaded">
+    <p>Loading...</p>
   </ng-container>
-  <ng-template #noData>
-    <p>No data</p>
+  <ng-template #loaded>
+    <ng-container *ngIf="devices.length; else noData">
+      <div class="device-items-container">
+        <recon-device-item
+          *ngFor="let device of devices"
+          [imgUrl]="(device?.images)[0] || null"
+          [price]="device.salesPrice"
+          [name]="device.name"
+          [id]="device.id"
+        ></recon-device-item>
+      </div>
+      <div class="pagination-container">
+        <recon-pagination
+          [totalCount]="totalCount"
+          [currentPage]="currentPage"
+          [pageSize]="pageSize"
+          (changePage$)="changePage($event)"
+        >
+        </recon-pagination>
+      </div>
+    </ng-container>
+    <ng-template #noData>
+      <p>No data</p>
+    </ng-template>
   </ng-template>
 </div>

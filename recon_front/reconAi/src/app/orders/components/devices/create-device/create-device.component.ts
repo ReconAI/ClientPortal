@@ -65,7 +65,6 @@ export class CreateDeviceComponent implements OnInit {
       ),
       seoTitle: [this?.seoTitle || '', Validators.required],
       seoDescription: [this?.seoDescription || '', Validators.required],
-      category: ['', Validators.required],
     });
   }
 

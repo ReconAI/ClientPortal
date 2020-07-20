@@ -88,6 +88,11 @@ export const selectDevice = createSelector(
   (orders: OrdersState): DeviceFormInterface => orders?.device || null
 );
 
+export const selectDoesExistDevice = createSelector(
+  selectOrders,
+  (orders: OrdersState): boolean => !!orders?.device
+);
+
 export const selectDeviceName = createSelector(
   selectDevice,
   (device: DeviceFormInterface): string => device?.name || null
@@ -137,5 +142,16 @@ export const selectDeviceSeoDescription = createSelector(
 export const selectDeviceImages = createSelector(
   selectDevice,
   (device: DeviceFormInterface): ServerImageInterface[] =>
-    (device.images as ServerImageInterface[]) || []
+    (device?.images as ServerImageInterface[]) || []
+);
+
+export const selectDeviceId = createSelector(
+  selectDevice,
+  (device: DeviceFormInterface): number => device?.id
+);
+
+export const selectUpdateDeviceError = createSelector(
+  selectOrdersErrors,
+  (errors: OrdersError): FormServerErrorInterface =>
+    errors?.updateDevice || null
 );

@@ -32,6 +32,7 @@ export interface DeviceServerInterface {
   seo_description: string;
   images: string[] | ServerImageInterface[];
   id?: number;
+  delete_images?: number[];
 }
 
 export interface DeviceListServerResponseInterface {
