@@ -38,4 +38,10 @@ export class FormFileWithListComponent implements OnInit {
       }
     }
   }
+
+  openFileInTab(url: string) {
+    if (url) {
+      window.open(url, '_blank');
+    }
+  }
 }

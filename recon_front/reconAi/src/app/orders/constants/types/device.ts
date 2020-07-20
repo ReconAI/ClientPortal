@@ -2,8 +2,9 @@ import { ManufacturerServerInterface } from 'app/store/orders/orders.server.help
 
 export interface DeviceFormInterface {
   name: string;
-  manufacturer: string;
-  images: File[] | string[];
+  manufacturer?: string | number;
+  manufacturer_id?: number;
+  images: File[] | string[] | ServerImageInterface[];
   product: string;
   description: string;
   buyingPrice: string;

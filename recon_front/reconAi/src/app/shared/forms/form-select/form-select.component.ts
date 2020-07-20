@@ -38,7 +38,7 @@ export class FormSelectComponent implements ControlValueAccessor, OnInit {
 
   writeValue(value: string) {
     this.selectedOption = this.options.find(
-      (option) => option?.value === value
+      (option) => option?.value?.toString() === value?.toString()
     );
 
     this.onChange(this.selectedOption?.value || '');

@@ -1,3 +1,4 @@
+import { setManagementDeviceLoadingStatusAction } from './../loaders/loaders.actions';
 import { generalTransformFormErrorToObject } from './../../core/helpers/generalFormsErrorsTransformation';
 import { CategoryInterface } from './../../orders/constants/types/category';
 import {
@@ -13,7 +14,9 @@ import {
   deviceFormFieldLabels,
   transformLoadedDevicesFromServer,
   handlePaginationParamsForDeviceList,
-  IdDeviceRequestInterface
+  IdDeviceRequestInterface,
+  DeviceListItemServerInterface,
+  transformDeviceFromServer,
 } from './orders.server.helpers';
 import { Router } from '@angular/router';
 import { Action, Store, select } from '@ngrx/store';
@@ -29,7 +32,7 @@ import {
   mergeMap,
   withLatestFrom,
 } from 'rxjs/operators';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AppState } from '../reducers';
 import {
   OrdersActionTypes,
@@ -50,6 +53,8 @@ import {
   deleteDeviceErrorAction,
   loadDeviceListRequestedAction,
   updateDeviceListMetaAction,
+  loadManagementDeviceSucceededAction,
+  loadManagementDeviceErrorAction,
 } from './orders.actions';
 import {
   setCategoriesListLoadingStatusAction,
@@ -359,6 +364,42 @@ export class OrdersEffects {
             finalize(() => {
               this.store.dispatch(
                 setDeleteDeviceLoadingStatusAction({
+                  status: false,
+                })
+              );
+            })
+          );
+      })
+    )
+  );
+
+  loadManagementDevice$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action & IdDeviceRequestInterface>(
+        OrdersActionTypes.LOAD_MANAGEMENT_DEVICE_REQUESTED
+      ),
+      tap(() => {
+        this.store.dispatch(
+          setManagementDeviceLoadingStatusAction({
+            status: true,
+          })
+        );
+      }),
+      switchMap(({ id }) => {
+        return this.httpClient
+          .get<DeviceListItemServerInterface>(
+            `/order-api/management/devices/${id}`
+          )
+          .pipe(
+            map((device) =>
+              loadManagementDeviceSucceededAction(
+                transformDeviceFromServer(device)
+              )
+            ),
+            catchError(() => of(loadManagementDeviceErrorAction())),
+            finalize(() => {
+              this.store.dispatch(
+                setManagementDeviceLoadingStatusAction({
                   status: false,
                 })
               );

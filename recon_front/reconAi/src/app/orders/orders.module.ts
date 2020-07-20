@@ -1,3 +1,4 @@
+import { UpdateDeviceContainer } from './components/devices/update-device/update-device.container';
 import { CreateManufactureContainer } from './components/devices/create-device/create-manufacture/create-manufacture.container';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CoreModule } from './../core/core.module';
@@ -17,7 +18,6 @@ import { DeviceListComponent } from './components/devices/device-list/device-lis
 import { DeviceItemComponent } from './components/devices/device-item/device-item.component';
 import { DeviceListContainer } from './components/devices/device-list/device-list.container';
 import { DeleteDeviceDialogComponent } from './components/devices/device-item/delete-device-dialog/delete-device-dialog.component';
-import { UpdateDeviceComponent } from './components/devices/update-device/update-device.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +31,7 @@ import { UpdateDeviceComponent } from './components/devices/update-device/update
     DeviceListContainer,
     DeviceItemComponent,
     DeleteDeviceDialogComponent,
-    UpdateDeviceComponent,
+    UpdateDeviceContainer,
   ],
   imports: [
     CommonModule,

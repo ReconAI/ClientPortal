@@ -1,0 +1,21 @@
+<ng-container *ngIf="!(loadingStatus$ | async); else loaded">
+  <recon-create-device
+    [allCategories]="categories$ | async"
+    [manufacturers]="manufacturers$ | async"
+    [name]="name$ | async"
+    [manufacturerId]="manufacturerId$ | async"
+    [product]="product$ | async"
+    [description]="description$ | async"
+    [buyingPrice]="buyingPrice$ | async"
+    [salesPrice]="salesPrice$ | async"
+    [seoTags]="seoTags$ | async"
+    [seoTitle]="seoTitle$ | async"
+    [seoDescription]="seoDescription$ | async"
+    [images]="images$ | async"
+    (sendDevice$)="sendDevice($event)"
+  ></recon-create-device>
+</ng-container>
+
+<ng-template #loaded>
+  Loading...
+</ng-template>

@@ -11,9 +11,11 @@ import {
   DeviceListResponseClientInterface,
   IdDeviceRequestInterface,
   PaginatedDeviceListRequestInterface,
+  DeviceRequestClientInterface,
 } from './orders.server.helpers';
 import { createAction, props } from '@ngrx/store';
 import { MetaStoreDevicesInterface } from './orders.reducer';
+import { DeviceFormInterface } from 'app/orders/constants';
 
 export enum OrdersActionTypes {
   LOAD_CATEGORIES_REQUESTED = '[Orders] Load Categories Requested',
@@ -154,17 +156,17 @@ export const deleteDeviceErrorAction = createAction(
   OrdersActionTypes.DELETE_DEVICE_ERROR
 );
 
-export const loadManagementDeviceRequested = createAction(
+export const loadManagementDeviceRequestedAction = createAction(
   OrdersActionTypes.LOAD_MANAGEMENT_DEVICE_REQUESTED,
   props<IdDeviceRequestInterface>()
 );
 
-export const loadManagementDeviceSucceeded = createAction(
-  OrdersActionTypes.LOAD_MANAGEMENT_DEVICE_SUCCEEDED
-  // props<Device>()
+export const loadManagementDeviceSucceededAction = createAction(
+  OrdersActionTypes.LOAD_MANAGEMENT_DEVICE_SUCCEEDED,
+  props<DeviceRequestClientInterface>()
 );
 
-export const loadManagementDeviceError = createAction(
+export const loadManagementDeviceErrorAction = createAction(
   OrdersActionTypes.LOAD_MANAGEMENT_DEVICE_ERROR
 );
 

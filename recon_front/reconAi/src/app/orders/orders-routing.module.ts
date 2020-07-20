@@ -1,4 +1,4 @@
-import { UpdateDeviceComponent } from './components/devices/update-device/update-device.component';
+import { UpdateDeviceContainer } from './components/devices/update-device/update-device.container';
 import { AuthRoleGuard } from './../core/guards/auth-role-guard/auth-role.guard';
 import {
   SUPER_ADMIN_ROLE,
@@ -44,7 +44,7 @@ const routes: Routes = [
       expectedRolePriority: UserRolesPriorities.SUPER_ADMIN_ROLE,
     },
     canActivate: [AuthRoleGuard],
-    component: UpdateDeviceComponent,
+    component: UpdateDeviceContainer,
   },
 ];
 

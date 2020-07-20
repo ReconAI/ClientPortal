@@ -115,7 +115,7 @@ export const transformCreateDeviceRequestToServer = async (
   return {
     name: device.name,
     description: device.description,
-    manufacturer: device.manufacturer,
+    manufacturer: device.manufacturer as string,
     buying_price: device.buyingPrice,
     sales_price: device.salesPrice,
     product_number: device.product,
@@ -158,7 +158,8 @@ export interface DeviceListItemServerInterface {
   id: number;
   name: string;
   description: string;
-  manufacturer: ManufacturerServerInterface;
+  manufacturer?: ManufacturerServerInterface;
+  manufacturer_id?: number;
   buying_price: string;
   sales_price: string;
   product_number: string;
@@ -211,3 +212,25 @@ export const handlePaginationParamsForDeviceList = ({
       ? ''
       : `&manufacturer__categories__id=${categoryId}`
   }`;
+
+export interface DeviceRequestClientInterface {
+  device: DeviceFormInterface;
+}
+
+export const transformDeviceFromServer = (
+  device: DeviceListItemServerInterface
+): DeviceRequestClientInterface => ({
+  device: {
+    name: device.name,
+    manufacturer: device.manufacturer_id,
+    description: device.description,
+    id: device.id,
+    buyingPrice: device.buying_price,
+    salesPrice: device.sales_price,
+    product: device.product_number,
+    seoTitle: device.seo_title,
+    seoDescription: device.seo_description,
+    seoTags: device.seo_keywords,
+    images: device.images,
+  },
+});

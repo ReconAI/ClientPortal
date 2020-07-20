@@ -7,7 +7,10 @@ import { MatDialog } from '@angular/material/dialog';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 import { ReconSelectOption } from 'app/shared/types';
-import { DeviceFormInterface } from 'app/orders/constants';
+import {
+  DeviceFormInterface,
+  ServerImageInterface,
+} from 'app/orders/constants';
 import { FormServerErrorInterface } from 'app/constants/types/requests';
 
 @Component({
@@ -21,6 +24,18 @@ export class CreateDeviceComponent implements OnInit {
   @Input() loading = false;
   @Input() validationError: FormServerErrorInterface = null;
   @Output() sendDevice$ = new EventEmitter<DeviceFormInterface>();
+
+  @Input() name: string;
+  @Input() manufacturerId: number;
+  @Input() product: string;
+  @Input() description: string;
+  @Input() buyingPrice: string;
+  @Input() salesPrice: string;
+  @Input() seoTags: string[];
+  @Input() seoTitle: string;
+  @Input() seoDescription: string;
+  @Input() categoryId: number;
+  @Input() images: ServerImageInterface[];
   deviceForm: FormGroup;
 
   constructor(
@@ -31,16 +46,25 @@ export class CreateDeviceComponent implements OnInit {
 
   ngOnInit(): void {
     this.deviceForm = this.fb.group({
-      name: ['', Validators.required],
-      manufacturer: ['', Validators.required],
-      images: this.fb.array([]),
-      product: ['', Validators.required],
-      description: ['', Validators.required],
-      buyingPrice: ['', Validators.required],
-      salesPrice: ['', Validators.required],
-      seoTags: this.fb.array([], Validators.required),
-      seoTitle: ['', Validators.required],
-      seoDescription: ['', Validators.required],
+      name: [this?.name || '', Validators.required],
+      manufacturer: [this?.manufacturerId || '', Validators.required],
+      images: this.fb.array(
+        this?.images?.map((img) => ({
+          name: img?.path?.slice(img.path.lastIndexOf('/') + 1),
+          id: img.id,
+          path: img?.path,
+        })) || []
+      ),
+      product: [this?.product || '', Validators.required],
+      description: [this?.description || '', Validators.required],
+      buyingPrice: [this?.buyingPrice || '', Validators.required],
+      salesPrice: [this?.salesPrice || '', Validators.required],
+      seoTags: this.fb.array(
+        this?.seoTags?.map((text) => this.fb.control(text)) || [],
+        Validators.required
+      ),
+      seoTitle: [this?.seoTitle || '', Validators.required],
+      seoDescription: [this?.seoDescription || '', Validators.required],
       category: ['', Validators.required],
     });
   }

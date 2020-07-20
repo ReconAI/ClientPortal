@@ -1,3 +1,4 @@
+import { ServerImageInterface } from './../../orders/constants/types/device';
 import {
   CREATED_DT_DESC,
   ALL_CATEGORIES_ID_FOR_DEVICE,
@@ -79,4 +80,62 @@ export const selectDevicesMetaCategoryId = createSelector(
 export const selectDevicesMetaOrdering = createSelector(
   selectDevicesMeta,
   (meta: MetaStoreDevicesInterface): string => meta.ordering || CREATED_DT_DESC
+);
+
+// device info
+export const selectDevice = createSelector(
+  selectOrders,
+  (orders: OrdersState): DeviceFormInterface => orders?.device || null
+);
+
+export const selectDeviceName = createSelector(
+  selectDevice,
+  (device: DeviceFormInterface): string => device?.name || null
+);
+
+export const selectDeviceManufacturerId = createSelector(
+  selectDevice,
+  (device: DeviceFormInterface): number =>
+    (device?.manufacturer as number) || null
+);
+
+export const selectDeviceDescription = createSelector(
+  selectDevice,
+  (device: DeviceFormInterface): string => device?.description || null
+);
+
+export const selectDeviceBuyingPrice = createSelector(
+  selectDevice,
+  (device: DeviceFormInterface): string => device?.buyingPrice || null
+);
+
+export const selectDeviceSalesPrice = createSelector(
+  selectDevice,
+  (device: DeviceFormInterface): string => device?.salesPrice || null
+);
+
+export const selectDeviceProduct = createSelector(
+  selectDevice,
+  (device: DeviceFormInterface): string => device?.product || null
+);
+
+export const selectDeviceSeoTitle = createSelector(
+  selectDevice,
+  (device: DeviceFormInterface): string => device?.seoTitle || null
+);
+
+export const selectDeviceSeoTags = createSelector(
+  selectDevice,
+  (device: DeviceFormInterface): string[] => device?.seoTags || null
+);
+
+export const selectDeviceSeoDescription = createSelector(
+  selectDevice,
+  (device: DeviceFormInterface): string => device?.seoDescription || null
+);
+
+export const selectDeviceImages = createSelector(
+  selectDevice,
+  (device: DeviceFormInterface): ServerImageInterface[] =>
+    (device.images as ServerImageInterface[]) || []
 );

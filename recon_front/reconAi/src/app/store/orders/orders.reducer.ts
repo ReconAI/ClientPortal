@@ -10,6 +10,7 @@ import {
   DeviceListResponseClientInterface,
   DeviceListItemClientInterface,
   PaginatedDeviceListRequestInterface,
+  DeviceRequestClientInterface,
 } from './orders.server.helpers';
 import {
   loadCategoriesSucceededAction,
@@ -21,6 +22,7 @@ import {
   createDeviceErrorAction,
   loadDeviceListSucceededAction,
   updateDeviceListMetaAction,
+  loadManagementDeviceSucceededAction,
 } from './orders.actions';
 import { CategoryInterface } from './../../orders/constants/types/category';
 import { ActivationInterface } from './../../constants/types/activation';
@@ -53,6 +55,7 @@ const errorInit: OrdersError = {
 export interface OrdersState {
   categories: CategoryInterface[];
   manufacturers: ManufacturerInterface[];
+  device: DeviceFormInterface;
   devices: DeviceListItemClientInterface[];
   meta: MetaStoreDevicesInterface;
   errors: OrdersError;
@@ -62,6 +65,7 @@ export const initialState: OrdersState = {
   categories: [],
   manufacturers: [],
   errors: errorInit,
+  device: null,
   devices: [],
   meta: {
     currentPage: 1,
@@ -139,7 +143,6 @@ const loadDeviceListSucceededReducer = (
     ...result.meta,
   },
 });
-
 const updateDeviceListMetaReducer = (
   state: OrdersState,
   { type, pagination }: Action & PaginatedDeviceListRequestInterface
@@ -149,6 +152,14 @@ const updateDeviceListMetaReducer = (
     ...state.meta,
     ...pagination,
   },
+});
+
+const loadManagementDeviceSucceededReducer = (
+  state: OrdersState,
+  { type, device }: Action & DeviceRequestClientInterface
+): OrdersState => ({
+  ...state,
+  device,
 });
 
 const ordersReducer = createReducer(
@@ -161,7 +172,8 @@ const ordersReducer = createReducer(
   on(createDeviceErrorAction, createDeviceErrorReducer),
   on(resetCreateDeviceErrorAction, resetCreateDeviceErrorReducer),
   on(loadDeviceListSucceededAction, loadDeviceListSucceededReducer),
-  on(updateDeviceListMetaAction, updateDeviceListMetaReducer)
+  on(updateDeviceListMetaAction, updateDeviceListMetaReducer),
+  on(loadManagementDeviceSucceededAction, loadManagementDeviceSucceededReducer)
 );
 
 export function reducer(state: OrdersState | undefined, action: Action) {
