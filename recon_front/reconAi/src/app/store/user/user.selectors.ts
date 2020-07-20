@@ -1,3 +1,4 @@
+import { selectUserProfile } from './../users/users.selectors';
 import { FormServerErrorInterface } from './../../constants/types/requests';
 import {
   UserRoleTypes,
@@ -173,4 +174,9 @@ export const selectCurrentUserProfileInvoicingLastName = createSelector(
 export const selectCurrentUserUpdateError = createSelector(
   selectUser,
   (user: UserState): FormServerErrorInterface => user?.errors?.updateCurrentUser
+);
+
+export const selectCurrentUserProfileId = createSelector(
+  selectUser,
+  (user: UserState): string => user?.profile?.id
 );
