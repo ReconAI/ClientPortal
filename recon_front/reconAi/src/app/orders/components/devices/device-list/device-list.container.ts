@@ -1,5 +1,10 @@
+import { updateDeviceListMetaAction } from './../../../../store/orders/orders.actions';
+import { map } from 'rxjs/operators';
 import { selectDeviceListLoadingStatus } from './../../../../store/loaders/loaders.selectors';
-import { CREATED_DT_DESC } from './../../../constants/requests';
+import {
+  CREATED_DT_DESC,
+  ALL_CATEGORIES_ID_FOR_DEVICE,
+} from './../../../constants/requests';
 import { Observable } from 'rxjs';
 import {
   selectOrderCategoriesList,
@@ -7,6 +12,8 @@ import {
   selectDevicesMetaTotalCount,
   selectDevicesMetaCurrentPage,
   selectDevicesMetaPageSize,
+  selectDevicesMetaCategoryId,
+  selectDevicesMetaOrdering,
 } from './../../../../store/orders/orders.selectors';
 import {
   loadCategoriesRequestedAction,
@@ -16,7 +23,10 @@ import { Store, select } from '@ngrx/store';
 import { Component, OnInit } from '@angular/core';
 import { AppState } from 'app/store/reducers';
 import { CategoryInterface, DeviceFormInterface } from 'app/orders/constants';
-import { DeviceListItemClientInterface } from 'app/store/orders/orders.server.helpers';
+import {
+  DeviceListItemClientInterface,
+  PaginatedDeviceListRequestInterface,
+} from 'app/store/orders/orders.server.helpers';
 
 @Component({
   selector: 'recon-device-list-container',
@@ -27,8 +37,13 @@ export class DeviceListContainer implements OnInit {
   loadingStatus$: Observable<boolean> = this.store.pipe(
     select(selectDeviceListLoadingStatus)
   );
+  // add category with -1 to get devices of all categories
   categories$: Observable<CategoryInterface[]> = this.store.pipe(
-    select(selectOrderCategoriesList)
+    select(selectOrderCategoriesList),
+    map((categories) => [
+      { id: ALL_CATEGORIES_ID_FOR_DEVICE, name: 'All' },
+      ...categories,
+    ])
   );
   devices$: Observable<DeviceListItemClientInterface[]> = this.store.pipe(
     select(selectDevices)
@@ -42,15 +57,13 @@ export class DeviceListContainer implements OnInit {
   pageSize$: Observable<number> = this.store.pipe(
     select(selectDevicesMetaPageSize)
   );
+  ordering$: Observable<string> = this.store.pipe(
+    select(selectDevicesMetaOrdering)
+  );
 
-  loadDevices({
-    page = 1,
-    categoryId = 0,
-    ordering = CREATED_DT_DESC,
-  } = {}): void {
-    this.store.dispatch(
-      loadDeviceListRequestedAction({ page, ordering, categoryId })
-    );
+  loadDevices(pagination: PaginatedDeviceListRequestInterface = null): void {
+    this.store.dispatch(updateDeviceListMetaAction(pagination));
+    this.store.dispatch(loadDeviceListRequestedAction());
   }
 
   ngOnInit(): void {

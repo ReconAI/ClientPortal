@@ -3,6 +3,7 @@ import {
   CREATED_DT_DESC,
   SALES_PRICE_DESC,
   SALES_PRICE_ASC,
+  ALL_CATEGORIES_ID_FOR_DEVICE,
 } from './../../../constants/requests';
 import { CategoryInterface, DeviceFormInterface } from 'app/orders/constants';
 import { Router } from '@angular/router';
@@ -17,12 +18,6 @@ import {
 import { PaginatedDeviceListRequestInterface } from 'app/store/orders/orders.server.helpers';
 import { MatSelectChange } from '@angular/material/select';
 import { MatTabChangeEvent } from '@angular/material/tabs';
-
-interface Pagination {
-  page?: number;
-  ordering?: string;
-  categoryId?: number;
-}
 
 @Component({
   selector: 'recon-device-list',
@@ -39,9 +34,7 @@ export class DeviceListComponent implements OnInit {
   @Input() loadingStatus: boolean;
   @Output() loadData$ = new EventEmitter<PaginatedDeviceListRequestInterface>();
 
-  ordering = CREATED_DT_DESC;
-  page = 1;
-  selectedCategory = 0;
+  @Input() ordering;
   sortOptions = [
     {
       value: CREATED_DT_DESC,
@@ -67,31 +60,37 @@ export class DeviceListComponent implements OnInit {
     this.router.navigate([url]);
   }
 
-  loadData() {
-    this.loadData$.emit({
-      page: this.page,
-      ordering: this.ordering,
-      categoryId: this.selectedCategory,
-    });
+  loadData(pagination: PaginatedDeviceListRequestInterface) {
+    this.loadData$.emit(pagination);
   }
 
   // the order of categories is important
   tabChange(tabChangeEvent: MatTabChangeEvent): void {
     const category = this.categories[tabChangeEvent.index];
-    this.page = 1;
-    this.selectedCategory = category.id;
-    this.loadData();
+    this.loadData({
+      pagination: {
+        currentPage: 1,
+        categoryId: category.id,
+      },
+    });
   }
 
   changePage(page: number): void {
-    this.page = page;
-    this.loadData();
+    this.loadData({
+      pagination: {
+        currentPage: page,
+      },
+    });
   }
 
   changeOrdering(selectChange: MatSelectChange): void {
-    this.ordering = selectChange.value;
-    this.page = 1;
-    this.loadData();
+    const ordering = selectChange.value;
+    this.loadData({
+      pagination: {
+        ordering,
+        currentPage: 1,
+      },
+    });
   }
 
   ngOnInit(): void {}

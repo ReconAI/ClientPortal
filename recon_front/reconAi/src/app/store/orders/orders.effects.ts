@@ -12,8 +12,8 @@ import {
   transformCreateDeviceRequestToServer,
   deviceFormFieldLabels,
   transformLoadedDevicesFromServer,
-  IdDeviceRequestInterface,
-  PaginatedDeviceListRequestInterface,
+  handlePaginationParamsForDeviceList,
+  IdDeviceRequestInterface
 } from './orders.server.helpers';
 import { Router } from '@angular/router';
 import { Action, Store, select } from '@ngrx/store';
@@ -49,6 +49,7 @@ import {
   deleteDeviceSucceededAction,
   deleteDeviceErrorAction,
   loadDeviceListRequestedAction,
+  updateDeviceListMetaAction,
 } from './orders.actions';
 import {
   setCategoriesListLoadingStatusAction,
@@ -73,6 +74,7 @@ import { calculatePageAfterDelete } from 'app/core/helpers';
 import {
   selectDevices,
   selectDevicesMetaCurrentPage,
+  selectDevicesMeta,
 } from './orders.selectors';
 
 @Injectable()
@@ -282,9 +284,7 @@ export class OrdersEffects {
 
   loadDeviceList$: Observable<Action> = createEffect(() =>
     this.actions$.pipe(
-      ofType<Action & PaginatedDeviceListRequestInterface>(
-        OrdersActionTypes.LOAD_DEVICE_LIST_REQUESTED
-      ),
+      ofType<Action>(OrdersActionTypes.LOAD_DEVICE_LIST_REQUESTED),
       tap(() => {
         this.store.dispatch(
           setDeviceListLoadingStatusAction({
@@ -292,12 +292,15 @@ export class OrdersEffects {
           })
         );
       }),
-      switchMap(({ page, ordering, categoryId }) => {
+      withLatestFrom(this.store.pipe(select(selectDevicesMeta))),
+      switchMap(([_, pagination]) => {
         return this.httpClient
           .get<
             PaginationResponseServerInterface<DeviceListServerResponseInterface>
           >(
-            `/order-api/devices?page=${page}&ordering=${ordering}&manufacturer__categories__id=${categoryId}`
+            `/order-api/devices?${handlePaginationParamsForDeviceList(
+              pagination
+            )}`
           )
           .pipe(
             map((response) =>
@@ -341,51 +344,16 @@ export class OrdersEffects {
             map(() => deleteDeviceSucceededAction()),
             tap(() => {
               this.store.dispatch(
-                loadDeviceListRequestedAction({
-                  page: calculatePageAfterDelete(currentPage, devices.length),
+                updateDeviceListMetaAction({
+                  pagination: {
+                    currentPage: calculatePageAfterDelete(
+                      currentPage,
+                      devices.length
+                    ),
+                  },
                 })
               );
-            }),
-            catchError(() => of(deleteDeviceErrorAction())),
-            finalize(() => {
-              this.store.dispatch(
-                setDeleteDeviceLoadingStatusAction({
-                  status: false,
-                })
-              );
-            })
-          );
-      })
-    )
-  );
-
-  loadManagementDevice$: Observable<Action> = createEffect(() =>
-    this.actions$.pipe(
-      ofType<Action & IdDeviceRequestInterface>(
-        OrdersActionTypes.DELETE_DEVICE_REQUESTED
-      ),
-      tap(() => {
-        this.store.dispatch(
-          setDeleteDeviceLoadingStatusAction({
-            status: true,
-          })
-        );
-      }),
-      withLatestFrom(
-        this.store.pipe(select(selectDevices)),
-        this.store.pipe(select(selectDevicesMetaCurrentPage))
-      ),
-      switchMap(([{ id }, devices, currentPage]) => {
-        return this.httpClient
-          .delete<void>(`/order-api/management/devices/${id}`)
-          .pipe(
-            map(() => deleteDeviceSucceededAction()),
-            tap(() => {
-              this.store.dispatch(
-                loadDeviceListRequestedAction({
-                  page: calculatePageAfterDelete(currentPage, devices.length),
-                })
-              );
+              this.store.dispatch(loadDeviceListRequestedAction());
             }),
             catchError(() => of(deleteDeviceErrorAction())),
             finalize(() => {
