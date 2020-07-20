@@ -4,10 +4,10 @@ import {
   UserRolesPriorities,
 } from './../constants/types/user';
 import { CreateDeviceContainer } from './components/devices/create-device/create-device.container';
-import { OrdersListComponent } from './orders-list/orders-list.component';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { UpdateCategoryListContainer } from './components/update-category-list/update-category-list.container';
+import { DeviceListContainer } from './components/devices/device-list/device-list.container';
 
 const routes: Routes = [
   {
@@ -16,7 +16,7 @@ const routes: Routes = [
       title: 'Categories',
       backgroundWithoutUnion: true,
     },
-    component: OrdersListComponent,
+    component: DeviceListContainer,
   },
   {
     path: 'create-device',

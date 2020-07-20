@@ -8,24 +8,28 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { OrdersRoutingModule } from './orders-routing.module';
-import { OrdersListComponent } from './orders-list/orders-list.component';
-import { OrderItemComponent } from './orders-list/order-item/order-item.component';
 import { CreateDeviceComponent } from './components/devices/create-device/create-device.component';
 import { CreateManufactureComponent } from './components/devices/create-device/create-manufacture/create-manufacture.component';
 import { UpdateCategoryListComponent } from './components/update-category-list/update-category-list.component';
 import { UpdateCategoryListContainer } from './components/update-category-list/update-category-list.container';
 import { CreateDeviceContainer } from './components/devices/create-device/create-device.container';
+import { DeviceListComponent } from './components/devices/device-list/device-list.component';
+import { DeviceItemComponent } from './components/devices/device-item/device-item.component';
+import { DeviceListContainer } from './components/devices/device-list/device-list.container';
+import { DeleteDeviceDialogComponent } from './components/devices/device-item/delete-device-dialog/delete-device-dialog.component';
 
 @NgModule({
   declarations: [
-    OrdersListComponent,
-    OrderItemComponent,
     CreateDeviceComponent,
     CreateDeviceContainer,
     CreateManufactureComponent,
     CreateManufactureContainer,
     UpdateCategoryListComponent,
     UpdateCategoryListContainer,
+    DeviceListComponent,
+    DeviceListContainer,
+    DeviceItemComponent,
+    DeleteDeviceDialogComponent,
   ],
   imports: [
     CommonModule,

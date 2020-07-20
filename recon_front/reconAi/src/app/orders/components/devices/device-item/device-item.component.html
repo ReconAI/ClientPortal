@@ -1,0 +1,29 @@
+<div class="device-container">
+    <div>
+      <button
+        mat-icon-button
+        aria-label="Actions"
+        [matMenuTriggerFor]="menu"
+        #menuTrigger="matMenuTrigger"
+      >
+        <mat-icon [ngClass]="{ 'active-icon': menuTrigger.menuOpen }"
+          >more_vert</mat-icon
+        >
+      </button>
+      <mat-menu #menu="matMenu" xPosition="before" class="recon-menu">
+        <button mat-menu-item>
+          Edit
+        </button>
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="deleteClick()">
+          Delete
+        </button>
+      </mat-menu>
+    </div>
+    <img [src]="imgUrl || 'assets/noImage.png'" alt="Order picture" />
+    <span>{{ name }}</span>
+    <span
+      ><b>{{ price | number: ".2-2" }}</b> €</span
+    >
+  </div>
+  

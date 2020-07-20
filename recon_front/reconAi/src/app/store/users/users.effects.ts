@@ -1,3 +1,4 @@
+import { PaginationResponseServerInterface } from './../../constants/types/requests';
 import { setAppTitleAction } from './../app/app.actions';
 import { UserProfileFormInterface } from './../../constants/types/user';
 import { generalTransformFormErrorToObject } from './../../core/helpers/generalFormsErrorsTransformation';
@@ -10,12 +11,10 @@ import {
 import { ActivationInterface } from './../../constants/types/activation';
 import { generalTransformFormErrorToString } from 'app/core/helpers/generalFormsErrorsTransformation';
 import {
-  UsersListResponseInterface,
   transformUsersListResponseFromServer,
   UserProfileRequestInterface,
   transformUserProfileResponseFromServer,
   ServerUserProfileInterface,
-  calculatePageAfterDelete,
   transformAddUserToServer,
   transformInviteSignUpUserToServer,
   transformActivateUserToClient,
@@ -74,6 +73,7 @@ import {
 import { AddUserInterface } from 'app/users/constants';
 import { transformUserResponse } from '../user/user.server.helpers';
 import { PaginationRequestInterface } from 'app/constants/types/requests';
+import { calculatePageAfterDelete } from 'app/core/helpers';
 
 @Injectable()
 export class UsersEffects {
@@ -98,7 +98,9 @@ export class UsersEffects {
       }),
       switchMap(({ page }) =>
         this.httpClient
-          .get<UsersListResponseInterface>(`/api/users?page=${page}`)
+          .get<PaginationResponseServerInterface<ServerUserInterface>>(
+            `/api/users?page=${page}`
+          )
           .pipe(
             map((users) =>
               loadUsersListSucceededAction(

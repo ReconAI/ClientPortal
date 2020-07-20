@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { OrdersListComponent } from './orders-list.component';
+import { DeleteDeviceDialogComponent } from './delete-device-dialog.component';
 
-describe('OrdersListComponent', () => {
-  let component: OrdersListComponent;
-  let fixture: ComponentFixture<OrdersListComponent>;
+describe('DeleteDeviceDialogComponent', () => {
+  let component: DeleteDeviceDialogComponent;
+  let fixture: ComponentFixture<DeleteDeviceDialogComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ OrdersListComponent ]
+      declarations: [ DeleteDeviceDialogComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(OrdersListComponent);
+    fixture = TestBed.createComponent(DeleteDeviceDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
