@@ -13,6 +13,7 @@ import {
   PaginatedDeviceListRequestInterface,
 } from './orders.server.helpers';
 import { createAction, props } from '@ngrx/store';
+import { MetaStoreDevicesInterface } from './orders.reducer';
 
 export enum OrdersActionTypes {
   LOAD_CATEGORIES_REQUESTED = '[Orders] Load Categories Requested',
@@ -40,6 +41,7 @@ export enum OrdersActionTypes {
   LOAD_DEVICE_LIST_REQUESTED = '[Orders] Load Device List Requested',
   LOAD_DEVICE_LIST_SUCCEEDED = '[Orders] Load Device List Succeeded',
   LOAD_DEVICE_LIST_ERROR = '[Orders] Load Device List Error',
+  UPDATE_DEVICE_LIST_META = '[Orders] Update Device List Meta',
 
   DELETE_DEVICE_REQUESTED = '[Orders] Delete Device Requested',
   DELETE_DEVICE_SUCCEEDED = '[Orders] Delete Device Succeeded',
@@ -124,7 +126,6 @@ export const resetCreateDeviceErrorAction = createAction(
 
 export const loadDeviceListRequestedAction = createAction(
   OrdersActionTypes.LOAD_DEVICE_LIST_REQUESTED,
-  props<PaginatedDeviceListRequestInterface>()
 );
 
 export const loadDeviceListSucceededAction = createAction(
@@ -147,4 +148,9 @@ export const deleteDeviceSucceededAction = createAction(
 
 export const deleteDeviceErrorAction = createAction(
   OrdersActionTypes.DELETE_DEVICE_ERROR
+);
+
+export const updateDeviceListMetaAction = createAction(
+  OrdersActionTypes.UPDATE_DEVICE_LIST_META,
+  props<PaginatedDeviceListRequestInterface>()
 );

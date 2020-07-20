@@ -24,7 +24,7 @@ export interface PaginationResponseServerInterface<T> {
 
 
 export interface MetaClientInterface {
-  count: number;
-  currentPage: number;
-  pageSize: number;
+  count?: number;
+  currentPage?: number;
+  pageSize?: number;
 }

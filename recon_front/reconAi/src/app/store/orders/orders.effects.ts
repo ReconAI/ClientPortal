@@ -14,6 +14,7 @@ import {
   transformLoadedDevicesFromServer,
   DeleteDeviceRequestInterface,
   PaginatedDeviceListRequestInterface,
+  handlePaginationParamsForDeviceList,
 } from './orders.server.helpers';
 import { Router } from '@angular/router';
 import { Action, Store, select } from '@ngrx/store';
@@ -49,6 +50,7 @@ import {
   deleteDeviceSucceededAction,
   deleteDeviceErrorAction,
   loadDeviceListRequestedAction,
+  updateDeviceListMetaAction,
 } from './orders.actions';
 import {
   setCategoriesListLoadingStatusAction,
@@ -70,7 +72,11 @@ import {
 } from 'app/orders/constants';
 import { transformUsersListResponseFromServer } from '../users/users.server.helpers';
 import { calculatePageAfterDelete } from 'app/core/helpers';
-import { selectDevices, selectDevicesMetaCurrentPage } from './orders.selectors';
+import {
+  selectDevices,
+  selectDevicesMetaCurrentPage,
+  selectDevicesMeta,
+} from './orders.selectors';
 
 @Injectable()
 export class OrdersEffects {
@@ -127,7 +133,10 @@ export class OrdersEffects {
       }),
       switchMap((categories) =>
         this.httpClient
-          .post<CategoryInterface[]>('/order-api/management/categories', categories)
+          .post<CategoryInterface[]>(
+            '/order-api/management/categories',
+            categories
+          )
           .pipe(
             map((updatedCategories) =>
               updateCategoriesSucceededAction(
@@ -206,7 +215,9 @@ export class OrdersEffects {
       }),
       switchMap(() =>
         this.httpClient
-          .get<ManufacturerServerInterface[]>('/order-api/management/manufacturers')
+          .get<ManufacturerServerInterface[]>(
+            '/order-api/management/manufacturers'
+          )
           .pipe(
             map((manufacturers) =>
               loadManufacturerListSucceededAction(
@@ -274,9 +285,7 @@ export class OrdersEffects {
 
   loadDeviceList$: Observable<Action> = createEffect(() =>
     this.actions$.pipe(
-      ofType<Action & PaginatedDeviceListRequestInterface>(
-        OrdersActionTypes.LOAD_DEVICE_LIST_REQUESTED
-      ),
+      ofType<Action>(OrdersActionTypes.LOAD_DEVICE_LIST_REQUESTED),
       tap(() => {
         this.store.dispatch(
           setDeviceListLoadingStatusAction({
@@ -284,10 +293,15 @@ export class OrdersEffects {
           })
         );
       }),
-      switchMap(({ page, ordering, categoryId }) => {
+      withLatestFrom(this.store.pipe(select(selectDevicesMeta))),
+      switchMap(([_, pagination]) => {
         return this.httpClient
-          .get<PaginationResponseServerInterface<DeviceListServerResponseInterface>>(
-            `/order-api/devices?page=${page}&ordering=${ordering}&manufacturer__categories__id=${categoryId}`
+          .get<
+            PaginationResponseServerInterface<DeviceListServerResponseInterface>
+          >(
+            `/order-api/devices?${handlePaginationParamsForDeviceList(
+              pagination
+            )}`
           )
           .pipe(
             map((response) =>
@@ -325,22 +339,32 @@ export class OrdersEffects {
         this.store.pipe(select(selectDevicesMetaCurrentPage))
       ),
       switchMap(([{ id }, devices, currentPage]) => {
-        return this.httpClient.delete<void>(`/order-api/management/devices/${id}`).pipe(
-          map(() => deleteDeviceSucceededAction()),
-          tap(() => {
-            this.store.dispatch(loadDeviceListRequestedAction({
-              page: calculatePageAfterDelete(currentPage, devices.length)
-            }));
-          }),
-          catchError(() => of(deleteDeviceErrorAction())),
-          finalize(() => {
-            this.store.dispatch(
-              setDeleteDeviceLoadingStatusAction({
-                status: false,
-              })
-            );
-          })
-        );
+        return this.httpClient
+          .delete<void>(`/order-api/management/devices/${id}`)
+          .pipe(
+            map(() => deleteDeviceSucceededAction()),
+            tap(() => {
+              this.store.dispatch(
+                updateDeviceListMetaAction({
+                  pagination: {
+                    currentPage: calculatePageAfterDelete(
+                      currentPage,
+                      devices.length
+                    ),
+                  },
+                })
+              );
+              this.store.dispatch(loadDeviceListRequestedAction());
+            }),
+            catchError(() => of(deleteDeviceErrorAction())),
+            finalize(() => {
+              this.store.dispatch(
+                setDeleteDeviceLoadingStatusAction({
+                  status: false,
+                })
+              );
+            })
+          );
       })
     )
   );

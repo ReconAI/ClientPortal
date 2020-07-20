@@ -1,3 +1,4 @@
+import { MetaStoreDevicesInterface } from './orders.reducer';
 import {
   MetaClientInterface,
   PaginationResponseServerInterface,
@@ -13,6 +14,7 @@ import { CategoryInterface } from './../../orders/constants/types/category';
 import {
   ManufacturerInterface,
   DeviceFormInterface,
+  ALL_CATEGORIES_ID_FOR_DEVICE,
 } from 'app/orders/constants';
 
 export interface CategoriesServerResponseInterface {
@@ -190,8 +192,22 @@ export interface DeleteDeviceRequestInterface {
   id: number;
 }
 
-export interface PaginatedDeviceListRequestInterface
-  extends PaginationRequestInterface {
-  ordering?: string;
-  categoryId?: number;
+export interface PaginatedDeviceListRequestInterface {
+  pagination: MetaStoreDevicesInterface;
 }
+export interface DeviceListPaginationServerInterface {
+  page: number;
+  ordering: string;
+  manufacturer__categories__id: number;
+}
+
+export const handlePaginationParamsForDeviceList = ({
+  currentPage,
+  ordering,
+  categoryId,
+}: MetaStoreDevicesInterface): string =>
+  `page=${currentPage}&ordering=${ordering}${
+    categoryId === ALL_CATEGORIES_ID_FOR_DEVICE
+      ? ''
+      : `&manufacturer__categories__id=${categoryId}`
+  }`;
