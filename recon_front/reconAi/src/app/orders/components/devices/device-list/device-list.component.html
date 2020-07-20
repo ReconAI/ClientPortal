@@ -1,0 +1,57 @@
+<div class="device-page-header-container">
+  <mat-tab-group (selectedTabChange)="tabChange($event)">
+    <mat-tab
+      *ngFor="let category of categories"
+      [label]="category.name"
+      ><div class="fake"></div
+    ></mat-tab>
+  </mat-tab-group>
+  <button mat-raised-button color="accent" [matMenuTriggerFor]="menu">
+    CREATE
+  </button>
+  <mat-menu #menu="matMenu" xPosition="before" class="recon-menu">
+    <button mat-menu-item (click)="navigateTo('/orders/create-device')">
+      Device
+    </button>
+    <mat-divider></mat-divider>
+    <button mat-menu-item (click)="navigateTo('/orders/categories')">
+      Category
+    </button>
+  </mat-menu>
+</div>
+<div class="devices-page-container">
+  <div class="sort-container">
+    <mat-label>Sort by:</mat-label>
+    <mat-select
+      [(ngModel)]="ordering"
+      (selectionChange)="changeOrdering($event)"
+    >
+      <ng-container *ngFor="let option of sortOptions">
+        <mat-option [value]="option.value">{{ option.label }}</mat-option>
+        <mat-divider></mat-divider>
+      </ng-container>
+    </mat-select>
+  </div>
+
+  <div class="device-items-container" *ngIf="!loadingStatus; else loading">
+    <recon-device-item
+      *ngFor="let device of devices"
+      [imgUrl]="(device?.images)[0] || null"
+      [price]="device.salesPrice"
+      [name]="device.name"
+      [id]="device.id"
+    ></recon-device-item>
+  </div>
+  <ng-template #loading>
+    Loading...
+  </ng-template>
+  <div class="pagination-container">
+    <recon-pagination
+      [totalCount]="totalCount"
+      [currentPage]="currentPage"
+      [pageSize]="pageSize"
+      (changePage$)="changePage($event)"
+    >
+    </recon-pagination>
+  </div>
+</div>

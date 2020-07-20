@@ -8,6 +8,9 @@ import {
   CreateManufacturerRequestClientInterface,
   ManufacturerListResponseClientInterface,
   CreateDeviceRequestClientInterface,
+  DeviceListResponseClientInterface,
+  DeleteDeviceRequestInterface,
+  PaginatedDeviceListRequestInterface,
 } from './orders.server.helpers';
 import { createAction, props } from '@ngrx/store';
 
@@ -33,6 +36,14 @@ export enum OrdersActionTypes {
   CREATE_DEVICE_SUCCEEDED = '[Orders] Create Device Succeeded',
   CREATE_DEVICE_ERROR = '[Orders] Create Device Error',
   RESET_CREATE_DEVICE_ERROR = '[Orders] Reset Create Device Error',
+
+  LOAD_DEVICE_LIST_REQUESTED = '[Orders] Load Device List Requested',
+  LOAD_DEVICE_LIST_SUCCEEDED = '[Orders] Load Device List Succeeded',
+  LOAD_DEVICE_LIST_ERROR = '[Orders] Load Device List Error',
+
+  DELETE_DEVICE_REQUESTED = '[Orders] Delete Device Requested',
+  DELETE_DEVICE_SUCCEEDED = '[Orders] Delete Device Succeeded',
+  DELETE_DEVICE_ERROR = '[Orders] Delete Device Error',
 }
 
 export const loadCategoriesRequestedAction = createAction(
@@ -109,4 +120,31 @@ export const createDeviceErrorAction = createAction(
 
 export const resetCreateDeviceErrorAction = createAction(
   OrdersActionTypes.RESET_CREATE_DEVICE_ERROR
+);
+
+export const loadDeviceListRequestedAction = createAction(
+  OrdersActionTypes.LOAD_DEVICE_LIST_REQUESTED,
+  props<PaginatedDeviceListRequestInterface>()
+);
+
+export const loadDeviceListSucceededAction = createAction(
+  OrdersActionTypes.LOAD_DEVICE_LIST_SUCCEEDED,
+  props<DeviceListResponseClientInterface>()
+);
+
+export const loadDeviceListErrorAction = createAction(
+  OrdersActionTypes.LOAD_DEVICE_LIST_ERROR
+);
+
+export const deleteDeviceRequestedAction = createAction(
+  OrdersActionTypes.DELETE_DEVICE_REQUESTED,
+  props<DeleteDeviceRequestInterface>()
+);
+
+export const deleteDeviceSucceededAction = createAction(
+  OrdersActionTypes.DELETE_DEVICE_SUCCEEDED
+);
+
+export const deleteDeviceErrorAction = createAction(
+  OrdersActionTypes.DELETE_DEVICE_ERROR
 );

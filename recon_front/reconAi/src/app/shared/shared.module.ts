@@ -35,7 +35,8 @@ import { FormChipsComponent } from './forms/form-chips/form-chips.component';
     FormSelectComponent,
     FormFileWithListComponent,
     FormChipsComponent,
-  ], // remove pagination
+    PaginationComponent
+  ],
   providers: [],
 })
 export class SharedModule {}

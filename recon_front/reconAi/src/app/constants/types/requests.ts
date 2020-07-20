@@ -14,3 +14,17 @@ export interface UrlInterceptorInterface {
 export interface PaginationRequestInterface {
   page: number;
 }
+
+export interface PaginationResponseServerInterface<T> {
+  count: number;
+  current: number;
+  page_size: number;
+  results: T[];
+}
+
+
+export interface MetaClientInterface {
+  count: number;
+  currentPage: number;
+  pageSize: number;
+}

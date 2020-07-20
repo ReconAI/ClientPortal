@@ -1,3 +1,4 @@
+import { PaginationResponseServerInterface, MetaClientInterface } from './../../constants/types/requests';
 import { getUserPriorityByRole } from './../../core/helpers/priorities';
 import { ResetPasswordInterface } from './../../constants/types/resetPassword';
 import { SignUpRequestInterface } from './../signUp/signUp.server.helpers';
@@ -19,26 +20,13 @@ import {
 } from 'app/constants/types';
 import moment from 'moment';
 
-export interface UsersListResponseInterface {
-  count: number;
-  current: number;
-  page_size: number;
-  results: ServerUserInterface[];
-}
-
-interface MetaUsersListInterface {
-  count: number;
-  currentPage: number;
-  pageSize: number;
-}
-
 export interface StoreUsersListInterface {
   list: UserInterface[];
-  meta: MetaUsersListInterface;
+  meta: MetaClientInterface;
 }
 
 export const transformUsersListResponseFromServer = (
-  response: UsersListResponseInterface
+  response: PaginationResponseServerInterface<ServerUserInterface>
 ): StoreUsersListInterface => ({
   list: response.results.map((user) => ({
     id: user.id,
@@ -97,19 +85,6 @@ export const transformUserProfileResponseFromServer = (
     rolePriority: getUserPriorityByRole(response?.group?.name),
   },
 });
-
-// it checks the length of data before removing and calculates new page
-// it's the same if there's data and current page - 1 if there's no data
-export const calculatePageAfterDelete = (
-  currentPage: number,
-  length: number
-): number => {
-  if (length > 1) {
-    return currentPage;
-  }
-
-  return currentPage > 1 ? currentPage - 1 : 1;
-};
 
 interface AddUserServerInterface {
   firstname: string;
@@ -192,7 +167,9 @@ export const transformUpdateUserToServer = (
   phone: user.phone,
 });
 
-export const getTitleOfInvitedRegistration = (roleName: UserRoleTypes): string => {
+export const getTitleOfInvitedRegistration = (
+  roleName: UserRoleTypes
+): string => {
   return roleName === CLIENT_ROLE
     ? `Client's registration`
     : `Registration for invited ${roleName}`;

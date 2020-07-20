@@ -21,6 +21,8 @@ import {
   setCreateManufacturerLoadingStatusAction,
   setManufacturerListLoadingStatusAction,
   setCreateDeviceLoadingStatusAction,
+  setDeviceListLoadingStatusAction,
+  setDeleteDeviceLoadingStatusAction,
 } from './loaders.actions';
 import { createReducer, on, Action } from '@ngrx/store';
 
@@ -49,6 +51,8 @@ export interface LoadersState {
   createManufacturer: boolean;
   manufacturerList: boolean;
   createDevice: boolean;
+  deviceList: boolean;
+  deleteDevice: boolean;
 }
 
 const initialState: LoadersState = {
@@ -75,6 +79,8 @@ const initialState: LoadersState = {
   createManufacturer: false,
   manufacturerList: false,
   createDevice: false,
+  deviceList: false,
+  deleteDevice: false,
 };
 
 const setCurrentUserLoadingStatusReducer = (
@@ -183,6 +189,16 @@ const setCreateDeviceLoadingStatusReducer = (
   { status }: Action & LoaderInterface
 ): LoadersState => ({ ...state, createDevice: status });
 
+const setDeviceListLoadingStatusReducer = (
+  state: LoadersState,
+  { status }: Action & LoaderInterface
+): LoadersState => ({ ...state, deviceList: status });
+
+const setDeleteDeviceLoadingStatusReducer = (
+  state: LoadersState,
+  { status }: Action & LoaderInterface
+): LoadersState => ({ ...state, deleteDevice: status });
+
 const loadersReducer = createReducer(
   initialState,
   on(setCurrentUserLoadingStatusAction, setCurrentUserLoadingStatusReducer),
@@ -227,7 +243,9 @@ const loadersReducer = createReducer(
     setManufacturerListLoadingStatusAction,
     setManufacturerListLoadingStatusReducer
   ),
-  on(setCreateDeviceLoadingStatusAction, setCreateDeviceLoadingStatusReducer)
+  on(setCreateDeviceLoadingStatusAction, setCreateDeviceLoadingStatusReducer),
+  on(setDeviceListLoadingStatusAction, setDeviceListLoadingStatusReducer),
+  on(setDeleteDeviceLoadingStatusAction, setDeleteDeviceLoadingStatusReducer)
 );
 
 export function reducer(state: LoadersState | undefined, action: Action) {

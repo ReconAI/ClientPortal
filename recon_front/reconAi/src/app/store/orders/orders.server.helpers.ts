@@ -1,5 +1,14 @@
+import {
+  MetaClientInterface,
+  PaginationResponseServerInterface,
+  PaginationRequestInterface,
+} from './../../constants/types/requests';
 import { getBase64 } from './../../core/helpers/files';
-import { DeviceServerInterface } from './../../orders/constants/types/device';
+import {
+  DeviceServerInterface,
+  ServerImageInterface,
+  DeviceListServerResponseInterface,
+} from './../../orders/constants/types/device';
 import { CategoryInterface } from './../../orders/constants/types/category';
 import {
   ManufacturerInterface,
@@ -98,7 +107,7 @@ export const transformCreateDeviceRequestToServer = async (
   const based64Images: string[] = [];
 
   for (let i = 0; i < deviceImages.length; i++) {
-    based64Images.push((await getBase64(deviceImages[i])).toString());
+    based64Images.push((await getBase64(deviceImages[i] as File)).toString());
   }
 
   return {
@@ -127,3 +136,62 @@ export const deviceFormFieldLabels = {
   seo_description: 'SEO description',
   images: 'Images',
 };
+
+export interface DeviceListItemClientInterface {
+  name: string;
+  description: string;
+  salesPrice: string;
+  images: string[];
+  id: number;
+}
+
+export interface DeviceListResponseClientInterface {
+  result: {
+    devices: DeviceListItemClientInterface[];
+    meta: MetaClientInterface;
+  };
+}
+
+export interface DeviceListItemServerInterface {
+  id: number;
+  name: string;
+  description: string;
+  manufacturer: ManufacturerServerInterface;
+  buying_price: string;
+  sales_price: string;
+  product_number: string;
+  seo_title: string;
+  seo_keywords: string[];
+  seo_description: string;
+  published: boolean;
+  images: ServerImageInterface[];
+  created_dt: string;
+}
+export const transformLoadedDevicesFromServer = (
+  response: PaginationResponseServerInterface<DeviceListServerResponseInterface>
+): DeviceListResponseClientInterface => ({
+  result: {
+    devices: response.results.map((device) => ({
+      id: device.id,
+      name: device.name,
+      description: device.description,
+      images: device.images.map((image: ServerImageInterface) => image.path),
+      salesPrice: device.sales_price,
+    })),
+    meta: {
+      pageSize: response.page_size,
+      currentPage: response.current,
+      count: response.count,
+    },
+  },
+});
+
+export interface DeleteDeviceRequestInterface {
+  id: number;
+}
+
+export interface PaginatedDeviceListRequestInterface
+  extends PaginationRequestInterface {
+  ordering?: string;
+  categoryId?: number;
+}

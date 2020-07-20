@@ -1,0 +1,9 @@
+<recon-device-list
+  [categories]="categories$ | async"
+  [devices]="devices$ | async"
+  [totalCount]="totalCount$ | async"
+  [currentPage]="currentPage$ | async"
+  [pageSize]="pageSize$ | async"
+  [loadingStatus]="loadingStatus$ | async"
+  (loadData$)="loadDevices($event)"
+></recon-device-list>
