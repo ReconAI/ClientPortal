@@ -242,6 +242,7 @@ class CreateDeviceView(CreateAPIView):
 ))
 @method_decorator(name='put', decorator=swagger_auto_schema(
     responses=DEFAULT_UNSAFE_REQUEST_RESPONSES,
+    request_body=UpdateDeviceSerializer,
     tags=['Device'],
     operation_summary="Updates a device",
     operation_description='Updates a device with images',
