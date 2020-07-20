@@ -12,7 +12,7 @@ import {
   transformCreateDeviceRequestToServer,
   deviceFormFieldLabels,
   transformLoadedDevicesFromServer,
-  DeleteDeviceRequestInterface,
+  IdDeviceRequestInterface,
   PaginatedDeviceListRequestInterface,
 } from './orders.server.helpers';
 import { Router } from '@angular/router';
@@ -70,7 +70,10 @@ import {
 } from 'app/orders/constants';
 import { transformUsersListResponseFromServer } from '../users/users.server.helpers';
 import { calculatePageAfterDelete } from 'app/core/helpers';
-import { selectDevices, selectDevicesMetaCurrentPage } from './orders.selectors';
+import {
+  selectDevices,
+  selectDevicesMetaCurrentPage,
+} from './orders.selectors';
 
 @Injectable()
 export class OrdersEffects {
@@ -127,7 +130,10 @@ export class OrdersEffects {
       }),
       switchMap((categories) =>
         this.httpClient
-          .post<CategoryInterface[]>('/order-api/management/categories', categories)
+          .post<CategoryInterface[]>(
+            '/order-api/management/categories',
+            categories
+          )
           .pipe(
             map((updatedCategories) =>
               updateCategoriesSucceededAction(
@@ -206,7 +212,9 @@ export class OrdersEffects {
       }),
       switchMap(() =>
         this.httpClient
-          .get<ManufacturerServerInterface[]>('/order-api/management/manufacturers')
+          .get<ManufacturerServerInterface[]>(
+            '/order-api/management/manufacturers'
+          )
           .pipe(
             map((manufacturers) =>
               loadManufacturerListSucceededAction(
@@ -286,7 +294,9 @@ export class OrdersEffects {
       }),
       switchMap(({ page, ordering, categoryId }) => {
         return this.httpClient
-          .get<PaginationResponseServerInterface<DeviceListServerResponseInterface>>(
+          .get<
+            PaginationResponseServerInterface<DeviceListServerResponseInterface>
+          >(
             `/order-api/devices?page=${page}&ordering=${ordering}&manufacturer__categories__id=${categoryId}`
           )
           .pipe(
@@ -310,7 +320,7 @@ export class OrdersEffects {
 
   deleteDevice$: Observable<Action> = createEffect(() =>
     this.actions$.pipe(
-      ofType<Action & DeleteDeviceRequestInterface>(
+      ofType<Action & IdDeviceRequestInterface>(
         OrdersActionTypes.DELETE_DEVICE_REQUESTED
       ),
       tap(() => {
@@ -325,22 +335,67 @@ export class OrdersEffects {
         this.store.pipe(select(selectDevicesMetaCurrentPage))
       ),
       switchMap(([{ id }, devices, currentPage]) => {
-        return this.httpClient.delete<void>(`/order-api/management/devices/${id}`).pipe(
-          map(() => deleteDeviceSucceededAction()),
-          tap(() => {
-            this.store.dispatch(loadDeviceListRequestedAction({
-              page: calculatePageAfterDelete(currentPage, devices.length)
-            }));
-          }),
-          catchError(() => of(deleteDeviceErrorAction())),
-          finalize(() => {
-            this.store.dispatch(
-              setDeleteDeviceLoadingStatusAction({
-                status: false,
-              })
-            );
+        return this.httpClient
+          .delete<void>(`/order-api/management/devices/${id}`)
+          .pipe(
+            map(() => deleteDeviceSucceededAction()),
+            tap(() => {
+              this.store.dispatch(
+                loadDeviceListRequestedAction({
+                  page: calculatePageAfterDelete(currentPage, devices.length),
+                })
+              );
+            }),
+            catchError(() => of(deleteDeviceErrorAction())),
+            finalize(() => {
+              this.store.dispatch(
+                setDeleteDeviceLoadingStatusAction({
+                  status: false,
+                })
+              );
+            })
+          );
+      })
+    )
+  );
+
+  loadManagementDevice$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action & IdDeviceRequestInterface>(
+        OrdersActionTypes.DELETE_DEVICE_REQUESTED
+      ),
+      tap(() => {
+        this.store.dispatch(
+          setDeleteDeviceLoadingStatusAction({
+            status: true,
           })
         );
+      }),
+      withLatestFrom(
+        this.store.pipe(select(selectDevices)),
+        this.store.pipe(select(selectDevicesMetaCurrentPage))
+      ),
+      switchMap(([{ id }, devices, currentPage]) => {
+        return this.httpClient
+          .delete<void>(`/order-api/management/devices/${id}`)
+          .pipe(
+            map(() => deleteDeviceSucceededAction()),
+            tap(() => {
+              this.store.dispatch(
+                loadDeviceListRequestedAction({
+                  page: calculatePageAfterDelete(currentPage, devices.length),
+                })
+              );
+            }),
+            catchError(() => of(deleteDeviceErrorAction())),
+            finalize(() => {
+              this.store.dispatch(
+                setDeleteDeviceLoadingStatusAction({
+                  status: false,
+                })
+              );
+            })
+          );
       })
     )
   );

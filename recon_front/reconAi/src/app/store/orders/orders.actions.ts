@@ -9,7 +9,7 @@ import {
   ManufacturerListResponseClientInterface,
   CreateDeviceRequestClientInterface,
   DeviceListResponseClientInterface,
-  DeleteDeviceRequestInterface,
+  IdDeviceRequestInterface,
   PaginatedDeviceListRequestInterface,
 } from './orders.server.helpers';
 import { createAction, props } from '@ngrx/store';
@@ -44,6 +44,10 @@ export enum OrdersActionTypes {
   DELETE_DEVICE_REQUESTED = '[Orders] Delete Device Requested',
   DELETE_DEVICE_SUCCEEDED = '[Orders] Delete Device Succeeded',
   DELETE_DEVICE_ERROR = '[Orders] Delete Device Error',
+
+  LOAD_MANAGEMENT_DEVICE_REQUESTED = '[Orders] Load Management Device Requested',
+  LOAD_MANAGEMENT_DEVICE_SUCCEEDED = '[Orders] Load Management Device Succeeded',
+  LOAD_MANAGEMENT_DEVICE_ERROR = '[Orders] Load Management Device Error',
 }
 
 export const loadCategoriesRequestedAction = createAction(
@@ -138,7 +142,7 @@ export const loadDeviceListErrorAction = createAction(
 
 export const deleteDeviceRequestedAction = createAction(
   OrdersActionTypes.DELETE_DEVICE_REQUESTED,
-  props<DeleteDeviceRequestInterface>()
+  props<IdDeviceRequestInterface>()
 );
 
 export const deleteDeviceSucceededAction = createAction(
@@ -147,4 +151,18 @@ export const deleteDeviceSucceededAction = createAction(
 
 export const deleteDeviceErrorAction = createAction(
   OrdersActionTypes.DELETE_DEVICE_ERROR
+);
+
+export const loadManagementDeviceRequested = createAction(
+  OrdersActionTypes.LOAD_MANAGEMENT_DEVICE_REQUESTED,
+  props<IdDeviceRequestInterface>()
+);
+
+export const loadManagementDeviceSucceeded = createAction(
+  OrdersActionTypes.LOAD_MANAGEMENT_DEVICE_SUCCEEDED,
+  // props<Device>()
+);
+
+export const loadManagementDeviceError = createAction(
+  OrdersActionTypes.LOAD_MANAGEMENT_DEVICE_ERROR
 );

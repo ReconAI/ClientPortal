@@ -17,6 +17,7 @@ import { DeviceListComponent } from './components/devices/device-list/device-lis
 import { DeviceItemComponent } from './components/devices/device-item/device-item.component';
 import { DeviceListContainer } from './components/devices/device-list/device-list.container';
 import { DeleteDeviceDialogComponent } from './components/devices/device-item/delete-device-dialog/delete-device-dialog.component';
+import { UpdateDeviceComponent } from './components/devices/update-device/update-device.component';
 
 @NgModule({
   declarations: [
@@ -30,6 +31,7 @@ import { DeleteDeviceDialogComponent } from './components/devices/device-item/de
     DeviceListContainer,
     DeviceItemComponent,
     DeleteDeviceDialogComponent,
+    UpdateDeviceComponent,
   ],
   imports: [
     CommonModule,

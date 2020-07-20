@@ -186,7 +186,7 @@ export const transformLoadedDevicesFromServer = (
   },
 });
 
-export interface DeleteDeviceRequestInterface {
+export interface IdDeviceRequestInterface {
   id: number;
 }
 
