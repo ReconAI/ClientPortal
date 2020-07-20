@@ -28,8 +28,8 @@ export class HttpErrorInterceptor implements HttpInterceptor {
     { url: '/api/api-token-auth' },
     { url: '/api/users', method: 'POST' },
     { url: '/api/users/invitations', method: 'PUT' },
-    { url: '/order-api/manufacturers', method: 'POST' },
-    { url: '/order-api/devices', method: 'POST' },
+    { url: '/order-api/management/manufacturers', method: 'POST' },
+    { url: '/order-api/management/devices', method: 'POST' },
   ];
 
   createErrorServerMessage(error: HttpErrorResponse): string {
