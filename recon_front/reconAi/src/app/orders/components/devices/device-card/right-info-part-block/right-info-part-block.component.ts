@@ -9,6 +9,7 @@ import { Component, OnInit, Input, ViewEncapsulation } from '@angular/core';
 export class RightInfoPartBlockComponent implements OnInit {
   @Input() name: string;
   @Input() description: string;
+  @Input() category: string;
   @Input() manufacturer: string;
   @Input() salesPrice: string;
 

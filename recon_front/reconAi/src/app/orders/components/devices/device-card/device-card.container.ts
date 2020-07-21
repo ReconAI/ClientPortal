@@ -1,3 +1,4 @@
+import { selectDeviceCategory } from './../../../../store/orders/orders.selectors';
 import { selectDeviceLoadingStatus } from './../../../../store/loaders/loaders.selectors';
 import { Observable } from 'rxjs';
 import { loadDeviceRequestedAction } from './../../../../store/orders/orders.actions';
@@ -51,6 +52,7 @@ export class DeviceCardContainer implements OnInit {
   manufacturer$: Observable<string> = this.store.pipe(
     select(selectDeviceManufacturer)
   );
+  category$: Observable<string> = this.store.pipe(select(selectDeviceCategory));
 
   loadingDeviceStatus$: Observable<boolean> = this.store.pipe(
     select(selectDeviceLoadingStatus)

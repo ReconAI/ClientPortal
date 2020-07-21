@@ -19,6 +19,7 @@ import {
   selectDeviceImages,
   selectUpdateDeviceError,
   selectDoesExistDevice,
+  selectDeviceCategoryId,
 } from './../../../../store/orders/orders.selectors';
 import {
   ManufacturerInterface,
@@ -64,6 +65,9 @@ export class UpdateDeviceContainer implements OnInit, OnDestroy {
   name$: Observable<string> = this.store.pipe(select(selectDeviceName));
   manufacturerId$: Observable<number> = this.store.pipe(
     select(selectDeviceManufacturerId)
+  );
+  categoryId$: Observable<number> = this.store.pipe(
+    select(selectDeviceCategoryId)
   );
   description$: Observable<string> = this.store.pipe(
     select(selectDeviceDescription)

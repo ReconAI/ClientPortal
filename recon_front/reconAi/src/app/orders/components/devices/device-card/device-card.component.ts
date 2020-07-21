@@ -12,6 +12,7 @@ export class DeviceCardComponent implements OnInit, OnDestroy {
   @Input() product: string;
   @Input() description: string;
   @Input() manufacturer: string;
+  @Input() category: string;
   @Input() salesPrice: string;
   @Input() seoTags: string;
   @Input() seoTitle: string;

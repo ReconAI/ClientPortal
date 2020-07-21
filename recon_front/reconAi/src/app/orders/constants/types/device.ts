@@ -12,7 +12,7 @@ export interface DeviceFormInterface {
   seoTags: string[] | string;
   seoTitle: string;
   seoDescription: string;
-  category?: string;
+  category?: string | number;
   id?: number;
 }
 
@@ -33,6 +33,7 @@ export interface DeviceServerInterface {
   images: string[] | ServerImageInterface[];
   id?: number;
   delete_images?: number[];
+  category: number;
 }
 
 export interface DeviceListServerResponseInterface {

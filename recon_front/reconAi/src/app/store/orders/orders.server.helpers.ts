@@ -123,6 +123,7 @@ export const transformCreateDeviceRequestToServer = async (
     seo_keywords: device.seoTags,
     seo_description: device.seoDescription,
     images: based64Images,
+    category: device.category as number,
   };
 };
 
@@ -158,6 +159,7 @@ export const transformUpdateDeviceRequestToServer = async (
     seo_description: device.seoDescription,
     images: based64Images,
     delete_images: imagesToDelete,
+    category: device.category as number,
   };
 };
 
@@ -204,6 +206,8 @@ export interface DeviceListItemServerInterface {
   published: boolean;
   images: ServerImageInterface[];
   created_dt: string;
+  category_id?: number;
+  category?: CategoryInterface;
 }
 export const transformLoadedDevicesFromServer = (
   response: PaginationResponseServerInterface<DeviceListServerResponseInterface>
@@ -234,7 +238,7 @@ export interface PaginatedDeviceListRequestInterface {
 export interface DeviceListPaginationServerInterface {
   page: number;
   ordering: string;
-  manufacturer__categories__id: number;
+  category_id: number;
 }
 
 export const handlePaginationParamsForDeviceList = ({
@@ -245,7 +249,7 @@ export const handlePaginationParamsForDeviceList = ({
   `page=${currentPage}&ordering=${ordering}${
     categoryId === ALL_CATEGORIES_ID_FOR_DEVICE
       ? ''
-      : `&manufacturer__categories__id=${categoryId}`
+      : `&category_id=${categoryId}`
   }`;
 
 export interface DeviceRequestClientInterface {
@@ -257,8 +261,9 @@ export const transformDeviceFromServer = (
 ): DeviceRequestClientInterface => ({
   device: {
     name: device.name,
-    // line below with || is used for management request and simple request
+    // 2 lines below with || are used for management request and simple request
     manufacturer: device?.manufacturer_id || device?.manufacturer?.name,
+    category: device.category_id || device?.category?.name || '',
     description: device.description,
     id: device.id,
     buyingPrice: device.buying_price,

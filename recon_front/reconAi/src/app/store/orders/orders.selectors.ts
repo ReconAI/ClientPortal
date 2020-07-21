@@ -156,6 +156,18 @@ export const selectDeviceId = createSelector(
   (device: DeviceFormInterface): number => device?.id
 );
 
+// management
+export const selectDeviceCategoryId = createSelector(
+  selectDevice,
+  (device: DeviceFormInterface): number => (device.category as number) || null
+);
+
+// simple
+export const selectDeviceCategory = createSelector(
+  selectDevice,
+  (device: DeviceFormInterface): string => (device.category as string) || null
+);
+
 export const selectUpdateDeviceError = createSelector(
   selectOrdersErrors,
   (errors: OrdersError): FormServerErrorInterface =>
