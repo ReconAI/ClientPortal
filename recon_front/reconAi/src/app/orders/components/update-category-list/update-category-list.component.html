@@ -9,9 +9,9 @@
         formControlName="name"
         [isWithCloseIcon]="true"
         [closeTooltip]="
-          category?.get('manufacturers_count')?.value ? closeTooltip : null
+          category?.get('has_device')?.value ? closeTooltip : null
         "
-        [disabledCloseIcon]="!!category?.get('manufacturers_count')?.value"
+        [disabledCloseIcon]="category?.get('has_device')?.value"
         (clickIcon)="removeCategory(i, category.value)"
       ></recon-form-input>
     </ng-container>

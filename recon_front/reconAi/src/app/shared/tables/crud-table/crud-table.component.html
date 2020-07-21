@@ -27,20 +27,22 @@
   <ng-container *ngIf="isWithActions" matColumnDef="actions">
     <mat-header-cell *matHeaderCellDef></mat-header-cell>
     <mat-cell *matCellDef="let element">
-      <!-- make actions general if we need it -->
-      <button
-        mat-icon-button
-        aria-label="Actions"
-        [matMenuTriggerFor]="menu"
-        (click)="openActionsMenu($event)"
-      >
-        <mat-icon>more_vert</mat-icon>
-      </button>
-      <mat-menu #menu="matMenu" xPosition="before" class="recon-menu">
-        <button mat-menu-item (click)="deleteClick(element)">
-          Delete
+      <ng-container *ngIf="!shouldShowActionsForRow || shouldShowActionsForRow(element)">
+        <!-- make actions general if we need it -->
+        <button
+          mat-icon-button
+          aria-label="Actions"
+          [matMenuTriggerFor]="menu"
+          (click)="openActionsMenu($event)"
+        >
+          <mat-icon>more_vert</mat-icon>
         </button>
-      </mat-menu>
+        <mat-menu #menu="matMenu" xPosition="before" class="recon-menu">
+          <button mat-menu-item (click)="deleteClick(element)">
+            Delete
+          </button>
+        </mat-menu>
+      </ng-container>
     </mat-cell>
   </ng-container>
 

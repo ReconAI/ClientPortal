@@ -16,6 +16,7 @@ export class ManagementComponent implements OnInit {
   @Input() totalCount: number;
   @Input() currentPage: number;
   @Input() pageSize: number;
+  @Input() currentUserId: string;
 
   @Output() loadData$ = new EventEmitter<number>();
 
@@ -61,7 +62,11 @@ export class ManagementComponent implements OnInit {
   ngOnInit(): void {}
 
   userClick(user: UserInterface): void {
-    this.router.navigate([`/users/${user?.id}`]);
+    if (this.currentUserId !== user.id) {
+      this.router.navigate([`/users/${user?.id}`]);
+    } else {
+      this.router.navigate([`/profile`]);
+    }
   }
 
   deleteUserClick(user: UserInterface): void {
@@ -84,6 +89,10 @@ export class ManagementComponent implements OnInit {
         id: user.id,
       },
     });
+  }
+
+  shouldShowActionsForRow(user: UserInterface): boolean {
+    return user.id?.toString() !== this.currentUserId?.toString();
   }
 
   loadData(page: number): void {

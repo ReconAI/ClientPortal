@@ -23,6 +23,9 @@ import {
   setCreateDeviceLoadingStatusAction,
   setDeviceListLoadingStatusAction,
   setDeleteDeviceLoadingStatusAction,
+  setManagementDeviceLoadingStatusAction,
+  setUpdateDeviceLoadingStatusAction,
+  setDeviceLoadingStatusAction,
 } from './loaders.actions';
 import { createReducer, on, Action } from '@ngrx/store';
 
@@ -53,6 +56,9 @@ export interface LoadersState {
   createDevice: boolean;
   deviceList: boolean;
   deleteDevice: boolean;
+  managementDevice: boolean;
+  updateDevice: boolean;
+  device: boolean;
 }
 
 const initialState: LoadersState = {
@@ -81,6 +87,9 @@ const initialState: LoadersState = {
   createDevice: false,
   deviceList: false,
   deleteDevice: false,
+  managementDevice: false,
+  updateDevice: false,
+  device: false,
 };
 
 const setCurrentUserLoadingStatusReducer = (
@@ -199,6 +208,21 @@ const setDeleteDeviceLoadingStatusReducer = (
   { status }: Action & LoaderInterface
 ): LoadersState => ({ ...state, deleteDevice: status });
 
+const setManagementDeviceLoadingStatusReducer = (
+  state: LoadersState,
+  { status }: Action & LoaderInterface
+): LoadersState => ({ ...state, managementDevice: status });
+
+const setUpdateDeviceLoadingStatusReducer = (
+  state: LoadersState,
+  { status }: Action & LoaderInterface
+): LoadersState => ({ ...state, updateDevice: status });
+
+const setDeviceLoadingStatusReducer = (
+  state: LoadersState,
+  { status }: Action & LoaderInterface
+): LoadersState => ({ ...state, device: status });
+
 const loadersReducer = createReducer(
   initialState,
   on(setCurrentUserLoadingStatusAction, setCurrentUserLoadingStatusReducer),
@@ -245,7 +269,13 @@ const loadersReducer = createReducer(
   ),
   on(setCreateDeviceLoadingStatusAction, setCreateDeviceLoadingStatusReducer),
   on(setDeviceListLoadingStatusAction, setDeviceListLoadingStatusReducer),
-  on(setDeleteDeviceLoadingStatusAction, setDeleteDeviceLoadingStatusReducer)
+  on(setDeleteDeviceLoadingStatusAction, setDeleteDeviceLoadingStatusReducer),
+  on(
+    setManagementDeviceLoadingStatusAction,
+    setManagementDeviceLoadingStatusReducer
+  ),
+  on(setUpdateDeviceLoadingStatusAction, setUpdateDeviceLoadingStatusReducer),
+  on(setDeviceLoadingStatusAction, setDeviceLoadingStatusReducer)
 );
 
 export function reducer(state: LoadersState | undefined, action: Action) {

@@ -9,7 +9,7 @@ import {
   deleteDeviceRequestedAction,
 } from 'app/store/orders';
 import { selectDeleteDeviceLoadingStatus } from 'app/store/loaders/loaders.selectors';
-import { DeleteDeviceRequestInterface } from 'app/store/orders/orders.server.helpers';
+import { IdDeviceRequestInterface } from 'app/store/orders/orders.server.helpers';
 
 @Component({
   selector: 'recon-delete-device-dialog',
@@ -21,7 +21,7 @@ export class DeleteDeviceDialogComponent implements OnInit, OnDestroy {
     private store: Store<AppState>,
     private dialogRef: MatDialogRef<DeleteDeviceDialogComponent>,
     private actionsSubject: ActionsSubject,
-    @Inject(MAT_DIALOG_DATA) public device: DeleteDeviceRequestInterface
+    @Inject(MAT_DIALOG_DATA) public device: IdDeviceRequestInterface
   ) {}
 
   closeModalSubscription$: Subscription;

@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { Component, OnInit, Input } from '@angular/core';
 import { DeleteDeviceDialogComponent } from './delete-device-dialog/delete-device-dialog.component';
@@ -12,7 +13,8 @@ export class DeviceItemComponent implements OnInit {
   @Input() price;
   @Input() name;
   @Input() id: number;
-  constructor(private dialog: MatDialog) {}
+  @Input() showActions = false;
+  constructor(private dialog: MatDialog, private router: Router) {}
 
   ngOnInit(): void {}
 
@@ -22,5 +24,9 @@ export class DeviceItemComponent implements OnInit {
         id: this.id,
       },
     });
+  }
+
+  editClick() {
+    this.router.navigate(['orders/update-device', this.id]);
   }
 }

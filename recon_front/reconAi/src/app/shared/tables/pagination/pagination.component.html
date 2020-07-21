@@ -1,17 +1,21 @@
 <div>
   <ng-container *ngIf="currentPage">
-    <span
+    <img
+      src="../../../assets/icons/arrow-left.svg"
+      width="20"
+      height="17"
       class="switcher"
       [ngClass]="{ disabled: startDisabled }"
       (click)="selectPage(currentPage - 1, false)"
-      ><</span
-    >
+    />
     <span>{{ label }}</span>
-    <span
+    <img
+      src="../../../assets/icons/arrow-right.svg"
+      width="20"
+      height="17"
       class="switcher"
       [ngClass]="{ disabled: endDisabled }"
       (click)="selectPage(currentPage + 1, true)"
-      >></span
-    >
+    />
   </ng-container>
 </div>

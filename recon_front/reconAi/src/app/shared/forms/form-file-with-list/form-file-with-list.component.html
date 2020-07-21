@@ -20,8 +20,12 @@
   >
     <div [formGroupName]="i" class="file-name-container">
       <mat-icon>insert_drive_file</mat-icon>
-      {{ file?.value?.name }}
-      <span (click)="removeFile(i)">&times;</span>
+      <span
+        [ngClass]="{ 'link-to-file': file?.value?.path }"
+        (click)="openFileInTab(file?.value?.path)"
+        >{{ file?.value?.name }}</span
+      >
+      <span class="remove-icon" (click)="removeFile(i)">&times;</span>
     </div>
   </div>
 </div>
