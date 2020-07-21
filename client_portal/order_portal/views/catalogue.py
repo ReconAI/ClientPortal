@@ -12,8 +12,8 @@ from rest_framework import status, filters
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 
-from order_portal.serizalizers import CategorySerializer, \
-    DeviceListSerializer, DeviceItemSerializer, CategoryDeviceSerializer
+from order_portal.serizalizers import DeviceListSerializer, \
+    DeviceItemSerializer, CategoryDeviceSerializer
 from recon_db_manager.models import Category
 from recon_db_manager.models import Device
 from shared.swagger.responses import http401, http404, \
@@ -53,7 +53,7 @@ class CategoryListMixin:
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
     responses={
-        status.HTTP_200_OK: data_serializer(CategorySerializer),
+        status.HTTP_200_OK: data_serializer(CategoryDeviceSerializer),
         status.HTTP_401_UNAUTHORIZED: http401(),
         status.HTTP_403_FORBIDDEN: http403(),
         status.HTTP_404_NOT_FOUND: http404(),

@@ -12,10 +12,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from order_portal.serizalizers import CategorySerializer, \
-    ReadManufacturerSerializer, WriteManufacturerSerializer, \
+from order_portal.serizalizers import ReadManufacturerSerializer, \
+    WriteManufacturerSerializer, \
     CategoryCollectionSerializer, CreateDeviceSerializer, \
-    UpdateDeviceSerializer, FullViewDeviceSerializer
+    UpdateDeviceSerializer, FullViewDeviceSerializer, CategoryDeviceSerializer
 from order_portal.views.catalogue import CategoryListMixin
 from recon_db_manager.models import Category, Manufacturer
 from recon_db_manager.models import Device
@@ -31,7 +31,7 @@ from shared.views.utils import RetrieveUpdateDestroyAPIView, \
 
 @method_decorator(name='post', decorator=swagger_auto_schema(
     responses={
-        status.HTTP_200_OK: data_serializer(CategorySerializer),
+        status.HTTP_200_OK: data_serializer(CategoryDeviceSerializer),
         status.HTTP_401_UNAUTHORIZED: http401(),
         status.HTTP_403_FORBIDDEN: http403(),
         status.HTTP_404_NOT_FOUND: http404(),
