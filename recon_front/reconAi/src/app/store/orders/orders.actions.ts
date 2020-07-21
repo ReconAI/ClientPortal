@@ -52,6 +52,10 @@ export enum OrdersActionTypes {
   UPDATE_DEVICE_SUCCEEDED = '[Orders] Update Device Succeeded',
   UPDATE_DEVICE_ERROR = '[Orders] Update Device Error',
   RESET_UPDATE_DEVICE_ERROR = '[Orders] Reset Update Device Error',
+
+  LOAD_DEVICE_REQUESTED = '[Orders] Load Device Requested',
+  LOAD_DEVICE_SUCCEEDED = '[Orders] Load Device Succeeded',
+  LOAD_DEVICE_ERROR = '[Orders] Load Device Error',
 }
 
 export const loadCategoriesRequestedAction = createAction(
@@ -176,7 +180,7 @@ export const updateDeviceListMetaAction = createAction(
 );
 
 export const resetDeviceListMetaAction = createAction(
-  OrdersActionTypes.RESET_DEVICE_LIST_META,
+  OrdersActionTypes.RESET_DEVICE_LIST_META
 );
 
 export const updateDeviceRequestedAction = createAction(
@@ -195,4 +199,18 @@ export const updateDeviceErrorAction = createAction(
 
 export const resetUpdateDeviceErrorAction = createAction(
   OrdersActionTypes.RESET_UPDATE_DEVICE_ERROR
+);
+
+export const loadDeviceRequestedAction = createAction(
+  OrdersActionTypes.LOAD_DEVICE_REQUESTED,
+  props<IdDeviceRequestInterface>()
+);
+
+export const loadDeviceSucceededAction = createAction(
+  OrdersActionTypes.LOAD_DEVICE_SUCCEEDED,
+  props<DeviceRequestClientInterface>()
+);
+
+export const loadDeviceErrorAction = createAction(
+  OrdersActionTypes.LOAD_DEVICE_ERROR
 );

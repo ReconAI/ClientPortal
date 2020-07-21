@@ -13,6 +13,7 @@ export class DeviceItemComponent implements OnInit {
   @Input() price;
   @Input() name;
   @Input() id: number;
+  @Input() showActions = false;
   constructor(private dialog: MatDialog, private router: Router) {}
 
   ngOnInit(): void {}

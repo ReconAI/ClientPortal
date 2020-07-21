@@ -257,7 +257,8 @@ export const transformDeviceFromServer = (
 ): DeviceRequestClientInterface => ({
   device: {
     name: device.name,
-    manufacturer: device.manufacturer_id,
+    // line below with || is used for management request and simple request
+    manufacturer: device?.manufacturer_id || device?.manufacturer?.name,
     description: device.description,
     id: device.id,
     buyingPrice: device.buying_price,

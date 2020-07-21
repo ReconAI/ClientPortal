@@ -9,7 +9,7 @@ export interface DeviceFormInterface {
   description: string;
   buyingPrice: string;
   salesPrice: string;
-  seoTags: string[];
+  seoTags: string[] | string;
   seoTitle: string;
   seoDescription: string;
   category?: string;
@@ -28,7 +28,7 @@ export interface DeviceServerInterface {
   sales_price: string;
   product_number: string;
   seo_title: string;
-  seo_keywords: string[];
+  seo_keywords: string[] | string;
   seo_description: string;
   images: string[] | ServerImageInterface[];
   id?: number;

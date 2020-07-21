@@ -76,7 +76,9 @@ export class UpdateDeviceContainer implements OnInit, OnDestroy {
   );
   product$: Observable<string> = this.store.pipe(select(selectDeviceProduct));
   seoTitle$: Observable<string> = this.store.pipe(select(selectDeviceSeoTitle));
-  seoTags$: Observable<string[]> = this.store.pipe(select(selectDeviceSeoTags));
+  seoTags$: Observable<string[]> = this.store.pipe(
+    select(selectDeviceSeoTags)
+  ) as Observable<string[]>;
   seoDescription$: Observable<string> = this.store.pipe(
     select(selectDeviceSeoDescription)
   );

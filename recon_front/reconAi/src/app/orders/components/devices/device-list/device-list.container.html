@@ -6,5 +6,6 @@
   [pageSize]="pageSize$ | async"
   [loadingStatus]="loadingStatus$ | async"
   [ordering]="ordering$ | async"
+  [isSuperAdmin]="isSuperAdmin$ | async"
   (loadData$)="loadDevices($event)"
 ></recon-device-list>

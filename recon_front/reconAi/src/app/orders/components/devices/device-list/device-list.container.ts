@@ -1,3 +1,6 @@
+import { UserRolesPriorities } from 'app/constants/types';
+import { SUPER_ADMIN_ROLE } from './../../../../constants/types/user';
+import { selectUserRolePriority } from './../../../../store/user/user.selectors';
 import {
   updateDeviceListMetaAction,
   resetDeviceListMetaAction,
@@ -62,6 +65,11 @@ export class DeviceListContainer implements OnInit, OnDestroy {
   );
   ordering$: Observable<string> = this.store.pipe(
     select(selectDevicesMetaOrdering)
+  );
+
+  isSuperAdmin$: Observable<boolean> = this.store.pipe(
+    select(selectUserRolePriority),
+    map((priority) => priority === UserRolesPriorities.SUPER_ADMIN_ROLE)
   );
 
   loadDevices(pagination: PaginatedDeviceListRequestInterface = null): void {

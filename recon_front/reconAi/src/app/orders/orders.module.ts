@@ -18,6 +18,10 @@ import { DeviceListComponent } from './components/devices/device-list/device-lis
 import { DeviceItemComponent } from './components/devices/device-item/device-item.component';
 import { DeviceListContainer } from './components/devices/device-list/device-list.container';
 import { DeleteDeviceDialogComponent } from './components/devices/device-item/delete-device-dialog/delete-device-dialog.component';
+import { DeviceCardComponent } from './components/devices/device-card/device-card.component';
+import { DeviceCardContainer } from './components/devices/device-card/device-card.container';
+import { ImageLeftCardBlockComponent } from './components/devices/device-card/image-left-card-block/image-left-card-block.component';
+import { RightInfoPartBlockComponent } from './components/devices/device-card/right-info-part-block/right-info-part-block.component';
 
 @NgModule({
   declarations: [
@@ -32,6 +36,10 @@ import { DeleteDeviceDialogComponent } from './components/devices/device-item/de
     DeviceItemComponent,
     DeleteDeviceDialogComponent,
     UpdateDeviceContainer,
+    DeviceCardComponent,
+    DeviceCardContainer,
+    ImageLeftCardBlockComponent,
+    RightInfoPartBlockComponent,
   ],
   imports: [
     CommonModule,

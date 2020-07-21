@@ -1,6 +1,7 @@
 import {
   setManagementDeviceLoadingStatusAction,
   setUpdateDeviceLoadingStatusAction,
+  setDeviceLoadingStatusAction,
 } from './../loaders/loaders.actions';
 import { generalTransformFormErrorToObject } from './../../core/helpers/generalFormsErrorsTransformation';
 import { CategoryInterface } from './../../orders/constants/types/category';
@@ -61,6 +62,8 @@ import {
   loadManagementDeviceErrorAction,
   updateDeviceSucceededAction,
   updateDeviceErrorAction,
+  loadDeviceErrorAction,
+  loadDeviceSucceededAction,
 } from './orders.actions';
 import {
   setCategoriesListLoadingStatusAction,
@@ -457,6 +460,38 @@ export class OrdersEffects {
             finalize(() => {
               this.store.dispatch(
                 setUpdateDeviceLoadingStatusAction({
+                  status: false,
+                })
+              );
+            })
+          );
+      })
+    )
+  );
+
+  loadDevice$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action & IdDeviceRequestInterface>(
+        OrdersActionTypes.LOAD_DEVICE_REQUESTED
+      ),
+      tap(() => {
+        this.store.dispatch(
+          setDeviceLoadingStatusAction({
+            status: true,
+          })
+        );
+      }),
+      switchMap(({ id }) => {
+        return this.httpClient
+          .get<DeviceListItemServerInterface>(`/order-api/devices/${id}`)
+          .pipe(
+            map((device) =>
+              loadDeviceSucceededAction(transformDeviceFromServer(device))
+            ),
+            catchError(() => of(loadDeviceErrorAction())),
+            finalize(() => {
+              this.store.dispatch(
+                setDeviceLoadingStatusAction({
                   status: false,
                 })
               );

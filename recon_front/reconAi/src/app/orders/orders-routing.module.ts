@@ -1,3 +1,4 @@
+import { DeviceCardContainer } from './components/devices/device-card/device-card.container';
 import { UpdateDeviceContainer } from './components/devices/update-device/update-device.container';
 import { AuthRoleGuard } from './../core/guards/auth-role-guard/auth-role.guard';
 import {
@@ -45,6 +46,14 @@ const routes: Routes = [
     },
     canActivate: [AuthRoleGuard],
     component: UpdateDeviceContainer,
+  },
+  {
+    path: ':id',
+    data: {
+      title: ' ',
+      backgroundWithoutUnion: true,
+    },
+    component: DeviceCardContainer,
   },
 ];
 

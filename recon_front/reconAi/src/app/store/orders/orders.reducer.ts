@@ -26,6 +26,7 @@ import {
   resetUpdateDeviceErrorAction,
   updateDeviceErrorAction,
   resetDeviceListMetaAction,
+  loadDeviceSucceededAction,
 } from './orders.actions';
 import { CategoryInterface } from './../../orders/constants/types/category';
 import { ActivationInterface } from './../../constants/types/activation';
@@ -193,6 +194,14 @@ const resetUpdateDeviceErrorReducer = (state: OrdersState): OrdersState => ({
   },
 });
 
+const loadDeviceSucceededReducer = (
+  state: OrdersState,
+  { type, device }: Action & DeviceRequestClientInterface
+): OrdersState => ({
+  ...state,
+  device,
+});
+
 const ordersReducer = createReducer(
   initialState,
   on(loadCategoriesSucceededAction, loadCategoriesSucceededReducer),
@@ -207,7 +216,8 @@ const ordersReducer = createReducer(
   on(loadManagementDeviceSucceededAction, loadManagementDeviceSucceededReducer),
   on(updateDeviceErrorAction, updateDeviceErrorReducer),
   on(resetUpdateDeviceErrorAction, resetUpdateDeviceErrorReducer),
-  on(resetDeviceListMetaAction, resetDeviceListMetaReducer)
+  on(resetDeviceListMetaAction, resetDeviceListMetaReducer),
+  on(loadDeviceSucceededAction, loadDeviceSucceededReducer)
 );
 
 export function reducer(state: OrdersState | undefined, action: Action) {

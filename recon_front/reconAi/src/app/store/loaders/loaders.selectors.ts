@@ -134,3 +134,8 @@ export const selectUpdateDeviceLoadingStatus = createSelector(
   selectLoaders,
   (loaders: LoadersState): boolean => loaders.updateDevice
 );
+
+export const selectDeviceLoadingStatus = createSelector(
+  selectLoaders,
+  (loaders: LoadersState): boolean => loaders.device
+);

@@ -4,7 +4,7 @@
       ><div class="fake"></div
     ></mat-tab>
   </mat-tab-group>
-  <button mat-raised-button color="accent" [matMenuTriggerFor]="menu">
+  <button mat-raised-button color="accent" [matMenuTriggerFor]="menu" *ngIf="isSuperAdmin">
     CREATE
   </button>
   <mat-menu #menu="matMenu" xPosition="before" class="recon-menu">
@@ -34,13 +34,15 @@
   <ng-template #loaded>
     <ng-container *ngIf="devices.length; else noData">
       <div class="device-items-container">
-        <recon-device-item
-          *ngFor="let device of devices"
-          [imgUrl]="(device?.images)[0] || null"
-          [price]="device.salesPrice"
-          [name]="device.name"
-          [id]="device.id"
-        ></recon-device-item>
+        <div *ngFor="let device of devices" (click)="cardClick(device?.id)">
+          <recon-device-item
+            [imgUrl]="(device?.images)[0] || null"
+            [price]="device.salesPrice"
+            [name]="device.name"
+            [id]="device.id"
+            [showActions]="isSuperAdmin"
+          ></recon-device-item>
+        </div>
       </div>
       <div class="pagination-container">
         <recon-pagination

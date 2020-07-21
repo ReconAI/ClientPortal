@@ -104,6 +104,12 @@ export const selectDeviceManufacturerId = createSelector(
     (device?.manufacturer as number) || null
 );
 
+export const selectDeviceManufacturer = createSelector(
+  selectDevice,
+  (device: DeviceFormInterface): string =>
+    (device?.manufacturer as string) || null
+);
+
 export const selectDeviceDescription = createSelector(
   selectDevice,
   (device: DeviceFormInterface): string => device?.description || null
@@ -131,7 +137,7 @@ export const selectDeviceSeoTitle = createSelector(
 
 export const selectDeviceSeoTags = createSelector(
   selectDevice,
-  (device: DeviceFormInterface): string[] => device?.seoTags || null
+  (device: DeviceFormInterface): string[] | string => device?.seoTags || null
 );
 
 export const selectDeviceSeoDescription = createSelector(
