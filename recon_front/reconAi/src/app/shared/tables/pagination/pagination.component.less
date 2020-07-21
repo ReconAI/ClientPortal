@@ -1,19 +1,27 @@
+@import "../../../../variables.less";
+
 div {
-    color: #828385;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: @recon-black;
 
     &>span {
-        cursor: pointer;
         font-size: 14px;
-
-        &.chosen {
-            color: black;
-            font-weight: bold;
-            font-size: 16px;
-        }
-
 
         &:not(:last-child) {
             margin-right: 10px;
+        }
+    }
+
+    .switcher {
+        font-size: 30px;
+        font-weight: 100;
+        cursor: pointer;
+
+        &.disabled {
+            cursor: default;
+            opacity: 0.3;
         }
     }
 }

@@ -1,17 +1,17 @@
 <div class="recon-modal-title">
-  <h3>Delete</h3>
+  <h3>Delete device</h3>
   <mat-icon [mat-dialog-close]="true">close</mat-icon>
 </div>
-<span
-  >This action would permanently delete this user. Please confirm.</span>
+
+<span>This action would permanently delete this device. Please confirm.</span>
 <div class="button-container">
   <button
     mat-raised-button
     color="primary"
-    (click)="deleteClick()"
-    [disabled]="isLoading"
+    (click)="deleteDevice()"
+    [disabled]="loadingStatus$ | async"
   >
-    <mat-icon *ngIf="isLoading; else loaded">
+    <mat-icon *ngIf="loadingStatus$ | async; else loaded">
       <mat-spinner color="primary" diameter="20"></mat-spinner>
     </mat-icon>
     <ng-template #loaded>DELETE</ng-template>

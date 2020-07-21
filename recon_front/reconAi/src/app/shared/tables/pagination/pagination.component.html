@@ -1,11 +1,17 @@
 <div>
   <ng-container *ngIf="currentPage">
     <span
-      [class]="{ chosen: currentPage === elem }"
-      (click)="selectPage(elem)"
-      *ngFor="let elem of shownPages"
+      class="switcher"
+      [ngClass]="{ disabled: startDisabled }"
+      (click)="selectPage(currentPage - 1, false)"
+      ><</span
     >
-      {{ elem }}
-    </span>
+    <span>{{ label }}</span>
+    <span
+      class="switcher"
+      [ngClass]="{ disabled: endDisabled }"
+      (click)="selectPage(currentPage + 1, true)"
+      >></span
+    >
   </ng-container>
 </div>
