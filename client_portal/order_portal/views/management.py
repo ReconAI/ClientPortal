@@ -3,22 +3,20 @@ Order portal management views set
 """
 
 from django.conf import settings
-from django.db.models import Count
-from django.db.models.query import QuerySet
 from django.db.transaction import atomic
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
-from rest_framework.mixins import ListModelMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from order_portal.serizalizers import CategorySerializer, \
-    ReadManufacturerSerializer, WriteManufacturerSerializer, \
+from order_portal.serizalizers import ReadManufacturerSerializer, \
+    WriteManufacturerSerializer, \
     CategoryCollectionSerializer, CreateDeviceSerializer, \
-    UpdateDeviceSerializer, FullViewDeviceSerializer
+    UpdateDeviceSerializer, FullViewDeviceSerializer, CategoryDeviceSerializer
+from order_portal.views.catalogue import CategoryListMixin
 from recon_db_manager.models import Category, Manufacturer
 from recon_db_manager.models import Device
 from shared.permissions import IsActive, IsSuperUser, PaymentRequired
@@ -33,7 +31,7 @@ from shared.views.utils import RetrieveUpdateDestroyAPIView, \
 
 @method_decorator(name='post', decorator=swagger_auto_schema(
     responses={
-        status.HTTP_200_OK: data_serializer(CategorySerializer),
+        status.HTTP_200_OK: data_serializer(CategoryDeviceSerializer),
         status.HTTP_401_UNAUTHORIZED: http401(),
         status.HTTP_403_FORBIDDEN: http403(),
         status.HTTP_404_NOT_FOUND: http404(),
@@ -48,13 +46,10 @@ from shared.views.utils import RetrieveUpdateDestroyAPIView, \
         token_header(),
     ]
 ))
-class SyncCategoriesView(ListModelMixin, CreateAPIView):
+class SyncCategoriesView(CategoryListMixin, CreateAPIView):
     """
     User create and get list views set
     """
-
-    serializer_class = CategorySerializer
-
     permission_classes = (IsAuthenticated, IsActive,
                           IsSuperUser, PaymentRequired)
 
@@ -72,11 +67,6 @@ class SyncCategoriesView(ListModelMixin, CreateAPIView):
         return Response({
             'errors': serializer.errors
         }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-
-    def filter_queryset(self, queryset: QuerySet) -> QuerySet:
-        return queryset.annotate(
-            manufacturers_count=Count('manufacturer')
-        )
 
 
 class ManufacturerOperator:

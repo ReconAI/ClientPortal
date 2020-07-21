@@ -4,28 +4,56 @@ Catalogue views set
 
 from django.db.models import Count
 from django.db.models.query import QuerySet
-from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_yasg.openapi import Parameter, TYPE_STRING, IN_QUERY
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status, filters
 from rest_framework.generics import ListAPIView
+from rest_framework.response import Response
 
-from order_portal.serizalizers import CategorySerializer, \
-    DeviceListSerializer, \
-    DeviceItemSerializer
+from order_portal.serizalizers import DeviceListSerializer, \
+    DeviceItemSerializer, CategoryDeviceSerializer
 from recon_db_manager.models import Category
 from recon_db_manager.models import Device
 from shared.swagger.responses import http401, http404, \
-    http403, http405, DEFAULT_GET_REQUESTS_RESPONSES, \
-    data_serializer
+    http403, http405, DEFAULT_GET_REQUESTS_RESPONSES, data_serializer
 from shared.views.utils import RetrieveAPIView
+
+
+class CategoryListMixin:
+    """
+    Device list utility
+    """
+    queryset = Category.objects.all()
+
+    serializer_class = CategoryDeviceSerializer
+
+    def list(self, *args, **kwargs) -> Response:
+        """
+        :rtype: Response
+        """
+        queryset = self.filter_queryset(self.get_queryset())
+
+        return Response({
+            'data': self.get_serializer(queryset, many=True).data
+        })
+
+    @staticmethod
+    def filter_queryset(queryset: QuerySet) -> QuerySet:
+        """
+        :type queryset: QuerySet
+
+        :rtype: QuerySet
+        """
+        return queryset.annotate(
+            device_count=Count('device')
+        )
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
     responses={
-        status.HTTP_200_OK: data_serializer(CategorySerializer),
+        status.HTTP_200_OK: data_serializer(CategoryDeviceSerializer),
         status.HTTP_401_UNAUTHORIZED: http401(),
         status.HTTP_403_FORBIDDEN: http403(),
         status.HTTP_404_NOT_FOUND: http404(),
@@ -34,26 +62,10 @@ from shared.views.utils import RetrieveAPIView
     tags=['Category'],
     operation_summary="List of categories",
 ))
-class CategoryListView(ListAPIView):
+class CategoryListView(CategoryListMixin, ListAPIView):
     """
     Categories list view
     """
-
-    queryset = Category.objects.all()
-
-    serializer_class = CategorySerializer
-
-    def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-
-        return JsonResponse({
-            'data': self.get_serializer(queryset, many=True).data
-        })
-
-    def filter_queryset(self, queryset: QuerySet) -> QuerySet:
-        return queryset.annotate(
-            manufacturers_count=Count('manufacturer')
-        )
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
@@ -68,7 +80,7 @@ class CategoryListView(ListAPIView):
             required=False, type=TYPE_STRING
         ),
         Parameter(
-            'manufacturer__categories__id', IN_QUERY,
+            'category_id', IN_QUERY,
             'Filters by category id',
             required=False, type=TYPE_STRING
         )
@@ -88,7 +100,7 @@ class DeviceListView(ListAPIView):
 
     search_fields = ['created_dt', 'sales_price']
 
-    filterset_fields = ['manufacturer__categories__id']
+    filterset_fields = ['category_id']
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
@@ -104,5 +116,4 @@ class DeviceItemView(RetrieveAPIView):
 
     serializer_class = DeviceItemSerializer
 
-    queryset = Device.objects.prefetch_related(
-        'manufacturer__categories', 'images').filter(published=True).all()
+    queryset = Device.objects.filter(published=True).all()
