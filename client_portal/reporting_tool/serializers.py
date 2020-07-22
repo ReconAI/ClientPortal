@@ -4,7 +4,7 @@ from recon_db_manager.models import Organization
 from shared.serializers import ReadOnlySerializer
 
 
-class AddCardSerializer(ReadOnlySerializer):
+class AttachPaymentMethodSerializer(ReadOnlySerializer):
     payment_method = CharField(
         required=True,
         allow_null=False,
@@ -19,3 +19,10 @@ class AddCardSerializer(ReadOnlySerializer):
         payment_method = self.validated_data.get('payment_method')
 
         return self.instance.customer.payment_methods().attach(payment_method)
+
+
+class DetachPaymentMethodSerializer(AttachPaymentMethodSerializer):
+    def save(self):
+        payment_method = self.validated_data.get('payment_method')
+
+        return self.instance.customer.payment_methods().detach(payment_method)
