@@ -87,11 +87,20 @@ class User(CommonUser, PermissionsMixin):
     @property
     def is_admin(self) -> bool:
         """
-        User is counted as company admin when his role is SUPER_ADMIN
+        User is counted as company admin when his role is ADMIN
 
         :rtype: bool
         """
         return self.group.name == Role.ADMIN
+
+    @property
+    def is_developer(self) -> bool:
+        """
+        User is counted as company developer when his role is DEVELOPER
+
+        :rtype: bool
+        """
+        return self.group.name == Role.DEVELOPER
 
     @property
     def is_superuser(self) -> bool:
