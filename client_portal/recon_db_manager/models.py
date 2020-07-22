@@ -43,6 +43,9 @@ class Organization(models.Model):
 
     @property
     def customer(self) -> 'AbstractCustomerManager':
+        """
+        :rtype: AbstractCustomerManager
+        """
         return import_string('shared.managers.StripeCustomerManager')(self)
 
 

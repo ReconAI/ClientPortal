@@ -10,6 +10,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import exceptions
 from rest_framework.response import Response
 from rest_framework.views import set_rollback
+from stripe.error import InvalidRequestError
 
 
 def exception_handler(exc, *args, **kwargs) -> Optional[Response]:
@@ -26,6 +27,8 @@ def exception_handler(exc, *args, **kwargs) -> Optional[Response]:
         exc = exceptions.NotFound()
     elif isinstance(exc, PermissionDenied):
         exc = exceptions.PermissionDenied()
+    elif isinstance(exc, InvalidRequestError):
+        exc = exceptions.ParseError(exc.user_message)
 
     if isinstance(exc, exceptions.APIException):
         headers = {}
