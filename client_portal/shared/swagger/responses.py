@@ -247,3 +247,18 @@ DEFAULT_GET_REQUESTS_RESPONSES = get_responses(
     status.HTTP_403_FORBIDDEN,
     status.HTTP_405_METHOD_NOT_ALLOWED
 )
+
+
+def default_get_responses_with_custom_success(
+        success_response: openapi.Schema
+) -> Dict[str, openapi.Schema]:
+    """
+    :type success_response: openapi.Schema
+
+    :rtype: Dict[str, openapi.Schema]
+    """
+
+    return {
+        status.HTTP_200_OK: success_response,
+        **DEFAULT_GET_REQUESTS_RESPONSES
+    }
