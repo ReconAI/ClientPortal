@@ -4,8 +4,7 @@ Recon db mangaer are defined here
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.db.models import ImageField
-
-from shared.managers import AbstractCustomerManager, StripeCustomerManager
+from django.utils.module_loading import import_string
 
 
 class Organization(models.Model):
@@ -43,8 +42,8 @@ class Organization(models.Model):
         return cls.objects.get(name=cls.ROOT)
 
     @property
-    def customer(self) -> AbstractCustomerManager:
-        return StripeCustomerManager(self)
+    def customer(self) -> 'AbstractCustomerManager':
+        return import_string('shared.managers.StripeCustomerManager')(self)
 
 
 class CommonUser(models.Model):
