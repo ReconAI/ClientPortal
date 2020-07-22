@@ -19,6 +19,8 @@ class CardListView(ListCreateAPIView):
 
     delete_serializer_class = DetachPaymentMethodSerializer
 
+    delete_serializer_class = DetachPaymentMethodSerializer
+
     @swagger_auto_schema(
         responses=DEFAULT_GET_REQUESTS_RESPONSES,
         tags=['Cards'],
