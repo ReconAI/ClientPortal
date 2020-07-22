@@ -122,3 +122,19 @@ export const transformUpdateCurrentUserToServer = (
   inv_phone: user.invoicing.phone,
   inv_email: user.invoicing.email,
 });
+
+export interface AttachCardRequestServerInterface {
+  payment_method: string;
+}
+
+export interface AttachCardRequestClientInterface {
+  method: {
+    paymentMethod: string;
+  };
+}
+
+export const transformAttachCardRequestToServer = (
+  card: AttachCardRequestClientInterface
+): AttachCardRequestServerInterface => ({
+  payment_method: card.method.paymentMethod,
+});

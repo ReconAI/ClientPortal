@@ -7,6 +7,7 @@ import {
   LoginUserFormInterface,
   UserTransformationResponse,
   PreResetPasswordRequestInterface,
+  AttachCardRequestClientInterface,
 } from './user.server.helpers';
 import { createAction, props } from '@ngrx/store';
 import { ResetPasswordWithMetaInterface } from 'app/constants/types/resetPassword';
@@ -40,6 +41,10 @@ export enum UserActionTypes {
   UPDATE_CURRENT_USER_SUCCEEDED = '[User] Update Current User Succeeded',
   UPDATE_CURRENT_USER_ERROR = '[User] Update Current User Error',
   RESET_UPDATE_CURRENT_USER_ERROR = '[User] Reset Update Current User Error',
+
+  ATTACH_CARD_REQUESTED = '[User] Attach Card Requested',
+  ATTACH_CARD_SUCCEEDED = '[User] Attach Card Succeeded',
+  ATTACH_CARD_ERROR = '[User] Attach Card Error',
 }
 
 export const loadCurrentUserRequestedAction = createAction(
@@ -142,4 +147,17 @@ export const updateCurrentUserErrorAction = createAction(
 
 export const resetUpdateCurrentUserErrorAction = createAction(
   UserActionTypes.RESET_UPDATE_CURRENT_USER_ERROR
+);
+
+export const attachCardRequestedAction = createAction(
+  UserActionTypes.ATTACH_CARD_REQUESTED,
+  props<AttachCardRequestClientInterface>()
+);
+
+export const attachCardSucceededAction = createAction(
+  UserActionTypes.ATTACH_CARD_SUCCEEDED
+);
+
+export const attachCardErrorAction = createAction(
+  UserActionTypes.ATTACH_CARD_ERROR
 );

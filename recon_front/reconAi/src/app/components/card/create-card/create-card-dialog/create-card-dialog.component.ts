@@ -6,6 +6,9 @@ import {
   ViewChild,
   ElementRef,
   ChangeDetectorRef,
+  Output,
+  EventEmitter,
+  Input,
 } from '@angular/core';
 import { StripeService } from 'app/core/services/stripe/stripe.service';
 @Component({
@@ -15,6 +18,8 @@ import { StripeService } from 'app/core/services/stripe/stripe.service';
 })
 export class CreateCardDialogComponent
   implements OnInit, AfterViewInit, OnDestroy {
+  @Input() loadingStatus = false;
+  @Output() submitStripe$ = new EventEmitter();
   elements: any;
   card: any;
   cardHandler = this.onChange.bind(this);
@@ -59,7 +64,7 @@ export class CreateCardDialogComponent
     this.cdr.detectChanges();
   }
 
-  async onSubmitStripe() {
-    await this.stripeService.createPaymentCardMethod(this.card);
+  onSubmitStripe() {
+    this.submitStripe$.emit(this.card);
   }
 }

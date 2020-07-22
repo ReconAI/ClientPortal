@@ -29,6 +29,7 @@ export enum LoadersActionTypes {
   SET_MANAGEMENT_DEVICE_LOADING_STATUS = '[Loaders | Orders] Set Management Device Loading Status',
   SET_UPDATE_DEVICE_LOADING_STATUS = '[Loaders | Orders] Set Update Device Loading Status',
   SET_DEVICE_LOADING_STATUS = '[Loaders | Orders] Set Device Loading Status',
+  SET_ATTACH_CARD_LOADING_STATUS = '[Loaders | User] Set Attach Card Loading Status',
 }
 
 export interface LoaderInterface {
@@ -167,6 +168,12 @@ export const setDeviceLoadingStatusAction = createAction(
 );
 
 export const setUpdateDeviceLoadingStatusAction = createAction(
+  LoadersActionTypes.SET_UPDATE_DEVICE_LOADING_STATUS,
+  props<LoaderInterface>()
+);
+
+// user -> cards
+export const setAttachCardLoadingStatusAction = createAction(
   LoadersActionTypes.SET_UPDATE_DEVICE_LOADING_STATUS,
   props<LoaderInterface>()
 );

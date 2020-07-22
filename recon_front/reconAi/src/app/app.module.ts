@@ -1,3 +1,4 @@
+import { CreateCardDialogContainer } from './components/card/create-card/create-card-dialog/create-card-dialog.container';
 import { BasketContainer } from './components/landing-page/header/basket/basket.container';
 import { OrdersEffects } from './store/orders/orders.effects';
 import { CurrentUserProfileContainer } from './components/current-user-profile/current-user-profile.container';
@@ -54,6 +55,7 @@ import { BasketComponent } from './components/landing-page/header/basket/basket.
 import { CreateCardComponent } from './components/card/create-card/create-card.component';
 import { CreateCardDialogComponent } from './components/card/create-card/create-card-dialog/create-card-dialog.component';
 import { PaymentMethodsComponent } from './components/current-user-profile/payment-methods/payment-methods.component';
+import { CardViewComponent } from './components/card/card-view/card-view.component';
 
 @NgModule({
   declarations: [
@@ -87,7 +89,9 @@ import { PaymentMethodsComponent } from './components/current-user-profile/payme
     BasketContainer,
     CreateCardComponent,
     CreateCardDialogComponent,
+    CreateCardDialogContainer,
     PaymentMethodsComponent,
+    CardViewComponent,
   ],
   imports: [
     BrowserModule,

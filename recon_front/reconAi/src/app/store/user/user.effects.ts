@@ -16,6 +16,7 @@ import {
   setResetPasswordLoadingStatusAction,
   setPreResetPasswordLoadingStatusAction,
   setUpdateCurrentUserLoadingStatusAction,
+  setAttachCardLoadingStatusAction,
 } from './../loaders/loaders.actions';
 import { LocalStorageService } from './../../core/services/localStorage/local-storage.service';
 import { Action, Store, select } from '@ngrx/store';
@@ -26,6 +27,8 @@ import {
   PreResetPasswordRequestInterface,
   transformResetPasswordFormToRequest,
   transformUpdateCurrentUserToServer,
+  AttachCardRequestClientInterface,
+  transformAttachCardRequestToServer,
 } from './user.server.helpers';
 import {
   UserActionTypes,
@@ -46,6 +49,8 @@ import {
   updateCurrentUserSucceededAction,
   resetUpdateCurrentUserErrorAction,
   updateCurrentUserErrorAction,
+  attachCardSucceededAction,
+  attachCardErrorAction,
 } from './user.actions';
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
@@ -296,6 +301,29 @@ export class UserEffects {
             finalize(() => {
               this.store.dispatch(
                 setUpdateCurrentUserLoadingStatusAction({
+                  status: false,
+                })
+              );
+            })
+          );
+      })
+    )
+  );
+
+  attachCard$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<AttachCardRequestClientInterface & Action>(
+        UserActionTypes.ATTACH_CARD_REQUESTED
+      ),
+      switchMap((card) => {
+        return this.httpClient
+          .post<void>('/api/cards', transformAttachCardRequestToServer(card))
+          .pipe(
+            map(() => attachCardSucceededAction()),
+            catchError((error) => of(attachCardErrorAction())),
+            finalize(() => {
+              this.store.dispatch(
+                setAttachCardLoadingStatusAction({
                   status: false,
                 })
               );

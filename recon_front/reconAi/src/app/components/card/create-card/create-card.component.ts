@@ -1,4 +1,4 @@
-import { CreateCardDialogComponent } from './create-card-dialog/create-card-dialog.component';
+import { CreateCardDialogContainer } from './create-card-dialog/create-card-dialog.container';
 
 import { MatDialog } from '@angular/material/dialog';
 import { Component } from '@angular/core';
@@ -12,7 +12,7 @@ export class CreateCardComponent {
   constructor(private dialog: MatDialog) {}
 
   openDialog(): void {
-    this.dialog.open(CreateCardDialogComponent, {
+    this.dialog.open(CreateCardDialogContainer, {
       width: '460px',
       height: '230px',
     });

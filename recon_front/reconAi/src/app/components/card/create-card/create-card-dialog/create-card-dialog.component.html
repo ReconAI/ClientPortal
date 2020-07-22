@@ -9,8 +9,15 @@
     <div id="card-errors" role="alert" *ngIf="error">{{ error }}</div>
   </div>
   <div class="button-container">
-    <button mat-raised-button color="primary" [disabled]="!!error">
-      Add
+    <button
+      mat-raised-button
+      color="primary"
+      [disabled]="loadingStatus || !!error"
+    >
+      <mat-icon *ngIf="loadingStatus; else loaded">
+        <mat-spinner color="primary" diameter="20"></mat-spinner>
+      </mat-icon>
+      <ng-template #loaded>ADD</ng-template>
     </button>
   </div>
 </form>
