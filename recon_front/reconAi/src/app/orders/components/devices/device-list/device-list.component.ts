@@ -32,6 +32,8 @@ export class DeviceListComponent implements OnInit {
   @Input() currentPage: number;
   @Input() pageSize: number;
   @Input() loadingStatus: boolean;
+  @Input() isSuperAdmin = false;
+
   @Output() loadData$ = new EventEmitter<PaginatedDeviceListRequestInterface>();
 
   @Input() ordering;
@@ -57,6 +59,7 @@ export class DeviceListComponent implements OnInit {
   constructor(private router: Router) {}
 
   navigateTo(url: string): void {
+    console.log(url);
     this.router.navigate([url]);
   }
 
@@ -73,6 +76,10 @@ export class DeviceListComponent implements OnInit {
         categoryId: category.id,
       },
     });
+  }
+
+  cardClick(id: number): void {
+    this.router.navigate(['/orders', id]);
   }
 
   changePage(page: number): void {

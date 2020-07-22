@@ -10,7 +10,12 @@
       ><span (click)="removeChip(i)">&times;</span>
     </div>
     <input
-      (keydown.enter)="addChip(chipText.value); chipText.value = ''"
+      (keydown.enter)="
+        $event.preventDefault();
+        $event.stopPropagation();
+        addChip(chipText.value);
+        chipText.value = ''
+      "
       [placeholder]="placeholder"
       (blur)="touched = true; focused = false"
       (focus)="focused = true"

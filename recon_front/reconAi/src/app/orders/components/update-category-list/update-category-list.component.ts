@@ -28,7 +28,7 @@ export class UpdateCategoryListComponent implements OnInit {
           this.fb.group({
             name: [category.name, Validators.required],
             id: [category.id],
-            manufacturers_count: [category.manufacturers_count],
+            has_device: [category.has_device],
           })
         )
       ),
@@ -48,7 +48,7 @@ export class UpdateCategoryListComponent implements OnInit {
   }
 
   removeCategory(i: number, category: CategoryInterface): void {
-    if (!category.manufacturers_count) {
+    if (!category.has_device) {
       this.categories.removeAt(i);
     }
   }

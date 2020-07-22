@@ -29,6 +29,7 @@ export const transformUserResponse = (
   isActive: response.is_active,
   profile: {
     username: response.username,
+    id: response.id,
   },
   user: {
     firstName: response.firstname,

@@ -1442,6 +1442,10 @@ class Device(models.Model):
     seo_description = models.TextField(null=True, db_column='seoDescription')
     published = models.BooleanField(default=True)
     created_dt = models.DateTimeField(null=True, auto_now_add=True)
+    category = models.ForeignKey(
+        Category, on_delete=models.PROTECT, db_column='categoryId',
+        null=True, blank=False
+    )
 
     class Meta:
         """

@@ -10,6 +10,7 @@ import {
   DeviceListResponseClientInterface,
   DeviceListItemClientInterface,
   PaginatedDeviceListRequestInterface,
+  DeviceRequestClientInterface,
 } from './orders.server.helpers';
 import {
   loadCategoriesSucceededAction,
@@ -21,6 +22,11 @@ import {
   createDeviceErrorAction,
   loadDeviceListSucceededAction,
   updateDeviceListMetaAction,
+  loadManagementDeviceSucceededAction,
+  resetUpdateDeviceErrorAction,
+  updateDeviceErrorAction,
+  resetDeviceListMetaAction,
+  loadDeviceSucceededAction,
 } from './orders.actions';
 import { CategoryInterface } from './../../orders/constants/types/category';
 import { ActivationInterface } from './../../constants/types/activation';
@@ -39,6 +45,7 @@ import {
 export interface OrdersError {
   createManufacturer: FormServerErrorInterface;
   createDevice: FormServerErrorInterface;
+  updateDevice: FormServerErrorInterface;
 }
 
 export interface MetaStoreDevicesInterface extends MetaClientInterface {
@@ -49,25 +56,30 @@ export interface MetaStoreDevicesInterface extends MetaClientInterface {
 const errorInit: OrdersError = {
   createManufacturer: null,
   createDevice: null,
+  updateDevice: null,
 };
 export interface OrdersState {
   categories: CategoryInterface[];
   manufacturers: ManufacturerInterface[];
+  device: DeviceFormInterface;
   devices: DeviceListItemClientInterface[];
   meta: MetaStoreDevicesInterface;
   errors: OrdersError;
 }
 
+const metaInit: MetaStoreDevicesInterface = {
+  currentPage: 1,
+  ordering: CREATED_DT_DESC,
+  categoryId: ALL_CATEGORIES_ID_FOR_DEVICE,
+};
+
 export const initialState: OrdersState = {
   categories: [],
   manufacturers: [],
   errors: errorInit,
+  device: null,
   devices: [],
-  meta: {
-    currentPage: 1,
-    ordering: CREATED_DT_DESC,
-    categoryId: ALL_CATEGORIES_ID_FOR_DEVICE,
-  },
+  meta: metaInit,
 };
 
 const loadCategoriesSucceededReducer = (
@@ -139,7 +151,6 @@ const loadDeviceListSucceededReducer = (
     ...result.meta,
   },
 });
-
 const updateDeviceListMetaReducer = (
   state: OrdersState,
   { type, pagination }: Action & PaginatedDeviceListRequestInterface
@@ -149,6 +160,46 @@ const updateDeviceListMetaReducer = (
     ...state.meta,
     ...pagination,
   },
+});
+
+const loadManagementDeviceSucceededReducer = (
+  state: OrdersState,
+  { type, device }: Action & DeviceRequestClientInterface
+): OrdersState => ({
+  ...state,
+  device,
+});
+
+const resetDeviceListMetaReducer = (state: OrdersState): OrdersState => ({
+  ...state,
+  meta: metaInit,
+});
+
+const updateDeviceErrorReducer = (
+  state: OrdersState,
+  { type, errors }: Action & ObjectFormErrorInterface
+): OrdersState => ({
+  ...state,
+  errors: {
+    ...state.errors,
+    updateDevice: errors,
+  },
+});
+
+const resetUpdateDeviceErrorReducer = (state: OrdersState): OrdersState => ({
+  ...state,
+  errors: {
+    ...state.errors,
+    updateDevice: errorInit.updateDevice,
+  },
+});
+
+const loadDeviceSucceededReducer = (
+  state: OrdersState,
+  { type, device }: Action & DeviceRequestClientInterface
+): OrdersState => ({
+  ...state,
+  device,
 });
 
 const ordersReducer = createReducer(
@@ -161,7 +212,12 @@ const ordersReducer = createReducer(
   on(createDeviceErrorAction, createDeviceErrorReducer),
   on(resetCreateDeviceErrorAction, resetCreateDeviceErrorReducer),
   on(loadDeviceListSucceededAction, loadDeviceListSucceededReducer),
-  on(updateDeviceListMetaAction, updateDeviceListMetaReducer)
+  on(updateDeviceListMetaAction, updateDeviceListMetaReducer),
+  on(loadManagementDeviceSucceededAction, loadManagementDeviceSucceededReducer),
+  on(updateDeviceErrorAction, updateDeviceErrorReducer),
+  on(resetUpdateDeviceErrorAction, resetUpdateDeviceErrorReducer),
+  on(resetDeviceListMetaAction, resetDeviceListMetaReducer),
+  on(loadDeviceSucceededAction, loadDeviceSucceededReducer)
 );
 
 export function reducer(state: OrdersState | undefined, action: Action) {

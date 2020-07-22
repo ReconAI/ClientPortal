@@ -14,6 +14,7 @@ export class CrudTableComponent implements OnInit {
 
   @Input() columns: CrudTableColumn[] = [];
   @Input() isWithActions = true;
+  @Input() shouldShowActionsForRow;
 
   @Output() changePage$ = new EventEmitter<number>();
   @Output() rowClick$ = new EventEmitter<any>();

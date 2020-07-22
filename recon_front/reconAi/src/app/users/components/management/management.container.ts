@@ -10,6 +10,7 @@ import { Store, select } from '@ngrx/store';
 import { UserInterface } from './../../constants/types/user';
 import { Component, OnInit, Input } from '@angular/core';
 import { AppState } from 'app/store/reducers';
+import { selectCurrentUserProfileId } from 'app/store/user/user.selectors';
 
 @Component({
   selector: 'recon-management-container',
@@ -31,6 +32,10 @@ export class ManagementContainer implements OnInit {
 
   currentPage$: Observable<number> = this.store.pipe(
     select(selectUsersMetaCurrentPage)
+  );
+
+  currentUserId$: Observable<string> = this.store.pipe(
+    select(selectCurrentUserProfileId)
   );
 
   loadUsers(page = 1): void {

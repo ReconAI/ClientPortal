@@ -1,0 +1,20 @@
+<ng-container *ngIf="!(loadingDeviceStatus$ | async); else loading">
+  <ng-container *ngIf="isExist$ | async; else notFound">
+    <recon-device-card
+      [name]="name$ | async"
+      [product]="product$ | async"
+      [description]="description$ | async"
+      [salesPrice]="salesPrice$ | async"
+      [seoTags]="seoTags$ | async"
+      [seoTitle]="seoTitle$ | async"
+      [seoDescription]="seoDescription$ | async"
+      [images]="images$ | async"
+      [category]="category$ | async"
+      [manufacturer]="manufacturer$ | async"
+    ></recon-device-card>
+  </ng-container>
+  <ng-template #notFound>Not found</ng-template>
+</ng-container>
+<ng-template #loading>
+  Loading...
+</ng-template>

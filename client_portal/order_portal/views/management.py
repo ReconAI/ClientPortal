@@ -3,22 +3,20 @@ Order portal management views set
 """
 
 from django.conf import settings
-from django.db.models import Count
-from django.db.models.query import QuerySet
 from django.db.transaction import atomic
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
-from rest_framework.mixins import ListModelMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from order_portal.serizalizers import CategorySerializer, \
-    ReadManufacturerSerializer, WriteManufacturerSerializer, \
+from order_portal.serizalizers import ReadManufacturerSerializer, \
+    WriteManufacturerSerializer, \
     CategoryCollectionSerializer, CreateDeviceSerializer, \
-    UpdateDeviceSerializer, FullViewDeviceSerializer
+    UpdateDeviceSerializer, FullViewDeviceSerializer, CategoryDeviceSerializer
+from order_portal.views.catalogue import CategoryListMixin
 from recon_db_manager.models import Category, Manufacturer
 from recon_db_manager.models import Device
 from shared.permissions import IsActive, IsSuperUser, PaymentRequired
@@ -26,40 +24,40 @@ from shared.swagger.headers import token_header
 from shared.swagger.responses import http401, http404, \
     http403, http405, DEFAULT_UNSAFE_REQUEST_RESPONSES, \
     DEFAULT_DELETE_REQUEST_RESPONSES, DEFAULT_GET_REQUESTS_RESPONSES, \
-    data_serializer, http422
+    data_serializer, http422, data_message_serializer, \
+    default_get_responses_with_custom_success
 from shared.views.utils import RetrieveUpdateDestroyAPIView, \
     ListCreateAPIView, CreateAPIView
 
 
-@method_decorator(name='post', decorator=swagger_auto_schema(
-    responses={
-        status.HTTP_200_OK: data_serializer(CategorySerializer),
-        status.HTTP_401_UNAUTHORIZED: http401(),
-        status.HTTP_403_FORBIDDEN: http403(),
-        status.HTTP_404_NOT_FOUND: http404(),
-        status.HTTP_405_METHOD_NOT_ALLOWED: http405(),
-        status.HTTP_422_UNPROCESSABLE_ENTITY: http422(),
-    },
-    request_body=CategoryCollectionSerializer,
-    tags=['Category'],
-    operation_summary='Creates a category',
-    operation_description='Synchronize categories set',
-    manual_parameters=[
-        token_header(),
-    ]
-))
-class SyncCategoriesView(ListModelMixin, CreateAPIView):
+class SyncCategoriesView(CategoryListMixin, ListCreateAPIView):
     """
     User create and get list views set
     """
-
-    serializer_class = CategorySerializer
-
     permission_classes = (IsAuthenticated, IsActive,
                           IsSuperUser, PaymentRequired)
 
     queryset = Category.objects.all()
 
+    @swagger_auto_schema(
+        responses={
+            status.HTTP_200_OK: data_message_serializer(
+                CategoryDeviceSerializer
+            ),
+            status.HTTP_401_UNAUTHORIZED: http401(),
+            status.HTTP_403_FORBIDDEN: http403(),
+            status.HTTP_404_NOT_FOUND: http404(),
+            status.HTTP_405_METHOD_NOT_ALLOWED: http405(),
+            status.HTTP_422_UNPROCESSABLE_ENTITY: http422(),
+        },
+        request_body=CategoryCollectionSerializer,
+        tags=['Category'],
+        operation_summary='Creates a category',
+        operation_description='Synchronize categories set',
+        manual_parameters=[
+            token_header(),
+        ]
+    )
     @atomic(settings.RECON_AI_CONNECTION_NAME)
     def post(self, request, *args, **kwargs):
         serializer = CategoryCollectionSerializer(data=request.data)
@@ -67,16 +65,32 @@ class SyncCategoriesView(ListModelMixin, CreateAPIView):
         if serializer.is_valid():
             serializer.save()
 
-            return self.list(request)
+            return Response({
+                'data': self.list(),
+                'message': _('Categories were synchornized successfully')
+            })
 
         return Response({
             'errors': serializer.errors
         }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
-    def filter_queryset(self, queryset: QuerySet) -> QuerySet:
-        return queryset.annotate(
-            manufacturers_count=Count('manufacturer')
-        )
+    @swagger_auto_schema(
+        responses=default_get_responses_with_custom_success(
+            data_serializer(CategoryDeviceSerializer)
+        ),
+        tags=['Category'],
+        operation_summary="List of categories",
+        operation_description='Categories list view with device attached flag'
+    )
+    def get(self, *args, **kwargs) -> Response:
+        """
+        Categories list view with device attached flag
+
+        :rtype: Response
+        """
+        return Response({
+            'data': self.list()
+        })
 
 
 class ManufacturerOperator:
@@ -92,13 +106,9 @@ class ManufacturerOperator:
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
-    responses={
-        status.HTTP_200_OK: data_serializer(ReadManufacturerSerializer),
-        status.HTTP_401_UNAUTHORIZED: http401(),
-        status.HTTP_403_FORBIDDEN: http403(),
-        status.HTTP_404_NOT_FOUND: http404(),
-        status.HTTP_405_METHOD_NOT_ALLOWED: http405()
-    },
+    responses=default_get_responses_with_custom_success(
+        data_serializer(ReadManufacturerSerializer)
+    ),
     tags=['Manufacturer'],
     operation_summary="List of manufacturers",
     operation_description='Returns list of manufacturers with categories',
@@ -160,13 +170,9 @@ class ManufacturerListView(ManufacturerOperator, ListCreateAPIView):
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
-    responses={
-        status.HTTP_200_OK: ReadManufacturerSerializer,
-        status.HTTP_401_UNAUTHORIZED: http401(),
-        status.HTTP_403_FORBIDDEN: http403(),
-        status.HTTP_404_NOT_FOUND: http404(),
-        status.HTTP_405_METHOD_NOT_ALLOWED: http405()
-    },
+    responses=default_get_responses_with_custom_success(
+        ReadManufacturerSerializer
+    ),
     tags=['Manufacturer'],
     operation_summary="Get a manufacturer",
     operation_description='Returns a manufacturer with categories',
@@ -242,6 +248,7 @@ class CreateDeviceView(CreateAPIView):
 ))
 @method_decorator(name='put', decorator=swagger_auto_schema(
     responses=DEFAULT_UNSAFE_REQUEST_RESPONSES,
+    request_body=UpdateDeviceSerializer,
     tags=['Device'],
     operation_summary="Updates a device",
     operation_description='Updates a device with images',

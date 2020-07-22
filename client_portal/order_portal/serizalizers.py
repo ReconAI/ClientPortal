@@ -19,11 +19,23 @@ from recon_db_manager.models import Category, Manufacturer, Device, DeviceImage
 
 class CategorySerializer(ModelSerializer):
     """
-    Category serializer for displays
+    Condensed category serializer for displays
     """
 
-    manufacturers_count = serializers.SerializerMethodField(
-        'get_manufacturers_cnt'
+    class Meta:
+        """
+        Id and name should be shown
+        """
+        model = Category
+        fields = ('id', 'name')
+
+
+class CategoryDeviceSerializer(ModelSerializer):
+    """
+    Category serializer for displays
+    """
+    has_device = serializers.SerializerMethodField(
+        'get_has_device'
     )
 
     class Meta:
@@ -31,16 +43,16 @@ class CategorySerializer(ModelSerializer):
         Id and name should be shown
         """
         model = Category
-        fields = ('id', 'name', 'manufacturers_count')
+        fields = ('id', 'name', 'has_device')
 
     @staticmethod
-    def get_manufacturers_cnt(category: Category) -> int:
+    def get_has_device(category: Category) -> bool:
         """
         :type category: Category
 
-        :rtype: int
+        :rtype: bool
         """
-        return category.manufacturers_count
+        return category.device_count > 0
 
 
 class SynchronizeCategorySerializer(ModelSerializer):
@@ -86,7 +98,7 @@ class CategoryCollectionSerializer(Serializer):
 
         if self.__are_categories_assigned(categories):
             raise ValidationError(
-                'You try to delete categories attached to manufacturers',
+                'You try to delete categories attached to some devices',
                 code='delete_prohibition'
             )
 
@@ -162,7 +174,7 @@ class CategoryCollectionSerializer(Serializer):
         return Category.objects.filter(pk__in=ids_for_delete).delete()
 
     @property
-    def errors(self) -> list:
+    def errors(self) -> dict:
         errors = {}
         category_errors = super().errors.get('categories', [])
 
@@ -180,10 +192,8 @@ class CategoryCollectionSerializer(Serializer):
     def __are_categories_assigned(self, categories):
         categories_for_delete = self.__categories_for_delete_ids(categories)
 
-        return Category.objects.select_related(
-            'manufacturer_set'
-        ).filter(
-            manufacturer__categories__in=categories_for_delete
+        return Device.objects.filter(
+            category_id__in=categories_for_delete
         ).exists()
 
     @staticmethod
@@ -226,14 +236,12 @@ class BaseManufacturerSerializer(ModelSerializer):
     Condensed view of manufacturer
     """
 
-    categories = SynchronizeCategorySerializer(many=True, allow_null=True)
-
     class Meta:
         """
         Manufacturer name and related categories must be displayed
         """
         model = Manufacturer
-        fields = ('id', 'name', 'categories')
+        fields = ('id', 'name')
 
 
 class ReadManufacturerSerializer(ModelSerializer):
@@ -342,6 +350,7 @@ class DeviceItemSerializer(DeviceListSerializer):
 
     images = DeviceImageSerializer(many=True)
     manufacturer = BaseManufacturerSerializer()
+    category = CategorySerializer()
 
     class Meta:
         """
@@ -350,7 +359,7 @@ class DeviceItemSerializer(DeviceListSerializer):
         model = Device
         fields = ('id', 'name', 'description', 'sales_price', 'product_number',
                   'images', 'seo_title', 'seo_keywords', 'seo_description',
-                  'manufacturer')
+                  'manufacturer', 'category')
 
 
 class CreateDeviceSerializer(ModelSerializer):
@@ -362,6 +371,9 @@ class CreateDeviceSerializer(ModelSerializer):
 
     manufacturer = serializers.PrimaryKeyRelatedField(
         queryset=Manufacturer.objects.all()
+    )
+    category = serializers.PrimaryKeyRelatedField(
+        queryset=Category.objects.all()
     )
     seo_keywords = serializers.ListSerializer(
         child=CharField(required=True, allow_blank=False)
@@ -388,7 +400,7 @@ class CreateDeviceSerializer(ModelSerializer):
         fields = (
             'name', 'description', 'manufacturer', 'buying_price',
             'sales_price', 'product_number', 'seo_title', 'seo_keywords',
-            'seo_description', 'images'
+            'seo_description', 'images', 'category'
         )
 
     @staticmethod
@@ -439,7 +451,7 @@ class UpdateDeviceSerializer(CreateDeviceSerializer):
         fields = (
             'name', 'description', 'manufacturer', 'buying_price',
             'sales_price', 'product_number', 'seo_title', 'seo_keywords',
-            'seo_description', 'images', 'delete_images'
+            'seo_description', 'images', 'delete_images', 'category'
         )
 
     def update(self, instance: Device, validated_data: dict) -> Device:
@@ -502,9 +514,9 @@ class FullViewDeviceSerializer(ModelSerializer):
         """
         model = Device
         fields = (
-            'id', 'name', 'description', 'manufacturer_id', 'buying_price',
-            'sales_price', 'product_number', 'seo_title', 'seo_keywords',
-            'seo_description', 'images'
+            'id', 'name', 'description', 'category_id', 'manufacturer_id',
+            'buying_price', 'sales_price', 'product_number', 'seo_title',
+            'seo_keywords', 'seo_description', 'images'
         )
 
     @staticmethod

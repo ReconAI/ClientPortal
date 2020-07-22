@@ -1,0 +1,34 @@
+<div class="images-container">
+  <div class="view-container">
+    <img
+      [src]="images[activePictureIndex]?.path || 'assets/noImage.png'"
+      alt="main image"
+      [ngClass]="{ 'no-image': !images[activePictureIndex]?.path }"
+    />
+  </div>
+
+  <div class="preview-container" *ngIf="images?.length">
+    <img
+      src="assets/icons/arrow-left.svg"
+      width="20"
+      height="17"
+      [ngClass]="{ blocked: isBlockedFirst }"
+      (click)="changeActiveIndex(activePictureIndex - 1)"
+    />
+    <div
+      class="preview"
+      *ngFor="let img of images; let i = index"
+      [ngClass]="{ active: i === activePictureIndex }"
+      (click)="changeActiveIndex(i)"
+    >
+      <img [src]="img?.path" alt="Image" />
+    </div>
+    <img
+      src="assets/icons/arrow-right.svg"
+      width="20"
+      height="17"
+      [ngClass]="{ blocked: isBlockedLast }"
+      (click)="changeActiveIndex(activePictureIndex + 1)"
+    />
+  </div>
+</div>

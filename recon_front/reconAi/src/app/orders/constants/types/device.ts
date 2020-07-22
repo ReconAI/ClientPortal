@@ -2,16 +2,17 @@ import { ManufacturerServerInterface } from 'app/store/orders/orders.server.help
 
 export interface DeviceFormInterface {
   name: string;
-  manufacturer: string;
-  images: File[] | string[];
+  manufacturer?: string | number;
+  manufacturer_id?: number;
+  images: File[] | string[] | ServerImageInterface[];
   product: string;
   description: string;
   buyingPrice: string;
   salesPrice: string;
-  seoTags: string[];
+  seoTags: string[] | string;
   seoTitle: string;
   seoDescription: string;
-  category?: string;
+  category?: string | number;
   id?: number;
 }
 
@@ -27,10 +28,12 @@ export interface DeviceServerInterface {
   sales_price: string;
   product_number: string;
   seo_title: string;
-  seo_keywords: string[];
+  seo_keywords: string[] | string;
   seo_description: string;
   images: string[] | ServerImageInterface[];
   id?: number;
+  delete_images?: number[];
+  category: number;
 }
 
 export interface DeviceListServerResponseInterface {

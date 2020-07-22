@@ -79,14 +79,13 @@
     [showRequiredSymbol]="true"
     fieldType="textarea"
   ></recon-form-input>
-
   <recon-form-select
     formControlName="category"
     [showRequiredSymbol]="true"
     [options]="categoryOptions"
-    label="Device category"
-  ></recon-form-select>
-
+    label="Category"
+  >
+  </recon-form-select>
   <div class="button-container">
     <button
       mat-raised-button
@@ -94,14 +93,18 @@
       type="submit"
       [disabled]="loading || !deviceForm.valid"
     >
-    <mat-icon *ngIf="loading; else loaded">
-      <mat-spinner color="primary" diameter="20"></mat-spinner>
-    </mat-icon>
-    <ng-template #loaded>SAVE</ng-template>
+      <mat-icon *ngIf="loading; else loaded">
+        <mat-spinner color="primary" diameter="20"></mat-spinner>
+      </mat-icon>
+      <ng-template #loaded>SAVE</ng-template>
     </button>
-    <button type="button" class="recon-white-button" (click)="cancelClick()" matRipple>
+    <button
+      type="button"
+      class="recon-white-button"
+      (click)="cancelClick()"
+      matRipple
+    >
       CANCEL
     </button>
-    
   </div>
 </form>

@@ -29,6 +29,7 @@ export class HttpErrorInterceptor implements HttpInterceptor {
     { url: '/api/users', method: 'POST' },
     { url: '/api/users/invitations', method: 'PUT' },
     { url: '/order-api/management/manufacturers', method: 'POST' },
+    { url: '/order-api/management/devices', method: 'PUT' },
     { url: '/order-api/management/devices', method: 'POST' },
   ];
 
@@ -77,7 +78,7 @@ export class HttpErrorInterceptor implements HttpInterceptor {
           Math.floor(error.status / 100) === 5 ||
           !this.errorsToNotShowMessage.find(
             (req) =>
-              req.url === request?.url &&
+              request?.url?.startsWith(req.url) &&
               (!req.method || req.method === request?.method)
           )
         ) {
@@ -89,7 +90,7 @@ export class HttpErrorInterceptor implements HttpInterceptor {
           this.openSnackBar(errorMessage);
 
           if (!environment.production) {
-            console.error(errorMessage);
+            console.error(errorMessage, 'ERROR');
           }
         }
 

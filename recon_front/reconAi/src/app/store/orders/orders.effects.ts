@@ -1,3 +1,8 @@
+import {
+  setManagementDeviceLoadingStatusAction,
+  setUpdateDeviceLoadingStatusAction,
+  setDeviceLoadingStatusAction,
+} from './../loaders/loaders.actions';
 import { generalTransformFormErrorToObject } from './../../core/helpers/generalFormsErrorsTransformation';
 import { CategoryInterface } from './../../orders/constants/types/category';
 import {
@@ -12,9 +17,11 @@ import {
   transformCreateDeviceRequestToServer,
   deviceFormFieldLabels,
   transformLoadedDevicesFromServer,
-  DeleteDeviceRequestInterface,
-  PaginatedDeviceListRequestInterface,
   handlePaginationParamsForDeviceList,
+  IdDeviceRequestInterface,
+  DeviceListItemServerInterface,
+  transformDeviceFromServer,
+  transformUpdateDeviceRequestToServer,
 } from './orders.server.helpers';
 import { Router } from '@angular/router';
 import { Action, Store, select } from '@ngrx/store';
@@ -30,7 +37,7 @@ import {
   mergeMap,
   withLatestFrom,
 } from 'rxjs/operators';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AppState } from '../reducers';
 import {
   OrdersActionTypes,
@@ -51,6 +58,12 @@ import {
   deleteDeviceErrorAction,
   loadDeviceListRequestedAction,
   updateDeviceListMetaAction,
+  loadManagementDeviceSucceededAction,
+  loadManagementDeviceErrorAction,
+  updateDeviceSucceededAction,
+  updateDeviceErrorAction,
+  loadDeviceErrorAction,
+  loadDeviceSucceededAction,
 } from './orders.actions';
 import {
   setCategoriesListLoadingStatusAction,
@@ -76,6 +89,8 @@ import {
   selectDevices,
   selectDevicesMetaCurrentPage,
   selectDevicesMeta,
+  selectDeviceImages,
+  selectDeviceId,
 } from './orders.selectors';
 
 @Injectable()
@@ -227,7 +242,7 @@ export class OrdersEffects {
             catchError((error) => of(loadManufacturerListErrorAction())),
             finalize(() => {
               this.store.dispatch(
-                setCategoriesListLoadingStatusAction({
+                setManufacturerListLoadingStatusAction({
                   status: false,
                 })
               );
@@ -324,7 +339,7 @@ export class OrdersEffects {
 
   deleteDevice$: Observable<Action> = createEffect(() =>
     this.actions$.pipe(
-      ofType<Action & DeleteDeviceRequestInterface>(
+      ofType<Action & IdDeviceRequestInterface>(
         OrdersActionTypes.DELETE_DEVICE_REQUESTED
       ),
       tap(() => {
@@ -360,6 +375,123 @@ export class OrdersEffects {
             finalize(() => {
               this.store.dispatch(
                 setDeleteDeviceLoadingStatusAction({
+                  status: false,
+                })
+              );
+            })
+          );
+      })
+    )
+  );
+
+  loadManagementDevice$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action & IdDeviceRequestInterface>(
+        OrdersActionTypes.LOAD_MANAGEMENT_DEVICE_REQUESTED
+      ),
+      tap(() => {
+        this.store.dispatch(
+          setManagementDeviceLoadingStatusAction({
+            status: true,
+          })
+        );
+      }),
+      switchMap(({ id }) => {
+        return this.httpClient
+          .get<DeviceListItemServerInterface>(
+            `/order-api/management/devices/${id}`
+          )
+          .pipe(
+            map((device) =>
+              loadManagementDeviceSucceededAction(
+                transformDeviceFromServer(device)
+              )
+            ),
+            catchError(() => of(loadManagementDeviceErrorAction())),
+            finalize(() => {
+              this.store.dispatch(
+                setManagementDeviceLoadingStatusAction({
+                  status: false,
+                })
+              );
+            })
+          );
+      })
+    )
+  );
+
+  updateDevice$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action & CreateDeviceRequestClientInterface>(
+        OrdersActionTypes.UPDATE_DEVICE_REQUESTED
+      ),
+      tap(() => {
+        this.store.dispatch(
+          setUpdateDeviceLoadingStatusAction({
+            status: true,
+          })
+        );
+      }),
+      withLatestFrom(this.store.pipe(select(selectDeviceImages))),
+      // to form to base64 in async way
+      mergeMap(
+        async ([{ device }, oldImages]) =>
+          await transformUpdateDeviceRequestToServer(device, oldImages)
+      ),
+      withLatestFrom(this.store.pipe(select(selectDeviceId))),
+      switchMap(([formedDevice, id]) => {
+        return this.httpClient
+          .put<void>(`/order-api/management/devices/${id}`, formedDevice)
+          .pipe(
+            map(() => updateDeviceSucceededAction()),
+            tap(() => {
+              this.router.navigate(['/orders']);
+            }),
+            catchError((error) =>
+              of(
+                updateDeviceErrorAction(
+                  generalTransformFormErrorToObject(
+                    error,
+                    deviceFormFieldLabels
+                  )
+                )
+              )
+            ),
+            finalize(() => {
+              this.store.dispatch(
+                setUpdateDeviceLoadingStatusAction({
+                  status: false,
+                })
+              );
+            })
+          );
+      })
+    )
+  );
+
+  loadDevice$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action & IdDeviceRequestInterface>(
+        OrdersActionTypes.LOAD_DEVICE_REQUESTED
+      ),
+      tap(() => {
+        this.store.dispatch(
+          setDeviceLoadingStatusAction({
+            status: true,
+          })
+        );
+      }),
+      switchMap(({ id }) => {
+        return this.httpClient
+          .get<DeviceListItemServerInterface>(`/order-api/devices/${id}`)
+          .pipe(
+            map((device) =>
+              loadDeviceSucceededAction(transformDeviceFromServer(device))
+            ),
+            catchError(() => of(loadDeviceErrorAction())),
+            finalize(() => {
+              this.store.dispatch(
+                setDeviceLoadingStatusAction({
                   status: false,
                 })
               );

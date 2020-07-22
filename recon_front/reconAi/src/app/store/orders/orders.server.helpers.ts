@@ -115,7 +115,7 @@ export const transformCreateDeviceRequestToServer = async (
   return {
     name: device.name,
     description: device.description,
-    manufacturer: device.manufacturer,
+    manufacturer: device.manufacturer as string,
     buying_price: device.buyingPrice,
     sales_price: device.salesPrice,
     product_number: device.product,
@@ -123,6 +123,43 @@ export const transformCreateDeviceRequestToServer = async (
     seo_keywords: device.seoTags,
     seo_description: device.seoDescription,
     images: based64Images,
+    category: device.category as number,
+  };
+};
+
+export const transformUpdateDeviceRequestToServer = async (
+  device: DeviceFormInterface,
+  oldImages: ServerImageInterface[]
+): Promise<DeviceServerInterface> => {
+  const deviceImages = device.images;
+  const based64Images: string[] = [];
+  const imagesToDelete: number[] = oldImages
+    .filter(
+      (img) =>
+        deviceImages.findIndex((newImage) => newImage.id === img.id) === -1
+    )
+    .map(({ id }) => id);
+
+  // absence of id means this file exists on db
+  for (let i = 0; i < deviceImages.length; i++) {
+    if (!(deviceImages[i] as ServerImageInterface).id) {
+      based64Images.push((await getBase64(deviceImages[i] as File)).toString());
+    }
+  }
+
+  return {
+    name: device.name,
+    description: device.description,
+    manufacturer: device.manufacturer as string,
+    buying_price: device.buyingPrice,
+    sales_price: device.salesPrice,
+    product_number: device.product,
+    seo_title: device.seoTitle,
+    seo_keywords: device.seoTags,
+    seo_description: device.seoDescription,
+    images: based64Images,
+    delete_images: imagesToDelete,
+    category: device.category as number,
   };
 };
 
@@ -158,7 +195,8 @@ export interface DeviceListItemServerInterface {
   id: number;
   name: string;
   description: string;
-  manufacturer: ManufacturerServerInterface;
+  manufacturer?: ManufacturerServerInterface;
+  manufacturer_id?: number;
   buying_price: string;
   sales_price: string;
   product_number: string;
@@ -168,6 +206,8 @@ export interface DeviceListItemServerInterface {
   published: boolean;
   images: ServerImageInterface[];
   created_dt: string;
+  category_id?: number;
+  category?: CategoryInterface;
 }
 export const transformLoadedDevicesFromServer = (
   response: PaginationResponseServerInterface<DeviceListServerResponseInterface>
@@ -188,7 +228,7 @@ export const transformLoadedDevicesFromServer = (
   },
 });
 
-export interface DeleteDeviceRequestInterface {
+export interface IdDeviceRequestInterface {
   id: number;
 }
 
@@ -198,7 +238,7 @@ export interface PaginatedDeviceListRequestInterface {
 export interface DeviceListPaginationServerInterface {
   page: number;
   ordering: string;
-  manufacturer__categories__id: number;
+  category_id: number;
 }
 
 export const handlePaginationParamsForDeviceList = ({
@@ -209,5 +249,29 @@ export const handlePaginationParamsForDeviceList = ({
   `page=${currentPage}&ordering=${ordering}${
     categoryId === ALL_CATEGORIES_ID_FOR_DEVICE
       ? ''
-      : `&manufacturer__categories__id=${categoryId}`
+      : `&category_id=${categoryId}`
   }`;
+
+export interface DeviceRequestClientInterface {
+  device: DeviceFormInterface;
+}
+
+export const transformDeviceFromServer = (
+  device: DeviceListItemServerInterface
+): DeviceRequestClientInterface => ({
+  device: {
+    name: device.name,
+    // 2 lines below with || are used for management request and simple request
+    manufacturer: device?.manufacturer_id || device?.manufacturer?.name,
+    category: device.category_id || device?.category?.name || '',
+    description: device.description,
+    id: device.id,
+    buyingPrice: device.buying_price,
+    salesPrice: device.sales_price,
+    product: device.product_number,
+    seoTitle: device.seo_title,
+    seoDescription: device.seo_description,
+    seoTags: device.seo_keywords,
+    images: device.images,
+  },
+});
