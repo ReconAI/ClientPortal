@@ -96,22 +96,6 @@ class IsActive(BasePermission):
         return request.user.is_active
 
 
-class IsCompanyAdmin(BasePermission):
-    """
-    User must be company admin to proceed
-    """
-    def has_permission(self, request: Request, view) -> bool:
-        """
-        :type request: Request
-        :param view:
-
-        :rtype: bool
-        """
-        user = request.user
-
-        return user.is_superuser or user.is_admin
-
-
 class IsSuperUser(BasePermission):
     """
     User must be company admin to proceed
@@ -128,7 +112,40 @@ class IsSuperUser(BasePermission):
         return user.is_superuser
 
 
-class PaymentRequired(BasePermission):
+class IsCompanyAdmin(IsSuperUser):
+    """
+    User must be company admin to proceed
+    """
+    def has_permission(self, request: Request, view) -> bool:
+        """
+        :type request: Request
+        :param view:
+
+        :rtype: bool
+        """
+
+        return super().has_permission(request, view) or request.user.is_admin
+
+
+class IsCompanyDeveloper(IsCompanyAdmin):
+    """
+    User must be company developer to proceed
+    """
+    def has_permission(self, request: Request, view) -> bool:
+        """
+        :type request: Request
+        :param view:
+
+        :rtype: bool
+        """
+
+        return (
+            super().has_permission(request, view)
+            or request.user.is_developer
+        )
+
+
+class PaymentRequired(IsSuperUser):
     """
     User must pay for the service
     """
@@ -139,6 +156,8 @@ class PaymentRequired(BasePermission):
 
         :rtype: bool
         """
-        user = request.user
 
-        return user.is_superuser or user.is_on_trial
+        return (
+            super().has_permission(request, view)
+            or request.user.is_on_trial
+        )

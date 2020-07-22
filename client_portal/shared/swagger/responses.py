@@ -182,6 +182,20 @@ def data_serializer(
     })
 
 
+def data_serializer_many(
+        serializer: 'Serializer') -> Union[type, Serializer]:
+    """
+    Converts serializer to common response format
+
+    :type serializer: 'Serializer'
+
+    :rtype: Type[Serializer]
+    """
+    return _app_response({
+        'data': serializer(many=True)
+    })
+
+
 def data_message_serializer(
         serializer: Type['Serializer']) -> Union[type, Type[Serializer]]:
     """
@@ -193,6 +207,21 @@ def data_message_serializer(
     """
     return _app_response({
         'data': serializer(),
+        'message': serializers.CharField()
+    })
+
+
+def data_many_message_serializer(
+        serializer: Type['Serializer']) -> Union[type, Type[Serializer]]:
+    """
+    Converts http message and serializer to common response format
+
+    :type serializer: Type['Serializer']
+
+    :rtype: Type[Serializer]
+    """
+    return _app_response({
+        'data': serializer(many=True),
         'message': serializers.CharField()
     })
 

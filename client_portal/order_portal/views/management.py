@@ -24,8 +24,9 @@ from shared.swagger.headers import token_header
 from shared.swagger.responses import http401, http404, \
     http403, http405, DEFAULT_UNSAFE_REQUEST_RESPONSES, \
     DEFAULT_DELETE_REQUEST_RESPONSES, DEFAULT_GET_REQUESTS_RESPONSES, \
-    data_serializer, http422, data_message_serializer, \
-    default_get_responses_with_custom_success
+    data_serializer, http422, default_get_responses_with_custom_success, \
+    data_serializer_many, \
+    data_many_message_serializer
 from shared.views.utils import RetrieveUpdateDestroyAPIView, \
     ListCreateAPIView, CreateAPIView
 
@@ -41,7 +42,7 @@ class SyncCategoriesView(CategoryListMixin, ListCreateAPIView):
 
     @swagger_auto_schema(
         responses={
-            status.HTTP_200_OK: data_message_serializer(
+            status.HTTP_200_OK: data_many_message_serializer(
                 CategoryDeviceSerializer
             ),
             status.HTTP_401_UNAUTHORIZED: http401(),
@@ -76,7 +77,7 @@ class SyncCategoriesView(CategoryListMixin, ListCreateAPIView):
 
     @swagger_auto_schema(
         responses=default_get_responses_with_custom_success(
-            data_serializer(CategoryDeviceSerializer)
+            data_serializer_many(CategoryDeviceSerializer)
         ),
         tags=['Category'],
         operation_summary="List of categories",
@@ -134,10 +135,10 @@ class ManufacturerListView(ManufacturerOperator, ListCreateAPIView):
         request_body=write_serializer_class,
         tags=['Manufacturer'],
         operation_summary="Creates a manufacturer",
-        operation_description='Creates a manufacturer with categories',
         manual_parameters=[
             token_header(),
-        ]
+        ],
+        operation_description='Creates a manufacturer with categories',
     )
     def post(self, request: Request, *args, **kwargs) -> Response:
         """

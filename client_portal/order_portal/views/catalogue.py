@@ -18,8 +18,7 @@ from order_portal.serizalizers import DeviceListSerializer, \
 from recon_db_manager.models import Category
 from recon_db_manager.models import Device
 from shared.swagger.responses import DEFAULT_GET_REQUESTS_RESPONSES, \
-    data_serializer, \
-    default_get_responses_with_custom_success
+    default_get_responses_with_custom_success, data_serializer_many
 from shared.views.utils import RetrieveAPIView
 
 
@@ -53,7 +52,7 @@ class CategoryListMixin:
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
     responses=default_get_responses_with_custom_success(
-        data_serializer(CategorySerializer)
+        data_serializer_many(CategorySerializer)
     ),
     tags=['Category'],
     operation_summary="List of categories",
