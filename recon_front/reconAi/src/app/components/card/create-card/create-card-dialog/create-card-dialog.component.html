@@ -1,0 +1,16 @@
+<div class="recon-modal-title">
+  <h3>Add new card</h3>
+  <mat-icon [mat-dialog-close]="true">close</mat-icon>
+</div>
+
+<form (ngSubmit)="onSubmitStripe()">
+  <div class="form-row">
+    <div id="card-element" #cardInfo></div>
+    <div id="card-errors" role="alert" *ngIf="error">{{ error }}</div>
+  </div>
+  <div class="button-container">
+    <button mat-raised-button color="primary" [disabled]="!!error">
+      Add
+    </button>
+  </div>
+</form>
