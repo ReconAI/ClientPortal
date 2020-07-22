@@ -1,15 +1,16 @@
 """
 Defines managers to manipulate data form diverse sources
 """
-from abc import abstractmethod
+
+from abc import abstractmethod, ABC
 from typing import Dict, List
 
 import boto3
+import stripe
 from django.conf import settings
 from django.contrib.auth.models import UserManager as UserManagerBase, Group
 from django.utils.module_loading import import_string
-
-from recon_db_manager.models import Organization, User
+from stripe.error import InvalidRequestError
 
 
 class UserManager(UserManagerBase):
@@ -17,7 +18,7 @@ class UserManager(UserManagerBase):
     User's manager
     """
 
-    def __create(self, organization: Organization, role: str, **extra_fields):
+    def __create(self, organization: 'Organization', role: str, **extra_fields):
         """
         :type organization: Organization
         :type role: str
@@ -36,7 +37,7 @@ class UserManager(UserManagerBase):
 
         return user
 
-    def create_admin(self, organization: Organization, **extra_fields):
+    def create_admin(self, organization: 'Organization', **extra_fields):
         """
         :type organization: Organization
 
@@ -46,7 +47,7 @@ class UserManager(UserManagerBase):
 
         return self.__create(organization, Role.ADMIN, **extra_fields)
 
-    def create_developer(self, organization: Organization, **extra_fields):
+    def create_developer(self, organization: 'Organization', **extra_fields):
         """
         :type organization: Organization
         :type extra_fields: dict
@@ -57,7 +58,7 @@ class UserManager(UserManagerBase):
 
         return self.__create(organization, Role.DEVELOPER, **extra_fields)
 
-    def create_client(self, organization: Organization, **extra_fields):
+    def create_client(self, organization: 'Organization', **extra_fields):
         """
         :type organization: Organization
         :type extra_fields: dict
@@ -76,7 +77,7 @@ class UserManager(UserManagerBase):
 
         :raise: NotFoundException
         """
-        from .models import Role
+        from .models import Role, Organization
 
         extra_fields.update({
             'is_active': True
@@ -91,7 +92,7 @@ class AbstractIaMUserManager:
     Interface for user iam manager
     """
 
-    def __init__(self, instance: User):
+    def __init__(self, instance: 'User'):
         """
         :type instance: User
         """
@@ -145,7 +146,7 @@ class IaMUserManager(AbstractIaMUserManager):
     """
     __user_serializer = 'shared.serializers.UserSerializer'
 
-    def __init__(self, instance: User):
+    def __init__(self, instance: 'User'):
         """
         :type instance: User
         """
@@ -274,3 +275,104 @@ class DummyIaMUserManager(AbstractIaMUserManager):
 
         :type group_name: str
         """
+
+
+class AbstractPaymentMethodManager(ABC):
+    def __init__(self, customer: stripe.Customer):
+        self._customer = customer
+
+    def attach(self, method_id: str):
+        pass
+
+    def detach(self, method_id: str):
+        pass
+
+    def list(self, method_type: str):
+        pass
+
+
+class AbstractCustomerManager(ABC):
+    def __init__(self, organization: 'Organization'):
+        self._organization = organization
+
+    @abstractmethod
+    def retrieve(self):
+        pass
+
+    @abstractmethod
+    def create(self):
+        pass
+
+    @abstractmethod
+    def delete(self):
+        pass
+
+    @abstractmethod
+    def payment_methods(self) -> AbstractPaymentMethodManager:
+        pass
+
+    def retrieve_or_create(self):
+        customer = self.retrieve()
+
+        if customer:
+            return customer
+
+        return self.create()
+
+
+class PaymentMethodManager(AbstractPaymentMethodManager):
+    __source = stripe.PaymentMethod
+
+    def list(self, method_type: str):
+        return self.__source.list(
+            customer=self._customer.id,
+            type=method_type,
+            api_key=settings.STRIPE_SECRET_KEY
+        )
+
+    def attach(self, method_id: str):
+        return self.__source.attach(
+            method_id,
+            customer=self._customer.id,
+            api_key=settings.STRIPE_SECRET_KEY
+        )
+
+    def detach(self, method_id: str):
+        return self.__source.detach(
+            method_id,
+            api_key=settings.STRIPE_SECRET_KEY
+        )
+
+
+class StripeCustomerManager(AbstractCustomerManager):
+    __source = stripe.Customer
+
+    def retrieve(self):
+        return self.__source.retrieve(
+            str(self._organization.id),
+            api_key=settings.STRIPE_SECRET_KEY
+        )
+
+    def create(self):
+        return self.__source.create(
+            id=str(self._organization.id),
+            name=self._organization.name,
+            api_key=settings.STRIPE_SECRET_KEY
+        )
+
+    def delete(self):
+        return self.__source.delete(
+            str(self._organization.id),
+            api_key=settings.STRIPE_SECRET_KEY
+        )
+
+    def payment_methods(self) -> AbstractPaymentMethodManager:
+        return PaymentMethodManager(
+            self.retrieve_or_create()
+        )
+
+    def retrieve_or_create(self):
+        try:
+            return self.retrieve()
+        except InvalidRequestError:
+            return self.create()

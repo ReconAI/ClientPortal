@@ -202,6 +202,9 @@ CLIENT_APP_SHEMA_HOST_PORT = os.environ.get(
 # Payments settings
 TRIAL_PERIOD_DAYS = 30
 
+STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY')
+STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
+
 LOGGING = {
     'version': 1,
     'filters': {
