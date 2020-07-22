@@ -108,6 +108,8 @@ class SerializerMixin:
             )
 
         if serializer.is_valid():
+            serializer.save()
+
             return Response({
                 'message': success_message
             }, status=status.HTTP_200_OK)
