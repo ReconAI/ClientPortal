@@ -1,27 +1,47 @@
-<recon-user-profile
-  [disabledInvoicing]="isClient"
-  [disabledUserEmail]="true"
-  [disabledOrganization]="isClient"
-  [hideInvoicing]="isClient"
-  [organizationName]="organizationName"
-  [organizationPhone]="organizationPhone"
-  [organizationEmail]="organizationEmail"
-  [organizationAddress]="organizationAddress"
-  [organizationVat]="organizationVat"
-  [organizationFirstName]="organizationFirstName"
-  [organizationLastName]="organizationLastName"
-  [userPhone]="userPhone"
-  [userEmail]="userEmail"
-  [userAddress]="userAddress"
-  [userFirstName]="userFirstName"
-  [userLastName]="userLastName"
-  [invoicingPhone]="invoicingPhone"
-  [invoicingEmail]="invoicingEmail"
-  [invoicingAddress]="invoicingAddress"
-  [invoicingFirstName]="invoicingFirstName"
-  [invoicingLastName]="invoicingLastName"
-  [loading]="sendLoadingStatus"
-  [errors]="errors"
-  (sendUserInfo$)="updateUser($event)"
->
-</recon-user-profile>
+<div class="user-profile-container">
+  <div class="user-container">
+    <recon-user-profile
+      [disabledInvoicing]="isClient"
+      [disabledUserEmail]="true"
+      [disabledOrganization]="isClient"
+      [hideInvoicing]="isClient"
+      [organizationName]="organizationName"
+      [organizationPhone]="organizationPhone"
+      [organizationEmail]="organizationEmail"
+      [organizationAddress]="organizationAddress"
+      [organizationVat]="organizationVat"
+      [organizationFirstName]="organizationFirstName"
+      [organizationLastName]="organizationLastName"
+      [userPhone]="userPhone"
+      [userEmail]="userEmail"
+      [userAddress]="userAddress"
+      [userFirstName]="userFirstName"
+      [userLastName]="userLastName"
+      [invoicingPhone]="invoicingPhone"
+      [invoicingEmail]="invoicingEmail"
+      [invoicingAddress]="invoicingAddress"
+      [invoicingFirstName]="invoicingFirstName"
+      [invoicingLastName]="invoicingLastName"
+      [loading]="sendLoadingStatus"
+      [errors]="errors"
+      (sendUserInfo$)="updateUser($event)"
+    >
+    </recon-user-profile>
+  </div>
+  <!-- <div
+    class="cards-container"
+    *ngIf="userRolePriority === userRolePriorities.SUPER_ADMIN_ROLE"
+  >
+    <p class="payment-label">
+      PAYMENT METHODS
+    </p>
+    <recon-payment-methods-container></recon-payment-methods-container>
+    <p class="payment-label">
+      CARDS
+    </p>
+    <recon-create-card></recon-create-card>
+    <div class="card-views-container">
+      <recon-card-views-container></recon-card-views-container>
+    </div>
+  </div> -->
+</div>

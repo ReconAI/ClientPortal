@@ -3,6 +3,7 @@ import {
   loadManufacturerListRequestedAction,
   createDeviceRequestedAction,
   resetCreateDeviceErrorAction,
+  resetAllCategoriesAction,
 } from './../../../../store/orders/orders.actions';
 import { ManufacturerInterface } from './../../../constants/types/manufacturers';
 import {
@@ -11,7 +12,7 @@ import {
   selectCreateDeviceError,
 } from './../../../../store/orders/orders.selectors';
 import { Observable } from 'rxjs';
-import { loadCategoriesRequestedAction } from 'app/store/orders';
+import { loadAllCategoriesRequestedAction } from 'app/store/orders';
 import { Store, select } from '@ngrx/store';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AppState } from 'app/store/reducers';
@@ -40,10 +41,11 @@ export class CreateDeviceContainer implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.store.dispatch(loadManufacturerListRequestedAction());
-    this.store.dispatch(loadCategoriesRequestedAction());
+    this.store.dispatch(loadAllCategoriesRequestedAction());
   }
 
   ngOnDestroy(): void {
+    this.store.dispatch(resetAllCategoriesAction());
     this.store.dispatch(resetCreateDeviceErrorAction());
   }
 

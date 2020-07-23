@@ -16,6 +16,12 @@ export enum OrdersActionTypes {
   LOAD_CATEGORIES_SUCCEEDED = '[Orders] Load Categories Succeeded',
   LOAD_CATEGORIES_ERROR = '[Orders] Load Categories Error',
 
+  // for management crud
+  LOAD_ALL_CATEGORIES_REQUESTED = '[Orders] Load All Categories Requested',
+  LOAD_ALL_CATEGORIES_SUCCEEDED = '[Orders] Load All Categories Succeeded',
+  LOAD_ALL_CATEGORIES_ERROR = '[Orders] Load All Categories Error',
+  RESET_ALL_CATEGORIES = '[Orders] Reset All Categories',
+
   UPDATE_CATEGORIES_REQUESTED = '[Orders] Update Categories Requested',
   UPDATE_CATEGORIES_SUCCEEDED = '[Orders] Update Categories Succeeded',
   UPDATE_CATEGORIES_ERROR = '[Orders] Update Categories Error',
@@ -69,6 +75,23 @@ export const loadCategoriesSucceededAction = createAction(
 
 export const loadCategoriesErrorAction = createAction(
   OrdersActionTypes.LOAD_CATEGORIES_ERROR
+);
+
+export const loadAllCategoriesRequestedAction = createAction(
+  OrdersActionTypes.LOAD_ALL_CATEGORIES_REQUESTED
+);
+
+export const loadAllCategoriesSucceededAction = createAction(
+  OrdersActionTypes.LOAD_ALL_CATEGORIES_SUCCEEDED,
+  props<CategoriesClientInterface>()
+);
+
+export const loadAllCategoriesErrorAction = createAction(
+  OrdersActionTypes.LOAD_ALL_CATEGORIES_ERROR
+);
+
+export const resetAllCategoriesAction = createAction(
+  OrdersActionTypes.RESET_ALL_CATEGORIES
 );
 
 export const updateCategoriesRequestedAction = createAction(

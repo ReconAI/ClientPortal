@@ -1,6 +1,8 @@
-<recon-user-profile
-  (sendUserInfo$)="signUpUser($event)"
-  [errors]="errors$ | async"
-  [loading]="isLoading$ | async"
-  [showTerms]="true"
-></recon-user-profile>
+<div class="user-container">
+  <recon-user-profile
+    (sendUserInfo$)="signUpUser($event)"
+    [errors]="errors$ | async"
+    [loading]="isLoading$ | async"
+    [showTerms]="true"
+  ></recon-user-profile>
+</div>

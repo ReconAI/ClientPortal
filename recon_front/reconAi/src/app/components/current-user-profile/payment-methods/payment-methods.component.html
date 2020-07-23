@@ -1,0 +1,13 @@
+<mat-radio-group
+  aria-labelledby="example-radio-group-label"
+  class="radio-group"
+  [(ngModel)]="paymentMethod"
+>
+  <mat-radio-button
+    class="radio-button"
+    *ngFor="let payment of possiblePayments"
+    [value]="payment.value"
+  >
+    {{ payment.label }}
+  </mat-radio-button>
+</mat-radio-group>

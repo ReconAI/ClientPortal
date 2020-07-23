@@ -95,6 +95,11 @@ export const selectCategoriesListLoadingStatus = createSelector(
   (loaders: LoadersState): boolean => loaders.categoriesList
 );
 
+export const selectAllCategoriesListLoadingStatus = createSelector(
+  selectLoaders,
+  (loaders: LoadersState): boolean => loaders.allCategoriesList
+);
+
 export const selectUpdateCategoriesListLoadingStatus = createSelector(
   selectLoaders,
   (loaders: LoadersState): boolean => loaders.updateCategoriesList
@@ -138,4 +143,15 @@ export const selectUpdateDeviceLoadingStatus = createSelector(
 export const selectDeviceLoadingStatus = createSelector(
   selectLoaders,
   (loaders: LoadersState): boolean => loaders.device
+);
+
+// user -> cards
+export const selectAttachCardLoadingStatus = createSelector(
+  selectLoaders,
+  (loaders: LoadersState): boolean => loaders.attachCard
+);
+
+export const selectUserCardsLoadingStatus = createSelector(
+  selectLoaders,
+  (loaders: LoadersState): boolean => loaders.userCards
 );

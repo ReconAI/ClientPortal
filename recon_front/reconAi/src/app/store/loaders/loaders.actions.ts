@@ -20,6 +20,7 @@ export enum LoadersActionTypes {
   SET_UPDATE_CURRENT_USER_LOADING_STATUS = '[Loaders] Set Update Current User Loading Status',
   SET_UPDATE_USER_LOADING_STATUS = '[Loaders] Set Update User Loading Status',
   SET_CATEGORIES_LIST_LOADING_STATUS = '[Loaders | Orders] Set Categories List Loading Status',
+  SET_ALL_CATEGORIES_LIST_LOADING_STATUS = '[Loaders | Orders] Set All Categories List Loading Status',
   SET_UPDATE_CATEGORIES_LIST_LOADING_STATUS = '[Loaders | Orders] Set Update Categories List Loading Status',
   SET_CREATE_MANUFACTURER_LOADING_STATUS = '[Loaders | Orders] Set Create Manufacturer Loading Status',
   SET_MANUFACTURER_LIST_LOADING_STATUS = '[Loaders | Orders] Set Manufacturer List Loading Status',
@@ -29,6 +30,8 @@ export enum LoadersActionTypes {
   SET_MANAGEMENT_DEVICE_LOADING_STATUS = '[Loaders | Orders] Set Management Device Loading Status',
   SET_UPDATE_DEVICE_LOADING_STATUS = '[Loaders | Orders] Set Update Device Loading Status',
   SET_DEVICE_LOADING_STATUS = '[Loaders | Orders] Set Device Loading Status',
+  SET_ATTACH_CARD_LOADING_STATUS = '[Loaders | User] Set Attach Card Loading Status',
+  SET_USER_CARDS_LOADING_STATUS = '[Loaders | User] Set User Cards Loading Status',
 }
 
 export interface LoaderInterface {
@@ -126,6 +129,11 @@ export const setCategoriesListLoadingStatusAction = createAction(
   props<LoaderInterface>()
 );
 
+export const setAllCategoriesListLoadingStatusAction = createAction(
+  LoadersActionTypes.SET_ALL_CATEGORIES_LIST_LOADING_STATUS,
+  props<LoaderInterface>()
+);
+
 export const setUpdateCategoriesListLoadingStatusAction = createAction(
   LoadersActionTypes.SET_UPDATE_CATEGORIES_LIST_LOADING_STATUS,
   props<LoaderInterface>()
@@ -168,5 +176,16 @@ export const setDeviceLoadingStatusAction = createAction(
 
 export const setUpdateDeviceLoadingStatusAction = createAction(
   LoadersActionTypes.SET_UPDATE_DEVICE_LOADING_STATUS,
+  props<LoaderInterface>()
+);
+
+// user -> cards
+export const setAttachCardLoadingStatusAction = createAction(
+  LoadersActionTypes.SET_UPDATE_DEVICE_LOADING_STATUS,
+  props<LoaderInterface>()
+);
+
+export const setUserCardsLoadingStatusAction = createAction(
+  LoadersActionTypes.SET_USER_CARDS_LOADING_STATUS,
   props<LoaderInterface>()
 );

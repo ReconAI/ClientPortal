@@ -26,6 +26,9 @@ import {
   setManagementDeviceLoadingStatusAction,
   setUpdateDeviceLoadingStatusAction,
   setDeviceLoadingStatusAction,
+  setAttachCardLoadingStatusAction,
+  setUserCardsLoadingStatusAction,
+  setAllCategoriesListLoadingStatusAction,
 } from './loaders.actions';
 import { createReducer, on, Action } from '@ngrx/store';
 
@@ -50,6 +53,7 @@ export interface LoadersState {
   updateUser: boolean;
   // orders
   categoriesList: boolean;
+  allCategoriesList: boolean;
   updateCategoriesList: boolean;
   createManufacturer: boolean;
   manufacturerList: boolean;
@@ -59,6 +63,9 @@ export interface LoadersState {
   managementDevice: boolean;
   updateDevice: boolean;
   device: boolean;
+  // user -> cards
+  attachCard: boolean;
+  userCards: boolean;
 }
 
 const initialState: LoadersState = {
@@ -81,6 +88,7 @@ const initialState: LoadersState = {
   updateUser: false,
   // orders
   categoriesList: false,
+  allCategoriesList: false,
   updateCategoriesList: false,
   createManufacturer: false,
   manufacturerList: false,
@@ -90,6 +98,9 @@ const initialState: LoadersState = {
   managementDevice: false,
   updateDevice: false,
   device: false,
+  // user -> cards
+  attachCard: false,
+  userCards: false,
 };
 
 const setCurrentUserLoadingStatusReducer = (
@@ -178,6 +189,11 @@ const setCategoriesListLoadingStatusReducer = (
   { status }: Action & LoaderInterface
 ): LoadersState => ({ ...state, categoriesList: status });
 
+const setAllCategoriesListLoadingStatusReducer = (
+  state: LoadersState,
+  { status }: Action & LoaderInterface
+): LoadersState => ({ ...state, allCategoriesList: status });
+
 const setUpdateCategoriesListLoadingStatusReducer = (
   state: LoadersState,
   { status }: Action & LoaderInterface
@@ -223,6 +239,17 @@ const setDeviceLoadingStatusReducer = (
   { status }: Action & LoaderInterface
 ): LoadersState => ({ ...state, device: status });
 
+// user -> cards
+const setAttachCardLoadingStatusReducer = (
+  state: LoadersState,
+  { status }: Action & LoaderInterface
+): LoadersState => ({ ...state, attachCard: status });
+
+const setUserCardsLoadingStatusReducer = (
+  state: LoadersState,
+  { status }: Action & LoaderInterface
+): LoadersState => ({ ...state, userCards: status });
+
 const loadersReducer = createReducer(
   initialState,
   on(setCurrentUserLoadingStatusAction, setCurrentUserLoadingStatusReducer),
@@ -256,6 +283,10 @@ const loadersReducer = createReducer(
     setCategoriesListLoadingStatusReducer
   ),
   on(
+    setAllCategoriesListLoadingStatusAction,
+    setAllCategoriesListLoadingStatusReducer
+  ),
+  on(
     setUpdateCategoriesListLoadingStatusAction,
     setUpdateCategoriesListLoadingStatusReducer
   ),
@@ -275,7 +306,10 @@ const loadersReducer = createReducer(
     setManagementDeviceLoadingStatusReducer
   ),
   on(setUpdateDeviceLoadingStatusAction, setUpdateDeviceLoadingStatusReducer),
-  on(setDeviceLoadingStatusAction, setDeviceLoadingStatusReducer)
+  on(setDeviceLoadingStatusAction, setDeviceLoadingStatusReducer),
+  // user -> cards
+  on(setAttachCardLoadingStatusAction, setAttachCardLoadingStatusReducer),
+  on(setUserCardsLoadingStatusAction, setUserCardsLoadingStatusReducer)
 );
 
 export function reducer(state: LoadersState | undefined, action: Action) {

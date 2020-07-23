@@ -1,9 +1,13 @@
+import { CardClientInterface } from './../../constants/types/card';
 import { UserProfileFormInterface } from 'app/constants/types';
 import {
   FormServerErrorInterface,
   ObjectFormErrorInterface,
 } from './../../constants/types/requests';
-import { UserTransformationResponse } from './user.server.helpers';
+import {
+  UserTransformationResponse,
+  LoadCardsRequestClientInterface,
+} from './user.server.helpers';
 import {
   UserRoleTypes,
   DEFAULT_USER_ROLE,
@@ -25,6 +29,7 @@ import {
   updateCurrentUserErrorAction,
   resetUpdateCurrentUserErrorAction,
   updateCurrentUserSucceededAction,
+  loadUserCardsSucceededAction,
 } from './user.actions';
 
 export interface UserErrorsInterface {
@@ -45,6 +50,9 @@ export interface UserState extends UserTransformationResponse {
   role: UserRoleTypes | null;
   rolePriority: UserRolesPriorities;
   isActive: boolean;
+  payment: {
+    cards: CardClientInterface[];
+  };
   errors: UserErrorsInterface;
 }
 
@@ -58,6 +66,7 @@ export const initialState: UserState = {
   profile: null,
   invoicing: null,
   isActive: null,
+  payment: null,
   errors: userErrorsInit,
 };
 
@@ -168,6 +177,17 @@ const resetUpdateCurrentUserErrorReducer = (state: UserState): UserState => ({
   },
 });
 
+const loadUserCardsSucceededReducer = (
+  state: UserState,
+  { cards }: LoadCardsRequestClientInterface
+): UserState => ({
+  ...state,
+  payment: {
+    ...state.payment,
+    cards,
+  },
+});
+
 const userReducer = createReducer(
   initialState,
   on(loadCurrentUserSucceededAction, loadCurrentUserSucceededReducer),
@@ -182,7 +202,8 @@ const userReducer = createReducer(
   on(logoutUserSucceededAction, logoutUserSucceededReducer),
   on(updateCurrentUserSucceededAction, updateCurrentUserSucceededReducer),
   on(updateCurrentUserErrorAction, updateCurrentUserErrorReducer),
-  on(resetUpdateCurrentUserErrorAction, resetUpdateCurrentUserErrorReducer)
+  on(resetUpdateCurrentUserErrorAction, resetUpdateCurrentUserErrorReducer),
+  on(loadUserCardsSucceededAction, loadUserCardsSucceededReducer)
 );
 
 export function reducer(state: UserState | undefined, action: Action) {

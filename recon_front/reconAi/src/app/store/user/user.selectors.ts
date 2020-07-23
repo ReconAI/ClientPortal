@@ -1,3 +1,4 @@
+import { CardClientInterface } from './../../constants/types/card';
 import { selectUserProfile } from './../users/users.selectors';
 import { FormServerErrorInterface } from './../../constants/types/requests';
 import {
@@ -179,4 +180,10 @@ export const selectCurrentUserUpdateError = createSelector(
 export const selectCurrentUserProfileId = createSelector(
   selectUser,
   (user: UserState): string => user?.profile?.id
+);
+
+// user -> cards
+export const selectUserCards = createSelector(
+  selectUser,
+  (user: UserState): CardClientInterface[] => user?.payment?.cards || []
 );

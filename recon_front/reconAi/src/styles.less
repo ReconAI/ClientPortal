@@ -51,7 +51,7 @@ body {
 // scroll styles
 /* width */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 7px;
 }
 
 
@@ -131,4 +131,32 @@ div.recon-modal-title {
     cursor: pointer;
     text-decoration: underline;
   }
+}
+
+
+// radio buttons 
+.mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle,
+.mat-radio-outer-circle {
+  border-color: @recon-border-input;
+  border-width: 1px !important;
+  background-color: @recon-background-input;
+}
+
+.mat-radio-button.mat-accent .mat-radio-inner-circle {
+  background-color: @recon-black;
+  border-width: 1px;
+}
+
+// tabs
+.mat-tab-header .mat-tab-label-container .mat-tab-list div {
+  min-width: 10px;
+  font-weight: 400;
+}
+
+.mat-tab-label-active {
+  opacity: 1 !important;
+}
+
+.mat-tab-group {
+  outline: 0;
 }

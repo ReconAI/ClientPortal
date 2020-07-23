@@ -2,18 +2,20 @@
   Activating...
 </ng-container>
 <ng-template #activated>
-  <recon-user-profile
-    [errors]="errors"
-    [showTerms]="true"
-    [isInvitation]="true"
-    [disabledUserEmail]="true"
-    [userFirstName]="firstName"
-    [userLastName]="lastName"
-    [loading]="isLoadingSignUp"
-    [userEmail]="email"
-    fieldType="password"
-    [profileUsername]="userUsername"
-    (sendUserInfo$)="invitationSignUp($event)"
-  >
-  </recon-user-profile>
+  <div class="user-container">
+    <recon-user-profile
+      [errors]="errors"
+      [showTerms]="true"
+      [isInvitation]="true"
+      [disabledUserEmail]="true"
+      [userFirstName]="firstName"
+      [userLastName]="lastName"
+      [loading]="isLoadingSignUp"
+      [userEmail]="email"
+      fieldType="password"
+      [profileUsername]="userUsername"
+      (sendUserInfo$)="invitationSignUp($event)"
+    >
+    </recon-user-profile>
+  </div>
 </ng-template>

@@ -1,11 +1,13 @@
 interface Process {
-    env: Env;
+  env: Env;
 }
 
 interface Env {
-    RECON_API_URL: string;
+  RECON_API_URL: string;
 }
 
 interface GlobalEnvironment {
-    process: Process;
+  process: Process;
 }
+
+declare var Stripe: any;

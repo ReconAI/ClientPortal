@@ -20,6 +20,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatRippleModule } from '@angular/material/core';
+import { MatRadioModule } from '@angular/material/radio';
 @NgModule({
   imports: [
     CommonModule,
@@ -42,6 +43,7 @@ import { MatRippleModule } from '@angular/material/core';
     MatChipsModule,
     MatAutocompleteModule,
     MatRippleModule,
+    MatRadioModule,
   ],
   exports: [
     MatToolbarModule,
@@ -63,6 +65,7 @@ import { MatRippleModule } from '@angular/material/core';
     MatChipsModule,
     MatAutocompleteModule,
     MatRippleModule,
+    MatRadioModule,
   ],
   providers: [],
 })

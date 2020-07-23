@@ -1,6 +1,5 @@
-import { UserProfileFormInterface } from './../../constants/types/user';
+import { UserProfileFormInterface, UserRolesPriorities } from './../../constants/types/user';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { UserRolesPriorities } from 'app/constants/types';
 import { FormServerErrorInterface } from 'app/constants/types/requests';
 
 @Component({
@@ -10,6 +9,8 @@ import { FormServerErrorInterface } from 'app/constants/types/requests';
 })
 export class CurrentUserProfileComponent implements OnInit {
   constructor() {}
+  readonly userRolePriorities = UserRolesPriorities;
+
   @Input() isLoading = false;
   @Input() organizationName: string;
   @Input() organizationPhone: string;

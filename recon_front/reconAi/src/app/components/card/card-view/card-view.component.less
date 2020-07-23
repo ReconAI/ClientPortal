@@ -1,0 +1,46 @@
+@import "../../../../variables.less";
+
+.card-view-container {
+    margin-top: 10px;
+    width: 360px;
+    height: 180px;
+    border: 2px solid @recon-primary-green;
+    background-color: @recon-background-input;
+    color: @recon-primary-green;
+
+    .top-part,
+    .middle-part,
+    .bottom-part {
+        display: flex;
+        justify-content: space-between;
+        margin-right: 10px;
+    }
+
+
+    .middle-part,
+    .bottom-part {
+        margin-left: 10px;
+    }
+
+    .top-part {
+        margin-top: 10px;
+
+        .brand {
+            font-size: 17px;
+            font-weight: 500;
+        }
+    }
+
+    .middle-part {
+        margin-top: 20px;
+    }
+
+    .delete-label {
+        cursor: pointer;
+        color: @recon-gray;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}

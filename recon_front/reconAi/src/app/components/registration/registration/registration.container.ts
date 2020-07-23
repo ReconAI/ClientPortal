@@ -9,6 +9,7 @@ import { signUpUserRequestedAction } from 'app/store/signUp';
 @Component({
   selector: 'recon-registration',
   templateUrl: './registration.container.html',
+  styleUrls: ['./registration.container.less'],
 })
 export class RegistrationContainer implements OnInit {
   constructor(private store: Store<AppState>) {}

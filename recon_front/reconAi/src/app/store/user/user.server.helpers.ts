@@ -1,3 +1,7 @@
+import {
+  CardClientInterface,
+  CardServerInterface,
+} from './../../constants/types/card';
 import { ResetPasswordWithMetaInterface } from 'app/constants/types/resetPassword';
 import { getUserPriorityByRole } from './../../core/helpers/priorities';
 import {
@@ -121,4 +125,51 @@ export const transformUpdateCurrentUserToServer = (
   inv_address: user.invoicing.address,
   inv_phone: user.invoicing.phone,
   inv_email: user.invoicing.email,
+});
+
+export interface AttachCardRequestServerInterface {
+  payment_method: string;
+}
+
+export interface AttachCardRequestClientInterface {
+  method: {
+    paymentMethod: string;
+  };
+}
+
+export const transformAttachCardRequestToServer = (
+  card: AttachCardRequestClientInterface
+): AttachCardRequestServerInterface => ({
+  payment_method: card.method.paymentMethod,
+});
+
+export interface LoadCardsRequestClientInterface {
+  cards: CardClientInterface[];
+}
+
+export const transformCardListFromServer = (
+  cards: CardServerInterface[]
+): LoadCardsRequestClientInterface => ({
+  cards: cards.map(({ card, id }) => ({
+    id,
+    expired: `${card.exp_month < 10 ? '0' : ''}${card.exp_month}/${
+      card.exp_year % 100
+    }`,
+    last4: card.last4,
+    brand: card.brand.toUpperCase(),
+  })),
+});
+
+export interface DeleteUserCardRequestInterface {
+  id: string;
+}
+
+export interface DetachCardRequestServerInterface {
+  payment_method: string;
+}
+
+export const transformDetachCardRequestToServer = ({
+  id,
+}: DeleteUserCardRequestInterface): DetachCardRequestServerInterface => ({
+  payment_method: id,
 });
