@@ -13,7 +13,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class StripeService {
   stripe: any;
-  apiKey = 'pk_test_HlgfbLYwgsv8TpEqvMnIrD7t00pF9QFP65';
+  apiKey =
+    $ENV.STRIPE_PUBLISHABLE_KEY || 'pk_test_HlgfbLYwgsv8TpEqvMnIrD7t00pF9QFP65';
 
   constructor(private store: Store<AppState>, private snackBar: MatSnackBar) {
     this.stripe = Stripe(this.apiKey);
