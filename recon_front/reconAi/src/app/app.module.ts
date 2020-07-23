@@ -58,6 +58,7 @@ import { PaymentMethodsComponent } from './components/current-user-profile/payme
 import { CardViewComponent } from './components/card/card-view/card-view.component';
 import { CardViewsContainer } from './components/current-user-profile/card-views/card-views.container';
 import { PaymentMethodsContainer } from './components/current-user-profile/payment-methods/payment-methods.container';
+import { DeleteCardDialogComponent } from './components/card/card-view/delete-card-dialog/delete-card-dialog.component';
 
 @NgModule({
   declarations: [
@@ -96,6 +97,7 @@ import { PaymentMethodsContainer } from './components/current-user-profile/payme
     PaymentMethodsContainer,
     CardViewComponent,
     CardViewsContainer,
+    DeleteCardDialogComponent,
   ],
   imports: [
     BrowserModule,

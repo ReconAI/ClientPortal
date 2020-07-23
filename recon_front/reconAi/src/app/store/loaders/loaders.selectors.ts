@@ -151,6 +151,11 @@ export const selectAttachCardLoadingStatus = createSelector(
   (loaders: LoadersState): boolean => loaders.attachCard
 );
 
+export const selectDetachCardLoadingStatus = createSelector(
+  selectLoaders,
+  (loaders: LoadersState): boolean => loaders.detachCard
+);
+
 export const selectUserCardsLoadingStatus = createSelector(
   selectLoaders,
   (loaders: LoadersState): boolean => loaders.userCards
