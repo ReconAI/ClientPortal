@@ -19,7 +19,7 @@ import { AuthRoleGuard } from './core/guards/auth-role-guard/auth-role.guard';
 const routes: Routes = [
   {
     path: '',
-    redirectTo: '/orders',
+    redirectTo: '/reporting',
     pathMatch: 'full',
   },
   {
