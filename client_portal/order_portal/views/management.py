@@ -24,29 +24,14 @@ from shared.swagger.headers import token_header
 from shared.swagger.responses import http401, http404, \
     http403, http405, DEFAULT_UNSAFE_REQUEST_RESPONSES, \
     DEFAULT_DELETE_REQUEST_RESPONSES, DEFAULT_GET_REQUESTS_RESPONSES, \
-    data_serializer, http422
+    data_serializer, http422, default_get_responses_with_custom_success, \
+    data_serializer_many, \
+    data_many_message_serializer
 from shared.views.utils import RetrieveUpdateDestroyAPIView, \
     ListCreateAPIView, CreateAPIView
 
 
-@method_decorator(name='post', decorator=swagger_auto_schema(
-    responses={
-        status.HTTP_200_OK: data_serializer(CategoryDeviceSerializer),
-        status.HTTP_401_UNAUTHORIZED: http401(),
-        status.HTTP_403_FORBIDDEN: http403(),
-        status.HTTP_404_NOT_FOUND: http404(),
-        status.HTTP_405_METHOD_NOT_ALLOWED: http405(),
-        status.HTTP_422_UNPROCESSABLE_ENTITY: http422(),
-    },
-    request_body=CategoryCollectionSerializer,
-    tags=['Category'],
-    operation_summary='Creates a category',
-    operation_description='Synchronize categories set',
-    manual_parameters=[
-        token_header(),
-    ]
-))
-class SyncCategoriesView(CategoryListMixin, CreateAPIView):
+class SyncCategoriesView(CategoryListMixin, ListCreateAPIView):
     """
     User create and get list views set
     """
@@ -55,6 +40,25 @@ class SyncCategoriesView(CategoryListMixin, CreateAPIView):
 
     queryset = Category.objects.all()
 
+    @swagger_auto_schema(
+        responses={
+            status.HTTP_200_OK: data_many_message_serializer(
+                CategoryDeviceSerializer
+            ),
+            status.HTTP_401_UNAUTHORIZED: http401(),
+            status.HTTP_403_FORBIDDEN: http403(),
+            status.HTTP_404_NOT_FOUND: http404(),
+            status.HTTP_405_METHOD_NOT_ALLOWED: http405(),
+            status.HTTP_422_UNPROCESSABLE_ENTITY: http422(),
+        },
+        request_body=CategoryCollectionSerializer,
+        tags=['Category'],
+        operation_summary='Creates a category',
+        operation_description='Synchronize categories set',
+        manual_parameters=[
+            token_header(),
+        ]
+    )
     @atomic(settings.RECON_AI_CONNECTION_NAME)
     def post(self, request, *args, **kwargs):
         serializer = CategoryCollectionSerializer(data=request.data)
@@ -62,11 +66,32 @@ class SyncCategoriesView(CategoryListMixin, CreateAPIView):
         if serializer.is_valid():
             serializer.save()
 
-            return self.list(request)
+            return Response({
+                'data': self.list(),
+                'message': _('Categories were synchornized successfully')
+            })
 
         return Response({
             'errors': serializer.errors
         }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+    @swagger_auto_schema(
+        responses=default_get_responses_with_custom_success(
+            data_serializer_many(CategoryDeviceSerializer)
+        ),
+        tags=['Category'],
+        operation_summary="List of categories",
+        operation_description='Categories list view with device attached flag'
+    )
+    def get(self, *args, **kwargs) -> Response:
+        """
+        Categories list view with device attached flag
+
+        :rtype: Response
+        """
+        return Response({
+            'data': self.list()
+        })
 
 
 class ManufacturerOperator:
@@ -82,13 +107,9 @@ class ManufacturerOperator:
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
-    responses={
-        status.HTTP_200_OK: data_serializer(ReadManufacturerSerializer),
-        status.HTTP_401_UNAUTHORIZED: http401(),
-        status.HTTP_403_FORBIDDEN: http403(),
-        status.HTTP_404_NOT_FOUND: http404(),
-        status.HTTP_405_METHOD_NOT_ALLOWED: http405()
-    },
+    responses=default_get_responses_with_custom_success(
+        data_serializer(ReadManufacturerSerializer)
+    ),
     tags=['Manufacturer'],
     operation_summary="List of manufacturers",
     operation_description='Returns list of manufacturers with categories',
@@ -114,10 +135,10 @@ class ManufacturerListView(ManufacturerOperator, ListCreateAPIView):
         request_body=write_serializer_class,
         tags=['Manufacturer'],
         operation_summary="Creates a manufacturer",
-        operation_description='Creates a manufacturer with categories',
         manual_parameters=[
             token_header(),
-        ]
+        ],
+        operation_description='Creates a manufacturer with categories',
     )
     def post(self, request: Request, *args, **kwargs) -> Response:
         """
@@ -150,13 +171,9 @@ class ManufacturerListView(ManufacturerOperator, ListCreateAPIView):
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
-    responses={
-        status.HTTP_200_OK: ReadManufacturerSerializer,
-        status.HTTP_401_UNAUTHORIZED: http401(),
-        status.HTTP_403_FORBIDDEN: http403(),
-        status.HTTP_404_NOT_FOUND: http404(),
-        status.HTTP_405_METHOD_NOT_ALLOWED: http405()
-    },
+    responses=default_get_responses_with_custom_success(
+        ReadManufacturerSerializer
+    ),
     tags=['Manufacturer'],
     operation_summary="Get a manufacturer",
     operation_description='Returns a manufacturer with categories',

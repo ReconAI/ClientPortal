@@ -8,16 +8,17 @@ from django.utils.decorators import method_decorator
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_yasg.openapi import Parameter, TYPE_STRING, IN_QUERY
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import status, filters
+from rest_framework import filters
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
+from rest_framework.serializers import Serializer
 
 from order_portal.serizalizers import DeviceListSerializer, \
-    DeviceItemSerializer, CategoryDeviceSerializer
+    DeviceItemSerializer, CategoryDeviceSerializer, CategorySerializer
 from recon_db_manager.models import Category
 from recon_db_manager.models import Device
-from shared.swagger.responses import http401, http404, \
-    http403, http405, DEFAULT_GET_REQUESTS_RESPONSES, data_serializer
+from shared.swagger.responses import DEFAULT_GET_REQUESTS_RESPONSES, \
+    default_get_responses_with_custom_success, data_serializer_many
 from shared.views.utils import RetrieveAPIView
 
 
@@ -29,15 +30,13 @@ class CategoryListMixin:
 
     serializer_class = CategoryDeviceSerializer
 
-    def list(self, *args, **kwargs) -> Response:
+    def list(self, *args, **kwargs) -> Serializer:
         """
         :rtype: Response
         """
         queryset = self.filter_queryset(self.get_queryset())
 
-        return Response({
-            'data': self.get_serializer(queryset, many=True).data
-        })
+        return self.get_serializer(queryset, many=True).data
 
     @staticmethod
     def filter_queryset(queryset: QuerySet) -> QuerySet:
@@ -52,20 +51,35 @@ class CategoryListMixin:
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
-    responses={
-        status.HTTP_200_OK: data_serializer(CategoryDeviceSerializer),
-        status.HTTP_401_UNAUTHORIZED: http401(),
-        status.HTTP_403_FORBIDDEN: http403(),
-        status.HTTP_404_NOT_FOUND: http404(),
-        status.HTTP_405_METHOD_NOT_ALLOWED: http405()
-    },
+    responses=default_get_responses_with_custom_success(
+        data_serializer_many(CategorySerializer)
+    ),
     tags=['Category'],
     operation_summary="List of categories",
+    operation_description='Categories list view with at '
+                          'least one device attached'
 ))
 class CategoryListView(CategoryListMixin, ListAPIView):
     """
-    Categories list view
+    Categories list view with at least one device attached
     """
+    serializer_class = CategorySerializer
+
+    def get(self, request, *args, **kwargs):
+        return Response({
+            'data': self.list()
+        })
+
+    @staticmethod
+    def filter_queryset(queryset: QuerySet) -> QuerySet:
+        """
+        :type queryset: QuerySet
+
+        :rtype: QuerySet
+        """
+        return queryset.annotate(
+            nchild=Count('device')
+        ).filter(nchild__gt=0)
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(

@@ -182,6 +182,20 @@ def data_serializer(
     })
 
 
+def data_serializer_many(
+        serializer: 'Serializer') -> Union[type, Serializer]:
+    """
+    Converts serializer to common response format
+
+    :type serializer: 'Serializer'
+
+    :rtype: Type[Serializer]
+    """
+    return _app_response({
+        'data': serializer(many=True)
+    })
+
+
 def data_message_serializer(
         serializer: Type['Serializer']) -> Union[type, Type[Serializer]]:
     """
@@ -193,6 +207,21 @@ def data_message_serializer(
     """
     return _app_response({
         'data': serializer(),
+        'message': serializers.CharField()
+    })
+
+
+def data_many_message_serializer(
+        serializer: Type['Serializer']) -> Union[type, Type[Serializer]]:
+    """
+    Converts http message and serializer to common response format
+
+    :type serializer: Type['Serializer']
+
+    :rtype: Type[Serializer]
+    """
+    return _app_response({
+        'data': serializer(many=True),
         'message': serializers.CharField()
     })
 
@@ -247,3 +276,18 @@ DEFAULT_GET_REQUESTS_RESPONSES = get_responses(
     status.HTTP_403_FORBIDDEN,
     status.HTTP_405_METHOD_NOT_ALLOWED
 )
+
+
+def default_get_responses_with_custom_success(
+        success_response: openapi.Schema
+) -> Dict[str, openapi.Schema]:
+    """
+    :type success_response: openapi.Schema
+
+    :rtype: Dict[str, openapi.Schema]
+    """
+
+    return {
+        status.HTTP_200_OK: success_response,
+        **DEFAULT_GET_REQUESTS_RESPONSES
+    }
