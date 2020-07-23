@@ -1,3 +1,5 @@
+import { UserRolesPriorities } from './../../constants/types/user';
+import { getUserPriorityByRole } from './../../core/helpers/priorities';
 import {
   selectCurrentUserName,
   selectCurrentUserProfileInvoicing,
@@ -106,7 +108,10 @@ export class UserEffects {
       switchMap(() =>
         this.httpClient.get<ServerUserInterface>('/api/profile').pipe(
           map((user) => {
-            if (user?.group?.name === 'super_admin') {
+            if (
+              getUserPriorityByRole(user?.group?.name) >=
+              UserRolesPriorities.DEVELOPER_ROLE
+            ) {
               this.store.dispatch(loadUserCardsRequestedAction());
             }
             return loadCurrentUserSucceededAction(transformUserResponse(user));
