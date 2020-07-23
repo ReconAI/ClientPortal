@@ -1,4 +1,7 @@
-import { UserProfileFormInterface, UserRolesPriorities } from './../../constants/types/user';
+import {
+  UserProfileFormInterface,
+  UserRolesPriorities,
+} from './../../constants/types/user';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FormServerErrorInterface } from 'app/constants/types/requests';
 
@@ -42,6 +45,10 @@ export class CurrentUserProfileComponent implements OnInit {
   // disable organization and invoicing blocks for clients
   get isClient(): boolean {
     return this.userRolePriority < UserRolesPriorities.DEVELOPER_ROLE;
+  }
+
+  get isDeveloperAtLeast(): boolean {
+    return this.userRolePriority >= UserRolesPriorities.DEVELOPER_ROLE;
   }
 
   updateUser(user: UserProfileFormInterface): void {

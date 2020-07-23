@@ -28,10 +28,7 @@
     >
     </recon-user-profile>
   </div>
-  <div
-    class="cards-container"
-    *ngIf="userRolePriority === userRolePriorities.SUPER_ADMIN_ROLE"
-  >
+  <div class="cards-container" *ngIf="isDeveloperAtLeast">
     <p class="payment-label">
       PAYMENT METHODS
     </p>
