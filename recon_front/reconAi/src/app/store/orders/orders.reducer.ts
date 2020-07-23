@@ -27,6 +27,8 @@ import {
   updateDeviceErrorAction,
   resetDeviceListMetaAction,
   loadDeviceSucceededAction,
+  loadAllCategoriesSucceededAction,
+  resetAllCategoriesAction,
 } from './orders.actions';
 import { CategoryInterface } from './../../orders/constants/types/category';
 import { ActivationInterface } from './../../constants/types/activation';
@@ -86,6 +88,16 @@ const loadCategoriesSucceededReducer = (
   state: OrdersState,
   { type, categories }: Action & CategoriesClientInterface
 ): OrdersState => ({ ...state, categories });
+
+const loadAllCategoriesSucceededReducer = (
+  state: OrdersState,
+  { type, categories }: Action & CategoriesClientInterface
+): OrdersState => ({ ...state, categories });
+
+const resetAllCategoriesReducer = (state: OrdersState): OrdersState => ({
+  ...state,
+  categories: [],
+});
 
 const updateCategoriesSucceededReducer = (
   state: OrdersState,
@@ -205,6 +217,7 @@ const loadDeviceSucceededReducer = (
 const ordersReducer = createReducer(
   initialState,
   on(loadCategoriesSucceededAction, loadCategoriesSucceededReducer),
+  on(loadAllCategoriesSucceededAction, loadAllCategoriesSucceededReducer),
   on(updateCategoriesSucceededAction, updateCategoriesSucceededReducer),
   on(createManufacturerErrorAction, createManufacturerErrorReducer),
   on(resetCreateManufacturerErrorAction, resetCreateManufacturerErrorReducer),
@@ -217,7 +230,8 @@ const ordersReducer = createReducer(
   on(updateDeviceErrorAction, updateDeviceErrorReducer),
   on(resetUpdateDeviceErrorAction, resetUpdateDeviceErrorReducer),
   on(resetDeviceListMetaAction, resetDeviceListMetaReducer),
-  on(loadDeviceSucceededAction, loadDeviceSucceededReducer)
+  on(loadDeviceSucceededAction, loadDeviceSucceededReducer),
+  on(resetAllCategoriesAction, resetAllCategoriesReducer)
 );
 
 export function reducer(state: OrdersState | undefined, action: Action) {

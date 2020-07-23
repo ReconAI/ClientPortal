@@ -31,7 +31,8 @@ import { ActivatedRoute } from '@angular/router';
 import {
   loadManagementDeviceRequestedAction,
   loadManufacturerListRequestedAction,
-  loadCategoriesRequestedAction,
+  loadAllCategoriesRequestedAction,
+  resetAllCategoriesAction,
   updateDeviceRequestedAction,
   resetUpdateDeviceErrorAction,
 } from './../../../../store/orders/orders.actions';
@@ -109,12 +110,13 @@ export class UpdateDeviceContainer implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.id = +this.activatedRoute.snapshot.paramMap.get('id');
     this.store.dispatch(loadManufacturerListRequestedAction());
-    this.store.dispatch(loadCategoriesRequestedAction());
+    this.store.dispatch(loadAllCategoriesRequestedAction());
     this.store.dispatch(loadManagementDeviceRequestedAction({ id: this.id }));
   }
 
   ngOnDestroy(): void {
     this.store.dispatch(resetUpdateDeviceErrorAction());
+    this.store.dispatch(resetAllCategoriesAction());
   }
 
   sendDevice(device): void {

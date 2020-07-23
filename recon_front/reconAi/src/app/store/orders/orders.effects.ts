@@ -2,6 +2,7 @@ import {
   setManagementDeviceLoadingStatusAction,
   setUpdateDeviceLoadingStatusAction,
   setDeviceLoadingStatusAction,
+  setAllCategoriesListLoadingStatusAction,
 } from './../loaders/loaders.actions';
 import { generalTransformFormErrorToObject } from './../../core/helpers/generalFormsErrorsTransformation';
 import { CategoryInterface } from './../../orders/constants/types/category';
@@ -64,6 +65,8 @@ import {
   updateDeviceErrorAction,
   loadDeviceErrorAction,
   loadDeviceSucceededAction,
+  loadAllCategoriesSucceededAction,
+  loadAllCategoriesErrorAction,
 } from './orders.actions';
 import {
   setCategoriesListLoadingStatusAction,
@@ -130,6 +133,40 @@ export class OrdersEffects {
             );
           })
         )
+      )
+    )
+  );
+
+  loadAllCategories$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action>(OrdersActionTypes.LOAD_ALL_CATEGORIES_REQUESTED),
+      tap(() => {
+        this.store.dispatch(
+          setAllCategoriesListLoadingStatusAction({
+            status: true,
+          })
+        );
+      }),
+      switchMap(() =>
+        this.httpClient
+          .get<CategoryInterface[]>('/order-api/management/categories')
+          .pipe(
+            map((categories) =>
+              loadAllCategoriesSucceededAction(
+                transformCategoriesFromServer(categories)
+              )
+            ),
+            catchError((error) => {
+              return of(loadAllCategoriesErrorAction());
+            }),
+            finalize(() => {
+              this.store.dispatch(
+                setAllCategoriesListLoadingStatusAction({
+                  status: false,
+                })
+              );
+            })
+          )
       )
     )
   );

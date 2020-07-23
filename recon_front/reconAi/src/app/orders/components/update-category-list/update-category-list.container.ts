@@ -1,13 +1,16 @@
-import { selectCategoriesListLoadingStatus } from './../../../store/loaders/loaders.selectors';
+import { selectAllCategoriesListLoadingStatus } from './../../../store/loaders/loaders.selectors';
 import { map, tap } from 'rxjs/operators';
-import { updateCategoriesRequestedAction } from './../../../store/orders/orders.actions';
+import {
+  updateCategoriesRequestedAction,
+  resetAllCategoriesAction,
+} from './../../../store/orders/orders.actions';
 import { selectOrderCategoriesList } from './../../../store/orders/orders.selectors';
 import { CategoryInterface } from './../../constants/types/category';
 import { Observable, Subscription } from 'rxjs';
 import { Store, select } from '@ngrx/store';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AppState } from 'app/store/reducers';
-import { loadCategoriesRequestedAction } from 'app/store/orders';
+import { loadAllCategoriesRequestedAction } from 'app/store/orders';
 import {
   CategoriesClientInterface,
   CategoriesFormInterface,
@@ -28,11 +31,11 @@ export class UpdateCategoryListContainer implements OnInit, OnDestroy {
   );
 
   loadingStatus$: Observable<boolean> = this.store.pipe(
-    select(selectCategoriesListLoadingStatus),
+    select(selectAllCategoriesListLoadingStatus)
   );
 
   loadingUpdatingStatus$: Observable<boolean> = this.store.pipe(
-    select(selectUpdateCategoriesListLoadingStatus),
+    select(selectUpdateCategoriesListLoadingStatus)
   );
 
   sendCategories(categories: CategoriesClientInterface): void {
@@ -43,10 +46,11 @@ export class UpdateCategoryListContainer implements OnInit, OnDestroy {
     this.loadingStatusSubscription = this.loadingStatus$.subscribe((status) => {
       this.loadingStatus = status;
     });
-    this.store.dispatch(loadCategoriesRequestedAction());
+    this.store.dispatch(loadAllCategoriesRequestedAction());
   }
 
   ngOnDestroy(): void {
+    this.store.dispatch(resetAllCategoriesAction());
     this.loadingStatusSubscription.unsubscribe();
   }
 }

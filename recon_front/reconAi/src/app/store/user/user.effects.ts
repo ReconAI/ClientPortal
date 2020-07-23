@@ -105,7 +105,9 @@ export class UserEffects {
       switchMap(() =>
         this.httpClient.get<ServerUserInterface>('/api/profile').pipe(
           map((user) => {
-            this.store.dispatch(loadUserCardsRequestedAction());
+            // if (user?.group?.name === 'super_admin') {
+            //   this.store.dispatch(loadUserCardsRequestedAction());
+            // }
             return loadCurrentUserSucceededAction(transformUserResponse(user));
           }),
           catchError((error) => of(loadCurrentUserErrorAction())),
