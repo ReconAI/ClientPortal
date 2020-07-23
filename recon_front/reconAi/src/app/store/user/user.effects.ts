@@ -18,6 +18,7 @@ import {
   setUpdateCurrentUserLoadingStatusAction,
   setAttachCardLoadingStatusAction,
   setUserCardsLoadingStatusAction,
+  setDetachCardLoadingStatusAction,
 } from './../loaders/loaders.actions';
 import { LocalStorageService } from './../../core/services/localStorage/local-storage.service';
 import { Action, Store, select } from '@ngrx/store';
@@ -105,9 +106,9 @@ export class UserEffects {
       switchMap(() =>
         this.httpClient.get<ServerUserInterface>('/api/profile').pipe(
           map((user) => {
-            // if (user?.group?.name === 'super_admin') {
-            //   this.store.dispatch(loadUserCardsRequestedAction());
-            // }
+            if (user?.group?.name === 'super_admin') {
+              this.store.dispatch(loadUserCardsRequestedAction());
+            }
             return loadCurrentUserSucceededAction(transformUserResponse(user));
           }),
           catchError((error) => of(loadCurrentUserErrorAction())),
@@ -383,6 +384,13 @@ export class UserEffects {
       ofType<Action & DeleteUserCardRequestInterface>(
         UserActionTypes.DELETE_USER_CARD_REQUESTED
       ),
+      tap(() => {
+        this.store.dispatch(
+          setDetachCardLoadingStatusAction({
+            status: true,
+          })
+        );
+      }),
       switchMap((id) =>
         this.httpClient
           .request<void>('delete', `/api/cards`, {
@@ -393,7 +401,14 @@ export class UserEffects {
             tap(() => {
               this.store.dispatch(loadUserCardsRequestedAction());
             }),
-            catchError((error) => of(deleteUserCardErrorAction()))
+            catchError((error) => of(deleteUserCardErrorAction())),
+            finalize(() => {
+              this.store.dispatch(
+                setDetachCardLoadingStatusAction({
+                  status: false,
+                })
+              );
+            })
           )
       )
     )

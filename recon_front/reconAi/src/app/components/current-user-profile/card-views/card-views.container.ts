@@ -22,13 +22,5 @@ export class CardViewsContainer implements OnInit {
     select(selectUserCardsLoadingStatus)
   );
 
-  deleteCard(id: string) {
-    this.store.dispatch(
-      deleteUserCardRequestedAction({
-        id,
-      })
-    );
-  }
-
   ngOnInit(): void {}
 }

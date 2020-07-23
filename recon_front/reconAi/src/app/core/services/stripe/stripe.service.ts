@@ -6,15 +6,17 @@ import { Store } from '@ngrx/store';
 import { Injectable } from '@angular/core';
 import { AppState } from 'app/store/reducers';
 import { setAttachCardLoadingStatusAction } from 'app/store/loaders';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({
   providedIn: 'root',
 })
 export class StripeService {
   stripe: any;
-  apiKey = 'pk_test_HlgfbLYwgsv8TpEqvMnIrD7t00pF9QFP65';
+  apiKey =
+    $ENV.STRIPE_PUBLISHABLE_KEY || 'pk_test_HlgfbLYwgsv8TpEqvMnIrD7t00pF9QFP65';
 
-  constructor(private store: Store<AppState>) {
+  constructor(private store: Store<AppState>, private snackBar: MatSnackBar) {
     this.stripe = Stripe(this.apiKey);
   }
 
@@ -51,6 +53,11 @@ export class StripeService {
           status: false,
         })
       );
+
+      this.snackBar.open(error?.message || 'Server error', null, {
+        duration: 3 * 1000,
+        panelClass: ['recon-snackbar'],
+      });
 
       this.store.dispatch(attachCardErrorAction());
     }

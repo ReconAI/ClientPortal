@@ -1,0 +1,19 @@
+<div class="recon-modal-title">
+  <h3>Delete card</h3>
+  <mat-icon [mat-dialog-close]="true">close</mat-icon>
+</div>
+
+<span>Do you want to delete **** **** **** {{ data.last4 }} card?</span>
+<div class="button-container">
+  <button
+    [disabled]="loadingStatus$ | async"
+    mat-raised-button
+    color="primary"
+    (click)="deleteCard()"
+  >
+    <mat-icon *ngIf="loadingStatus$ | async; else loaded">
+      <mat-spinner color="primary" diameter="20"></mat-spinner>
+    </mat-icon>
+    <ng-template #loaded>DELETE</ng-template>
+  </button>
+</div>

@@ -9,11 +9,8 @@ import { PaymentMethodsComponentInterface } from 'app/constants/types/card';
 export class PaymentMethodsComponent implements OnInit {
   @Input() possiblePayments: PaymentMethodsComponentInterface[] = [];
   paymentMethod = '';
+  invoicingTooltip = 'Your organization is not approved for that payment method';
   constructor() {}
 
-  ngOnInit(): void {
-    this.paymentMethod = this.possiblePayments?.length
-      ? this.possiblePayments[0]?.value
-      : '';
-  }
+  ngOnInit(): void {}
 }
