@@ -140,7 +140,13 @@ export const selectDeviceLoadingStatus = createSelector(
   (loaders: LoadersState): boolean => loaders.device
 );
 
+// user -> cards
 export const selectAttachCardLoadingStatus = createSelector(
   selectLoaders,
   (loaders: LoadersState): boolean => loaders.attachCard
+);
+
+export const selectUserCardsLoadingStatus = createSelector(
+  selectLoaders,
+  (loaders: LoadersState): boolean => loaders.userCards
 );

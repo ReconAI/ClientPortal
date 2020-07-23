@@ -17,6 +17,7 @@ import {
   setPreResetPasswordLoadingStatusAction,
   setUpdateCurrentUserLoadingStatusAction,
   setAttachCardLoadingStatusAction,
+  setUserCardsLoadingStatusAction,
 } from './../loaders/loaders.actions';
 import { LocalStorageService } from './../../core/services/localStorage/local-storage.service';
 import { Action, Store, select } from '@ngrx/store';
@@ -29,6 +30,9 @@ import {
   transformUpdateCurrentUserToServer,
   AttachCardRequestClientInterface,
   transformAttachCardRequestToServer,
+  transformCardListFromServer,
+  DeleteUserCardRequestInterface,
+  transformDetachCardRequestToServer,
 } from './user.server.helpers';
 import {
   UserActionTypes,
@@ -51,6 +55,11 @@ import {
   updateCurrentUserErrorAction,
   attachCardSucceededAction,
   attachCardErrorAction,
+  loadUserCardsRequestedAction,
+  loadUserCardsSucceededAction,
+  loadUserCardsErrorAction,
+  deleteUserCardSucceededAction,
+  deleteUserCardErrorAction,
 } from './user.actions';
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
@@ -71,6 +80,7 @@ import {
   UserProfileFormInterface,
   signUpRelationsFormAnsServerFields,
 } from 'app/constants/types';
+import { CardServerInterface } from 'app/constants/types/card';
 
 @Injectable()
 export class UserEffects {
@@ -94,9 +104,10 @@ export class UserEffects {
       }),
       switchMap(() =>
         this.httpClient.get<ServerUserInterface>('/api/profile').pipe(
-          map((user) =>
-            loadCurrentUserSucceededAction(transformUserResponse(user))
-          ),
+          map((user) => {
+            this.store.dispatch(loadUserCardsRequestedAction());
+            return loadCurrentUserSucceededAction(transformUserResponse(user));
+          }),
           catchError((error) => of(loadCurrentUserErrorAction())),
           finalize(() => {
             this.store.dispatch(
@@ -310,6 +321,7 @@ export class UserEffects {
     )
   );
 
+  // loading status is set in stripe service
   attachCard$: Observable<Action> = createEffect(() =>
     this.actions$.pipe(
       ofType<AttachCardRequestClientInterface & Action>(
@@ -320,6 +332,9 @@ export class UserEffects {
           .post<void>('/api/cards', transformAttachCardRequestToServer(card))
           .pipe(
             map(() => attachCardSucceededAction()),
+            tap(() => {
+              this.store.dispatch(loadUserCardsRequestedAction());
+            }),
             catchError((error) => of(attachCardErrorAction())),
             finalize(() => {
               this.store.dispatch(
@@ -330,6 +345,55 @@ export class UserEffects {
             })
           );
       })
+    )
+  );
+
+  loadCards$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action>(UserActionTypes.LOAD_USER_CARDS_REQUESTED),
+      tap(() => {
+        this.store.dispatch(
+          setUserCardsLoadingStatusAction({
+            status: true,
+          })
+        );
+      }),
+      switchMap(() => {
+        return this.httpClient.get<CardServerInterface[]>('/api/cards').pipe(
+          map((cards) =>
+            loadUserCardsSucceededAction(transformCardListFromServer(cards))
+          ),
+          catchError((error) => of(loadUserCardsErrorAction())),
+          finalize(() => {
+            this.store.dispatch(
+              setUserCardsLoadingStatusAction({
+                status: false,
+              })
+            );
+          })
+        );
+      })
+    )
+  );
+
+  deleteCard$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action & DeleteUserCardRequestInterface>(
+        UserActionTypes.DELETE_USER_CARD_REQUESTED
+      ),
+      switchMap((id) =>
+        this.httpClient
+          .request<void>('delete', `/api/cards`, {
+            body: transformDetachCardRequestToServer(id),
+          })
+          .pipe(
+            map(() => deleteUserCardSucceededAction()),
+            tap(() => {
+              this.store.dispatch(loadUserCardsRequestedAction());
+            }),
+            catchError((error) => of(deleteUserCardErrorAction()))
+          )
+      )
     )
   );
 }

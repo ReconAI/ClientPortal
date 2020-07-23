@@ -8,6 +8,8 @@ import {
   UserTransformationResponse,
   PreResetPasswordRequestInterface,
   AttachCardRequestClientInterface,
+  LoadCardsRequestClientInterface,
+  DeleteUserCardRequestInterface,
 } from './user.server.helpers';
 import { createAction, props } from '@ngrx/store';
 import { ResetPasswordWithMetaInterface } from 'app/constants/types/resetPassword';
@@ -45,6 +47,14 @@ export enum UserActionTypes {
   ATTACH_CARD_REQUESTED = '[User] Attach Card Requested',
   ATTACH_CARD_SUCCEEDED = '[User] Attach Card Succeeded',
   ATTACH_CARD_ERROR = '[User] Attach Card Error',
+
+  LOAD_USER_CARDS_REQUESTED = '[User] Load User Cards Requested',
+  LOAD_USER_CARDS_SUCCEEDED = '[User] Load User Cards Succeeded',
+  LOAD_USER_CARDS_ERROR = '[User] Load User Cards Error',
+
+  DELETE_USER_CARD_REQUESTED = '[User] Delete User Card Requested',
+  DELETE_USER_CARD_SUCCEEDED = '[User] Delete User Card Succeeded',
+  DELETE_USER_CARD_ERROR = '[User] Delete User Card Error',
 }
 
 export const loadCurrentUserRequestedAction = createAction(
@@ -160,4 +170,30 @@ export const attachCardSucceededAction = createAction(
 
 export const attachCardErrorAction = createAction(
   UserActionTypes.ATTACH_CARD_ERROR
+);
+
+export const loadUserCardsRequestedAction = createAction(
+  UserActionTypes.LOAD_USER_CARDS_REQUESTED
+);
+
+export const loadUserCardsSucceededAction = createAction(
+  UserActionTypes.LOAD_USER_CARDS_SUCCEEDED,
+  props<LoadCardsRequestClientInterface>()
+);
+
+export const loadUserCardsErrorAction = createAction(
+  UserActionTypes.LOAD_USER_CARDS_ERROR
+);
+
+export const deleteUserCardRequestedAction = createAction(
+  UserActionTypes.DELETE_USER_CARD_REQUESTED,
+  props<DeleteUserCardRequestInterface>()
+);
+
+export const deleteUserCardSucceededAction = createAction(
+  UserActionTypes.DELETE_USER_CARD_SUCCEEDED
+);
+
+export const deleteUserCardErrorAction = createAction(
+  UserActionTypes.DELETE_USER_CARD_ERROR
 );

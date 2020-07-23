@@ -5,10 +5,10 @@
   </div>
   <div class="middle-part">
     <span>CARD</span>
-    <span>10/22</span>
+    <span>{{ expired }}</span>
   </div>
   <div class="bottom-part">
-    <span>**** **** **** 1234</span>
-    <span class="delete-label">Delete card</span>
+    <span>**** **** **** {{ last4 }}</span>
+    <span class="delete-label" (click)="deleteCard()">Delete card</span>
   </div>
 </div>

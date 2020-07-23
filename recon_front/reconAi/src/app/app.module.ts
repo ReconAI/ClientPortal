@@ -56,6 +56,8 @@ import { CreateCardComponent } from './components/card/create-card/create-card.c
 import { CreateCardDialogComponent } from './components/card/create-card/create-card-dialog/create-card-dialog.component';
 import { PaymentMethodsComponent } from './components/current-user-profile/payment-methods/payment-methods.component';
 import { CardViewComponent } from './components/card/card-view/card-view.component';
+import { CardViewsContainer } from './components/current-user-profile/card-views/card-views.container';
+import { PaymentMethodsContainer } from './components/current-user-profile/payment-methods/payment-methods.container';
 
 @NgModule({
   declarations: [
@@ -91,7 +93,9 @@ import { CardViewComponent } from './components/card/card-view/card-view.compone
     CreateCardDialogComponent,
     CreateCardDialogContainer,
     PaymentMethodsComponent,
+    PaymentMethodsContainer,
     CardViewComponent,
+    CardViewsContainer,
   ],
   imports: [
     BrowserModule,
