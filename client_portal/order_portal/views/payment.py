@@ -1,4 +1,5 @@
 from django.db.transaction import atomic
+from django.utils.translation import gettext_lazy as _
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
@@ -11,15 +12,16 @@ from order_portal.settings import RECON_AI_CONNECTION_NAME
 from recon_db_manager.models import Device
 from shared.permissions import IsCompanyDeveloper, IsActive
 from shared.swagger.headers import token_header
-from shared.swagger.responses import DEFAULT_UNSAFE_REQUEST_RESPONSES, \
-    default_unsafe_responses_with_custom_success, data_serializer, \
-    data_serializer_many, data_message_serializer
+from shared.swagger.responses import \
+    default_unsafe_responses_with_custom_success, data_serializer_many, \
+    data_message_serializer
 from shared.views.utils import CreateAPIView
-from django.utils.translation import gettext_lazy as _
 
 
 class BasketOverviewView(CreateAPIView):
     serializer_class = BasketOverviewSerializer
+
+    permission_classes = (IsAuthenticated, IsActive, IsCompanyDeveloper)
 
     queryset = Device.objects.prefetch_related(
         'images').filter(published=True).all()
@@ -63,7 +65,7 @@ class BasketPayView(CreateAPIView):
 
     permission_classes = (IsAuthenticated, IsActive, IsCompanyDeveloper)
 
-    create_success_message = _('Payment is successfully carried out')
+    create_success_message = _('Your order has been completed successfully')
 
     @swagger_auto_schema(
         responses=default_unsafe_responses_with_custom_success(
