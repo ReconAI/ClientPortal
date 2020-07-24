@@ -288,6 +288,22 @@ def default_get_responses_with_custom_success(
     """
 
     return {
-        status.HTTP_200_OK: success_response,
-        **DEFAULT_GET_REQUESTS_RESPONSES
+        **DEFAULT_GET_REQUESTS_RESPONSES,
+        status.HTTP_200_OK: success_response
     }
+
+
+def default_unsafe_responses_with_custom_success(
+        success_response: openapi.Schema
+) -> Dict[str, openapi.Schema]:
+    """
+    :type success_response: openapi.Schema
+
+    :rtype: Dict[str, openapi.Schema]
+    """
+
+    return {
+        **DEFAULT_UNSAFE_REQUEST_RESPONSES,
+        status.HTTP_200_OK: success_response
+    }
+

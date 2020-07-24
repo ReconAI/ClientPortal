@@ -158,12 +158,19 @@ MEDIA_URL = '/media/'
 # Enable/Disable http requests service data capturing
 LOG_HTTP = os.environ.get('LOG_HTTP', 'False') in ['True', '1']
 
+STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY')
+STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
+
+
 # Export http log aws bucket and key accordingly
 AWS_EXPORT_HTTP_LOG_BUCKET = os.environ.get('AWS_EXPORT_HTTP_LOG_BUCKET')
 AWS_EXPORT_HTTP_LOG_KEY = os.environ.get('AWS_EXPORT_HTTP_LOG_KEY')
 
 CLIENT_APP_SHEMA_HOST_PORT = os.environ.get(
     'CLIENT_APP_SHEMA_HOST_PORT')  # like http://127.0.0.1:8000
+
+VAT = 24  # vat in %
+CURRENCY = "eur"
 
 LOGGING = {
     'version': 1,
