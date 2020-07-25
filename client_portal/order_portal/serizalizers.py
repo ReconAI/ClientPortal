@@ -1,20 +1,27 @@
 """
 Order portal serializers range
 """
-from typing import List, Tuple
+import functools
+from datetime import datetime
+from typing import List, Tuple, Dict
 
+import stripe
+from django.conf import settings
 from django.core.files.base import ContentFile
 from django.core.validators import FileExtensionValidator, MaxLengthValidator
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError, ErrorDetail
 from rest_framework.fields import ListField, CharField, IntegerField
+from rest_framework.request import Request
 from rest_framework.serializers import ListSerializer, \
     Serializer
 from rest_framework.serializers import ModelSerializer
 
 from order_portal.fields import ImgField
-from recon_db_manager.models import Category, Manufacturer, Device, DeviceImage
+from recon_db_manager.models import Category, Manufacturer, Device, \
+    DeviceImage, DevicePurchase
+from shared.helpers import StripePrice
 
 
 class CategorySerializer(ModelSerializer):
@@ -529,3 +536,149 @@ class FullViewDeviceSerializer(ModelSerializer):
         :rtype: List[str]
         """
         return device.seo_keywords.split(', ')
+
+
+class BasketOverviewSerializer(DeviceListSerializer):
+    count = serializers.SerializerMethodField('format_count', read_only=True)
+    total_with_vat = serializers.SerializerMethodField('format_total_with_vat', read_only=True)
+    total_without_vat = serializers.SerializerMethodField('format_total_without_vat', read_only=True)
+
+    class Meta:
+        """
+        Limited range of fields can be shown on the list page
+        """
+        model = Device
+        fields = ('id', 'name', 'description', 'sales_price', 'images',
+                  'created_dt', 'count', 'total_with_vat', 'total_without_vat')
+
+    def format_count(self, instance: Device) -> int:
+        return self.__device_count(instance)
+
+    def format_total_without_vat(self, instance: Device) -> int:
+        cnt = self.__device_count(instance)
+
+        return instance.sales_price_obj.total(cnt)
+
+    def format_total_with_vat(self, instance: Device) -> float:
+        cnt = self.__device_count(instance)
+
+        return round(
+            instance.sales_price_vat_obj(settings.VAT).total(cnt),
+            2
+        )
+
+    def __device_count(self, instance: Device) -> int:
+        return self.context.get('device_count', {}).get(str(instance.id), 0)
+
+
+class BasketSerializer(Serializer):
+    device_count = serializers.DictField(
+        child=IntegerField(min_value=1, required=True, allow_null=False),
+        required=True,
+        allow_empty=False,
+        allow_null=False
+    )
+
+    def create(self, validated_data):
+        pass
+
+    def update(self, instance, validated_data):
+        pass
+
+
+class PaymentSerializer(BasketSerializer):
+    card_id = serializers.CharField(required=True, allow_null=False, allow_blank=False)
+
+    queryset = Device.objects.filter(published=True)
+
+    __devices = None
+
+    def validate_device_count(self, incoming_device: Dict[str, int]):
+        device_ids = incoming_device.keys()
+
+        if not all(device_id.isnumeric() for device_id in device_ids):
+            raise ValidationError(_('All device ids must be numeric'))
+
+        if len(self.__get_devices()) != len(device_ids):
+            raise ValidationError(_('You want to buy non existent devices'))
+
+        return incoming_device
+
+    def create(self, validated_data):
+        total = self.__total
+
+        payment = stripe.PaymentIntent.create(
+            amount=total,
+            customer=self.__request.user.organization.id,
+            receipt_email=self.__request.user.organization.inv_email,
+            payment_method=validated_data.get('card_id'),
+            confirm=True,
+            currency=settings.CURRENCY,
+            api_key=settings.STRIPE_SECRET_KEY
+        )
+
+        if payment:
+            now = datetime.now()
+            DevicePurchase.objects.bulk_create([
+                DevicePurchase(
+                    organization=self.__request.user.organization,
+                    device=device,
+                    payment_id=payment.id,
+                    device_name=device.name,
+                    device_price=device.sales_price,
+                    device_cnt=cnt,
+                    total=self.__device_total(device),
+                    created_dt=now
+                )
+                for device, cnt
+                in self.__get_devices().items()
+            ])
+
+        return payment
+
+    @property
+    def __total(self) -> float:
+        return functools.reduce(
+            lambda total, device: total + self.__device_total(device),
+            self.__get_devices().keys(),
+            0
+        )
+
+    def __device_total(self, device: Device):
+        device_cnt = self.__get_devices().get(device, 0)
+
+        return StripePrice(device.sales_price_vat_obj(settings.VAT)).total(device_cnt)
+
+    def __get_devices(self) -> Dict[Device, int]:
+        if self.__devices is None:
+            device_count = self.initial_data.get('device_count', {})
+
+            devices = self.queryset.filter(
+                id__in=device_count.keys()
+            ).all()
+
+            if len(devices):
+                self.__devices = {}
+                for device in devices:
+                    self.__devices[device] = device_count.get(str(device.id), 0)
+
+        return self.__devices
+
+    @property
+    def __request(self) -> Request:
+        return self.context.get('request')
+
+
+class PaymentIntentSerializer(Serializer):
+    id = serializers.CharField(required=True)
+    amount = serializers.IntegerField(required=True)
+
+    class Meta:
+        model = stripe.PaymentIntent
+        fields = ('id', 'amount')
+
+    def create(self, validated_data):
+        pass
+
+    def update(self, instance, validated_data):
+        pass

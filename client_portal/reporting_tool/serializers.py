@@ -61,4 +61,4 @@ class PaymentMethodSerializer(Serializer):
     created = IntegerField(required=True)
     customer = CharField(required=True)
     type = CharField(required=True)
-    card = CardSerializer()
+    card = CardSerializer(required=True)
