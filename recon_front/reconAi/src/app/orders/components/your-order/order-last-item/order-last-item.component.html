@@ -1,0 +1,17 @@
+<div class="order-last-item-container">
+  <recon-form-checkbox label="" [checked]="selected"></recon-form-checkbox>
+  <div class="select-field">
+    <span>Select all</span>
+  </div>
+  <div class="field-container">
+    <div class="field">
+      <span>VAT sum</span> <span>{{ vatSum }}</span>
+    </div>
+    <div class="field">
+      <span>Price without VAT</span> <span>{{ price | number: ".2-2" }} €</span>
+    </div>
+    <div class="field">
+      <span>Price with VAT</span> <span>{{ price | number: ".2-2" }} €</span>
+    </div>
+  </div>
+</div>

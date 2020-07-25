@@ -1,0 +1,25 @@
+<div class="order-item-container">
+  <recon-form-checkbox label="" [checked]="selected"></recon-form-checkbox>
+  <div class="image-container">
+    <img [src]="imgUrl" />
+  </div>
+  <div class="field-container">
+    <span class="title">{{ name }}</span>
+    <div class="field">
+      <span>Device amount</span> <span>{{ amount }}</span>
+    </div>
+    <div class="field">
+      <span>VAT</span> <span>{{ vat }}</span>
+    </div>
+    <div class="field">
+      <span>Price without VAT</span> <span>{{ price | number: ".2-2" }} €</span>
+    </div>
+    <div class="field">
+      <span>Price with VAT</span> <span>{{ price | number: ".2-2" }} €</span>
+    </div>
+    <div class="delete-field">
+      <span>Delete</span>
+    </div>
+  </div>
+  
+</div>

@@ -22,6 +22,10 @@ import { DeviceCardComponent } from './components/devices/device-card/device-car
 import { DeviceCardContainer } from './components/devices/device-card/device-card.container';
 import { ImageLeftCardBlockComponent } from './components/devices/device-card/image-left-card-block/image-left-card-block.component';
 import { RightInfoPartBlockComponent } from './components/devices/device-card/right-info-part-block/right-info-part-block.component';
+import { YourOrderComponent } from './components/your-order/your-order.component';
+import { OrderItemComponent } from './components/your-order/order-item/order-item.component';
+import { OrderLastItemComponent } from './components/your-order/order-last-item/order-last-item.component';
+import { DeliveryInformationComponent } from './components/your-order/delivery-information/delivery-information.component';
 
 @NgModule({
   declarations: [
@@ -40,6 +44,10 @@ import { RightInfoPartBlockComponent } from './components/devices/device-card/ri
     DeviceCardContainer,
     ImageLeftCardBlockComponent,
     RightInfoPartBlockComponent,
+    YourOrderComponent,
+    OrderItemComponent,
+    OrderLastItemComponent,
+    DeliveryInformationComponent,
   ],
   imports: [
     CommonModule,

@@ -1,3 +1,4 @@
+import { YourOrderComponent } from './components/your-order/your-order.component';
 import { DeviceCardContainer } from './components/devices/device-card/device-card.container';
 import { UpdateDeviceContainer } from './components/devices/update-device/update-device.container';
 import { AuthRoleGuard } from './../core/guards/auth-role-guard/auth-role.guard';
@@ -47,6 +48,15 @@ const routes: Routes = [
     canActivate: [AuthRoleGuard],
     component: UpdateDeviceContainer,
   },
+  {
+    path: 'yours',
+    data: {
+      title: 'Your order',
+      backgroundWithoutUnion: true,
+    },
+    component: YourOrderComponent,
+  },
+  // :id must be last
   {
     path: ':id',
     data: {
