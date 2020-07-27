@@ -121,9 +121,6 @@ class ManufacturerListView(ManufacturerOperator, ListCreateAPIView):
     """
     Manufacturer list view and create
     """
-
-    serializer_class = ReadManufacturerSerializer
-
     write_serializer_class = WriteManufacturerSerializer
 
     queryset = Manufacturer.objects.prefetch_related('categories').all()

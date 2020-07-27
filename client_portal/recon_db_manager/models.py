@@ -1409,8 +1409,6 @@ class Manufacturer(models.Model):
     address = models.CharField(max_length=255, null=True, blank=True)
     order_email = models.EmailField(null=True, blank=True)
     support_email = models.EmailField(null=True, blank=True)
-    categories = models.ManyToManyField(Category,
-                                        db_table='ManufacturerCategories')
 
     class Meta:
         """
@@ -1460,9 +1458,21 @@ class Device(models.Model):
 
     @property
     def sales_price_obj(self) -> Price:
+        """
+        Price helper
+
+        :rtype: Price
+        """
         return Price(self.sales_price)
 
     def sales_price_vat_obj(self, tax: float) -> PriceWithTax:
+        """
+        Price with taxes handler
+
+        :type tax: float
+
+        :rtype: PriceWithTax
+        """
         return PriceWithTax(self.sales_price_obj, tax)
 
 
@@ -1494,17 +1504,32 @@ class DevicePurchase(models.Model):
     Device purchase model
     """
     id = models.BigAutoField(primary_key=True)
-    device = models.ForeignKey(Device, on_delete=models.SET_NULL, null=True, blank=False, db_column='deviceId')
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, null=True, blank=False, db_column='organizationId')
-    payment_id = models.CharField(max_length=255, null=False, blank=False, db_column='paymentId')
-    device_name = models.CharField(max_length=255, null=False, blank=False, db_column='deviceName')
-    device_price = models.DecimalField(null=False, blank=False, max_digits=16, decimal_places=2, db_column='devicePrice')
-    device_cnt = models.PositiveIntegerField(null=False, blank=False, db_column='deviceCount')
+    device = models.ForeignKey(
+        Device, on_delete=models.SET_NULL,
+        null=True, blank=False, db_column='deviceId'
+    )
+    organization = models.ForeignKey(
+        Organization, on_delete=models.CASCADE,
+        null=True, blank=False, db_column='organizationId'
+    )
+    payment_id = models.CharField(
+        max_length=255, null=False, blank=False, db_column='paymentId'
+    )
+    device_name = models.CharField(
+        max_length=255, null=False, blank=False, db_column='deviceName'
+    )
+    device_price = models.DecimalField(
+        null=False, blank=False, max_digits=16,
+        decimal_places=2, db_column='devicePrice'
+    )
+    device_cnt = models.PositiveIntegerField(
+        null=False, blank=False, db_column='deviceCount'
+    )
     total = models.PositiveIntegerField(null=False, blank=False)
     created_dt = models.DateTimeField(null=True, auto_now_add=True)
 
     class Meta:
         """
-        Device image model's Meta class specification
+        Device purchase model's Meta class specification
         """
         db_table = 'DevicePurchases'

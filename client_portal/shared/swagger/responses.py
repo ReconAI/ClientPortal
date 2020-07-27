@@ -306,4 +306,3 @@ def default_unsafe_responses_with_custom_success(
         **DEFAULT_UNSAFE_REQUEST_RESPONSES,
         status.HTTP_200_OK: success_response
     }
-

@@ -57,7 +57,7 @@ def forms_to_formserializer(
     return form_to_formserializer(type('Form', (Form, ), {**fields}))
 
 
-class ReadOnlySerializer(serializers.ModelSerializer):
+class ReadOnlySerializerMixin:
     """
     Serializer doesn't let write
     """
@@ -72,7 +72,7 @@ class ReadOnlySerializer(serializers.ModelSerializer):
         """
 
 
-class GroupSerializer(ReadOnlySerializer):
+class GroupSerializer(ReadOnlySerializerMixin, serializers.ModelSerializer):
     """
     Serializes user group data
     """
@@ -86,7 +86,8 @@ class GroupSerializer(ReadOnlySerializer):
         fields = ('name',)
 
 
-class OrganizationSerializer(ReadOnlySerializer):
+class OrganizationSerializer(ReadOnlySerializerMixin,
+                             serializers.ModelSerializer):
     """
     Represents organization as serialized data
     """
@@ -103,7 +104,7 @@ class OrganizationSerializer(ReadOnlySerializer):
         )
 
 
-class UserSerializer(ReadOnlySerializer):
+class UserSerializer(ReadOnlySerializerMixin, serializers.ModelSerializer):
     """
     Serializes user data
     """

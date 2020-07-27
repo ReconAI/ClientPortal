@@ -12,7 +12,7 @@ from django.core.validators import FileExtensionValidator, MaxLengthValidator
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError, ErrorDetail
-from rest_framework.fields import ListField, CharField, IntegerField
+from rest_framework.fields import CharField, IntegerField
 from rest_framework.request import Request
 from rest_framework.serializers import ListSerializer, \
     Serializer
@@ -22,6 +22,7 @@ from order_portal.fields import ImgField
 from recon_db_manager.models import Category, Manufacturer, Device, \
     DeviceImage, DevicePurchase
 from shared.helpers import StripePrice
+from shared.serializers import ReadOnlySerializerMixin
 
 
 class CategorySerializer(ModelSerializer):
@@ -148,7 +149,7 @@ class CategoryCollectionSerializer(Serializer):
 
         return created + updated
 
-    def create(self, categories_list: List[dict]) -> List[Category]:
+    def create(self, validated_data: List[dict]) -> List[Category]:
         """
         :rtype validated_data: Dict[str, List[dict]]
 
@@ -157,7 +158,7 @@ class CategoryCollectionSerializer(Serializer):
         return Category.objects.bulk_create([
             Category(**category)
             for category
-            in categories_list
+            in validated_data
         ])
 
     def update(self, categories_list: List[dict]):
@@ -255,8 +256,6 @@ class ReadManufacturerSerializer(ModelSerializer):
     """
     Manufacturer serializer for show
     """
-    categories = SynchronizeCategorySerializer(many=True, allow_null=True)
-    category_ids = serializers.ListSerializer
 
     class Meta:
         """
@@ -264,19 +263,13 @@ class ReadManufacturerSerializer(ModelSerializer):
         """
         model = Manufacturer
         fields = ('id', 'name', 'address', 'contact_person', 'order_email',
-                  'phone', 'support_email', 'vat', 'categories')
+                  'phone', 'support_email', 'vat')
 
 
 class WriteManufacturerSerializer(ModelSerializer):
     """
     Create/Update Manufacturer serializer
     """
-    category_ids = ListField(
-        child=serializers.IntegerField(min_value=1),
-        allow_empty=False,
-        min_length=1,
-        max_length=None
-    )
 
     class Meta:
         """
@@ -284,41 +277,7 @@ class WriteManufacturerSerializer(ModelSerializer):
         """
         model = Manufacturer
         fields = ('name', 'address', 'contact_person', 'order_email', 'phone',
-                  'support_email', 'vat', 'category_ids')
-
-    @staticmethod
-    def validate_category_ids(category_ids: List[int]) -> List[Category]:
-        """
-        All af the categories are to be present in the db
-
-        :type category_ids: List[int]
-
-        :rtype: List[Category]
-        """
-        category_ids = set(category_ids)
-
-        categories = Category.objects.filter(id__in=category_ids).all()
-
-        if category_ids and len(categories) != len(category_ids):
-            raise ValidationError("Some of passed categories does not exist")
-
-        return categories
-
-    def create(self, validated_data):
-        categories = validated_data.pop('category_ids')
-
-        manufacturer = super().create(validated_data)
-        manufacturer.categories.set(categories)
-
-        return manufacturer
-
-    def update(self, instance, validated_data):
-        categories = validated_data.pop('category_ids')
-
-        manufacturer = super().update(instance, validated_data)
-        manufacturer.categories.set(categories)
-
-        return manufacturer
+                  'support_email', 'vat')
 
 
 class DeviceImageSerializer(ModelSerializer):
@@ -539,9 +498,18 @@ class FullViewDeviceSerializer(ModelSerializer):
 
 
 class BasketOverviewSerializer(DeviceListSerializer):
+    """
+    Returns list of devices along with calculated price
+    """
     count = serializers.SerializerMethodField('format_count', read_only=True)
-    total_with_vat = serializers.SerializerMethodField('format_total_with_vat', read_only=True)
-    total_without_vat = serializers.SerializerMethodField('format_total_without_vat', read_only=True)
+    total_with_vat = serializers.SerializerMethodField(
+        'format_total_with_vat',
+        read_only=True
+    )
+    total_without_vat = serializers.SerializerMethodField(
+        'format_total_without_vat',
+        read_only=True
+    )
 
     class Meta:
         """
@@ -552,14 +520,29 @@ class BasketOverviewSerializer(DeviceListSerializer):
                   'created_dt', 'count', 'total_with_vat', 'total_without_vat')
 
     def format_count(self, instance: Device) -> int:
+        """
+        :type instance: Device
+
+        :rtype: int
+        """
         return self.__device_count(instance)
 
     def format_total_without_vat(self, instance: Device) -> int:
+        """
+        :type instance: Device
+
+        :rtype: int
+        """
         cnt = self.__device_count(instance)
 
         return instance.sales_price_obj.total(cnt)
 
     def format_total_with_vat(self, instance: Device) -> float:
+        """
+        :type instance: Device
+
+        :rtype: float
+        """
         cnt = self.__device_count(instance)
 
         return round(
@@ -571,7 +554,10 @@ class BasketOverviewSerializer(DeviceListSerializer):
         return self.context.get('device_count', {}).get(str(instance.id), 0)
 
 
-class BasketSerializer(Serializer):
+class BasketSerializer(ReadOnlySerializerMixin, Serializer):
+    """
+    Accepts incoming devices ids along with their count respectively
+    """
     device_count = serializers.DictField(
         child=IntegerField(min_value=1, required=True, allow_null=False),
         required=True,
@@ -579,21 +565,30 @@ class BasketSerializer(Serializer):
         allow_null=False
     )
 
-    def create(self, validated_data):
-        pass
-
-    def update(self, instance, validated_data):
-        pass
-
 
 class PaymentSerializer(BasketSerializer):
-    card_id = serializers.CharField(required=True, allow_null=False, allow_blank=False)
+    """
+    Reads incoming data and performs payment
+    """
+
+    card_id = serializers.CharField(
+        required=True,
+        allow_null=False,
+        allow_blank=False
+    )
 
     queryset = Device.objects.filter(published=True)
 
     __devices = None
 
-    def validate_device_count(self, incoming_device: Dict[str, int]):
+    def validate_device_count(
+            self, incoming_device: Dict[str, int]) -> Dict[str, int]:
+        """
+        :type incoming_device: Dict[str, int]
+
+        :rtype: Dict[str, int]
+        """
+
         device_ids = incoming_device.keys()
 
         if not all(device_id.isnumeric() for device_id in device_ids):
@@ -607,14 +602,10 @@ class PaymentSerializer(BasketSerializer):
     def create(self, validated_data):
         total = self.__total
 
-        payment = stripe.PaymentIntent.create(
+        payment = self.__request.user.organization.customer.pay(
             amount=total,
-            customer=self.__request.user.organization.id,
-            receipt_email=self.__request.user.organization.inv_email,
             payment_method=validated_data.get('card_id'),
-            confirm=True,
-            currency=settings.CURRENCY,
-            api_key=settings.STRIPE_SECRET_KEY
+            confirm=True
         )
 
         if payment:
@@ -647,9 +638,16 @@ class PaymentSerializer(BasketSerializer):
     def __device_total(self, device: Device):
         device_cnt = self.__get_devices().get(device, 0)
 
-        return StripePrice(device.sales_price_vat_obj(settings.VAT)).total(device_cnt)
+        return StripePrice(
+            device.sales_price_vat_obj(settings.VAT)
+        ).total(device_cnt)
 
     def __get_devices(self) -> Dict[Device, int]:
+        """
+        Device count getter
+
+        :rtype: Dict[Device, int]
+        """
         if self.__devices is None:
             device_count = self.initial_data.get('device_count', {})
 
@@ -657,10 +655,13 @@ class PaymentSerializer(BasketSerializer):
                 id__in=device_count.keys()
             ).all()
 
-            if len(devices):
+            if devices:
                 self.__devices = {}
                 for device in devices:
-                    self.__devices[device] = device_count.get(str(device.id), 0)
+                    self.__devices[device] = device_count.get(
+                        str(device.id),
+                        0
+                    )
 
         return self.__devices
 
@@ -669,16 +670,16 @@ class PaymentSerializer(BasketSerializer):
         return self.context.get('request')
 
 
-class PaymentIntentSerializer(Serializer):
+class PaymentIntentSerializer(ReadOnlySerializerMixin, Serializer):
+    """
+    Payment data serializer
+    """
     id = serializers.CharField(required=True)
     amount = serializers.IntegerField(required=True)
 
     class Meta:
+        """
+        Completed payment should expose id and amount
+        """
         model = stripe.PaymentIntent
         fields = ('id', 'amount')
-
-    def create(self, validated_data):
-        pass
-
-    def update(self, instance, validated_data):
-        pass
