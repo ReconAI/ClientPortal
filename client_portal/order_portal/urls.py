@@ -40,7 +40,7 @@ urlpatterns = [
     path('basket/pay', BasketPayView.as_view(), name='basket.pay')
 ]
 
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT, name='file')
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
 if settings.DEBUG:
