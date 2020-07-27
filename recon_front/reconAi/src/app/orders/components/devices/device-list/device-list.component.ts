@@ -33,6 +33,7 @@ export class DeviceListComponent implements OnInit {
   @Input() pageSize: number;
   @Input() loadingStatus: boolean;
   @Input() isSuperAdmin = false;
+  @Input() userId = '';
 
   @Output() loadData$ = new EventEmitter<PaginatedDeviceListRequestInterface>();
 
