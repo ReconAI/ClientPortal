@@ -53,12 +53,13 @@ class HTTPLogMiddleware(MiddlewareMixin):
 
         :rtype: str
         """
-        return '{},{},{},{},{}\n'.format(
+        return '{},{},{},{},{},{}\n'.format(
             datetime.now().isoformat(),
             request.method,
             request.path_info,
             request.content_type,
-            response.status_code
+            response.status_code,
+            request.META.get("REMOTE_ADDR")
         )
 
     @staticmethod

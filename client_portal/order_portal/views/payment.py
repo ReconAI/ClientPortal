@@ -1,3 +1,7 @@
+"""
+Payment views module
+"""
+
 from django.db.transaction import atomic
 from django.utils.translation import gettext_lazy as _
 from drf_yasg.utils import swagger_auto_schema
@@ -19,6 +23,9 @@ from shared.views.utils import CreateAPIView
 
 
 class BasketOverviewView(CreateAPIView):
+    """
+    List with ordered items view
+    """
     serializer_class = BasketOverviewSerializer
 
     permission_classes = (IsAuthenticated, IsActive, IsCompanyDeveloper)
@@ -61,6 +68,9 @@ class BasketOverviewView(CreateAPIView):
 
 
 class BasketPayView(CreateAPIView):
+    """
+    Complete payment view
+    """
     serializer_class = PaymentSerializer
 
     permission_classes = (IsAuthenticated, IsActive, IsCompanyDeveloper)
