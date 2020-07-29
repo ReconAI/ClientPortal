@@ -66,6 +66,8 @@ EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS')
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
 
+INFO_EMAIL = os.environ.get('INFO_EMAIL')
+
 ROOT_URLCONF = 'reporting_tool.urls'
 
 TEMPLATES = [
@@ -193,7 +195,7 @@ STORAGE_ROOT = '{}/{}/'.format(BASE_DIR, 'data')
 LOG_HTTP = os.environ.get('LOG_HTTP', 'False') in ['True', '1']
 
 # Export http log aws bucket and key accordingly
-AWS_EXPORT_HTTP_LOG_BUCKET = os.environ.get('AWS_EXPORT_HTTP_LOG_BUCKET')
+CLIENT_PORTAL_BUCKET = os.environ.get('AWS_CLIENT_PORTAL_BUCKET')
 AWS_EXPORT_HTTP_LOG_KEY = os.environ.get('AWS_EXPORT_HTTP_LOG_KEY')
 
 CLIENT_APP_SHEMA_HOST_PORT = os.environ.get(

@@ -25,6 +25,7 @@ from .views.accounts import SignupView, ActivateView, CurrentUserProfileView, \
     ObtainAuthToken, LogoutView, ResetPassword, PasswordResetConfirmView, \
     PreSignupValidationView, CheckResetPasswordTokenView
 from .views.cards import CardListView
+from .views.new_features import NewFeatureView
 from .views.user_management import UserList, UserItem, InvitationView
 
 urlpatterns = [
@@ -45,6 +46,8 @@ urlpatterns = [
     path('users', UserList.as_view(), name='users.list'),
     path('users/<int:pk>', UserItem.as_view(), name='users.item'),
     path('users/invitations', InvitationView.as_view(), name='users.invitation'),
+
+    path('new-features', NewFeatureView.as_view(), name='new_feature.request'),
 
     path('admin/', admin.site.urls),
 ]
