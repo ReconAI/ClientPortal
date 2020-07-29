@@ -1,3 +1,4 @@
+import { BasketService } from './../../../../core/services/basket/basket.service';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { Component, OnInit, Input } from '@angular/core';
@@ -14,7 +15,11 @@ export class DeviceItemComponent implements OnInit {
   @Input() name;
   @Input() id: number;
   @Input() showActions = false;
-  constructor(private dialog: MatDialog, private router: Router) {}
+  @Input() userId: number;
+  constructor(
+    private dialog: MatDialog,
+    private router: Router,
+  ) {}
 
   ngOnInit(): void {}
 

@@ -10,6 +10,7 @@ import { UserProfileComponent } from './forms/user-profile/user-profile.componen
 import { FormSelectComponent } from './forms/form-select/form-select.component';
 import { FormFileWithListComponent } from './forms/form-file-with-list/form-file-with-list.component';
 import { FormChipsComponent } from './forms/form-chips/form-chips.component';
+import { FormCheckboxComponent } from './forms/form-checkbox/form-checkbox.component';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import { FormChipsComponent } from './forms/form-chips/form-chips.component';
     FormSelectComponent,
     FormFileWithListComponent,
     FormChipsComponent,
+    FormCheckboxComponent,
   ],
   imports: [
     MaterialModule,
@@ -35,7 +37,8 @@ import { FormChipsComponent } from './forms/form-chips/form-chips.component';
     FormSelectComponent,
     FormFileWithListComponent,
     FormChipsComponent,
-    PaginationComponent
+    PaginationComponent,
+    FormCheckboxComponent,
   ],
   providers: [],
 })

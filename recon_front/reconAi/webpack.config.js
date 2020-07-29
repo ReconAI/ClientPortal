@@ -10,6 +10,7 @@ module.exports = {
           process.env.STRIPE_PUBLISHABLE_KEY
         ),
         STRIPE_SECRET_KEY: JSON.stringify(process.env.STRIPE_SECRET_KEY),
+        VAT: JSON.stringify(process.env.VAT),
       },
     }),
   ],

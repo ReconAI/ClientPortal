@@ -7,6 +7,8 @@ interface Env {
   ORDER_PORTAL_API_URL: string;
   STRIPE_PUBLISHABLE_KEY: string;
   STRIPE_SECRET_KEY: string;
+  VAT: string;
+  FEE: string;
 }
 
 interface GlobalEnvironment {

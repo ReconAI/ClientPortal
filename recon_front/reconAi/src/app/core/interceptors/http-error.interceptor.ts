@@ -31,6 +31,8 @@ export class HttpErrorInterceptor implements HttpInterceptor {
     { url: '/order-api/management/manufacturers', method: 'POST' },
     { url: '/order-api/management/devices', method: 'PUT' },
     { url: '/order-api/management/devices', method: 'POST' },
+    { url: '/order-api/basket/pay', method: 'POST' },
+    { url: '/api/cards', method: 'POST' },
   ];
 
   createErrorServerMessage(error: HttpErrorResponse): string {

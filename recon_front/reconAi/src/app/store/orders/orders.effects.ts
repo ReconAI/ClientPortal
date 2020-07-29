@@ -1,10 +1,18 @@
+import { loadBasketOverviewRequestedAction } from 'app/store/orders';
+import { selectCurrentUserProfileId } from './../user/user.selectors';
+import { BasketService } from './../../core/services/basket/basket.service';
 import {
   setManagementDeviceLoadingStatusAction,
   setUpdateDeviceLoadingStatusAction,
   setDeviceLoadingStatusAction,
   setAllCategoriesListLoadingStatusAction,
+  setBasketOverviewLoadingStatusAction,
+  setPayBasketLoadingStatusAction,
 } from './../loaders/loaders.actions';
-import { generalTransformFormErrorToObject } from './../../core/helpers/generalFormsErrorsTransformation';
+import {
+  generalTransformFormErrorToObject,
+  generalTransformFormErrorToString,
+} from './../../core/helpers/generalFormsErrorsTransformation';
 import { CategoryInterface } from './../../orders/constants/types/category';
 import {
   transformCategoriesFromServer,
@@ -23,6 +31,12 @@ import {
   DeviceListItemServerInterface,
   transformDeviceFromServer,
   transformUpdateDeviceRequestToServer,
+  BasketOverviewRequestClientInterface,
+  transformBasketOverviewResponseFromServer,
+  transformBasketOverviewRequestToServer,
+  BasketPaymentRequestActionInterface,
+  transformBasketPaymentRequestToServer,
+  BasketPaymentSucceededInterface,
 } from './orders.server.helpers';
 import { Router } from '@angular/router';
 import { Action, Store, select } from '@ngrx/store';
@@ -38,7 +52,7 @@ import {
   mergeMap,
   withLatestFrom,
 } from 'rxjs/operators';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { AppState } from '../reducers';
 import {
   OrdersActionTypes,
@@ -67,6 +81,10 @@ import {
   loadDeviceSucceededAction,
   loadAllCategoriesSucceededAction,
   loadAllCategoriesErrorAction,
+  loadBasketOverviewSucceededAction,
+  loadBasketOverviewErrorAction,
+  payBasketSucceededAction,
+  payBasketErrorAction,
 } from './orders.actions';
 import {
   setCategoriesListLoadingStatusAction,
@@ -77,16 +95,8 @@ import {
   setDeviceListLoadingStatusAction,
   setDeleteDeviceLoadingStatusAction,
 } from '../loaders';
-import {
-  PaginationRequestInterface,
-  PaginationResponseServerInterface,
-} from 'app/constants/types/requests';
-import {
-  DeviceFormInterface,
-  DeviceServerInterface,
-  DeviceListServerResponseInterface,
-} from 'app/orders/constants';
-import { transformUsersListResponseFromServer } from '../users/users.server.helpers';
+import { PaginationResponseServerInterface } from 'app/constants/types/requests';
+import { DeviceListServerResponseInterface } from 'app/orders/constants';
 import { calculatePageAfterDelete } from 'app/core/helpers';
 import {
   selectDevices,
@@ -95,6 +105,7 @@ import {
   selectDeviceImages,
   selectDeviceId,
 } from './orders.selectors';
+import { BasketItemServerInterface } from 'app/orders/constants/types/basket';
 
 @Injectable()
 export class OrdersEffects {
@@ -102,7 +113,8 @@ export class OrdersEffects {
     private actions$: Actions,
     private httpClient: HttpClient,
     private store: Store<AppState>,
-    private router: Router
+    private router: Router,
+    private basketService: BasketService
   ) {}
 
   loadCategories$: Observable<Action> = createEffect(() =>
@@ -529,6 +541,97 @@ export class OrdersEffects {
             finalize(() => {
               this.store.dispatch(
                 setDeviceLoadingStatusAction({
+                  status: false,
+                })
+              );
+            })
+          );
+      })
+    )
+  );
+
+  loadBasketOverview$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action>(OrdersActionTypes.LOAD_BASKET_OVERVIEW_REQUESTED),
+      tap(() => {
+        this.store.dispatch(
+          setBasketOverviewLoadingStatusAction({
+            status: true,
+          })
+        );
+      }),
+      withLatestFrom(this.store.pipe(select(selectCurrentUserProfileId))),
+      switchMap(([_, userProfileId]) => {
+        const basket = this.basketService.basketOfUser(+userProfileId);
+
+        return this.httpClient
+          .post<BasketItemServerInterface[]>(
+            `/order-api/basket/overview`,
+            transformBasketOverviewRequestToServer({
+              deviceCount: {
+                ...basket,
+              },
+            })
+          )
+          .pipe(
+            map((overview) =>
+              loadBasketOverviewSucceededAction(
+                transformBasketOverviewResponseFromServer(overview)
+              )
+            ),
+            catchError(() => of(loadBasketOverviewErrorAction())),
+            finalize(() => {
+              this.store.dispatch(
+                setBasketOverviewLoadingStatusAction({
+                  status: false,
+                })
+              );
+            })
+          );
+      })
+    )
+  );
+
+  payBasket$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action & BasketPaymentRequestActionInterface>(
+        OrdersActionTypes.PAY_BASKET_REQUESTED
+      ),
+      tap(() => {
+        this.store.dispatch(
+          setPayBasketLoadingStatusAction({
+            status: true,
+          })
+        );
+      }),
+      withLatestFrom(this.store.pipe(select(selectCurrentUserProfileId))),
+      switchMap(([{ cardId }, userProfileId]) => {
+        const basket = this.basketService.basketOfUser(+userProfileId);
+
+        return this.httpClient
+          .post<BasketPaymentSucceededInterface>(
+            `/order-api/basket/pay`,
+            transformBasketPaymentRequestToServer({
+              deviceCount: {
+                ...basket,
+              },
+              cardId,
+            })
+          )
+          .pipe(
+            map(({ id }) => payBasketSucceededAction({ id })),
+            tap(() => {
+              this.basketService.deleteDevicesOfUser(+userProfileId);
+              this.store.dispatch(loadBasketOverviewRequestedAction());
+            }),
+            catchError((error) => {
+              return of(
+                payBasketErrorAction(generalTransformFormErrorToString(error))
+              );
+            }),
+            finalize(() => {
+              this.store.dispatch(
+                setPayBasketLoadingStatusAction({
                   status: false,
                 })
               );

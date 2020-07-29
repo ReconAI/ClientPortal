@@ -160,3 +160,14 @@ export const selectUserCardsLoadingStatus = createSelector(
   selectLoaders,
   (loaders: LoadersState): boolean => loaders.userCards
 );
+
+// orders -> basket
+export const selectBasketOverviewLoadingStatus = createSelector(
+  selectLoaders,
+  (loaders: LoadersState): boolean => loaders.basketOverview
+);
+
+export const selectPayingBasketLoadingStatus = createSelector(
+  selectLoaders,
+  (loaders: LoadersState): boolean => loaders.payBasket
+);

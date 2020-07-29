@@ -79,7 +79,7 @@ export class CreateDeviceComponent implements OnInit {
   openCreateManufactureDialog(): void {
     this.dialog.open(CreateManufactureContainer, {
       width: '470px',
-      height: '650px',
+      height: '575px',
     });
   }
 

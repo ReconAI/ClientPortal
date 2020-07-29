@@ -33,6 +33,8 @@ export enum LoadersActionTypes {
   SET_ATTACH_CARD_LOADING_STATUS = '[Loaders | User] Set Attach Card Loading Status',
   SET_DETACH_CARD_LOADING_STATUS = '[Loaders | User] Set Detach Card Loading Status',
   SET_USER_CARDS_LOADING_STATUS = '[Loaders | User] Set User Cards Loading Status',
+  SET_BASKET_OVERVIEW_LOADING_STATUS = '[Loaders | Orders] Set Basket Overview Loading Status',
+  SET_PAY_BASKET_LOADING_STATUS = '[Loaders | Orders] Set Pay Basket Loading Status',
 }
 
 export interface LoaderInterface {
@@ -193,5 +195,17 @@ export const setDetachCardLoadingStatusAction = createAction(
 
 export const setUserCardsLoadingStatusAction = createAction(
   LoadersActionTypes.SET_USER_CARDS_LOADING_STATUS,
+  props<LoaderInterface>()
+);
+// end
+
+// orders -> basket
+export const setBasketOverviewLoadingStatusAction = createAction(
+  LoadersActionTypes.SET_BASKET_OVERVIEW_LOADING_STATUS,
+  props<LoaderInterface>()
+);
+
+export const setPayBasketLoadingStatusAction = createAction(
+  LoadersActionTypes.SET_PAY_BASKET_LOADING_STATUS,
   props<LoaderInterface>()
 );

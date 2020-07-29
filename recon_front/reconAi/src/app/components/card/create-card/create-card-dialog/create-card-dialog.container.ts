@@ -1,5 +1,8 @@
 import { MatDialogRef } from '@angular/material/dialog';
-import { attachCardSucceededAction } from './../../../../store/user/user.actions';
+import {
+  attachCardSucceededAction,
+  resetAttachCardErrorAction,
+} from './../../../../store/user/user.actions';
 import { ofType } from '@ngrx/effects';
 import { selectAttachCardLoadingStatus } from './../../../../store/loaders/loaders.selectors';
 import { Observable, Subscription } from 'rxjs';
@@ -15,6 +18,7 @@ import {
 } from '@angular/core';
 import { StripeService } from 'app/core/services/stripe/stripe.service';
 import { AppState } from 'app/store/reducers';
+import { selectAttachCardErrorsStatus } from 'app/store/user/user.selectors';
 @Component({
   selector: 'recon-create-card-dialog-container',
   templateUrl: './create-card-dialog.container.html',
@@ -30,6 +34,9 @@ export class CreateCardDialogContainer implements OnInit, OnDestroy {
   closeModalSubscription$: Subscription;
   loadingStatus$: Observable<boolean> = this.store.pipe(
     select(selectAttachCardLoadingStatus)
+  );
+  validationError$: Observable<string> = this.store.pipe(
+    select(selectAttachCardErrorsStatus)
   );
 
   closeModal$: Observable<Action> = this.actionsSubject.pipe(
@@ -47,6 +54,7 @@ export class CreateCardDialogContainer implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.store.dispatch(resetAttachCardErrorAction());
     this.closeModalSubscription$.unsubscribe();
   }
 }

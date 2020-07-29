@@ -1,5 +1,6 @@
 <recon-create-card-dialog
   [loadingStatus]="loadingStatus$ | async"
+  [validationError]="validationError$ | async"
   (submitStripe$)="onSubmitStripe($event)"
 >
 </recon-create-card-dialog>

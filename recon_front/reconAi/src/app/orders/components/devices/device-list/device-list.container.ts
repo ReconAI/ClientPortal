@@ -1,3 +1,4 @@
+import { selectCurrentUserProfileId } from 'app/store/user/user.selectors';
 import { UserRolesPriorities } from 'app/constants/types';
 import { SUPER_ADMIN_ROLE } from './../../../../constants/types/user';
 import { selectUserRolePriority } from './../../../../store/user/user.selectors';
@@ -65,6 +66,9 @@ export class DeviceListContainer implements OnInit, OnDestroy {
   );
   ordering$: Observable<string> = this.store.pipe(
     select(selectDevicesMetaOrdering)
+  );
+  userId$: Observable<string> = this.store.pipe(
+    select(selectCurrentUserProfileId)
   );
 
   isSuperAdmin$: Observable<boolean> = this.store.pipe(

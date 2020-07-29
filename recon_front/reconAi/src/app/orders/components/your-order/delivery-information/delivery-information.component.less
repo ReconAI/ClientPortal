@@ -1,0 +1,42 @@
+@import "../../../../../variables.less";
+
+.delivery-information-container {
+    height: 200px;
+    width: 100%;
+    min-width: 520px;
+    background-color: @recon-background-input;
+    border: 2px dashed @recon-border-input;
+    display: flex;
+
+    .delivery-info {
+        margin-left: 15px;
+        margin-top: 15px;
+        width: 50%;
+
+        .title-container {
+            margin-bottom: 10px;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .field {
+            margin-bottom: 5px;
+
+            span:first-child {
+                margin-right: 2px;
+                color: @recon-gray;
+            }
+        }
+    }
+
+    .icon-container {
+        width: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        img {
+            margin-right: -30px;
+        }
+    }
+}

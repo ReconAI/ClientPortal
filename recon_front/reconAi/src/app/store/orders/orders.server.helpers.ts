@@ -16,6 +16,10 @@ import {
   DeviceFormInterface,
   ALL_CATEGORIES_ID_FOR_DEVICE,
 } from 'app/orders/constants';
+import {
+  BasketItemClientInterface,
+  BasketItemServerInterface,
+} from 'app/orders/constants/types/basket';
 
 export interface CategoriesServerResponseInterface {
   results: CategoryInterface[];
@@ -68,7 +72,7 @@ export const transformCreateManufacturerRequestToServer = (
   phone: manufacturer.phone,
   support_email: manufacturer.supportEmail,
   vat: manufacturer.vat,
-  category_ids: manufacturer.categories.map(({ id }) => id),
+  // category_ids: manufacturer.categories.map(({ id }) => id),
 });
 
 export const transformManufactureListFromServer = (
@@ -199,6 +203,7 @@ export interface DeviceListItemServerInterface {
   manufacturer_id?: number;
   buying_price: string;
   sales_price: string;
+  sales_price_with_vat?: string;
   product_number: string;
   seo_title: string;
   seo_keywords: string[];
@@ -264,6 +269,8 @@ export const transformDeviceFromServer = (
     // 2 lines below with || are used for management request and simple request
     manufacturer: device?.manufacturer_id || device?.manufacturer?.name,
     category: device.category_id || device?.category?.name || '',
+    // only for card
+    salesPriceWithVat: device.sales_price_with_vat || '',
     description: device.description,
     id: device.id,
     buyingPrice: device.buying_price,
@@ -274,4 +281,80 @@ export const transformDeviceFromServer = (
     seoTags: device.seo_keywords,
     images: device.images,
   },
+});
+
+export interface BasketOverviewRequestServerInterface {
+  device_count: {
+    [key: number]: number;
+  };
+}
+
+export interface BasketPaymentRequestServerInterface
+  extends BasketOverviewRequestServerInterface {
+  card_id: string;
+}
+
+export interface BasketOverviewRequestClientInterface {
+  deviceCount: {
+    [key: number]: string;
+  };
+}
+
+export interface BasketPaymentRequestActionInterface {
+  cardId: string;
+}
+
+export interface BasketPaymentRequestClientInterface
+  extends BasketOverviewRequestClientInterface {
+  cardId: string;
+}
+
+export const transformBasketOverviewRequestToServer = ({
+  deviceCount,
+}: BasketOverviewRequestClientInterface): BasketOverviewRequestServerInterface => ({
+  device_count: Object.keys(deviceCount).reduce(
+    (res, key) => ({
+      ...res,
+      [key]: +deviceCount[key],
+    }),
+    {}
+  ),
+});
+
+export interface BasketItemsInterface {
+  items: BasketItemClientInterface[];
+}
+
+export interface BasketPaymentSucceededInterface {
+  id: string;
+}
+
+export const transformBasketOverviewResponseFromServer = (
+  response: BasketItemServerInterface[]
+): BasketItemsInterface => ({
+  items: response.map((order) => ({
+    id: order.id,
+    name: order.name,
+    description: order.description,
+    salesPrice: order.sales_price,
+    images: order.images,
+    count: order.count,
+    totalWithVat: order.total_with_vat,
+    totalWithoutVat: order.total_without_vat,
+    vatAmount: order.total_with_vat - order.total_without_vat,
+  })),
+});
+
+export const transformBasketPaymentRequestToServer = ({
+  cardId,
+  deviceCount,
+}: BasketPaymentRequestClientInterface): BasketPaymentRequestServerInterface => ({
+  card_id: cardId,
+  device_count: Object.keys(deviceCount).reduce(
+    (res, key) => ({
+      ...res,
+      [key]: +deviceCount[key],
+    }),
+    {}
+  ),
 });
