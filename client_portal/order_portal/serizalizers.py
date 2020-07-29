@@ -317,15 +317,32 @@ class DeviceItemSerializer(DeviceListSerializer):
     images = DeviceImageSerializer(many=True)
     manufacturer = BaseManufacturerSerializer()
     category = CategorySerializer()
+    sales_price_with_vat = serializers.SerializerMethodField(
+        'format_sales_price_with_vat',
+        read_only=True
+    )
 
     class Meta:
         """
         List of attributes are to be shown on device item page
         """
         model = Device
-        fields = ('id', 'name', 'description', 'sales_price', 'product_number',
-                  'images', 'seo_title', 'seo_keywords', 'seo_description',
+        fields = ('id', 'name', 'description', 'sales_price',
+                  'sales_price_with_vat', 'product_number', 'images',
+                  'seo_title', 'seo_keywords', 'seo_description',
                   'manufacturer', 'category')
+
+    @staticmethod
+    def format_sales_price_with_vat(instance: Device) -> str:
+        """
+        :type instance: Device
+
+        :rtype: float
+        """
+        return str(round(
+            instance.sales_price_vat_obj(settings.VAT).as_price(),
+            2
+        ))
 
 
 class CreateDeviceSerializer(ModelSerializer):
