@@ -1,0 +1,14 @@
+<recon-your-order
+  [basketItems]="basketItems$ | async"
+  [phone]="phone$ | async"
+  [invoicingPhone]="invoicingPhone$ | async"
+  [email]="email$ | async"
+  [address]="address$ | async"
+  [company]="company$ | async"
+  [firstName]="firstName$ | async"
+  [lastName]="lastName$ | async"
+  [loadingOverviewStatus]="loadingOverviewStatus$ | async"
+  [payingBasketStatus]="payingBasketStatus$ | async"
+  (buyClick$)="buyClick($event)"
+  (deleteClick$)="deleteDeviceOfUser($event)"
+></recon-your-order>

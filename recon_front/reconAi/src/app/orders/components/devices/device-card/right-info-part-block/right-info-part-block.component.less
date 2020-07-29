@@ -2,29 +2,106 @@
 
 .info-container {
     display: flex;
-    width: 100%;
+    width: 80%;
     flex-direction: column;
     align-items: flex-start;
+    margin-bottom: 20px;
 
 
-    .mat-tab-group {
+    .title {
+        color: @recon-gray;
+    }
+
+    .field {
+        margin-top: 7px;
+        display: flex;
+        justify-content: space-between;
         width: 100%;
-        outline: 0;
+
+        &.three-columned-field {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+
+            .block {
+                max-width: 28%;
+                display: flex;
+                flex-direction: column;
+                text-align: center;
+
+                .title {
+                    margin-bottom: 15px;
+                }
+            }
+        }
+    }
+
+    .technical-description-container {
+        margin-top: 7px;
     }
 
     .description-container {
-        margin-top: 20px;
+        width: 100%;
+
         display: flex;
         flex-direction: column;
 
-
-        .title {
-            margin-top: 7px;
-            color: @recon-gray;
-        }
-
         .description {
+            display: block;
+            max-height: 160px;
+            overflow: auto;
+
+            word-break: break-word;
             white-space: pre-line;
         }
     }
+
+    .button-container {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 20px;
+    }
+}
+
+.input-number-container {
+    display: flex;
+    height: 40px;
+
+    div.sign {
+        width: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #E5E5E5;
+        font-weight: 100;
+        font-size: 25px;
+        cursor: pointer;
+
+        &:hover {
+            span {
+                opacity: 0.5;
+            }
+        }
+    }
+
+    input {
+        padding-left: 7px;
+        border: 0px;
+        border-top: 1px solid #E5E5E5;
+        border-bottom: 1px solid #E5E5E5;
+        background-color: #F9F9F9;
+        width: calc(100% - 35px - 35px);
+
+        &:focus {
+            outline: none;
+            border: 1px solid @recon-black;
+        }
+
+        &.recon-input-invalid {
+            border-color: @recon-error-input-border;
+        }
+    }
+
 }

@@ -1,11 +1,27 @@
-.left-part {
-    width: 60%;
-    margin-bottom: 50px;
+@import "../../../../variables.less";
 
-    .button-container {
-        width: 100%;
-        margin-top: 20px;
-        display: flex;
-        justify-content: center;
+.your-order-container {
+    display: flex;
+
+    .left-part {
+        width: 60%;
+        margin-bottom: 50px;
+
+        .button-container {
+            width: 100%;
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+        }
     }
+
+    .right-part {
+        margin-left: 35px;
+    }
+}
+
+.payment-label {
+    color: @recon-gray;
+    padding: 15px 0px;
+    font-weight: 500;
 }

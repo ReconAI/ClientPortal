@@ -1,0 +1,19 @@
+<div class="recon-modal-title">
+  <h3>{{ data.succeeded ? "Your order - " + data.id : "" }}</h3>
+  <mat-icon [mat-dialog-close]="true">close</mat-icon>
+</div>
+<div class="content-container">
+  <img
+    height="70"
+    width="70"
+    [src]="
+      data.succeeded
+        ? 'assets/icons/round-success.svg'
+        : 'assets/icons/round-error.svg'
+    "
+  />
+  <span class="msg">{{ data.message }}</span>
+  <button mat-raised-button color="primary" [mat-dialog-close]="true">
+    CONTINUE
+  </button>
+</div>

@@ -41,19 +41,19 @@ export class DeviceListComponent implements OnInit {
   sortOptions = [
     {
       value: CREATED_DT_DESC,
-      label: 'New',
+      label: 'by creation date (New → Old)',
     },
     {
       value: CREATED_DT_ASC,
-      label: 'Old',
+      label: 'by creation date (Old → New)',
     },
     {
       value: SALES_PRICE_DESC,
-      label: 'High price',
+      label: 'by price (High → Low)',
     },
     {
       value: SALES_PRICE_ASC,
-      label: 'Low price',
+      label: 'by price (Low → High)',
     },
   ];
 

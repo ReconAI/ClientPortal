@@ -3,11 +3,11 @@ export interface BasketLocalStorageInterface {
 }
 
 export interface DecryptedLineBasketInterface {
-  [key: number]: number;
+  [key: number]: string;
 }
 
 export interface DecryptedBasketInterface {
   [key: number]: {
-    [key: number]: number;
+    [key: number]: string;
   };
 }

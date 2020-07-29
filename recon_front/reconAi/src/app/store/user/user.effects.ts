@@ -1,3 +1,5 @@
+import { selectCurrentUserProfileId } from 'app/store/user/user.selectors';
+import { BasketService } from './../../core/services/basket/basket.service';
 import { UserRolesPriorities } from './../../constants/types/user';
 import { getUserPriorityByRole } from './../../core/helpers/priorities';
 import {
@@ -92,7 +94,8 @@ export class UserEffects {
     private httpClient: HttpClient,
     private store: Store<AppState>,
     private router: Router,
-    private localStorageService: LocalStorageService
+    private localStorageService: LocalStorageService,
+    private basketService: BasketService
   ) {}
 
   loadCurrentUser$: Observable<Action> = createEffect(() =>
@@ -114,6 +117,7 @@ export class UserEffects {
             ) {
               this.store.dispatch(loadUserCardsRequestedAction());
             }
+            this.basketService.initBasketAmount(+user.id);
             return loadCurrentUserSucceededAction(transformUserResponse(user));
           }),
           catchError((error) => of(loadCurrentUserErrorAction())),
@@ -183,14 +187,16 @@ export class UserEffects {
           })
         );
       }),
-      switchMap(() =>
+      withLatestFrom(this.store.pipe(select(selectCurrentUserProfileId))),
+      switchMap(([_, userId]) =>
         this.httpClient.put('/api/logout', {}).pipe(
           map(() => {
             this.localStorageService.removeAuthToken();
-            this.store.dispatch(resetCurrentUserAction());
             return logoutUserSucceededAction();
           }),
           tap(() => {
+            this.basketService.deleteDevicesOfUser(+userId);
+            this.store.dispatch(resetCurrentUserAction());
             this.router.navigate(['/']);
           }),
           catchError((error) => of(logoutUserErrorAction())),
@@ -343,7 +349,11 @@ export class UserEffects {
             tap(() => {
               this.store.dispatch(loadUserCardsRequestedAction());
             }),
-            catchError((error) => of(attachCardErrorAction())),
+            catchError((error) =>
+              of(
+                attachCardErrorAction(generalTransformFormErrorToString(error))
+              )
+            ),
             finalize(() => {
               this.store.dispatch(
                 setAttachCardLoadingStatusAction({

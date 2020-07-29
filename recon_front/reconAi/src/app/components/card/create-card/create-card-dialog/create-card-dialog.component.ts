@@ -19,10 +19,13 @@ import { StripeService } from 'app/core/services/stripe/stripe.service';
 export class CreateCardDialogComponent
   implements OnInit, AfterViewInit, OnDestroy {
   @Input() loadingStatus = false;
+  // stripe & back end error
+  @Input() validationError = '';
   @Output() submitStripe$ = new EventEmitter();
   elements: any;
   card: any;
   cardHandler = this.onChange.bind(this);
+  // stripe front error
   error: string;
   constructor(
     private cdr: ChangeDetectorRef,

@@ -1,3 +1,5 @@
+@import "../../../../../variables.less";
+
 .order-item-container {
     display: flex;
     margin: 20px 0;
@@ -16,6 +18,8 @@
 
     .image-container {
         margin-left: 10px;
+        margin-right: 10px;
+        width: 180px;
     }
 
     .field-container {
@@ -26,7 +30,7 @@
             justify-content: space-between;
 
             span:first-child {
-                color: #828385;
+                color: @recon-gray;
             }
 
             span:last-child {
@@ -37,7 +41,7 @@
 
 
     .delete-field {
-        color: #828385;
+        color: @recon-gray;
         width: 100%;
         margin-top: 5px;
         display: flex;

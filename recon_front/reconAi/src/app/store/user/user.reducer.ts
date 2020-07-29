@@ -30,12 +30,17 @@ import {
   resetUpdateCurrentUserErrorAction,
   updateCurrentUserSucceededAction,
   loadUserCardsSucceededAction,
+  updateBasketAmountAction,
+  UpdateBasketActionPayload,
+  attachCardErrorAction,
+  resetAttachCardErrorAction,
 } from './user.actions';
 
 export interface UserErrorsInterface {
   login: string;
   resetPassword: string;
   preResetPassword: string;
+  attachCard: string;
   updateCurrentUser: FormServerErrorInterface;
 }
 
@@ -43,6 +48,7 @@ export const userErrorsInit: UserErrorsInterface = {
   login: null,
   resetPassword: null,
   preResetPassword: null,
+  attachCard: null,
   updateCurrentUser: null,
 };
 export interface UserState extends UserTransformationResponse {
@@ -54,6 +60,8 @@ export interface UserState extends UserTransformationResponse {
     cards: CardClientInterface[];
   };
   errors: UserErrorsInterface;
+  // it's under control of basketService
+  basketAmount: number;
 }
 
 export const initialState: UserState = {
@@ -68,6 +76,7 @@ export const initialState: UserState = {
   isActive: null,
   payment: null,
   errors: userErrorsInit,
+  basketAmount: 0,
 };
 
 const loadCurrentUserSucceededReducer = (
@@ -188,6 +197,33 @@ const loadUserCardsSucceededReducer = (
   },
 });
 
+const updateBasketAmountReducer = (
+  state: UserState,
+  { amount }: Action & UpdateBasketActionPayload
+): UserState => ({
+  ...state,
+  basketAmount: amount,
+});
+
+const attachCardErrorReducer = (
+  state: UserState,
+  { general }: (Action & FormServerErrorInterface) | null
+): UserState => ({
+  ...state,
+  errors: {
+    ...state.errors,
+    attachCard: general,
+  },
+});
+
+const resetAttachCardErrorReducer = (state: UserState): UserState => ({
+  ...state,
+  errors: {
+    ...state.errors,
+    attachCard: userErrorsInit.attachCard,
+  },
+});
+
 const userReducer = createReducer(
   initialState,
   on(loadCurrentUserSucceededAction, loadCurrentUserSucceededReducer),
@@ -203,7 +239,10 @@ const userReducer = createReducer(
   on(updateCurrentUserSucceededAction, updateCurrentUserSucceededReducer),
   on(updateCurrentUserErrorAction, updateCurrentUserErrorReducer),
   on(resetUpdateCurrentUserErrorAction, resetUpdateCurrentUserErrorReducer),
-  on(loadUserCardsSucceededAction, loadUserCardsSucceededReducer)
+  on(loadUserCardsSucceededAction, loadUserCardsSucceededReducer),
+  on(updateBasketAmountAction, updateBasketAmountReducer),
+  on(attachCardErrorAction, attachCardErrorReducer),
+  on(resetAttachCardErrorAction, resetAttachCardErrorReducer)
 );
 
 export function reducer(state: UserState | undefined, action: Action) {

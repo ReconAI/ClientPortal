@@ -11,6 +11,7 @@ import {
   DeviceListItemClientInterface,
   PaginatedDeviceListRequestInterface,
   DeviceRequestClientInterface,
+  BasketItemsInterface,
 } from './orders.server.helpers';
 import {
   loadCategoriesSucceededAction,
@@ -29,6 +30,7 @@ import {
   loadDeviceSucceededAction,
   loadAllCategoriesSucceededAction,
   resetAllCategoriesAction,
+  loadBasketOverviewSucceededAction,
 } from './orders.actions';
 import { CategoryInterface } from './../../orders/constants/types/category';
 import { ActivationInterface } from './../../constants/types/activation';
@@ -43,6 +45,7 @@ import {
   ManufacturerInterface,
   DeviceFormInterface,
 } from 'app/orders/constants';
+import { BasketItemClientInterface } from 'app/orders/constants/types/basket';
 
 export interface OrdersError {
   createManufacturer: FormServerErrorInterface;
@@ -66,6 +69,9 @@ export interface OrdersState {
   device: DeviceFormInterface;
   devices: DeviceListItemClientInterface[];
   meta: MetaStoreDevicesInterface;
+  basket: {
+    items: BasketItemClientInterface[];
+  };
   errors: OrdersError;
 }
 
@@ -81,6 +87,9 @@ export const initialState: OrdersState = {
   errors: errorInit,
   device: null,
   devices: [],
+  basket: {
+    items: [],
+  },
   meta: metaInit,
 };
 
@@ -214,6 +223,17 @@ const loadDeviceSucceededReducer = (
   device,
 });
 
+const loadBasketOverviewSucceededReducer = (
+  state: OrdersState,
+  { type, items }: Action & BasketItemsInterface
+): OrdersState => ({
+  ...state,
+  basket: {
+    ...state.basket,
+    items,
+  },
+});
+
 const ordersReducer = createReducer(
   initialState,
   on(loadCategoriesSucceededAction, loadCategoriesSucceededReducer),
@@ -231,7 +251,8 @@ const ordersReducer = createReducer(
   on(resetUpdateDeviceErrorAction, resetUpdateDeviceErrorReducer),
   on(resetDeviceListMetaAction, resetDeviceListMetaReducer),
   on(loadDeviceSucceededAction, loadDeviceSucceededReducer),
-  on(resetAllCategoriesAction, resetAllCategoriesReducer)
+  on(resetAllCategoriesAction, resetAllCategoriesReducer),
+  on(loadBasketOverviewSucceededAction, loadBasketOverviewSucceededReducer)
 );
 
 export function reducer(state: OrdersState | undefined, action: Action) {

@@ -30,6 +30,8 @@ import {
   setUserCardsLoadingStatusAction,
   setAllCategoriesListLoadingStatusAction,
   setDetachCardLoadingStatusAction,
+  setBasketOverviewLoadingStatusAction,
+  setPayBasketLoadingStatusAction,
 } from './loaders.actions';
 import { createReducer, on, Action } from '@ngrx/store';
 
@@ -68,6 +70,9 @@ export interface LoadersState {
   attachCard: boolean;
   detachCard: boolean;
   userCards: boolean;
+  // orders -> basket
+  basketOverview: boolean;
+  payBasket: boolean;
 }
 
 const initialState: LoadersState = {
@@ -104,6 +109,9 @@ const initialState: LoadersState = {
   attachCard: false,
   detachCard: false,
   userCards: false,
+  // orders -> basket
+  basketOverview: false,
+  payBasket: false,
 };
 
 const setCurrentUserLoadingStatusReducer = (
@@ -258,6 +266,17 @@ const setUserCardsLoadingStatusReducer = (
   { status }: Action & LoaderInterface
 ): LoadersState => ({ ...state, userCards: status });
 
+// orders -> basket
+const setBasketOverviewLoadingStatusReducer = (
+  state: LoadersState,
+  { status }: Action & LoaderInterface
+): LoadersState => ({ ...state, basketOverview: status });
+
+const setPayBasketLoadingStatusReducer = (
+  state: LoadersState,
+  { status }: Action & LoaderInterface
+): LoadersState => ({ ...state, payBasket: status });
+
 const loadersReducer = createReducer(
   initialState,
   on(setCurrentUserLoadingStatusAction, setCurrentUserLoadingStatusReducer),
@@ -318,7 +337,13 @@ const loadersReducer = createReducer(
   // user -> cards
   on(setAttachCardLoadingStatusAction, setAttachCardLoadingStatusReducer),
   on(setDetachCardLoadingStatusAction, setDetachCardLoadingStatusReducer),
-  on(setUserCardsLoadingStatusAction, setUserCardsLoadingStatusReducer)
+  on(setUserCardsLoadingStatusAction, setUserCardsLoadingStatusReducer),
+  // orders -> basket
+  on(
+    setBasketOverviewLoadingStatusAction,
+    setBasketOverviewLoadingStatusReducer
+  ),
+  on(setPayBasketLoadingStatusAction, setPayBasketLoadingStatusReducer)
 );
 
 export function reducer(state: LoadersState | undefined, action: Action) {

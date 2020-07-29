@@ -6,11 +6,12 @@ import { Component, OnInit, Input } from '@angular/core';
   styleUrls: ['./delivery-information.component.less'],
 })
 export class DeliveryInformationComponent implements OnInit {
-  @Input() company = 'HQSoftware';
-  @Input() person = 'Julia Zhdanovich';
-  @Input() phone = '+123412341234';
-  @Input() email = 'Julia_Zhda@gmail.com';
-  @Input() address = 'Minsk, Pobeditelei Pr., 57 and 108';
+  @Input() company = '';
+  @Input() person = '';
+  @Input() phone = '';
+  @Input() invoicingPhone = '';
+  @Input() email = '';
+  @Input() address = '';
   constructor() {}
 
   ngOnInit(): void {}

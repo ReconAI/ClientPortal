@@ -54,12 +54,12 @@ export class StripeService {
         })
       );
 
-      this.snackBar.open(error?.message || 'Server error', null, {
-        duration: 3 * 1000,
-        panelClass: ['recon-snackbar'],
-      });
+      // this.snackBar.open(error?.message || 'Server error', null, {
+      //   duration: 3 * 1000,
+      //   panelClass: ['recon-snackbar'],
+      // });
 
-      this.store.dispatch(attachCardErrorAction());
+      this.store.dispatch(attachCardErrorAction({ general: error.message || 'Server error' }));
     }
   }
 

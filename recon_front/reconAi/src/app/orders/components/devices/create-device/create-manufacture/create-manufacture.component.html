@@ -91,43 +91,6 @@
       id="support-email"
     />
   </mat-form-field>
-  <mat-form-field formArrayName="categories">
-    <mat-chip-list #chipList>
-      <mat-chip
-        *ngFor="let category of categories.controls; let i = index"
-        [selectable]="true"
-        [removable]="true"
-        (removed)="removeCategory(i)"
-      >
-        {{ category.value.name }}
-        <span matChipRemove class="close-chip">&times;</span>
-      </mat-chip>
-      <input
-        placeholder="Category *"
-        #categoryInput
-        #trigger="matAutocompleteTrigger"
-        [formControl]="categoryControl"
-        [matAutocomplete]="auto"
-        [matChipInputFor]="chipList"
-        [matChipInputSeparatorKeyCodes]="[]"
-        (keydown.enter)="$event.stopPropagation(); trigger.openPanel()"
-      />
-    </mat-chip-list>
-    <mat-autocomplete
-      [displayWith]
-      #auto="matAutocomplete"
-      (optionSelected)="selected($event, trigger)"
-    >
-      <!-- this (click) handler is used to open pop up after click on option -->
-      <mat-option
-        *ngFor="let category of filteredCategories"
-        [value]="category.id"
-        (click)="$event.stopPropagation(); trigger.openPanel()"
-      >
-        {{ category.name }}
-      </mat-option>
-    </mat-autocomplete>
-  </mat-form-field>
   <button
     mat-raised-button
     color="primary"

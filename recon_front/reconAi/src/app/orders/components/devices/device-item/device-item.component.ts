@@ -19,7 +19,6 @@ export class DeviceItemComponent implements OnInit {
   constructor(
     private dialog: MatDialog,
     private router: Router,
-    private basket: BasketService
   ) {}
 
   ngOnInit(): void {}
@@ -34,10 +33,5 @@ export class DeviceItemComponent implements OnInit {
 
   editClick() {
     this.router.navigate(['orders/update-device', this.id]);
-  }
-
-  addToBasket($event): void {
-    $event.stopPropagation();
-    this.basket.addToBasket(this.id, this.userId);
   }
 }

@@ -6,9 +6,9 @@ import { Component, OnInit, Input } from '@angular/core';
   styleUrls: ['./order-last-item.component.less'],
 })
 export class OrderLastItemComponent implements OnInit {
-  @Input() selected = false;
-  @Input() vatSum = 20;
-  @Input() price = 10000;
+  @Input() vatAmount = 0;
+  @Input() totalPriceWithoutVat = 0;
+  @Input() totalPriceWithVat = 0;
   constructor() {}
 
   ngOnInit(): void {}

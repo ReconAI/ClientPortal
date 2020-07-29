@@ -1,4 +1,4 @@
-import { ObjectFormErrorInterface } from 'app/constants/types/requests';
+import { ObjectFormErrorInterface, FormServerErrorInterface } from 'app/constants/types/requests';
 import {
   CategoriesClientInterface,
   CreateManufacturerRequestClientInterface,
@@ -8,6 +8,11 @@ import {
   IdDeviceRequestInterface,
   PaginatedDeviceListRequestInterface,
   DeviceRequestClientInterface,
+  BasketOverviewRequestClientInterface,
+  BasketItemsInterface,
+  BasketPaymentRequestClientInterface,
+  BasketPaymentSucceededInterface,
+  BasketPaymentRequestActionInterface,
 } from './orders.server.helpers';
 import { createAction, props } from '@ngrx/store';
 
@@ -62,6 +67,14 @@ export enum OrdersActionTypes {
   LOAD_DEVICE_REQUESTED = '[Orders] Load Device Requested',
   LOAD_DEVICE_SUCCEEDED = '[Orders] Load Device Succeeded',
   LOAD_DEVICE_ERROR = '[Orders] Load Device Error',
+
+  LOAD_BASKET_OVERVIEW_REQUESTED = '[Orders] Load Basket Overview Requested',
+  LOAD_BASKET_OVERVIEW_SUCCEEDED = '[Orders] Load Basket Overview Succeeded',
+  LOAD_BASKET_OVERVIEW_ERROR = '[Orders] Load Basket Overview Error',
+
+  PAY_BASKET_REQUESTED = '[Orders] Pay Basket Requested',
+  PAY_BASKET_SUCCEEDED = '[Orders] Pay Basket Succeeded',
+  PAY_BASKET_ERROR = '[Orders] Pay Basket Error',
 }
 
 export const loadCategoriesRequestedAction = createAction(
@@ -236,4 +249,32 @@ export const loadDeviceSucceededAction = createAction(
 
 export const loadDeviceErrorAction = createAction(
   OrdersActionTypes.LOAD_DEVICE_ERROR
+);
+
+export const loadBasketOverviewRequestedAction = createAction(
+  OrdersActionTypes.LOAD_BASKET_OVERVIEW_REQUESTED
+);
+
+export const loadBasketOverviewSucceededAction = createAction(
+  OrdersActionTypes.LOAD_BASKET_OVERVIEW_SUCCEEDED,
+  props<BasketItemsInterface>()
+);
+
+export const loadBasketOverviewErrorAction = createAction(
+  OrdersActionTypes.LOAD_BASKET_OVERVIEW_ERROR
+);
+
+export const payBasketRequestedAction = createAction(
+  OrdersActionTypes.PAY_BASKET_REQUESTED,
+  props<BasketPaymentRequestActionInterface>()
+);
+
+export const payBasketSucceededAction = createAction(
+  OrdersActionTypes.PAY_BASKET_SUCCEEDED,
+  props<BasketPaymentSucceededInterface>()
+);
+
+export const payBasketErrorAction = createAction(
+  OrdersActionTypes.PAY_BASKET_ERROR,
+  props<FormServerErrorInterface>()
 );

@@ -11,6 +11,8 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { UpdateCategoryListContainer } from './components/update-category-list/update-category-list.container';
 import { DeviceListContainer } from './components/devices/device-list/device-list.container';
+import { YourOrderContainer } from './components/your-order/your-order.contatiner';
+import { IsPossibleToBuyGuard } from 'app/core/guards/is-possible-to-buy/is-possible-to-buy.guard';
 
 const routes: Routes = [
   {
@@ -49,12 +51,12 @@ const routes: Routes = [
     component: UpdateDeviceContainer,
   },
   {
-    path: 'yours',
+    path: 'basket',
     data: {
-      title: 'Your order',
-      backgroundWithoutUnion: true,
+      title: 'Your basket',
     },
-    component: YourOrderComponent,
+    canActivate: [IsPossibleToBuyGuard],
+    component: YourOrderContainer,
   },
   // :id must be last
   {

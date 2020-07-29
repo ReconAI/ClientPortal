@@ -1,20 +1,58 @@
-<div class="left-part">
-  <recon-order-item> </recon-order-item>
-  <mat-divider></mat-divider>
-  <recon-order-item> </recon-order-item>
-  <mat-divider></mat-divider>
-
-  <recon-order-item> </recon-order-item>
-  <mat-divider></mat-divider>
-
-  <recon-order-item> </recon-order-item>
-  <mat-divider></mat-divider>
-
-  <recon-order-item> </recon-order-item>
-  <mat-divider></mat-divider>
-  <recon-order-last-item></recon-order-last-item>
-  <recon-delivery-information></recon-delivery-information>
-  <div class="button-container">
-      <button mat-raised-button color="primary">BUY</button>
+<ng-container *ngIf="!loadingOverviewStatus; else loaded">
+  <div class="your-order-container">
+    <ng-container *ngIf="basketItems.length; else emptyBasket">
+      <div class="left-part">
+        <ng-container *ngFor="let item of basketItems">
+          <recon-order-item
+            [amount]="item.count"
+            [priceWithoutVat]="item.totalWithoutVat"
+            [priceWithVat]="item.totalWithVat"
+            [name]="item.name"
+            [vatAmount]="item.vatAmount"
+            [imgUrl]="(item?.images)[0]?.path"
+            [id]="item.id"
+            (deleteClick$)="deleteClick($event)"
+          >
+          </recon-order-item>
+          <mat-divider></mat-divider>
+        </ng-container>
+        <recon-order-last-item
+          [vatAmount]="vatAmount"
+          [totalPriceWithoutVat]="priceWithoutVat"
+          [totalPriceWithVat]="priceWithVat"
+        ></recon-order-last-item>
+        <recon-delivery-information
+          [person]="firstName + ' ' + lastName"
+          [company]="company"
+          [phone]="phone"
+          [invoicingPhone]="invoicingPhone"
+          [email]="email"
+          [address]="address"
+        ></recon-delivery-information>
+        <div class="button-container">
+          <button
+            [disabled]="payingBasketStatus || !paymentMethod"
+            mat-raised-button
+            color="primary"
+            (click)="buyClick()"
+          >
+            <mat-icon *ngIf="payingBasketStatus; else loaded">
+              <mat-spinner color="primary" diameter="20"></mat-spinner>
+            </mat-icon>
+            <ng-template #loaded>BUY</ng-template>
+          </button>
+        </div>
+      </div>
+      <div class="right-part">
+        <p class="payment-label">PAYMENT METHODS</p>
+        <recon-payment-methods-container
+          (selectPayment$)="selectPayment($event)"
+        ></recon-payment-methods-container>
+      </div>
+    </ng-container>
+    <ng-template #emptyBasket
+      ><recon-empty-basket></recon-empty-basket>
+    </ng-template>
   </div>
-</div>
+</ng-container>
+<ng-template #loaded>Loading...</ng-template>

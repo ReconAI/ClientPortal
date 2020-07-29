@@ -36,6 +36,13 @@ export const selectUserRolePriority = createSelector(
   (user: UserState): UserRolesPriorities | null => user.rolePriority
 );
 
+export const selectIsUserAbleToBuy = createSelector(
+  selectUserRolePriority,
+  (priority: UserRolesPriorities) =>
+    priority === UserRolesPriorities.DEVELOPER_ROLE ||
+    priority === UserRolesPriorities.ADMIN_ROLE
+);
+
 export const selectLoginErrorsStatus = createSelector(
   selectUser,
   (user: UserState): string => user?.errors?.login || ''
@@ -186,4 +193,15 @@ export const selectCurrentUserProfileId = createSelector(
 export const selectUserCards = createSelector(
   selectUser,
   (user: UserState): CardClientInterface[] => user?.payment?.cards || []
+);
+
+export const selectAttachCardErrorsStatus = createSelector(
+  selectUser,
+  (user: UserState): string => user?.errors?.attachCard || ''
+);
+
+// user -> basket
+export const selectUserBasketAmount = createSelector(
+  selectUser,
+  (user: UserState): number => user?.basketAmount || 0
 );

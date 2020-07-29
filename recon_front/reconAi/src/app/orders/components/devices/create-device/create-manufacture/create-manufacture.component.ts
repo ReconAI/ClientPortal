@@ -32,7 +32,6 @@ export class CreateManufactureComponent implements OnInit {
   manufactureForm: FormGroup;
   constructor(private fb: FormBuilder) {}
 
-  @Input() allCategories: CategoryInterface[] = [];
   @Input() loadingStatus = false;
   @Input() validationError: FormServerErrorInterface = null;
   @Output() sendManufacturer$ = new EventEmitter<ManufacturerInterface>();
@@ -53,31 +52,6 @@ export class CreateManufactureComponent implements OnInit {
     return generalTransformationObjectErrorsForComponent(this.validationError);
   }
 
-  selected(event: MatAutocompleteSelectedEvent, trigger): void {
-    this.categories.push(
-      this.fb.group({ name: event.option.viewValue, id: event.option.value })
-    );
-    this.categoryInput.nativeElement.value = '';
-    this.categoryControl.setValue(null);
-    trigger.openPanel();
-  }
-
-  get filteredCategories(): CategoryInterface[] {
-    const selectedCategories = this.categories.value.map(
-      (category: CategoryInterface) => category.name.toLowerCase()
-    );
-    const inputValue =
-      this?.categoryInput?.nativeElement?.value.toLowerCase() || '';
-    return this.allCategories.filter(({ name }: CategoryInterface) => {
-      const lowerCasedCategory = name.toLowerCase();
-
-      return (
-        lowerCasedCategory.indexOf(inputValue) >= 0 &&
-        selectedCategories.indexOf(lowerCasedCategory) < 0
-      );
-    });
-  }
-
   ngOnInit(): void {
     this.manufactureForm = this.fb.group({
       name: ['', Validators.required],
@@ -87,7 +61,6 @@ export class CreateManufactureComponent implements OnInit {
       address: ['', Validators.required],
       orderEmail: ['', Validators.required],
       supportEmail: ['', Validators.required],
-      categories: this.fb.array([], Validators.required),
     });
   }
 

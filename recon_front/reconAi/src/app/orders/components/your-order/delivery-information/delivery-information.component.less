@@ -1,8 +1,11 @@
+@import "../../../../../variables.less";
+
 .delivery-information-container {
-    height: 190px;
+    height: 200px;
     width: 100%;
-    background-color: #F9F9F9;
-    border: 2px dashed #E5E5E5;
+    min-width: 520px;
+    background-color: @recon-background-input;
+    border: 2px dashed @recon-border-input;
     display: flex;
 
     .delivery-info {
@@ -21,7 +24,7 @@
 
             span:first-child {
                 margin-right: 2px;
-                color: #828385;
+                color: @recon-gray;
             }
         }
     }
