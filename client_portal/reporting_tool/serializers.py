@@ -11,14 +11,15 @@ from django.conf import settings
 from django.core.files.base import ContentFile
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import CharField, IntegerField, ListField
+from rest_framework.serializers import ModelSerializer
 from rest_framework.serializers import Serializer
 
-from shared.fields import FileField
 from recon_db_manager.models import Organization
-from shared.serializers import ReadOnlySerializer
+from shared.fields import FileField
+from shared.serializers import ReadOnlySerializerMixin
 
 
-class AttachPaymentMethodSerializer(ReadOnlySerializer):
+class AttachPaymentMethodSerializer(ModelSerializer):
     """
     Organization attach card serializer
     """
@@ -51,7 +52,7 @@ class DetachPaymentMethodSerializer(AttachPaymentMethodSerializer):
         return self.instance.customer.payment_methods().detach(payment_method)
 
 
-class CardSerializer(Serializer):
+class CardSerializer(ReadOnlySerializerMixin, Serializer):
     """
     Stripe card attributes
     """
@@ -62,7 +63,7 @@ class CardSerializer(Serializer):
     last4 = CharField(required=True, min_length=2, max_length=2)
 
 
-class PaymentMethodSerializer(Serializer):
+class PaymentMethodSerializer(ReadOnlySerializerMixin, Serializer):
     """
     Stripe payment method attributes
     """
@@ -70,7 +71,7 @@ class PaymentMethodSerializer(Serializer):
     created = IntegerField(required=True)
     customer = CharField(required=True)
     type = CharField(required=True)
-    card = CardSerializer()
+    card = CardSerializer(required=True)
 
 
 class FeatureRequestSerializer(Serializer):
