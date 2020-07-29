@@ -10,12 +10,14 @@ from botocore.client import BaseClient
 from botocore.config import Config
 from django.conf import settings
 from django.core.files.base import ContentFile
+from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-from rest_framework.fields import CharField, IntegerField, ListField
+from rest_framework.fields import CharField, IntegerField, ListField, \
+    SerializerMethodField
 from rest_framework.serializers import ModelSerializer
 from rest_framework.serializers import Serializer
 
-from recon_db_manager.models import Organization
+from recon_db_manager.models import Organization, DevicePurchase
 from reporting_tool.forms.utils import SendEmailMixin
 from shared.fields import FileField
 from shared.serializers import ReadOnlySerializerMixin
@@ -190,3 +192,18 @@ class FeatureRequestSerializer(ReadOnlySerializerMixin,
             'description': validated_data.get('description', ''),
             'organization': self.context.get('organization')
         }
+
+
+class OrderSerializer(ModelSerializer):
+    type = serializers.CharField()
+    timestamp = serializers.CharField()
+    payment_id = serializers.CharField()
+    total = serializers.SerializerMethodField(method_name='process_total')
+
+    class Meta:
+        model = DevicePurchase
+        fields = ('payment_id', 'type', 'timestamp', 'total')
+
+    @staticmethod
+    def process_total(purchase: dict) -> float:
+        return purchase.get('total__sum', 0) / 100

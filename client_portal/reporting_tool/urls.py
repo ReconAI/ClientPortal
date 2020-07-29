@@ -26,6 +26,7 @@ from .views.accounts import SignupView, ActivateView, CurrentUserProfileView, \
     PreSignupValidationView, CheckResetPasswordTokenView
 from .views.cards import CardListView
 from .views.new_features import NewFeatureView
+from .views.orders import OrdersListView
 from .views.user_management import UserList, UserItem, InvitationView
 
 urlpatterns = [
@@ -36,6 +37,7 @@ urlpatterns = [
     path('profile', CurrentUserProfileView.as_view(), name='profile'),
     path('logout', LogoutView.as_view(), name='logout'),
     path('cards', CardListView.as_view(), name='cards.list'),
+    path('orders', OrdersListView.as_view(), name='orders.list'),
 
     path('reset-password', ResetPassword.as_view(), name='password_reset'),
     path('reset', PasswordResetConfirmView.as_view(),
