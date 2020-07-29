@@ -123,7 +123,7 @@ class ManufacturerListView(ManufacturerOperator, ListCreateAPIView):
     """
     write_serializer_class = WriteManufacturerSerializer
 
-    queryset = Manufacturer.objects.prefetch_related('categories').all()
+    queryset = Manufacturer.objects.all()
 
     create_success_message = _('Manufacturer is created successfully')
 
