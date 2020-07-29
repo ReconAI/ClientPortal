@@ -13,7 +13,7 @@ from rest_framework.serializers import ListSerializer, \
     Serializer
 from rest_framework.serializers import ModelSerializer
 
-from order_portal.fields import ImgField
+from shared.fields import FileField as ImgField
 from recon_db_manager.models import Category, Manufacturer, Device, DeviceImage
 
 

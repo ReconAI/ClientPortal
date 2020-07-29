@@ -28,7 +28,7 @@ class Command(BaseCommand):
                    aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
                    aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY)
 
-        self.__export_bucket = settings.AWS_EXPORT_HTTP_LOG_BUCKET
+        self.__export_bucket = settings.CLIENT_PORTAL_BUCKET
         if not self.__export_bucket:
             raise ValueError('AWS export bucket is not specified')
 

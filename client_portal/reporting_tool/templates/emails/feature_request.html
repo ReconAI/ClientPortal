@@ -1,0 +1,15 @@
+{% load i18n %}{% autoescape off %}
+{% trans "You have received New Feature Request from organisation " %}{{ organization.name }}.
+
+{% trans "Description" %}:
+{{ description }}
+
+{% trans "Sensor feed links" %}:
+{% for feed_link in feed_links %}
+	{{ feed_link }}
+{% endfor %}
+
+{% trans "Files attached" %}:
+{% for file in files_attached %}
+	{{ file }}
+{% endfor %}
