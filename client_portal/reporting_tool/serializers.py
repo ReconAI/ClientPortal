@@ -12,8 +12,7 @@ from django.conf import settings
 from django.core.files.base import ContentFile
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-from rest_framework.fields import CharField, IntegerField, ListField, \
-    SerializerMethodField
+from rest_framework.fields import CharField, IntegerField, ListField
 from rest_framework.serializers import ModelSerializer
 from rest_framework.serializers import Serializer
 
