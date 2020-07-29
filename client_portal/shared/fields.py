@@ -9,6 +9,9 @@ from rest_framework.fields import FileField as FileFieldBase
 
 
 class ContentFile(ContentFileBase):
+    """
+    Content file accepting file extension
+    """
     def __init__(self, content, ext, name=None):
         super().__init__(content, name=name)
 

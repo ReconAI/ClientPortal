@@ -18,11 +18,11 @@ from rest_framework.serializers import ListSerializer, \
     Serializer
 from rest_framework.serializers import ModelSerializer
 
+from recon_db_manager.models import Category, Manufacturer, Device, DeviceImage
 from recon_db_manager.models import DevicePurchase
+from shared.fields import FileField as ImgField
 from shared.helpers import StripePrice
 from shared.serializers import ReadOnlySerializerMixin
-from shared.fields import FileField as ImgField
-from recon_db_manager.models import Category, Manufacturer, Device, DeviceImage
 
 
 class CategorySerializer(ModelSerializer):

@@ -1,5 +1,5 @@
 {% load i18n %}{% autoescape off %}
-{% trans "You have received New Feature Request from organisation " %}{{ organization.name }}.
+{% trans "You have received New Feature Request from organization " %}{{ organization.name }}.
 
 {% trans "Description" %}:
 {{ description }}
@@ -13,3 +13,5 @@
 {% for file in files_attached %}
 	{{ file }}
 {% endfor %}
+
+{% endautoescape %}

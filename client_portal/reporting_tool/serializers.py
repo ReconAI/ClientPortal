@@ -6,6 +6,7 @@ import uuid
 from typing import List
 
 import boto3
+from botocore.client import BaseClient
 from botocore.config import Config
 from django.conf import settings
 from django.core.files.base import ContentFile
@@ -15,6 +16,7 @@ from rest_framework.serializers import ModelSerializer
 from rest_framework.serializers import Serializer
 
 from recon_db_manager.models import Organization
+from reporting_tool.forms.utils import SendEmailMixin
 from shared.fields import FileField
 from shared.serializers import ReadOnlySerializerMixin
 
@@ -36,7 +38,7 @@ class AttachPaymentMethodSerializer(ModelSerializer):
         model = Organization
         fields = ('payment_method', )
 
-    def save(self):
+    def save(self, **kwargs):
         payment_method = self.validated_data.get('payment_method')
 
         return self.instance.customer.payment_methods().attach(payment_method)
@@ -46,7 +48,7 @@ class DetachPaymentMethodSerializer(AttachPaymentMethodSerializer):
     """
     Organization detach card serializer
     """
-    def save(self):
+    def save(self, **kwargs):
         payment_method = self.validated_data.get('payment_method')
 
         return self.instance.customer.payment_methods().detach(payment_method)
@@ -74,11 +76,16 @@ class PaymentMethodSerializer(ReadOnlySerializerMixin, Serializer):
     card = CardSerializer(required=True)
 
 
-class FeatureRequestSerializer(Serializer):
+class FeatureRequestSerializer(ReadOnlySerializerMixin,
+                               SendEmailMixin, Serializer):
+    """
+    New feature request serializer
+    """
+
     TOTAL_SIZE_LIMITATION_BYTES = 100 << 20
     FILES_UPLOAD_KEY = 'feature_requests'
 
-    description = CharField(required=True)
+    description = CharField(required=True, min_length=50, max_length=10000)
     sensor_feed_links = ListField(
         child=CharField(allow_null=False, allow_blank=False),
         required=False
@@ -92,6 +99,11 @@ class FeatureRequestSerializer(Serializer):
     __s3 = None
 
     def validate_files(self, files: List[ContentFile]) -> List[ContentFile]:
+        """
+        :type files: List[ContentFile]
+
+        :rtype: List[ContentFile]
+        """
         total_size = functools.reduce(
             lambda carry, file: carry + file.size,
             files,
@@ -112,15 +124,22 @@ class FeatureRequestSerializer(Serializer):
         return file_public_links
 
     def __upload_file(self, file: ContentFile) -> str:
+        """
+        Uploads file and returns its link
+
+        :type file: ContentFile
+
+        :rtype: str
+        """
         destination = self.__destination(file)
 
-        self.s3.upload_fileobj(
+        self.s3_client.upload_fileobj(
             file,
             settings.CLIENT_PORTAL_BUCKET,
             destination
         )
 
-        return self.s3.generate_presigned_url(
+        return self.s3_client.generate_presigned_url(
             'get_object',
             Params={
                 'Bucket': settings.CLIENT_PORTAL_BUCKET,
@@ -128,14 +147,7 @@ class FeatureRequestSerializer(Serializer):
             }
         )
 
-    def file_public_link(self, destination: str):
-        return '{}/{}/{}'.format(
-            self.s3.meta.endpoint_url,
-            settings.CLIENT_PORTAL_BUCKET,
-            destination
-        )
-
-    def __destination(self, file: ContentFile):
+    def __destination(self, file: ContentFile) -> str:
         return '{}/organization_{}/{}.{}'.format(
             self.FILES_UPLOAD_KEY,
             self.context.get('organization').id,
@@ -144,7 +156,10 @@ class FeatureRequestSerializer(Serializer):
         )
 
     @property
-    def s3(self):
+    def s3_client(self) -> BaseClient:
+        """
+        :rtype: BaseClient
+        """
         if self.__s3 is None:
             self.__s3 = boto3.client(
                 's3',
@@ -155,8 +170,23 @@ class FeatureRequestSerializer(Serializer):
 
         return self.__s3
 
-    def create(self, validated_data: dict):
-        files = self.__upload_files(validated_data.get('files'))
+    def save(self, **kwargs):
+        return self.send_mail(
+            'a.volosyuk@hqsoftwarelab.com',
+            'emails/feature_request_subject.txt',
+            'emails/feature_request.html',
+            self.validated_data
+        )
 
-        return {}
+    def get_email_context(self, validated_data: dict, *args, **kwargs) -> dict:
+        """
+        :type validated_data: dict
 
+        :rtype: dict
+        """
+        return {
+            'files_attached': self.__upload_files(validated_data.get('files')),
+            'feed_links': validated_data.get('sensor_feed_links', []),
+            'description': validated_data.get('description', ''),
+            'organization': self.context.get('organization')
+        }

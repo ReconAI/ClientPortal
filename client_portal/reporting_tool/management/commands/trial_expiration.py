@@ -82,9 +82,8 @@ class Command(BaseCommand, SendEmailMixin):
         """
         return self.filter_query_set(self.query_set)
 
-    def get_email_context(self, request: Request, user: User) -> dict:
+    def get_email_context(self, user: User, *args, **kwargs) -> dict:
         """
-        :type request: Optional[Request]
         :type user: User
 
         :rtype: dict
