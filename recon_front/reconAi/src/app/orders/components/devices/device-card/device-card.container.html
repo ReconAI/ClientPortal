@@ -5,12 +5,15 @@
       [product]="product$ | async"
       [description]="description$ | async"
       [salesPrice]="salesPrice$ | async"
+      [salesPriceWithVat]="salesPriceWithVat$ | async"
       [seoTags]="seoTags$ | async"
       [seoTitle]="seoTitle$ | async"
       [seoDescription]="seoDescription$ | async"
       [images]="images$ | async"
       [category]="category$ | async"
       [manufacturer]="manufacturer$ | async"
+      [isAbleToBuy]="isAbleToBuy$ | async"
+      (addToBasket$)="addToBasket($event)"
     ></recon-device-card>
   </ng-container>
   <ng-template #notFound>Not found</ng-template>

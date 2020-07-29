@@ -1,0 +1,59 @@
+@import "../../../../../variables.less";
+
+.order-item-container {
+    display: flex;
+    margin: 20px 0;
+    width: 100%;
+
+    img {
+        width: 180px;
+        max-height: 180px;
+    }
+
+    .title {
+        white-space: normal;
+        word-break: break-word;
+        font-size: 16px;
+    }
+
+    .image-container {
+        margin-left: 10px;
+        margin-right: 10px;
+        width: 180px;
+    }
+
+    .field-container {
+        width: calc(100% - 24px - 180px - 10px);
+
+        .field {
+            display: flex;
+            justify-content: space-between;
+
+            span:first-child {
+                color: @recon-gray;
+            }
+
+            span:last-child {
+                font-weight: 500;
+            }
+        }
+    }
+
+
+    .delete-field {
+        color: @recon-gray;
+        width: 100%;
+        margin-top: 5px;
+        display: flex;
+        justify-content: flex-end;
+
+        &>span {
+            cursor: pointer;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+
+    }
+}

@@ -4,9 +4,11 @@
 </div>
 
 <form (ngSubmit)="onSubmitStripe()">
+  <mat-error *ngIf="validationError || error">{{
+    validationError || error
+  }}</mat-error>
   <div class="form-row">
     <div id="card-element" #cardInfo></div>
-    <div id="card-errors" role="alert" *ngIf="error">{{ error }}</div>
   </div>
   <div class="button-container">
     <button

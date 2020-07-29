@@ -7,6 +7,6 @@ export interface ManufacturerInterface {
   address: string;
   orderEmail: string;
   supportEmail: string;
-  categories: CategoryInterface[];
+  // categories: CategoryInterface[];
   id?: number;
 }

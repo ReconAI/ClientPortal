@@ -47,6 +47,7 @@ export enum UserActionTypes {
   ATTACH_CARD_REQUESTED = '[User] Attach Card Requested',
   ATTACH_CARD_SUCCEEDED = '[User] Attach Card Succeeded',
   ATTACH_CARD_ERROR = '[User] Attach Card Error',
+  RESET_ATTACH_CARD_ERROR = '[User] Reset Attach Card Error',
 
   LOAD_USER_CARDS_REQUESTED = '[User] Load User Cards Requested',
   LOAD_USER_CARDS_SUCCEEDED = '[User] Load User Cards Succeeded',
@@ -55,6 +56,8 @@ export enum UserActionTypes {
   DELETE_USER_CARD_REQUESTED = '[User] Delete User Card Requested',
   DELETE_USER_CARD_SUCCEEDED = '[User] Delete User Card Succeeded',
   DELETE_USER_CARD_ERROR = '[User] Delete User Card Error',
+
+  UPDATE_BASKET_AMOUNT = '[User] Update Basket Amount',
 }
 
 export const loadCurrentUserRequestedAction = createAction(
@@ -169,7 +172,12 @@ export const attachCardSucceededAction = createAction(
 );
 
 export const attachCardErrorAction = createAction(
-  UserActionTypes.ATTACH_CARD_ERROR
+  UserActionTypes.ATTACH_CARD_ERROR,
+  props<FormServerErrorInterface>()
+);
+
+export const resetAttachCardErrorAction = createAction(
+  UserActionTypes.RESET_ATTACH_CARD_ERROR,
 );
 
 export const loadUserCardsRequestedAction = createAction(
@@ -196,4 +204,13 @@ export const deleteUserCardSucceededAction = createAction(
 
 export const deleteUserCardErrorAction = createAction(
   UserActionTypes.DELETE_USER_CARD_ERROR
+);
+
+export interface UpdateBasketActionPayload {
+  amount: number;
+}
+
+export const updateBasketAmountAction = createAction(
+  UserActionTypes.UPDATE_BASKET_AMOUNT,
+  props<UpdateBasketActionPayload>()
 );

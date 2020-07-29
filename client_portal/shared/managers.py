@@ -346,6 +346,17 @@ class AbstractCustomerManager(ABC):
         :rtype: AbstractPaymentMethodManager
         """
 
+    @abstractmethod
+    def pay(self, amount: float, payment_method: str, **kwargs) -> object:
+        """
+        Performs payment on behalf of the customer
+
+        :type amount: float
+        :type payment_method: str
+
+        :rtype: object
+        """
+
     def retrieve_or_create(self) -> object:
         """
         :rtype: object
@@ -445,6 +456,17 @@ class StripeCustomerManager(AbstractCustomerManager):
         """
         return PaymentMethodManager(
             self.retrieve_or_create()
+        )
+
+    def pay(self, amount: float, payment_method: str, **kwargs) -> object:
+        return stripe.PaymentIntent.create(
+            amount=amount,
+            customer=self._organization.id,
+            receipt_email=self._organization.inv_email,
+            payment_method=payment_method,
+            currency=settings.CURRENCY,
+            api_key=settings.STRIPE_SECRET_KEY,
+            **kwargs
         )
 
     def retrieve_or_create(self) -> stripe.Customer:

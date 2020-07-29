@@ -9,6 +9,7 @@ export interface DeviceFormInterface {
   description: string;
   buyingPrice: string;
   salesPrice: string;
+  salesPriceWithVat?: string;
   seoTags: string[] | string;
   seoTitle: string;
   seoDescription: string;
@@ -26,6 +27,7 @@ export interface DeviceServerInterface {
   manufacturer: string | ManufacturerServerInterface;
   buying_price: string;
   sales_price: string;
+  sales_price_with_vat?: string;
   product_number: string;
   seo_title: string;
   seo_keywords: string[] | string;

@@ -1,4 +1,11 @@
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  OnDestroy,
+  Output,
+  EventEmitter,
+} from '@angular/core';
 import { ServerImageInterface } from 'app/orders/constants';
 import { Meta } from '@angular/platform-browser';
 
@@ -14,10 +21,14 @@ export class DeviceCardComponent implements OnInit, OnDestroy {
   @Input() manufacturer: string;
   @Input() category: string;
   @Input() salesPrice: string;
+  @Input() salesPriceWithVat: string;
   @Input() seoTags: string;
   @Input() seoTitle: string;
   @Input() seoDescription: string;
   @Input() images: ServerImageInterface[];
+  @Input() isAbleToBuy: boolean;
+  @Output() addToBasket$ = new EventEmitter<number>();
+
   constructor(private meta: Meta) {}
 
   ngOnInit(): void {
@@ -40,5 +51,9 @@ export class DeviceCardComponent implements OnInit, OnDestroy {
     this.meta.removeTag('name=description');
     this.meta.removeTag('name=keywords');
     this.meta.removeTag('name=title');
+  }
+
+  addToBasket(amount: number): void {
+    this.addToBasket$.emit(amount);
   }
 }

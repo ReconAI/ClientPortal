@@ -1,0 +1,27 @@
+<mat-radio-group
+  aria-labelledby="example-radio-group-label"
+  class="radio-group"
+  [(ngModel)]="paymentMethod"
+  (change)="selectPayment($event)"
+>
+  <mat-radio-button
+    class="radio-button"
+    *ngFor="let payment of possiblePayments"
+    [value]="payment.value"
+    [disabled]="'invoicing_account' === payment.value"
+    [matTooltip]="'invoicing_account' === payment.value ? invoicingTooltip : ''"
+  >
+    {{ payment.label }}
+  </mat-radio-button>
+  <!-- only invoice -->
+  <ng-container *ngIf="possiblePayments.length === 1">
+    <mat-radio-button class="radio-button" [value]="null" [disabled]="true">
+      <div class="credit-card-container">
+        Credit card
+        <mat-icon matSuffix [matTooltip]="creditCardTooltip">
+          help_outline
+        </mat-icon>
+      </div>
+    </mat-radio-button>
+  </ng-container>
+</mat-radio-group>

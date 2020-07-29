@@ -16,6 +16,7 @@ import {
   MetaStoreDevicesInterface,
 } from './orders.reducer';
 import { DeviceListItemClientInterface } from './orders.server.helpers';
+import { BasketItemClientInterface } from 'app/orders/constants/types/basket';
 
 export const selectOrders = (state: AppState): OrdersState => state.orders;
 
@@ -125,6 +126,11 @@ export const selectDeviceSalesPrice = createSelector(
   (device: DeviceFormInterface): string => device?.salesPrice || null
 );
 
+export const selectDeviceSalesWithVatPrice = createSelector(
+  selectDevice,
+  (device: DeviceFormInterface): string => device?.salesPriceWithVat || null
+);
+
 export const selectDeviceProduct = createSelector(
   selectDevice,
   (device: DeviceFormInterface): string => device?.product || null
@@ -172,4 +178,10 @@ export const selectUpdateDeviceError = createSelector(
   selectOrdersErrors,
   (errors: OrdersError): FormServerErrorInterface =>
     errors?.updateDevice || null
+);
+
+export const selectBasketItems = createSelector(
+  selectOrders,
+  (orders: OrdersState): BasketItemClientInterface[] =>
+    orders?.basket?.items || []
 );

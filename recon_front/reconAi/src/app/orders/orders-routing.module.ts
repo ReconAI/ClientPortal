@@ -1,3 +1,4 @@
+import { YourOrderComponent } from './components/your-order/your-order.component';
 import { DeviceCardContainer } from './components/devices/device-card/device-card.container';
 import { UpdateDeviceContainer } from './components/devices/update-device/update-device.container';
 import { AuthRoleGuard } from './../core/guards/auth-role-guard/auth-role.guard';
@@ -10,6 +11,8 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { UpdateCategoryListContainer } from './components/update-category-list/update-category-list.container';
 import { DeviceListContainer } from './components/devices/device-list/device-list.container';
+import { YourOrderContainer } from './components/your-order/your-order.contatiner';
+import { IsPossibleToBuyGuard } from 'app/core/guards/is-possible-to-buy/is-possible-to-buy.guard';
 
 const routes: Routes = [
   {
@@ -47,6 +50,15 @@ const routes: Routes = [
     canActivate: [AuthRoleGuard],
     component: UpdateDeviceContainer,
   },
+  {
+    path: 'basket',
+    data: {
+      title: 'Your basket',
+    },
+    canActivate: [IsPossibleToBuyGuard],
+    component: YourOrderContainer,
+  },
+  // :id must be last
   {
     path: ':id',
     data: {

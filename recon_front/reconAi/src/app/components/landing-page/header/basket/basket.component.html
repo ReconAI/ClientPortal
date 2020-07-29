@@ -1,1 +1,4 @@
-<div *ngIf="isVisible"><mat-icon> shopping_cart</mat-icon><span>0</span></div>
+<div *ngIf="isVisible" (click)="blockClick()">
+  <mat-icon> shopping_cart</mat-icon
+  ><span [ngClass]="{ 'green-label': !!amount }">{{ amount }}</span>
+</div>

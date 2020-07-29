@@ -1,3 +1,4 @@
+import { BasketLocalStorageInterface } from './../../constants/basket';
 import { Injectable } from '@angular/core';
 
 @Injectable({
@@ -5,6 +6,7 @@ import { Injectable } from '@angular/core';
 })
 export class LocalStorageService {
   readonly tokenKey = 'RAIAuth';
+  readonly basketKey = 'RAIBasket';
   constructor() {}
 
   /**
@@ -42,5 +44,19 @@ export class LocalStorageService {
     } catch {
       return null;
     }
+  }
+
+  // type
+  public getBasketValue(): BasketLocalStorageInterface {
+    try {
+      return JSON.parse(localStorage.getItem(this.basketKey));
+    } catch {
+      return null;
+    }
+  }
+
+  // type
+  public setBasketValue(value: BasketLocalStorageInterface): boolean {
+    return this.putToLocalStorage(this.basketKey, value);
   }
 }
