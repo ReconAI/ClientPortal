@@ -23,6 +23,7 @@ import {
   setAttachCardLoadingStatusAction,
   setUserCardsLoadingStatusAction,
   setDetachCardLoadingStatusAction,
+  setNewFeatureRequestLoadingStatusAction,
 } from './../loaders/loaders.actions';
 import { LocalStorageService } from './../../core/services/localStorage/local-storage.service';
 import { Action, Store, select } from '@ngrx/store';
@@ -38,6 +39,8 @@ import {
   transformCardListFromServer,
   DeleteUserCardRequestInterface,
   transformDetachCardRequestToServer,
+  NewRequestFeatureClientInterface,
+  transformNewRequestToServer,
 } from './user.server.helpers';
 import {
   UserActionTypes,
@@ -65,6 +68,8 @@ import {
   loadUserCardsErrorAction,
   deleteUserCardSucceededAction,
   deleteUserCardErrorAction,
+  newRequestFeatureSucceededAction,
+  newRequestFeatureErrorAction,
 } from './user.actions';
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
@@ -77,6 +82,7 @@ import {
   tap,
   filter,
   withLatestFrom,
+  mergeMap,
 } from 'rxjs/operators';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { AppState } from '../reducers';
@@ -425,6 +431,41 @@ export class UserEffects {
               );
             })
           )
+      )
+    )
+  );
+
+  // move it later
+  newRequestFeature$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action & NewRequestFeatureClientInterface>(
+        UserActionTypes.NEW_REQUEST_FEATURE_REQUESTED
+      ),
+      tap(() => {
+        this.store.dispatch(
+          setNewFeatureRequestLoadingStatusAction({
+            status: true,
+          })
+        );
+      }),
+      mergeMap(
+        async (newRequestFeature) =>
+          await transformNewRequestToServer(newRequestFeature)
+      ),
+      switchMap((formedFeature) =>
+        this.httpClient.post<void>('/api/new-features', formedFeature).pipe(
+          map(() => newRequestFeatureSucceededAction()),
+          catchError((error) =>
+            of(newRequestFeatureErrorAction(generalTransformFormErrorToString(error)))
+          ),
+          finalize(() => {
+            this.store.dispatch(
+              setNewFeatureRequestLoadingStatusAction({
+                status: false,
+              })
+            );
+          })
+        )
       )
     )
   );

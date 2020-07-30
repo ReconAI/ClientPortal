@@ -182,3 +182,9 @@ export const selectPurchaseLoadingStatus = createSelector(
   selectLoaders,
   (loaders: LoadersState): boolean => loaders.purchase
 );
+
+// user -> new request feature
+export const selectNewRequestFeatureLoadingStatus = createSelector(
+  selectLoaders,
+  (loaders: LoadersState): boolean => loaders.newFeature
+);

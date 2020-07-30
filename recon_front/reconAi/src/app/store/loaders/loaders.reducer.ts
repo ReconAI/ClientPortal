@@ -34,6 +34,7 @@ import {
   setPayBasketLoadingStatusAction,
   setPurchaseListLoadingStatusAction,
   setPurchaseLoadingStatusAction,
+  setNewFeatureRequestLoadingStatusAction,
 } from './loaders.actions';
 import { createReducer, on, Action } from '@ngrx/store';
 
@@ -78,6 +79,8 @@ export interface LoadersState {
   // purchase
   purchaseList: boolean;
   purchase: boolean;
+  // user -> new feature request
+  newFeature: boolean;
 }
 
 const initialState: LoadersState = {
@@ -120,6 +123,8 @@ const initialState: LoadersState = {
   // purchase
   purchaseList: false,
   purchase: false,
+  // user -> new feature request
+  newFeature: false,
 };
 
 const setCurrentUserLoadingStatusReducer = (
@@ -295,6 +300,12 @@ const setPurchaseLoadingStatusReducer = (
   { status }: Action & LoaderInterface
 ): LoadersState => ({ ...state, purchase: status });
 
+// user -> new feature request
+const setNewFeatureRequestLoadingStatusReducer = (
+  state: LoadersState,
+  { status }: Action & LoaderInterface
+): LoadersState => ({ ...state, newFeature: status });
+
 const loadersReducer = createReducer(
   initialState,
   on(setCurrentUserLoadingStatusAction, setCurrentUserLoadingStatusReducer),
@@ -364,7 +375,12 @@ const loadersReducer = createReducer(
   on(setPayBasketLoadingStatusAction, setPayBasketLoadingStatusReducer),
   // purchase
   on(setPurchaseListLoadingStatusAction, setPurchaseListLoadingStatusReducer),
-  on(setPurchaseLoadingStatusAction, setPurchaseLoadingStatusReducer)
+  on(setPurchaseLoadingStatusAction, setPurchaseLoadingStatusReducer),
+  // user -> new feature request
+  on(
+    setNewFeatureRequestLoadingStatusAction,
+    setNewFeatureRequestLoadingStatusReducer
+  )
 );
 
 export function reducer(state: LoadersState | undefined, action: Action) {

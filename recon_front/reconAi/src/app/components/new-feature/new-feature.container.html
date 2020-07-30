@@ -1,1 +1,5 @@
-<recon-new-feature></recon-new-feature>
+<recon-new-feature
+  [validationError]="validationError$ | async"
+  [loadingStatus]="loadingStatus$ | async"
+  (postRequest$)="postRequest($event)"
+></recon-new-feature>

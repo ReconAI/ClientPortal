@@ -1,5 +1,6 @@
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
+import { NewRequestFeatureClientInterface } from 'app/store/user/user.server.helpers';
 
 @Component({
   selector: 'recon-new-feature',
@@ -7,33 +8,19 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./new-feature.component.less'],
 })
 export class NewFeatureComponent implements OnInit {
+  @Input() validationError = '';
+  @Input() loadingStatus = false;
+
+  @Output() postRequest$ = new EventEmitter<NewRequestFeatureClientInterface>();
   constructor(private fb: FormBuilder) {}
-  readonly maxCountOfFiles = 20;
   newFeatureForm: FormGroup;
 
   get jsonValue(): string {
     return JSON.stringify(this.newFeatureForm.value);
   }
 
-  get files() {
-    return this?.newFeatureForm?.get('files') as FormArray;
-  }
-
   get feedLinks() {
     return this?.newFeatureForm?.get('feedLinks') as FormArray;
-  }
-
-  onFilesChange(event): void {
-    const newFiles = event?.target?.files;
-    if (newFiles?.length) {
-      for (
-        let i = 0;
-        i < Math.min(this.maxCountOfFiles, newFiles.length);
-        i++
-      ) {
-        this.files.push(this.fb.control(newFiles[i]));
-      }
-    }
   }
 
   ngOnInit(): void {
@@ -52,7 +39,9 @@ export class NewFeatureComponent implements OnInit {
     this.feedLinks.removeAt(i);
   }
 
-  removeFile(i: number) {
-    this.files.removeAt(i);
+  postRequest(): void {
+    this.postRequest$.emit({
+      newRequestFeature: this.newFeatureForm.value,
+    });
   }
 }

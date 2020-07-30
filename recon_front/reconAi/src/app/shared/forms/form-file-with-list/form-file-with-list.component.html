@@ -13,6 +13,7 @@
     (change)="onFilesChange($event)"
     [accept]="accept || ''"
   />
+   <span class="hint-attach">*Attach CAD draving, sensor or other files</span>
   <div
     [formArrayName]="field"
     *ngFor="let file of files.controls; let i = index"

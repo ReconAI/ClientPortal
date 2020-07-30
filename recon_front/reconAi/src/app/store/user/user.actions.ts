@@ -14,6 +14,7 @@ import {
   AttachCardRequestClientInterface,
   LoadCardsRequestClientInterface,
   DeleteUserCardRequestInterface,
+  NewRequestFeatureClientInterface,
 } from './user.server.helpers';
 import { createAction, props } from '@ngrx/store';
 import { ResetPasswordWithMetaInterface } from 'app/constants/types/resetPassword';
@@ -67,6 +68,11 @@ export enum UserActionTypes {
   LOAD_PURCHASE_LIST_REQUESTED = '[User] Load Purchase List Requested',
   LOAD_PURCHASE_LIST_SUCCEEDED = '[User] Load Purchase List Succeeded',
   LOAD_PURCHASE_LIST_ERROR = '[User] Load Purchase List Error',
+
+  NEW_REQUEST_FEATURE_REQUESTED = '[User] New Request Feature Requested',
+  NEW_REQUEST_FEATURE_SUCCEEDED = '[User] New Request Feature Succeeded',
+  NEW_REQUEST_FEATURE_ERROR = '[User] New Request Feature Error',
+  RESET_NEW_REQUEST_FEATURE_ERROR = '[User] Reset New Request Feature Error',
 }
 
 export const loadCurrentUserRequestedAction = createAction(
@@ -222,4 +228,23 @@ export interface UpdateBasketActionPayload {
 export const updateBasketAmountAction = createAction(
   UserActionTypes.UPDATE_BASKET_AMOUNT,
   props<UpdateBasketActionPayload>()
+);
+
+// new request feature
+export const newRequestFeatureRequestedAction = createAction(
+  UserActionTypes.NEW_REQUEST_FEATURE_REQUESTED,
+  props<NewRequestFeatureClientInterface>()
+);
+
+export const newRequestFeatureSucceededAction = createAction(
+  UserActionTypes.NEW_REQUEST_FEATURE_SUCCEEDED
+);
+
+export const newRequestFeatureErrorAction = createAction(
+  UserActionTypes.NEW_REQUEST_FEATURE_ERROR,
+  props<FormServerErrorInterface>()
+);
+
+export const resetNewRequestFeatureErrorAction = createAction(
+  UserActionTypes.RESET_NEW_REQUEST_FEATURE_ERROR
 );
