@@ -111,23 +111,6 @@ class User(CommonUser, PermissionsMixin):
         """
         return self.group.name == Role.SUPER_ADMIN
 
-    @property
-    def trial_expires_on(self) -> datetime:
-        """
-        :rtype: datetime
-        """
-        return (
-            self.created_dt
-            + timedelta(days=settings.TRIAL_PERIOD_DAYS)
-        )
-
-    @property
-    def is_on_trial(self) -> bool:
-        """
-        :rtype: bool
-        """
-        return self.trial_expires_on > now()
-
     def set_password(self, raw_password: str):
         """
         Hashes and sets password for user

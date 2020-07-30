@@ -12,8 +12,9 @@ from drf_braces.serializers.form_serializer import FormSerializer
 from rest_framework import serializers
 from rest_framework.authtoken.serializers import \
     AuthTokenSerializer as AuthTokenSerializerBase
+from rest_framework.serializers import ModelSerializer
 
-from recon_db_manager.models import Organization
+from recon_db_manager.models import Organization, DeviceImage
 
 
 def form_to_formserializer(form: Union[Type[BaseForm], type]) \
@@ -161,3 +162,16 @@ class AuthTokenSerializer(AuthTokenSerializerBase):
         """
         Update is prohibited for the Token
         """
+
+
+class DeviceImageSerializer(ModelSerializer):
+    """
+    Image serializer definition
+    """
+
+    class Meta:
+        """
+        Id and path are to be exposed
+        """
+        model = DeviceImage
+        fields = ('id', 'path')

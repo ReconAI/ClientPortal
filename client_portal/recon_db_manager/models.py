@@ -1,10 +1,14 @@
 """
 Recon db mangaer are defined here
 """
+from datetime import datetime, timedelta
+
+from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.db.models import ImageField
 from django.utils.module_loading import import_string
+from django.utils.timezone import now
 
 from shared.helpers import Price, PriceWithTax
 
@@ -29,6 +33,7 @@ class Organization(models.Model):
     inv_address = models.CharField(null=True, blank=True, max_length=255)
     inv_phone = models.CharField(null=True, blank=True, max_length=255)
     inv_email = models.EmailField(null=True, blank=True, max_length=255)
+    created_dt = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         """
@@ -49,6 +54,20 @@ class Organization(models.Model):
         :rtype: AbstractCustomerManager
         """
         return import_string('shared.managers.StripeCustomerManager')(self)
+
+    @property
+    def trial_expires_on(self) -> datetime:
+        """
+        :rtype: datetime
+        """
+        return self.created_dt + timedelta(days=settings.TRIAL_PERIOD_DAYS)
+
+    @property
+    def is_on_trial(self) -> bool:
+        """
+        :rtype: bool
+        """
+        return self.trial_expires_on > now()
 
 
 class CommonUser(models.Model):

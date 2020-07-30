@@ -7,13 +7,13 @@ from datetime import timedelta
 
 from argparse import ArgumentParser
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.core.management import BaseCommand
 from django.db.models.query import QuerySet
 from django.utils.timezone import now
 
+from recon_db_manager.models import Organization
 from reporting_tool.forms.utils import SendEmailMixin
-from shared.models import User
+from shared.models import User, Role, UserGroup
 
 
 class Command(BaseCommand, SendEmailMixin):
@@ -23,7 +23,7 @@ class Command(BaseCommand, SendEmailMixin):
 
     help = 'Notifies users about trial expiration'
 
-    query_set = get_user_model().objects.all()
+    query_set = Organization.objects.all()
 
     def add_arguments(self, parser: ArgumentParser):
         """
@@ -44,21 +44,30 @@ class Command(BaseCommand, SendEmailMixin):
         if not objects:
             self.stdout.write("No one's trial is expiring shortly")
 
-        for user in objects:
-            self.send_mail(
-                user.email,
-                'emails/trial_expiration_subject.txt',
-                'emails/trial_expiration.html',
-                request=None,
-                user=user
-            )
+        authorized_users_ids = list(UserGroup.objects.filter(
+            group__name__in=[Role.SUPER_ADMIN, Role.ADMIN, Role.DEVELOPER]
+        ).values_list('user_id', flat=True))
+
+        for organization in objects:
+            organization_users = User.objects.filter(
+                id__in=authorized_users_ids,
+                organization_id=organization.id
+            ).values('email', 'firstname', 'lastname')
+
+            if organization_users:
+                for user in organization_users:
+                    self.send_mail(
+                        user.get('email'),
+                        'emails/trial_expiration_subject.txt',
+                        'emails/trial_expiration.html',
+                        **user
+                    )
 
             message = "{} is notified about ending trial".format(
-                user.get_username()
+                organization.name
             )
 
             self.stdout.write(message)
-
 
     @staticmethod
     def filter_query_set(query_set: QuerySet) -> QuerySet:
@@ -67,7 +76,7 @@ class Command(BaseCommand, SendEmailMixin):
 
         :rtype: QuerySet
         """
-        now_ts = now()
+        now_ts = now() - timedelta(days=settings.TRIAL_PERIOD_DAYS)
 
         return query_set.filter(
             created_dt__lt=now_ts,
@@ -80,13 +89,11 @@ class Command(BaseCommand, SendEmailMixin):
         """
         return self.filter_query_set(self.query_set)
 
-    def get_email_context(self, user: User, *args, **kwargs) -> dict:
+    def get_email_context(self, *args, **kwargs) -> dict:
         """
-        :type user: User
-
         :rtype: dict
         """
         return {
             'app_name': settings.APP_NAME,
-            'user': user
+            **kwargs
         }
