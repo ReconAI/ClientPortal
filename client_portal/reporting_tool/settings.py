@@ -190,6 +190,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STORAGE_ROOT = '{}/{}/'.format(BASE_DIR, 'data')
+MEDIA_ROOT = '{}/{}/'.format(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 
 # Enable/Disable http requests service data capturing
 LOG_HTTP = os.environ.get('LOG_HTTP', 'False') in ['True', '1']

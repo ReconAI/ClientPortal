@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.conf import settings
 from django.conf.urls import url
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
 from drf_yasg import openapi
@@ -26,6 +27,7 @@ from .views.accounts import SignupView, ActivateView, CurrentUserProfileView, \
     PreSignupValidationView, CheckResetPasswordTokenView
 from .views.cards import CardListView
 from .views.new_features import NewFeatureView
+from .views.orders import OrdersListView, OrderItemView
 from .views.user_management import UserList, UserItem, InvitationView
 
 urlpatterns = [
@@ -36,6 +38,8 @@ urlpatterns = [
     path('profile', CurrentUserProfileView.as_view(), name='profile'),
     path('logout', LogoutView.as_view(), name='logout'),
     path('cards', CardListView.as_view(), name='cards.list'),
+    path('orders', OrdersListView.as_view(), name='orders.list'),
+    path('orders/<str:payment_id>', OrderItemView.as_view(), name='orders.item'),
 
     path('reset-password', ResetPassword.as_view(), name='password_reset'),
     path('reset', PasswordResetConfirmView.as_view(),
@@ -51,6 +55,8 @@ urlpatterns = [
 
     path('admin/', admin.site.urls),
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
     schema_view = get_schema_view(

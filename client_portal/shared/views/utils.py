@@ -189,6 +189,25 @@ class CreateModelMixin(SerializerMixin):
         return self.save_or_error(self.create_success_message)
 
 
+class PlainListModelMixin:
+    """
+    List a queryset.
+    """
+    def list(self, *args, **kwargs) -> Response:
+        """
+        Returns models plain list
+
+        :rtype: Response
+        """
+        queryset = self.filter_queryset(self.get_queryset())
+
+        serializer = self.get_serializer(queryset, many=True)
+
+        return Response({
+            'data': serializer.data
+        })
+
+
 class RetrieveAPIView(RetrieveModelMixin, GenericAPIView):
     """
     Generic retrieve API view
