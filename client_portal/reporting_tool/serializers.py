@@ -16,6 +16,7 @@ from rest_framework.fields import CharField, IntegerField, ListField
 from rest_framework.serializers import ModelSerializer
 from rest_framework.serializers import Serializer
 
+from order_portal.serizalizers import DeviceImageSerializer
 from recon_db_manager.models import Organization, DevicePurchase
 from reporting_tool.forms.utils import SendEmailMixin
 from shared.fields import FileField
@@ -193,7 +194,7 @@ class FeatureRequestSerializer(ReadOnlySerializerMixin,
         }
 
 
-class OrderSerializer(ModelSerializer):
+class OrderListSerializer(ModelSerializer):
     type = serializers.CharField()
     timestamp = serializers.CharField()
     payment_id = serializers.CharField()
@@ -206,3 +207,35 @@ class OrderSerializer(ModelSerializer):
     @staticmethod
     def process_total(purchase: dict) -> float:
         return purchase.get('total__sum', 0) / 100
+
+
+class OrderSerializer(ModelSerializer):
+    price_without_vat = serializers.SerializerMethodField(method_name='process_price_without_vat')
+    price_with_vat = serializers.SerializerMethodField(method_name='process_price_with_vat')
+    total = serializers.SerializerMethodField(method_name='process_total')
+    images = serializers.SerializerMethodField(method_name='format_images')
+
+    class Meta:
+        model = DevicePurchase
+        fields = ('payment_id', 'device_name', 'price_without_vat', 'price_with_vat',
+                  'device_cnt', 'total', 'images', 'created_dt')
+
+    @staticmethod
+    def process_price_without_vat(purchase: DevicePurchase) -> float:
+        return float(purchase.device_price)
+
+    def process_price_with_vat(self, purchase: DevicePurchase) -> float:
+        return round(self.process_total(purchase) / purchase.device_cnt, 2)
+
+    @staticmethod
+    def process_total(purchase: DevicePurchase) -> float:
+        return purchase.total / 100
+
+    def format_images(self, purchase: DevicePurchase):
+        return DeviceImageSerializer(
+            purchase.device.images,
+            many=True,
+            context={
+                'request': self.context.get('request')
+            }
+        ).data

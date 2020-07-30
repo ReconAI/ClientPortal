@@ -6,10 +6,11 @@ from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 
 from recon_db_manager.models import DevicePurchase
-from reporting_tool.serializers import OrderSerializer
+from reporting_tool.serializers import OrderListSerializer, OrderSerializer
 from shared.permissions import IsCompanyDeveloper, IsActive
 from shared.swagger.headers import token_header
 from shared.swagger.responses import DEFAULT_GET_REQUESTS_RESPONSES
+from shared.views.utils import PlainListModelMixin
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
@@ -24,7 +25,7 @@ from shared.swagger.responses import DEFAULT_GET_REQUESTS_RESPONSES
 class OrdersListView(ListAPIView):
     permission_classes = (IsAuthenticated, IsActive, IsCompanyDeveloper)
 
-    serializer_class = OrderSerializer
+    serializer_class = OrderListSerializer
 
     def filter_queryset(self, queryset: QuerySet) -> QuerySet:
         return queryset.filter(organization_id=self.request.user.organization.id)
@@ -35,3 +36,22 @@ class OrdersListView(ListAPIView):
             timestamp=RawSQL('created_dt::timestamp(0)', ()),
             type=Value('purchase', output_field=CharField())
         ).order_by('-timestamp')
+
+
+class OrderItemView(PlainListModelMixin, ListAPIView):
+    permission_classes = (IsAuthenticated, IsActive, IsCompanyDeveloper)
+
+    serializer_class = OrderSerializer
+
+    queryset = DevicePurchase.objects.prefetch_related('device__images').all()
+
+    def filter_queryset(self, queryset: QuerySet) -> QuerySet:
+        return queryset.filter(
+            organization_id=self.request.user.organization.id,
+            payment_id=self.kwargs['payment_id']
+        )
+
+    def get_serializer_context(self) -> dict:
+        return {
+            'request': self.request
+        }
