@@ -4,6 +4,12 @@
   </div>
   <div class="field-container">
     <span class="title">{{ name }}</span>
+    <div class="field" *ngIf="!hideOrderId">
+      <span>Order id</span> <span>{{ orderId }}</span>
+    </div>
+    <div class="field" *ngIf="!hidePaymentDate">
+      <span>Payment date</span> <span>{{ paymentDate }}</span>
+    </div>
     <div class="field">
       <span>Device amount</span> <span>{{ amount }}</span>
     </div>
@@ -21,7 +27,7 @@
       <span>Price with VAT</span>
       <span>{{ priceWithVat | number: ".2-2" }} €</span>
     </div>
-    <div class="delete-field">
+    <div class="delete-field" *ngIf="!hideDelete">
       <span (click)="onDelete()">Delete</span>
     </div>
   </div>

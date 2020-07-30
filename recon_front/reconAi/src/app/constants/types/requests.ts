@@ -22,7 +22,10 @@ export interface PaginationResponseServerInterface<T> {
   results: T[];
 }
 
-
+export interface PaginationResponseClientInterface<T> {
+  meta: MetaClientInterface;
+  list: T[];
+}
 export interface MetaClientInterface {
   count?: number;
   currentPage?: number;

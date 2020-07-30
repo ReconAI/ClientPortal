@@ -32,6 +32,8 @@ import {
   setDetachCardLoadingStatusAction,
   setBasketOverviewLoadingStatusAction,
   setPayBasketLoadingStatusAction,
+  setPurchaseListLoadingStatusAction,
+  setPurchaseLoadingStatusAction,
 } from './loaders.actions';
 import { createReducer, on, Action } from '@ngrx/store';
 
@@ -73,6 +75,9 @@ export interface LoadersState {
   // orders -> basket
   basketOverview: boolean;
   payBasket: boolean;
+  // purchase
+  purchaseList: boolean;
+  purchase: boolean;
 }
 
 const initialState: LoadersState = {
@@ -112,6 +117,9 @@ const initialState: LoadersState = {
   // orders -> basket
   basketOverview: false,
   payBasket: false,
+  // purchase
+  purchaseList: false,
+  purchase: false,
 };
 
 const setCurrentUserLoadingStatusReducer = (
@@ -277,6 +285,16 @@ const setPayBasketLoadingStatusReducer = (
   { status }: Action & LoaderInterface
 ): LoadersState => ({ ...state, payBasket: status });
 
+const setPurchaseListLoadingStatusReducer = (
+  state: LoadersState,
+  { status }: Action & LoaderInterface
+): LoadersState => ({ ...state, purchaseList: status });
+
+const setPurchaseLoadingStatusReducer = (
+  state: LoadersState,
+  { status }: Action & LoaderInterface
+): LoadersState => ({ ...state, purchase: status });
+
 const loadersReducer = createReducer(
   initialState,
   on(setCurrentUserLoadingStatusAction, setCurrentUserLoadingStatusReducer),
@@ -343,7 +361,10 @@ const loadersReducer = createReducer(
     setBasketOverviewLoadingStatusAction,
     setBasketOverviewLoadingStatusReducer
   ),
-  on(setPayBasketLoadingStatusAction, setPayBasketLoadingStatusReducer)
+  on(setPayBasketLoadingStatusAction, setPayBasketLoadingStatusReducer),
+  // purchase
+  on(setPurchaseListLoadingStatusAction, setPurchaseListLoadingStatusReducer),
+  on(setPurchaseLoadingStatusAction, setPurchaseLoadingStatusReducer)
 );
 
 export function reducer(state: LoadersState | undefined, action: Action) {

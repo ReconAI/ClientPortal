@@ -11,6 +11,8 @@ import { FormSelectComponent } from './forms/form-select/form-select.component';
 import { FormFileWithListComponent } from './forms/form-file-with-list/form-file-with-list.component';
 import { FormChipsComponent } from './forms/form-chips/form-chips.component';
 import { FormCheckboxComponent } from './forms/form-checkbox/form-checkbox.component';
+import { OrderItemComponent } from './orders/order-item/order-item.component';
+import { DeliveryInformationComponent } from './orders/delivery-information/delivery-information.component';
 
 @NgModule({
   declarations: [
@@ -22,6 +24,8 @@ import { FormCheckboxComponent } from './forms/form-checkbox/form-checkbox.compo
     FormFileWithListComponent,
     FormChipsComponent,
     FormCheckboxComponent,
+    OrderItemComponent,
+    DeliveryInformationComponent,
   ],
   imports: [
     MaterialModule,
@@ -39,6 +43,8 @@ import { FormCheckboxComponent } from './forms/form-checkbox/form-checkbox.compo
     FormChipsComponent,
     PaginationComponent,
     FormCheckboxComponent,
+    OrderItemComponent,
+    DeliveryInformationComponent,
   ],
   providers: [],
 })

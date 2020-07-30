@@ -171,3 +171,14 @@ export const selectPayingBasketLoadingStatus = createSelector(
   selectLoaders,
   (loaders: LoadersState): boolean => loaders.payBasket
 );
+
+// purchases
+export const selectPurchaseListLoadingStatus = createSelector(
+  selectLoaders,
+  (loaders: LoadersState): boolean => loaders.purchaseList
+);
+
+export const selectPurchaseLoadingStatus = createSelector(
+  selectLoaders,
+  (loaders: LoadersState): boolean => loaders.purchase
+);

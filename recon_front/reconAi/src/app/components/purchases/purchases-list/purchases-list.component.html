@@ -1,0 +1,10 @@
+<recon-crud-table
+  [data]="purchases"
+  [columns]="columns"
+  [pageSize]="pageSize"
+  [totalCount]="totalCount"
+  [currentPage]="currentPage"
+  (changePage$)="loadPurchases($event)"
+  (rowClick$)="purchaseClick($event)"
+  [isWithActions]="false"
+></recon-crud-table>

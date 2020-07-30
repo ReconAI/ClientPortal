@@ -4,6 +4,8 @@
       <div class="left-part">
         <ng-container *ngFor="let item of basketItems">
           <recon-order-item
+            [hidePaymentDate]="true"
+            [hideOrderId]="true"
             [amount]="item.count"
             [priceWithoutVat]="item.totalWithoutVat"
             [priceWithVat]="item.totalWithVat"

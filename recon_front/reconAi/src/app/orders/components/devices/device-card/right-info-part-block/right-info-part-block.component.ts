@@ -25,6 +25,7 @@ export class RightInfoPartBlockComponent implements OnInit {
   @Input() salesPrice: string;
   @Input() salesPriceWithVat: string;
   @Input() isAbleToBuy: boolean;
+  @Input() product: string;
   @Output() addToBasket$ = new EventEmitter<number>();
 
   readonly vat = VAT;

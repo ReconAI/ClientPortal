@@ -1,5 +1,5 @@
-import { VAT } from './../../../../constants/globalVariables/globalVariables';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { VAT } from 'app/constants/globalVariables/globalVariables';
 
 @Component({
   selector: 'recon-order-item',
@@ -15,6 +15,12 @@ export class OrderItemComponent implements OnInit {
   @Input() vatAmount = 0;
   @Input() name = '';
   @Input() imgUrl;
+  @Input() orderId: string;
+  @Input() paymentDate: string;
+
+  @Input() hideOrderId: boolean;
+  @Input() hidePaymentDate: boolean;
+  @Input() hideDelete: boolean;
   readonly vat = VAT;
   @Output() deleteClick$ = new EventEmitter<number>();
 
