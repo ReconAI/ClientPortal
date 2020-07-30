@@ -25,10 +25,10 @@ variables:
     ENV_ORDER: $env_order_portal
     ENV_DB_AI: $env_db_recon_ai_db
     ENV_DB_PORTAL: $env_db_client_portal_db
-  only:
-    refs:
-    - dev
-    - develop
+  rules:
+  - if: '$CI_PIPELINE_SOURCE == "schedule"'
+    when: never
+  - if: '$CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH == "develop"'
   tags:
   - recon-dev
 
@@ -46,15 +46,38 @@ variables:
     ENV_ORDER: $env_order_portal
     ENV_DB_AI: $env_db_recon_ai_db
     ENV_DB_PORTAL: $env_db_client_portal_db
-  only:
-    refs:
-    - master
+  rules:
+  - if: '$CI_PIPELINE_SOURCE == "schedule"'
+    when: never
+  - if: '$CI_COMMIT_BRANCH == "master"'
   tags:
   - recon-prod
 
 stages:
+- cron
 - build
 - deploy
+
+.cron: &cron
+  stage: cron
+  extends:
+  - .expand_env
+  script:
+  - docker exec reporting_tool python3 manage.py export_http_log || { echo "Cron failed to execute"; exit 1; }
+
+cron_dev:
+  extends:
+  - .env_dev
+  - .cron
+  rules:
+  - if: '$CRON == "dev" && $CI_PIPELINE_SOURCE == "schedule"'
+
+cron_prod:
+  extends:
+  - .env_prod
+  - .cron
+  rules:
+  - if: '$CRON == "prod" && $CI_PIPELINE_SOURCE == "schedule"'
 
 .build: &build
   stage: build
@@ -76,11 +99,11 @@ stages:
   - docker rm -f recon_ai_db client_portal_db reporting_tool reporting_tool_front order_portal || echo "Almost safe to ignore, containers failed to remove";
   - docker network rm ${DOCKER_NETWORK} || echo "Almost safe to ignore, netwoirk failed to remove";
   - docker network create ${DOCKER_NETWORK} || echo "Almost safe to ignore, netwoirk failed to create";
-  - docker run --restart=always -d                              --network ${DOCKER_NETWORK} --env-file ${ENV_DB_AI}     -v ${ROOT_PATH}/recon_ai_db:/var/lib/postgresql/data      --name recon_ai_db postgres:12.3-alpine                                                || { echo "Database failed to start"; exit 1; }
-  - docker run --restart=always -d                              --network ${DOCKER_NETWORK} --env-file ${ENV_DB_PORTAL} -v ${ROOT_PATH}/client_portal_db:/var/lib/postgresql/data --name client_portal_db postgres:12.3-alpine                                           || { echo "Database failed to start"; exit 1; }
-  - docker run --restart=always -d -p ${PUBLIC_PORT}:8000       --network ${DOCKER_NETWORK} --env-file ${ENV}                                                                     --name reporting_tool ${CI_REGISTRY}/${NAMESPACE}/reporting_tool:${CI_COMMIT_REF_SLUG} || { echo "Reporting tool failed to start"; exit 1; }
-  - docker run --restart=always -d -p ${PUBLIC_PORT_FRONT}:4200 --network ${DOCKER_NETWORK} --env-file ${ENV_FRONT}                                                               --name reporting_tool_front ${CI_REGISTRY}/${NAMESPACE}/reporting_tool_front:${CI_COMMIT_REF_SLUG} || { echo "Reporting tool front failed to start"; exit 1; }
-  - docker run --restart=always -d -p ${PUBLIC_PORT_ORDER}:8000 --network ${DOCKER_NETWORK} --env-file ${ENV_ORDER}                                                               --name order_portal ${CI_REGISTRY}/${NAMESPACE}/order_portal:${CI_COMMIT_REF_SLUG} || { echo "Order portal failed to start"; exit 1; }
+  - docker run --restart=always -d                              --network ${DOCKER_NETWORK} --env-file ${ENV_DB_AI}     -v ${ROOT_PATH}/recon_ai_db:/var/lib/postgresql/data                                --name recon_ai_db postgres:12.3-alpine                                                            || { echo "Database failed to start"; exit 1; }
+  - docker run --restart=always -d                              --network ${DOCKER_NETWORK} --env-file ${ENV_DB_PORTAL} -v ${ROOT_PATH}/client_portal_db:/var/lib/postgresql/data                           --name client_portal_db postgres:12.3-alpine                                                       || { echo "Database failed to start"; exit 1; }
+  - docker run --restart=always -d -p ${PUBLIC_PORT}:8000       --network ${DOCKER_NETWORK} --env-file ${ENV}           -v ${ROOT_PATH}/media:/client_portal/media -v ${ROOT_PATH}/data:/client_portal/data --name reporting_tool ${CI_REGISTRY}/${NAMESPACE}/reporting_tool:${CI_COMMIT_REF_SLUG}             || { echo "Reporting tool failed to start"; exit 1; }
+  - docker run --restart=always -d -p ${PUBLIC_PORT_FRONT}:4200 --network ${DOCKER_NETWORK} --env-file ${ENV_FRONT}                                                                                         --name reporting_tool_front ${CI_REGISTRY}/${NAMESPACE}/reporting_tool_front:${CI_COMMIT_REF_SLUG} || { echo "Reporting tool front failed to start"; exit 1; }
+  - docker run --restart=always -d -p ${PUBLIC_PORT_ORDER}:8000 --network ${DOCKER_NETWORK} --env-file ${ENV_ORDER}     -v ${ROOT_PATH}/media:/order_portal/media -v ${ROOT_PATH}/data:/order_portal/data   --name order_portal ${CI_REGISTRY}/${NAMESPACE}/order_portal:${CI_COMMIT_REF_SLUG}                 || { echo "Order portal failed to start"; exit 1; }
 
 build_dev:
   extends:
