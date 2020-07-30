@@ -17,11 +17,10 @@ from rest_framework.serializers import ModelSerializer
 from rest_framework.serializers import Serializer
 from rest_framework.utils.serializer_helpers import ReturnDict
 
-from order_portal.serizalizers import DeviceImageSerializer
 from recon_db_manager.models import Organization, DevicePurchase
 from reporting_tool.forms.utils import SendEmailMixin
 from shared.fields import FileField
-from shared.serializers import ReadOnlySerializerMixin
+from shared.serializers import ReadOnlySerializerMixin, DeviceImageSerializer
 
 
 class AttachPaymentMethodSerializer(ModelSerializer):
@@ -228,20 +227,16 @@ class OrderSerializer(ModelSerializer):
     Order item serializer
     """
     price_without_vat = serializers.SerializerMethodField(
-        method_name='process_price_without_vat',
-        required=True
+        method_name='process_price_without_vat'
     )
     price_with_vat = serializers.SerializerMethodField(
-        method_name='process_price_with_vat',
-        required=True
+        method_name='process_price_with_vat'
     )
     total = serializers.SerializerMethodField(
-        method_name='process_total',
-        required=True
+        method_name='process_total'
     )
     images = serializers.SerializerMethodField(
-        method_name='format_images',
-        required=True
+        method_name='format_images'
     )
 
     class Meta:

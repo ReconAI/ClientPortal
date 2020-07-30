@@ -159,5 +159,5 @@ class PaymentRequired(IsSuperUser):
 
         return (
             super().has_permission(request, view)
-            or request.user.is_on_trial
+            or request.user.organization.is_on_trial
         )

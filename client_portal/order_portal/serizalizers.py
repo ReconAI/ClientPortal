@@ -22,7 +22,7 @@ from recon_db_manager.models import Category, Manufacturer, Device, DeviceImage
 from recon_db_manager.models import DevicePurchase
 from shared.fields import FileField as ImgField
 from shared.helpers import StripePrice
-from shared.serializers import ReadOnlySerializerMixin
+from shared.serializers import ReadOnlySerializerMixin, DeviceImageSerializer
 
 
 class CategorySerializer(ModelSerializer):
@@ -278,19 +278,6 @@ class WriteManufacturerSerializer(ModelSerializer):
         model = Manufacturer
         fields = ('name', 'address', 'contact_person', 'order_email', 'phone',
                   'support_email', 'vat')
-
-
-class DeviceImageSerializer(ModelSerializer):
-    """
-    Image serializer definition
-    """
-
-    class Meta:
-        """
-        Id and path are to be exposed
-        """
-        model = DeviceImage
-        fields = ('id', 'path')
 
 
 class DeviceListSerializer(ModelSerializer):
