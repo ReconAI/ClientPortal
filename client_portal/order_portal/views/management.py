@@ -28,7 +28,7 @@ from shared.swagger.responses import http401, http404, \
     data_serializer_many, \
     data_many_message_serializer
 from shared.views.utils import RetrieveUpdateDestroyAPIView, \
-    ListCreateAPIView, CreateAPIView
+    ListCreateAPIView, CreateAPIView, PlainListModelMixin
 
 
 class SyncCategoriesView(CategoryListMixin, ListCreateAPIView):
@@ -117,7 +117,8 @@ class ManufacturerOperator:
         token_header(),
     ]
 ))
-class ManufacturerListView(ManufacturerOperator, ListCreateAPIView):
+class ManufacturerListView(PlainListModelMixin, ManufacturerOperator,
+                           ListCreateAPIView):
     """
     Manufacturer list view and create
     """
@@ -150,21 +151,6 @@ class ManufacturerListView(ManufacturerOperator, ListCreateAPIView):
             )
         )
 
-    def get(self, request, *args, **kwargs) -> Response:
-        """
-        Generic list view
-
-        :type request: Request
-
-        :rtype: Response
-        """
-        queryset = self.filter_queryset(self.get_queryset())
-
-        serializer = self.get_serializer(queryset, many=True)
-
-        return Response({
-            'data': serializer.data
-        })
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(

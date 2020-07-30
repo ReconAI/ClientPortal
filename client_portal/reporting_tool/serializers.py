@@ -15,6 +15,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.fields import CharField, IntegerField, ListField
 from rest_framework.serializers import ModelSerializer
 from rest_framework.serializers import Serializer
+from rest_framework.utils.serializer_helpers import ReturnDict
 
 from order_portal.serizalizers import DeviceImageSerializer
 from recon_db_manager.models import Organization, DevicePurchase
@@ -195,43 +196,97 @@ class FeatureRequestSerializer(ReadOnlySerializerMixin,
 
 
 class OrderListSerializer(ModelSerializer):
+    """
+    Order list serializer
+    """
     type = serializers.CharField()
     timestamp = serializers.CharField()
     payment_id = serializers.CharField()
     total = serializers.SerializerMethodField(method_name='process_total')
 
     class Meta:
+        """
+        Orders list fields set
+        """
         model = DevicePurchase
         fields = ('payment_id', 'type', 'timestamp', 'total')
 
     @staticmethod
     def process_total(purchase: dict) -> float:
+        """
+        Total displayed with cents separated
+
+        :type purchase: dict
+
+        :rtype: float
+        """
         return purchase.get('total__sum', 0) / 100
 
 
 class OrderSerializer(ModelSerializer):
-    price_without_vat = serializers.SerializerMethodField(method_name='process_price_without_vat')
-    price_with_vat = serializers.SerializerMethodField(method_name='process_price_with_vat')
-    total = serializers.SerializerMethodField(method_name='process_total')
-    images = serializers.SerializerMethodField(method_name='format_images')
+    """
+    Order item serializer
+    """
+    price_without_vat = serializers.SerializerMethodField(
+        method_name='process_price_without_vat',
+        required=True
+    )
+    price_with_vat = serializers.SerializerMethodField(
+        method_name='process_price_with_vat',
+        required=True
+    )
+    total = serializers.SerializerMethodField(
+        method_name='process_total',
+        required=True
+    )
+    images = serializers.SerializerMethodField(
+        method_name='format_images',
+        required=True
+    )
 
     class Meta:
+        """
+        Device purchase fields list definition
+        """
         model = DevicePurchase
-        fields = ('payment_id', 'device_name', 'price_without_vat', 'price_with_vat',
-                  'device_cnt', 'total', 'images', 'created_dt')
+        fields = ('payment_id', 'device_name', 'price_without_vat',
+                  'price_with_vat', 'device_cnt', 'total', 'images',
+                  'created_dt')
 
     @staticmethod
     def process_price_without_vat(purchase: DevicePurchase) -> float:
+        """
+        :type purchase: DevicePurchase
+
+        :rtype: float
+        """
         return float(purchase.device_price)
 
     def process_price_with_vat(self, purchase: DevicePurchase) -> float:
+        """
+        :type purchase: DevicePurchase
+
+        :rtype: float
+        """
         return round(self.process_total(purchase) / purchase.device_cnt, 2)
 
     @staticmethod
     def process_total(purchase: DevicePurchase) -> float:
+        """
+        Returns total in number with floating point
+
+        :type purchase: DevicePurchase
+
+        :rtype: float
+        """
         return purchase.total / 100
 
-    def format_images(self, purchase: DevicePurchase):
+    def format_images(self, purchase: DevicePurchase) -> ReturnDict:
+        """
+        :type purchase: DevicePurchase
+
+        :rtype: list
+        """
         return DeviceImageSerializer(
             purchase.device.images,
             many=True,

@@ -279,7 +279,7 @@ DEFAULT_GET_REQUESTS_RESPONSES = get_responses(
 
 
 def default_get_responses_with_custom_success(
-        success_response: openapi.Schema
+        success_response: Union[openapi.Schema, Serializer]
 ) -> Dict[str, openapi.Schema]:
     """
     :type success_response: openapi.Schema

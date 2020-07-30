@@ -193,7 +193,12 @@ class PlainListModelMixin:
     """
     List a queryset.
     """
-    def list(self, request, *args, **kwargs):
+    def list(self, *args, **kwargs) -> Response:
+        """
+        Returns models plain list
+
+        :rtype: Response
+        """
         queryset = self.filter_queryset(self.get_queryset())
 
         serializer = self.get_serializer(queryset, many=True)

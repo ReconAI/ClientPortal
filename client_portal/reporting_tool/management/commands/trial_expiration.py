@@ -8,11 +8,9 @@ from datetime import timedelta
 from argparse import ArgumentParser
 from django.conf import settings
 from django.contrib.auth import get_user_model
-
 from django.core.management import BaseCommand
 from django.db.models.query import QuerySet
 from django.utils.timezone import now
-from requests import Request
 
 from reporting_tool.forms.utils import SendEmailMixin
 from shared.models import User
