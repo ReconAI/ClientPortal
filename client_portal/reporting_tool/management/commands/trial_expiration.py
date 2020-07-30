@@ -76,7 +76,7 @@ class Command(BaseCommand, SendEmailMixin):
 
         :rtype: QuerySet
         """
-        now_ts = now()
+        now_ts = now() - timedelta(days=settings.TRIAL_PERIOD_DAYS)
 
         return query_set.filter(
             created_dt__lt=now_ts,
