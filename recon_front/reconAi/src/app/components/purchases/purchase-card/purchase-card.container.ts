@@ -1,3 +1,4 @@
+import { selectPurchaseLoadingStatus } from './../../../store/loaders/loaders.selectors';
 import {
   selectCurrentUserProfileInvoicingEmail,
   selectCurrentUserProfileOrganizationLastName,
@@ -29,6 +30,10 @@ export class PurchaseCardContainer implements OnInit {
     private activatedRoute: ActivatedRoute,
     private store: Store<AppState>
   ) {}
+
+  loadingStatus$: Observable<boolean> = this.store.pipe(
+    select(selectPurchaseLoadingStatus)
+  );
 
   purchases$: Observable<PurchaseCardClientInterface[]> = this.store.pipe(
     select(selectPurchaseCard)

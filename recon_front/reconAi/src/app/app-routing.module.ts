@@ -1,3 +1,4 @@
+import { IsPossibleToBuyGuard } from './core/guards/is-possible-to-buy/is-possible-to-buy.guard';
 import { PurchaseCardContainer } from './components/purchases/purchase-card/purchase-card.container';
 import { CurrentUserProfileContainer } from './components/current-user-profile/current-user-profile.container';
 import { UserRolesPriorities } from './constants/types/user';
@@ -76,7 +77,7 @@ const routes: Routes = [
   },
   {
     path: 'invoice',
-    // canActivate: [AuthRoleGuard],
+    canActivateChild: [IsPossibleToBuyGuard],
     children: [
       {
         path: '',

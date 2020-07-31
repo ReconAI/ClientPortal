@@ -1,5 +1,16 @@
+import { newRequestFeatureSucceededAction } from './../../store/user/user.actions';
+import { ofType } from '@ngrx/effects';
+import { Observable, Subscription } from 'rxjs';
+import { ActionsSubject, Action } from '@ngrx/store';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
-import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  EventEmitter,
+  Output,
+  OnDestroy,
+} from '@angular/core';
 import { NewRequestFeatureClientInterface } from 'app/store/user/user.server.helpers';
 
 @Component({
@@ -10,14 +21,12 @@ import { NewRequestFeatureClientInterface } from 'app/store/user/user.server.hel
 export class NewFeatureComponent implements OnInit {
   @Input() validationError = '';
   @Input() loadingStatus = false;
+  readonly maxFileSize = 1024 * 1024 * 100;
 
   @Output() postRequest$ = new EventEmitter<NewRequestFeatureClientInterface>();
   constructor(private fb: FormBuilder) {}
   newFeatureForm: FormGroup;
-
-  get jsonValue(): string {
-    return JSON.stringify(this.newFeatureForm.value);
-  }
+  closeModalSubscription$: Subscription;
 
   get feedLinks() {
     return this?.newFeatureForm?.get('feedLinks') as FormArray;
@@ -25,14 +34,20 @@ export class NewFeatureComponent implements OnInit {
 
   ngOnInit(): void {
     this.newFeatureForm = this.fb.group({
-      description: [null, Validators.required],
-      feedLinks: this.fb.array([this.fb.control('')]),
+      description: ['', Validators.required],
+      feedLinks: this.fb.array([]),
       files: this.fb.array([]),
     });
   }
 
+  clearFormArray = (formArray: FormArray) => {
+    while (formArray.length !== 0) {
+      formArray.removeAt(0);
+    }
+  };
+
   addLink(): void {
-    this.feedLinks.push(this.fb.control(''));
+    this.feedLinks.push(this.fb.control('', Validators.required));
   }
 
   removeLink(i: number): void {

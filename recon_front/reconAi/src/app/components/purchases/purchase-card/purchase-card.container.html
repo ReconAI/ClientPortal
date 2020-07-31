@@ -1,16 +1,18 @@
-<div class="purchase-card">
-  <recon-order-item
-    *ngFor="let purchase of purchases$ | async"
-    [orderId]="purchase.paymentId"
-    [amount]="purchase.amount"
-    [paymentDate]="purchase.createdDt"
-    [priceWithVat]="purchase.priceWithVat"
-    [priceWithoutVat]="purchase.priceWithoutVat"
-    [vatAmount]="purchase.priceWithVat - purchase.priceWithoutVat"
-    [name]="purchase.deviceName"
-    [hideDelete]="true"
-    [imgUrl]="purchase?.images[0]?.path"
-  ></recon-order-item>
+<div class="purchase-card" *ngIf="!(loadingStatus$ | async); else loading">
+  <ng-container *ngFor="let purchase of purchases$ | async">
+    <recon-order-item
+      [orderId]="purchase.paymentId"
+      [amount]="purchase.amount"
+      [paymentDate]="purchase.createdDt"
+      [priceWithVat]="purchase.priceWithVat"
+      [priceWithoutVat]="purchase.priceWithoutVat"
+      [vatAmount]="purchase.priceWithVat - purchase.priceWithoutVat"
+      [name]="purchase.deviceName"
+      [hideDelete]="true"
+      [imgUrl]="purchase?.images[0]?.path"
+    ></recon-order-item>
+    <mat-divider></mat-divider>
+  </ng-container>
   <div class="delivery-container">
     <recon-delivery-information
       [phone]="phone$ | async"
@@ -18,8 +20,11 @@
       [email]="email$ | async"
       [address]="address$ | async"
       [company]="company$ | async"
-      [person]="(firstName$ | async) + (lastName$ |  async)"
+      [person]="(firstName$ | async) + ' ' + (lastName$ |  async)"
     >
     </recon-delivery-information>
   </div>
 </div>
+<ng-template #loading>
+  Loading...
+</ng-template>

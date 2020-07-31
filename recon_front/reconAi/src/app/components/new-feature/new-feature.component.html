@@ -5,6 +5,8 @@
       label="Please include description of the problem and current process here"
       [showRequiredSymbol]="true"
       formControlName="description"
+      [hideAmount]="false"
+      [maxLen]="10000"
       fieldType="textarea"
     ></recon-form-input>
     <ng-container
@@ -26,8 +28,10 @@
     <recon-form-file-with-list
       [parentForm]="newFeatureForm"
       [maxCountOfFiles]="20"
+      [maxSumSize]="maxFileSize"
       field="files"
       label="Attach file"
+      hint="*Attach CAD drawing, sensor or other files"
     ></recon-form-file-with-list>
     <div class="button-container">
       <button

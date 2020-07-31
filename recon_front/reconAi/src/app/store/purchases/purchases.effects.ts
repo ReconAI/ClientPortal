@@ -104,7 +104,7 @@ export class PurchasesEffects {
             ),
             tap(() => {
               this.store.dispatch(
-                setAppTitleAction({ title: `Order ${id}` })
+                setAppTitleAction({ title: `Order ID ${id}` })
               );
             }),
             catchError((error) => of(loadPurchaseErrorAction())),

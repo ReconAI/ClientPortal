@@ -1,7 +1,10 @@
-import { newRequestFeatureRequestedAction } from './../../store/user/user.actions';
+import {
+  newRequestFeatureRequestedAction,
+  resetNewRequestFeatureErrorAction,
+} from './../../store/user/user.actions';
 import { selectNewRequestFeatureError } from './../../store/user/user.selectors';
 import { Observable } from 'rxjs';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Store, select } from '@ngrx/store';
 import { AppState } from 'app/store/reducers';
 import { selectNewRequestFeatureLoadingStatus } from 'app/store/loaders/loaders.selectors';
@@ -11,7 +14,7 @@ import { NewRequestFeatureClientInterface } from 'app/store/user/user.server.hel
   selector: 'recon-new-feature-container',
   templateUrl: './new-feature.container.html',
 })
-export class NewFeatureContainer implements OnInit {
+export class NewFeatureContainer implements OnInit, OnDestroy {
   constructor(private store: Store<AppState>) {}
 
   loadingStatus$: Observable<boolean> = this.store.pipe(
@@ -26,5 +29,9 @@ export class NewFeatureContainer implements OnInit {
 
   postRequest(value: NewRequestFeatureClientInterface): void {
     this.store.dispatch(newRequestFeatureRequestedAction(value));
+  }
+
+  ngOnDestroy(): void {
+    this.store.dispatch(resetNewRequestFeatureErrorAction());
   }
 }

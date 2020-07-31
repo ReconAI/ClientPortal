@@ -455,8 +455,15 @@ export class UserEffects {
       switchMap((formedFeature) =>
         this.httpClient.post<void>('/api/new-features', formedFeature).pipe(
           map(() => newRequestFeatureSucceededAction()),
+          tap(() => {
+            this.router.navigate(['/']);
+          }),
           catchError((error) =>
-            of(newRequestFeatureErrorAction(generalTransformFormErrorToString(error)))
+            of(
+              newRequestFeatureErrorAction(
+                generalTransformFormErrorToString(error)
+              )
+            )
           ),
           finalize(() => {
             this.store.dispatch(

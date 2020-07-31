@@ -1,3 +1,4 @@
+import { selectPurchaseListLoadingStatus } from './../../../store/loaders/loaders.selectors';
 import {
   selectPurchaseListMetaCurrentPage,
   selectPurchaseListMetaCount,
@@ -29,6 +30,9 @@ export class PurchasesListContainer implements OnInit {
   );
   pageSize$: Observable<number> = this.store.pipe(
     select(selectPurchaseListMetaPageSize)
+  );
+  loadingStatus$: Observable<boolean> = this.store.pipe(
+    select(selectPurchaseListLoadingStatus)
   );
 
   loadPurchases(page = 1): void {

@@ -12,6 +12,7 @@ export class PurchasesListComponent implements OnInit {
   @Input() currentPage = 0;
   @Input() totalCount = 0;
   @Input() pageSize = 0;
+  @Input() loadingStatus = false;
   @Output() loadData$ = new EventEmitter<number>();
 
   readonly columns = [

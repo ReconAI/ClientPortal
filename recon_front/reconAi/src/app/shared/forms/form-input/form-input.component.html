@@ -44,15 +44,20 @@
       </div>
     </div>
   </ng-container>
-  <textarea
-    *ngSwitchCase="'textarea'"
-    [id]="uniqueId"
-    [value]="value"
-    class="recon-input"
-    [ngClass]="{ 'recon-input-invalid': hasErrors }"
-    [placeholder]="placeholder"
-    [disabled]="disabled"
-    (input)="onChange($event.target.value)"
-    (blur)="onTouched()"
-  ></textarea>
+  <ng-container *ngSwitchCase="'textarea'">
+    <textarea
+      [id]="uniqueId"
+      [value]="value"
+      class="recon-input"
+      [ngClass]="{ 'recon-input-invalid': hasErrors }"
+      [placeholder]="placeholder"
+      [disabled]="disabled"
+      (input)="onChange($event.target.value)"
+      (blur)="onTouched()"
+    ></textarea>
+    <div class="symbols-amount" *ngIf="!hideAmount">
+      {{ value?.length || 0 }} / {{ maxLen }}
+      {{ value + "a " }}
+    </div>
+  </ng-container>
 </div>
