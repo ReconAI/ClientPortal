@@ -137,14 +137,14 @@ class FeatureRequestSerializer(ReadOnlySerializerMixin,
 
         self.s3_client.upload_fileobj(
             file,
-            settings.CLIENT_PORTAL_BUCKET,
+            settings.AWS_CLIENT_PORTAL_BUCKET,
             destination
         )
 
         return self.s3_client.generate_presigned_url(
             'get_object',
             Params={
-                'Bucket': settings.CLIENT_PORTAL_BUCKET,
+                'Bucket': settings.AWS_CLIENT_PORTAL_BUCKET,
                 'Key': destination
             }
         )
@@ -174,7 +174,7 @@ class FeatureRequestSerializer(ReadOnlySerializerMixin,
 
     def save(self, **kwargs):
         return self.send_mail(
-            'a.volosyuk@hqsoftwarelab.com',
+            settings.INFO_EMAIL,
             'emails/feature_request_subject.txt',
             'emails/feature_request.html',
             self.validated_data
