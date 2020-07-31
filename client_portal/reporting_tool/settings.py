@@ -171,6 +171,7 @@ AWS_IAM_USER_MANAGER = os.environ.get('AWS_IAM_SYNC_MANAGER',
 AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', '')
 AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', '')
 AWS_IAM_USER_GROUP = os.environ.get('AWS_IAM_USER_GROUP', '')
+AWS_CLIENT_PORTAL_BUCKET = os.environ.get('AWS_CLIENT_PORTAL_BUCKET')
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
@@ -197,7 +198,6 @@ MEDIA_URL = '/media/'
 LOG_HTTP = os.environ.get('LOG_HTTP', 'False') in ['True', '1']
 
 # Export http log aws bucket and key accordingly
-CLIENT_PORTAL_BUCKET = os.environ.get('AWS_CLIENT_PORTAL_BUCKET')
 AWS_EXPORT_HTTP_LOG_KEY = os.environ.get('AWS_EXPORT_HTTP_LOG_KEY')
 
 CLIENT_APP_SHEMA_HOST_PORT = os.environ.get(
