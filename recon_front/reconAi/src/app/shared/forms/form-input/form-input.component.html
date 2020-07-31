@@ -48,6 +48,7 @@
     <textarea
       [id]="uniqueId"
       [value]="value"
+      #textareaValue
       class="recon-input"
       [ngClass]="{ 'recon-input-invalid': hasErrors }"
       [placeholder]="placeholder"
@@ -56,8 +57,7 @@
       (blur)="onTouched()"
     ></textarea>
     <div class="symbols-amount" *ngIf="!hideAmount">
-      {{ value?.length || 0 }} / {{ maxLen }}
-      {{ value + "a " }}
+      {{ textareaValue?.value.length || 0 }} / {{ maxLen }}
     </div>
   </ng-container>
 </div>
