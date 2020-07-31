@@ -1,3 +1,5 @@
+import { IsPossibleToBuyGuard } from './core/guards/is-possible-to-buy/is-possible-to-buy.guard';
+import { PurchaseCardContainer } from './components/purchases/purchase-card/purchase-card.container';
 import { CurrentUserProfileContainer } from './components/current-user-profile/current-user-profile.container';
 import { UserRolesPriorities } from './constants/types/user';
 import { InvitationUserContainer } from './components/invitation-user/invitation-user.container';
@@ -15,6 +17,7 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
 import { AuthRoleGuard } from './core/guards/auth-role-guard/auth-role.guard';
+import { PurchasesListContainer } from './components/purchases/purchases-list/purchases-list.container';
 
 const routes: Routes = [
   {
@@ -71,6 +74,26 @@ const routes: Routes = [
     data: {
       title: 'Profile',
     },
+  },
+  {
+    path: 'invoice',
+    canActivateChild: [IsPossibleToBuyGuard],
+    children: [
+      {
+        path: '',
+        component: PurchasesListContainer,
+        data: {
+          title: 'Invoice history',
+        },
+      },
+      {
+        path: ':id',
+        component: PurchaseCardContainer,
+        data: {
+          title: ' ',
+        },
+      },
+    ],
   },
   {
     path: 'new-feature',

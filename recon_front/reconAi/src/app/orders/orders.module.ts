@@ -24,9 +24,7 @@ import { DeviceCardContainer } from './components/devices/device-card/device-car
 import { ImageLeftCardBlockComponent } from './components/devices/device-card/image-left-card-block/image-left-card-block.component';
 import { RightInfoPartBlockComponent } from './components/devices/device-card/right-info-part-block/right-info-part-block.component';
 import { YourOrderComponent } from './components/your-order/your-order.component';
-import { OrderItemComponent } from './components/your-order/order-item/order-item.component';
 import { OrderLastItemComponent } from './components/your-order/order-last-item/order-last-item.component';
-import { DeliveryInformationComponent } from './components/your-order/delivery-information/delivery-information.component';
 import { YourOrderContainer } from './components/your-order/your-order.contatiner';
 import { PaymentMethodsContainer } from './components/your-order/payment-methods/payment-methods.container';
 import { FinishedPaymentDialogComponent } from './components/your-order/finished-payment-dialog/finished-payment-dialog.component';
@@ -51,9 +49,7 @@ import { EmptyBasketComponent } from './components/your-order/empty-basket/empty
     RightInfoPartBlockComponent,
     YourOrderComponent,
     YourOrderContainer,
-    OrderItemComponent,
     OrderLastItemComponent,
-    DeliveryInformationComponent,
     PaymentMethodsComponent,
     PaymentMethodsContainer,
     FinishedPaymentDialogComponent,

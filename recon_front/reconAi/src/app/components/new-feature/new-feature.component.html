@@ -1,9 +1,12 @@
 <div class="new-feature-container">
   <form [formGroup]="newFeatureForm">
+    <mat-error *ngIf="validationError">{{ validationError }}</mat-error>
     <recon-form-input
       label="Please include description of the problem and current process here"
       [showRequiredSymbol]="true"
       formControlName="description"
+      [hideAmount]="false"
+      [maxLen]="10000"
       fieldType="textarea"
     ></recon-form-input>
     <ng-container
@@ -22,37 +25,25 @@
       <span (click)="addLink()">+ Add link...</span>
     </div>
 
-    <label for="file-upload" class="custom-file-upload">
-      <object data="../../../assets/icons/clip.svg" width="20" height="17">
-        Your browser does not support SVG
-      </object>
-      ATTACH FILE
-    </label>
-    <input
-      (change)="onFilesChange($event)"
-      id="file-upload"
-      type="file"
-      multiple
-    />
-    <span class="hint-attach">*Attach CAD draving, sensor or other files</span>
-    <div
-      formArrayName="files"
-      *ngFor="let file of files.controls; let i = index"
-      class="files-container"
-    >
-      <div [formGroupName]="i" class="file-name-container">
-        <mat-icon>insert_drive_file</mat-icon>
-        {{ file?.value?.name }}
-        <span (click)="removeFile(i)">&times;</span>
-      </div>
-    </div>
+    <recon-form-file-with-list
+      [parentForm]="newFeatureForm"
+      [maxCountOfFiles]="20"
+      [maxSumSize]="maxFileSize"
+      field="files"
+      label="Attach file"
+      hint="*Attach CAD drawing, sensor or other files"
+    ></recon-form-file-with-list>
     <div class="button-container">
       <button
         mat-raised-button
         color="primary"
-        [disabled]="!newFeatureForm.valid"
+        [disabled]="loadingStatus || !newFeatureForm.valid"
+        (click)="postRequest()"
       >
-        POST REQUEST
+        <mat-icon *ngIf="loadingStatus; else loaded">
+          <mat-spinner color="primary" diameter="20"></mat-spinner>
+        </mat-icon>
+        <ng-template #loaded>POST REQUEST</ng-template>
       </button>
     </div>
   </form>

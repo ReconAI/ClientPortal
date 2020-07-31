@@ -205,3 +205,9 @@ export const selectUserBasketAmount = createSelector(
   selectUser,
   (user: UserState): number => user?.basketAmount || 0
 );
+
+// user -> new request feature
+export const selectNewRequestFeatureError = createSelector(
+  selectUser,
+  (user: UserState): string => user?.errors?.newRequestFeature || ''
+);

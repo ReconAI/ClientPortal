@@ -22,9 +22,12 @@
   <mat-menu #menu="matMenu" xPosition="before" class="recon-menu">
     <button mat-menu-item (click)="onNavigate('profile')">Profile</button>
     <mat-divider></mat-divider>
-    <button mat-menu-item>History</button>
-
-    <mat-divider></mat-divider>
+    <ng-container *ngIf="isUserAbleToBuy">
+      <button mat-menu-item (click)="onNavigate('invoice')">
+        Invoice history
+      </button>
+      <mat-divider></mat-divider>
+    </ng-container>
     <ng-container
       *reconCheckUserRolePriority="userRolePriorities.DEVELOPER_ROLE"
     >

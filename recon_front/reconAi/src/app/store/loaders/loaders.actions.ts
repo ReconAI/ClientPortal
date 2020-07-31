@@ -35,6 +35,9 @@ export enum LoadersActionTypes {
   SET_USER_CARDS_LOADING_STATUS = '[Loaders | User] Set User Cards Loading Status',
   SET_BASKET_OVERVIEW_LOADING_STATUS = '[Loaders | Orders] Set Basket Overview Loading Status',
   SET_PAY_BASKET_LOADING_STATUS = '[Loaders | Orders] Set Pay Basket Loading Status',
+  SET_PURCHASE_LIST_LOADING_STATUS = '[Loaders | Purchases] Set Purchase List Loading Status',
+  SET_PURCHASE_LOADING_STATUS = '[Loaders | Purchases] Set Purchase Loading Status',
+  SET_NEW_FEATURE_REQUEST_LOADING_STATUS = '[Loaders | User] Set New Feature Request Loading Status',
 }
 
 export interface LoaderInterface {
@@ -207,5 +210,22 @@ export const setBasketOverviewLoadingStatusAction = createAction(
 
 export const setPayBasketLoadingStatusAction = createAction(
   LoadersActionTypes.SET_PAY_BASKET_LOADING_STATUS,
+  props<LoaderInterface>()
+);
+
+// purchases
+export const setPurchaseListLoadingStatusAction = createAction(
+  LoadersActionTypes.SET_PURCHASE_LIST_LOADING_STATUS,
+  props<LoaderInterface>()
+);
+
+export const setPurchaseLoadingStatusAction = createAction(
+  LoadersActionTypes.SET_PURCHASE_LOADING_STATUS,
+  props<LoaderInterface>()
+);
+
+// users -> new feature request
+export const setNewFeatureRequestLoadingStatusAction = createAction(
+  LoadersActionTypes.SET_NEW_FEATURE_REQUEST_LOADING_STATUS,
   props<LoaderInterface>()
 );

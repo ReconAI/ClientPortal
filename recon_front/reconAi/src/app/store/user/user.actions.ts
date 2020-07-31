@@ -1,3 +1,7 @@
+import {
+  PaginationRequestInterface,
+  PaginationResponseServerInterface,
+} from 'app/constants/types/requests';
 import { UserProfileFormInterface } from './../../constants/types/user';
 import {
   FormServerErrorInterface,
@@ -10,9 +14,11 @@ import {
   AttachCardRequestClientInterface,
   LoadCardsRequestClientInterface,
   DeleteUserCardRequestInterface,
+  NewRequestFeatureClientInterface,
 } from './user.server.helpers';
 import { createAction, props } from '@ngrx/store';
 import { ResetPasswordWithMetaInterface } from 'app/constants/types/resetPassword';
+import { PurchaseClientInterface } from 'app/constants/types/purchase';
 
 export enum UserActionTypes {
   LOAD_CURRENT_USER_REQUESTED = '[User] Load Current User Requested',
@@ -58,6 +64,15 @@ export enum UserActionTypes {
   DELETE_USER_CARD_ERROR = '[User] Delete User Card Error',
 
   UPDATE_BASKET_AMOUNT = '[User] Update Basket Amount',
+
+  LOAD_PURCHASE_LIST_REQUESTED = '[User] Load Purchase List Requested',
+  LOAD_PURCHASE_LIST_SUCCEEDED = '[User] Load Purchase List Succeeded',
+  LOAD_PURCHASE_LIST_ERROR = '[User] Load Purchase List Error',
+
+  NEW_REQUEST_FEATURE_REQUESTED = '[User] New Request Feature Requested',
+  NEW_REQUEST_FEATURE_SUCCEEDED = '[User] New Request Feature Succeeded',
+  NEW_REQUEST_FEATURE_ERROR = '[User] New Request Feature Error',
+  RESET_NEW_REQUEST_FEATURE_ERROR = '[User] Reset New Request Feature Error',
 }
 
 export const loadCurrentUserRequestedAction = createAction(
@@ -177,7 +192,7 @@ export const attachCardErrorAction = createAction(
 );
 
 export const resetAttachCardErrorAction = createAction(
-  UserActionTypes.RESET_ATTACH_CARD_ERROR,
+  UserActionTypes.RESET_ATTACH_CARD_ERROR
 );
 
 export const loadUserCardsRequestedAction = createAction(
@@ -213,4 +228,23 @@ export interface UpdateBasketActionPayload {
 export const updateBasketAmountAction = createAction(
   UserActionTypes.UPDATE_BASKET_AMOUNT,
   props<UpdateBasketActionPayload>()
+);
+
+// new request feature
+export const newRequestFeatureRequestedAction = createAction(
+  UserActionTypes.NEW_REQUEST_FEATURE_REQUESTED,
+  props<NewRequestFeatureClientInterface>()
+);
+
+export const newRequestFeatureSucceededAction = createAction(
+  UserActionTypes.NEW_REQUEST_FEATURE_SUCCEEDED
+);
+
+export const newRequestFeatureErrorAction = createAction(
+  UserActionTypes.NEW_REQUEST_FEATURE_ERROR,
+  props<FormServerErrorInterface>()
+);
+
+export const resetNewRequestFeatureErrorAction = createAction(
+  UserActionTypes.RESET_NEW_REQUEST_FEATURE_ERROR
 );

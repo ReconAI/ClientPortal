@@ -32,6 +32,9 @@ import {
   setDetachCardLoadingStatusAction,
   setBasketOverviewLoadingStatusAction,
   setPayBasketLoadingStatusAction,
+  setPurchaseListLoadingStatusAction,
+  setPurchaseLoadingStatusAction,
+  setNewFeatureRequestLoadingStatusAction,
 } from './loaders.actions';
 import { createReducer, on, Action } from '@ngrx/store';
 
@@ -73,6 +76,11 @@ export interface LoadersState {
   // orders -> basket
   basketOverview: boolean;
   payBasket: boolean;
+  // purchase
+  purchaseList: boolean;
+  purchase: boolean;
+  // user -> new feature request
+  newFeature: boolean;
 }
 
 const initialState: LoadersState = {
@@ -112,6 +120,11 @@ const initialState: LoadersState = {
   // orders -> basket
   basketOverview: false,
   payBasket: false,
+  // purchase
+  purchaseList: false,
+  purchase: false,
+  // user -> new feature request
+  newFeature: false,
 };
 
 const setCurrentUserLoadingStatusReducer = (
@@ -277,6 +290,22 @@ const setPayBasketLoadingStatusReducer = (
   { status }: Action & LoaderInterface
 ): LoadersState => ({ ...state, payBasket: status });
 
+const setPurchaseListLoadingStatusReducer = (
+  state: LoadersState,
+  { status }: Action & LoaderInterface
+): LoadersState => ({ ...state, purchaseList: status });
+
+const setPurchaseLoadingStatusReducer = (
+  state: LoadersState,
+  { status }: Action & LoaderInterface
+): LoadersState => ({ ...state, purchase: status });
+
+// user -> new feature request
+const setNewFeatureRequestLoadingStatusReducer = (
+  state: LoadersState,
+  { status }: Action & LoaderInterface
+): LoadersState => ({ ...state, newFeature: status });
+
 const loadersReducer = createReducer(
   initialState,
   on(setCurrentUserLoadingStatusAction, setCurrentUserLoadingStatusReducer),
@@ -343,7 +372,15 @@ const loadersReducer = createReducer(
     setBasketOverviewLoadingStatusAction,
     setBasketOverviewLoadingStatusReducer
   ),
-  on(setPayBasketLoadingStatusAction, setPayBasketLoadingStatusReducer)
+  on(setPayBasketLoadingStatusAction, setPayBasketLoadingStatusReducer),
+  // purchase
+  on(setPurchaseListLoadingStatusAction, setPurchaseListLoadingStatusReducer),
+  on(setPurchaseLoadingStatusAction, setPurchaseLoadingStatusReducer),
+  // user -> new feature request
+  on(
+    setNewFeatureRequestLoadingStatusAction,
+    setNewFeatureRequestLoadingStatusReducer
+  )
 );
 
 export function reducer(state: LoadersState | undefined, action: Action) {

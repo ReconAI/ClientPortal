@@ -1,3 +1,4 @@
+import { PurchasesListContainer } from './components/purchases/purchases-list/purchases-list.container';
 import { CreateCardDialogContainer } from './components/card/create-card/create-card-dialog/create-card-dialog.container';
 import { BasketContainer } from './components/landing-page/header/basket/basket.container';
 import { OrdersEffects } from './store/orders/orders.effects';
@@ -59,6 +60,9 @@ import { CardViewComponent } from './components/card/card-view/card-view.compone
 import { CardViewsContainer } from './components/current-user-profile/card-views/card-views.container';
 import { PaymentMethodsContainer } from './components/current-user-profile/payment-methods/payment-methods.container';
 import { DeleteCardDialogComponent } from './components/card/card-view/delete-card-dialog/delete-card-dialog.component';
+import { PurchasesListComponent } from './components/purchases/purchases-list/purchases-list.component';
+import { PurchasesEffects } from './store/purchases/purchases.effects';
+import { PurchaseCardContainer } from './components/purchases/purchase-card/purchase-card.container';
 
 @NgModule({
   declarations: [
@@ -98,6 +102,9 @@ import { DeleteCardDialogComponent } from './components/card/card-view/delete-ca
     CardViewComponent,
     CardViewsContainer,
     DeleteCardDialogComponent,
+    PurchasesListComponent,
+    PurchasesListContainer,
+    PurchaseCardContainer,
   ],
   imports: [
     BrowserModule,
@@ -121,6 +128,7 @@ import { DeleteCardDialogComponent } from './components/card/card-view/delete-ca
       SignUpEffects,
       UsersEffects,
       OrdersEffects,
+      PurchasesEffects,
     ]),
   ],
   providers: [

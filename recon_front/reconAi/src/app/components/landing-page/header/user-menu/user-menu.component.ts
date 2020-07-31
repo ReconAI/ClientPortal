@@ -17,6 +17,7 @@ export class UserMenuComponent {
   @Input() userPriority: UserRolesPriorities;
   @Input() userName: string;
   @Input() userRole: string;
+  @Input() isUserAbleToBuy = false;
 
   @Output() logout$ = new EventEmitter();
   constructor(public dialog: MatDialog, private router: Router) {}

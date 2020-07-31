@@ -34,6 +34,8 @@ import {
   UpdateBasketActionPayload,
   attachCardErrorAction,
   resetAttachCardErrorAction,
+  newRequestFeatureErrorAction,
+  resetNewRequestFeatureErrorAction,
 } from './user.actions';
 
 export interface UserErrorsInterface {
@@ -42,6 +44,7 @@ export interface UserErrorsInterface {
   preResetPassword: string;
   attachCard: string;
   updateCurrentUser: FormServerErrorInterface;
+  newRequestFeature: string;
 }
 
 export const userErrorsInit: UserErrorsInterface = {
@@ -50,6 +53,7 @@ export const userErrorsInit: UserErrorsInterface = {
   preResetPassword: null,
   attachCard: null,
   updateCurrentUser: null,
+  newRequestFeature: null,
 };
 export interface UserState extends UserTransformationResponse {
   isAuthenticated: boolean;
@@ -224,6 +228,25 @@ const resetAttachCardErrorReducer = (state: UserState): UserState => ({
   },
 });
 
+const newRequestFeatureErrorReducer = (
+  state: UserState,
+  { general }: (Action & FormServerErrorInterface) | null
+): UserState => ({
+  ...state,
+  errors: {
+    ...state.errors,
+    newRequestFeature: general,
+  },
+});
+
+const resetNewRequestFeatureErrorReducer = (state: UserState): UserState => ({
+  ...state,
+  errors: {
+    ...state.errors,
+    newRequestFeature: userErrorsInit.newRequestFeature,
+  },
+});
+
 const userReducer = createReducer(
   initialState,
   on(loadCurrentUserSucceededAction, loadCurrentUserSucceededReducer),
@@ -242,7 +265,9 @@ const userReducer = createReducer(
   on(loadUserCardsSucceededAction, loadUserCardsSucceededReducer),
   on(updateBasketAmountAction, updateBasketAmountReducer),
   on(attachCardErrorAction, attachCardErrorReducer),
-  on(resetAttachCardErrorAction, resetAttachCardErrorReducer)
+  on(resetAttachCardErrorAction, resetAttachCardErrorReducer),
+  on(newRequestFeatureErrorAction, newRequestFeatureErrorReducer),
+  on(resetNewRequestFeatureErrorAction, resetNewRequestFeatureErrorReducer)
 );
 
 export function reducer(state: UserState | undefined, action: Action) {

@@ -1,0 +1,9 @@
+<recon-purchases-list
+  [currentPage]="currentPage$ | async"
+  [totalCount]="totalCount$ | async"
+  [pageSize]="pageSize$ | async"
+  [purchases]="purchases$ | async"
+  [totalCount]="totalCount$ | async"
+  [loadingStatus]="loadingStatus$ | async"
+  (loadData$)="loadPurchases($event)"
+></recon-purchases-list>

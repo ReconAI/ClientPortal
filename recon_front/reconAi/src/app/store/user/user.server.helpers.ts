@@ -17,6 +17,7 @@ import {
 } from './../../constants/types/user';
 import { HttpErrorResponse } from '@angular/common/http';
 import { SignUpRequestInterface } from '../signUp/signUp.server.helpers';
+import { getBase64 } from 'app/core/helpers';
 export interface UserTransformationResponse extends UserProfileFormInterface {
   isAuthenticated?: boolean;
   role: UserRoleTypes | null;
@@ -173,3 +174,36 @@ export const transformDetachCardRequestToServer = ({
 }: DeleteUserCardRequestInterface): DetachCardRequestServerInterface => ({
   payment_method: id,
 });
+
+export interface NewRequestFeatureServerInterface {
+  description: string;
+  sensor_feed_links: string[];
+  files: string[];
+}
+
+export interface NewRequestFeatureClientInterface {
+  newRequestFeature: {
+    description: string;
+    feedLinks: string[];
+    files: File[];
+  };
+}
+
+export const transformNewRequestToServer = async ({
+  newRequestFeature,
+}: NewRequestFeatureClientInterface): Promise<
+  NewRequestFeatureServerInterface
+> => {
+  const files = newRequestFeature.files;
+  const based64Files: string[] = [];
+
+  for (let i = 0; i < files.length; i++) {
+    based64Files.push((await getBase64(files[i] as File)).toString());
+  }
+
+  return {
+    description: newRequestFeature.description,
+    sensor_feed_links: newRequestFeature.feedLinks,
+    files: based64Files,
+  };
+};

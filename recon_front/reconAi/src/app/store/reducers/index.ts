@@ -1,3 +1,4 @@
+import { PurchaseState } from './../purchases/purchases.reducer';
 import { ActionReducer, ActionReducerMap, MetaReducer } from '@ngrx/store';
 import { environment } from '@env';
 import { storeLogger } from 'ngrx-store-logger';
@@ -8,6 +9,7 @@ import * as signUp from '../signUp';
 import * as users from '../users';
 import * as app from '../app';
 import * as orders from '../orders';
+import * as purchases from '../purchases';
 
 import { UserState } from './../user/user.reducer';
 import { LoadersState } from './../loaders/loaders.reducer';
@@ -28,6 +30,7 @@ export interface AppState {
   users: UsersState;
   app: AppSliceState;
   orders: OrdersState;
+  purchases: PurchaseState;
 }
 
 export const reducers: ActionReducerMap<AppState> = {
@@ -37,6 +40,7 @@ export const reducers: ActionReducerMap<AppState> = {
   users: users.reducer,
   app: app.reducer,
   orders: orders.reducer,
+  purchases: purchases.reducer,
 };
 
 export const metaReducers: MetaReducer<AppState>[] = !environment.production

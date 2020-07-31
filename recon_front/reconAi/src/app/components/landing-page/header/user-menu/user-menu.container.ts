@@ -8,6 +8,7 @@ import {
   selectUserRolePriority,
   selectCurrentUserName,
   selectUserRole,
+  selectIsUserAbleToBuy,
 } from './../../../../store/user/user.selectors';
 import { Observable } from 'rxjs';
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
@@ -27,6 +28,9 @@ export class UserMenuContainer implements OnInit {
     select(selectUserRolePriority)
   );
 
+  isUserAbleToBuy$: Observable<boolean> = this.store.pipe(
+    select(selectIsUserAbleToBuy)
+  );
   userName$ = this.store.pipe(select(selectCurrentUserName));
   userRole$ = this.store.pipe(
     select(selectUserRole),

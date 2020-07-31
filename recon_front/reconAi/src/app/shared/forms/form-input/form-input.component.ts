@@ -38,6 +38,8 @@ export class FormInputComponent implements ControlValueAccessor, OnInit {
   @Input() disabledCloseIcon = false;
   @Input() rightIcon = '';
   @Input() rightIconTooltip = '';
+  @Input() maxLen = 0;
+  @Input() hideAmount = true;
   // add types
   @Input() fieldType: 'text' | 'textarea' | 'password' = 'text';
   @Output() changeVal = new EventEmitter<any>();
@@ -47,7 +49,7 @@ export class FormInputComponent implements ControlValueAccessor, OnInit {
   onTouched = () => {};
 
   writeValue(value: string) {
-    this.value = value;
+    this.value = value || '';
 
     this.onChange(this.value);
     this.changeVal.emit(this.value);
