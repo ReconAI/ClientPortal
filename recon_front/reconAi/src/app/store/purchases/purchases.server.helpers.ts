@@ -32,7 +32,7 @@ export const transformPurchaseFromServer = (
 ): PurchaseCardClientResponseInterface => ({
   purchases: purchases.map((purchase) => ({
     paymentId: purchase.payment_id,
-    createdDt: purchase.created_dt,
+    createdDt: moment(purchase.created_dt).format('YYYY.MM.DD'),
     amount: purchase.device_cnt,
     priceWithoutVat: purchase.price_without_vat,
     priceWithVat: purchase.price_with_vat,
