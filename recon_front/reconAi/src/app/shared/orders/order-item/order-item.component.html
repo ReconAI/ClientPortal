@@ -5,16 +5,16 @@
   <div class="field-container">
     <span class="title">{{ name }}</span>
     <div class="field" *ngIf="!hideOrderId">
-      <span>Order id</span> <span>{{ orderId }}</span>
+      <span>Order id</span> <span class="without-euro">{{ orderId }}</span>
     </div>
     <div class="field" *ngIf="!hidePaymentDate">
-      <span>Payment date</span> <span>{{ paymentDate }}</span>
+      <span>Payment date</span> <span class="without-euro">{{ paymentDate }}</span>
     </div>
     <div class="field">
-      <span>Device amount</span> <span>{{ amount }}</span>
+      <span>Device amount</span> <span class="without-euro">{{ amount }}</span>
     </div>
     <div class="field">
-      <span>VAT, %</span> <span>{{ vat }}</span>
+      <span>VAT, %</span> <span class="without-euro">{{ vat }}</span>
     </div>
     <div class="field">
       <span>VAT amount</span> <span>{{ vatAmount | number: ".2-2" }} €</span>

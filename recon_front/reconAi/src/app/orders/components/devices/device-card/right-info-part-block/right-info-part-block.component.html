@@ -35,11 +35,17 @@
         </div>
         <div class="block">
           <span class="title">Single device price</span>
-          <span>{{ singleDevicePrice | number: ".2-2" }} €</span>
+          <div class="three-columned-value-container">
+            <span class="three-columned-value"
+              >{{ singleDevicePrice | number: ".2-2" }} €</span
+            >
+          </div>
         </div>
         <div class="block">
           <span class="title">Total price of devices</span>
-          <span>{{ totalDevicesPrice | number: ".2-2" }} €</span>
+          <div class="three-columned-value-container">
+            <span>{{ totalDevicesPrice | number: ".2-2" }} €</span>
+          </div>
         </div>
       </div>
 
@@ -49,7 +55,7 @@
       </div>
       <div class="field">
         <span class="title"> VAT, % </span>
-        <span class="value"> {{ vat | number: ".2-2" }}</span>
+        <span class="value vat"> {{ vat | number: ".2-2" }}</span>
       </div>
       <div class="field">
         <span class="title"> VAT amount </span>

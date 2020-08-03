@@ -102,7 +102,7 @@ export class YourOrderComponent implements OnInit, OnDestroy {
 
   openDialog(data: FinishedPaymentDialogDataInterface): void {
     this.dialog.open(FinishedPaymentDialogComponent, {
-      height: '285px',
+      height: '300px',
       width: '420px',
       data,
     });

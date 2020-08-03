@@ -9,7 +9,6 @@ import {
   Input,
   EventEmitter,
   Output,
-  OnDestroy,
 } from '@angular/core';
 import { NewRequestFeatureClientInterface } from 'app/store/user/user.server.helpers';
 
