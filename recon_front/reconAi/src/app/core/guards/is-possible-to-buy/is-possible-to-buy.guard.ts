@@ -1,3 +1,4 @@
+import { filter, map, withLatestFrom, tap } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import {
   CanActivate,
@@ -8,7 +9,10 @@ import {
 import { Observable } from 'rxjs';
 import { Store, select } from '@ngrx/store';
 import { AppState } from 'app/store/reducers';
-import { selectIsUserAbleToBuy } from 'app/store/user/user.selectors';
+import {
+  selectIsUserAbleToBuy,
+  selectIsAuthenticated,
+} from 'app/store/user/user.selectors';
 
 @Injectable({
   providedIn: 'root',
@@ -24,7 +28,15 @@ export class IsPossibleToBuyGuard implements CanActivate {
     | Promise<boolean | UrlTree>
     | boolean
     | UrlTree {
-    return this.store.pipe(select(selectIsUserAbleToBuy));
+    return this.store.pipe(
+      withLatestFrom(
+        this.store.pipe(select(selectIsAuthenticated)),
+        this.store.pipe(select(selectIsUserAbleToBuy))
+      ),
+      // ([store, isAuth, isAbleToBuy])
+      filter(([_, isAuth]) => isAuth !== null),
+      map(([_, isAuth, isAbleToBuy]) => isAbleToBuy)
+    );
   }
 
   canActivateChild(next: ActivatedRouteSnapshot, state: RouterStateSnapshot) {

@@ -65,8 +65,8 @@ export class RightInfoPartBlockComponent implements OnInit {
   }
 
   addToBasket(): void {
-    this.amount = 1;
     this.addToBasket$.emit(+this.amount);
+    this.amount = 1;
   }
   constructor() {}
 

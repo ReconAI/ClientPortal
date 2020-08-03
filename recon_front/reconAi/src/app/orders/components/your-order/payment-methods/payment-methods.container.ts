@@ -24,7 +24,7 @@ export class PaymentMethodsContainer implements OnInit {
       }))
     ),
     map((cards) => [
-      { label: 'Invoicing account', value: 'invoicing_account' },
+      { label: 'Invoicing', value: 'invoicing_account' },
       ...cards,
     ])
   );

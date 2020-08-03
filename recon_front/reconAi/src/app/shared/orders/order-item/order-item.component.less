@@ -4,6 +4,11 @@
     display: flex;
     margin: 20px 0;
     width: 100%;
+    font-size: 13.5px;
+
+    .without-euro {
+        margin-right: 11px;
+    }
 
     img {
         width: 180px;
@@ -13,7 +18,9 @@
     .title {
         white-space: normal;
         word-break: break-word;
-        font-size: 16px;
+        font-size: 15px;
+        margin-bottom: 10px;
+        display: inline-block;
     }
 
     .image-container {
@@ -26,6 +33,7 @@
         width: calc(100% - 24px - 180px - 10px);
 
         .field {
+            margin: 3px 0px;
             display: flex;
             justify-content: space-between;
 
@@ -49,10 +57,7 @@
 
         &>span {
             cursor: pointer;
-
-            &:hover {
-                text-decoration: underline;
-            }
+            text-decoration: underline;
         }
 
     }
