@@ -12,7 +12,7 @@ import {
   CREATED_DT_DESC,
   ALL_CATEGORIES_ID_FOR_DEVICE,
 } from './../../../constants/requests';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import {
   selectOrderCategoriesList,
   selectDevices,
@@ -34,13 +34,20 @@ import {
   DeviceListItemClientInterface,
   PaginatedDeviceListRequestInterface,
 } from 'app/store/orders/orders.server.helpers';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'recon-device-list-container',
   templateUrl: './device-list.container.html',
 })
 export class DeviceListContainer implements OnInit, OnDestroy {
-  constructor(private store: Store<AppState>) {}
+  constructor(
+    private store: Store<AppState>,
+    private activatedRoute: ActivatedRoute
+  ) {}
+  categoryName = 'All';
+  categories: CategoryInterface[] = [];
+  categoriesSubscription$: Subscription;
   loadingStatus$: Observable<boolean> = this.store.pipe(
     select(selectDeviceListLoadingStatus)
   );
@@ -77,12 +84,40 @@ export class DeviceListContainer implements OnInit, OnDestroy {
   );
 
   loadDevices(pagination: PaginatedDeviceListRequestInterface = null): void {
-    this.store.dispatch(updateDeviceListMetaAction(pagination));
+    const defaultCategory = this.categories.find(
+      ({ name }) => name === this.categoryName
+    );
+
+    console.log(
+      {
+        pagination: {
+          categoryId: defaultCategory?.id || -1,
+          ...pagination,
+        },
+      },
+      'PAGINATION'
+    );
+    this.store.dispatch(
+      updateDeviceListMetaAction({
+        pagination: {
+          categoryId: defaultCategory?.id || -1,
+          ...(pagination?.pagination || {}),
+        },
+      })
+    );
     this.store.dispatch(loadDeviceListRequestedAction());
   }
 
   ngOnInit(): void {
     this.store.dispatch(loadCategoriesRequestedAction());
+
+    this.categoriesSubscription$ = this.categories$.subscribe((categories) => {
+      this.categories = categories;
+    });
+    this.categoryName = this.activatedRoute.snapshot.queryParamMap.get(
+      'category'
+    );
+
     this.loadDevices();
   }
 

@@ -1,3 +1,7 @@
+import {
+  updateBreadcrumbByIdAction,
+  insertBreadcrumbAtIndexAction,
+} from './../app/app.actions';
 import { loadBasketOverviewRequestedAction } from 'app/store/orders';
 import { selectCurrentUserProfileId } from './../user/user.selectors';
 import { BasketService } from './../../core/services/basket/basket.service';
@@ -537,6 +541,17 @@ export class OrdersEffects {
             map((device) =>
               loadDeviceSucceededAction(transformDeviceFromServer(device))
             ),
+            tap(({ device }) => {
+              this.store.dispatch(
+                updateBreadcrumbByIdAction({
+                  update: {
+                    oldId: '%device-id',
+                    newLabel: device.name,
+                    newUrl: `orders/${device.id}`,
+                  },
+                })
+              );
+            }),
             catchError(() => of(loadDeviceErrorAction())),
             finalize(() => {
               this.store.dispatch(

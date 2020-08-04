@@ -1,4 +1,7 @@
-import { setAppTitleAction } from './../app/app.actions';
+import {
+  setAppTitleAction,
+  updateBreadcrumbByIdAction,
+} from './../app/app.actions';
 import { generalTransformPaginationFromServer } from './../../core/helpers/request';
 import {
   PurchaseClientInterface,
@@ -103,6 +106,15 @@ export class PurchasesEffects {
               )
             ),
             tap(() => {
+              this.store.dispatch(
+                updateBreadcrumbByIdAction({
+                  update: {
+                    oldId: '%purchase-id',
+                    newLabel: `Order ID ${id}`,
+                    newUrl: `invoice/${id}`,
+                  },
+                })
+              );
               this.store.dispatch(
                 setAppTitleAction({ title: `Order ID ${id}` })
               );

@@ -1,0 +1,23 @@
+<ul class="breadcrumbs-container" *ngIf="visibility">
+  <li
+    *ngFor="let breadcrumb of breadcrumbs; let i = index"
+    [ngClass]="{ active: i === breadcrumbs.length - 1 }"
+    class="breadcrumb-item"
+  >
+    <a
+      *ngIf="breadcrumb?.label !== '...'; else waitingBreadcrumb"
+      [routerLink]="[breadcrumb.url]"
+      [queryParams]="breadcrumb.queryParams || {}"
+    >
+      {{ breadcrumb.label }}
+    </a>
+    <ng-template #waitingBreadcrumb>
+      <a>
+        ...
+      </a>
+    </ng-template>
+    <ng-container *ngIf="i !== breadcrumbs.length - 1">
+      <span class="separator">/</span></ng-container
+    >
+  </li>
+</ul>

@@ -5,7 +5,11 @@
 </div>
 <ng-template #isInitApp>
   <recon-header></recon-header>
-  <div class="router-outlet-wrapper">
+  <recon-breadcrumbs-container></recon-breadcrumbs-container>
+  <div
+    class="router-outlet-wrapper"
+    [ngClass]="{ 'with-breadcrumbs': breadcrumbsVisibility }"
+  >
     <h3>{{ title }}</h3>
     <router-outlet></router-outlet>
   </div>

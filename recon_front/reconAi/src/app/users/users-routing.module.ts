@@ -8,11 +8,17 @@ const routes: Routes = [
     path: '',
     data: {
       title: 'User management',
+      hideBreadcrumb: true,
     },
     component: ManagementContainer,
   },
   {
     path: ':id',
+    data: {
+      breadcrumbTitle: '...',
+      breadcrumbId: '%user-id',
+      showBreadcrumbs: true,
+    },
     component: UserContainer,
   },
 ];

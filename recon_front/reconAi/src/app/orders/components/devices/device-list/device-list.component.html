@@ -1,5 +1,5 @@
 <div class="device-page-header-container">
-  <mat-tab-group (selectedTabChange)="tabChange($event)" [tabIndex]="0">
+  <mat-tab-group (selectedTabChange)="tabChange($event)" [selectedIndex]="selectedTabIndex">
     <mat-tab *ngFor="let category of categories" [label]="category.name"
       ><div class="fake"></div
     ></mat-tab>

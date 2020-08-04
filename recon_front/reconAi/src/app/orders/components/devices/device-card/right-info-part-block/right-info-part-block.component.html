@@ -3,21 +3,21 @@
   <div class="description-container">
     <div class="field">
       <span class="title"> Product number </span>
-      <span class="value"> {{ product }}</span>
+      <span> {{ product }}</span>
     </div>
 
     <div class="field">
       <span class="title"> Manufacturer </span>
-      <span class="value"> {{ manufacturer }}</span>
+      <span> {{ manufacturer }}</span>
     </div>
     <div class="field">
       <span class="title"> Device category </span>
-      <span class="value"> {{ category }}</span>
+      <span> {{ category }}</span>
     </div>
 
     <div class="technical-description-container">
       <span class="title"> Technical description </span>
-      <span class="value description"> {{ description }}</span>
+      <span class="description"> {{ description }}</span>
     </div>
 
     <ng-container *ngIf="isAbleToBuy">
@@ -37,21 +37,27 @@
           <span class="title">Single device price</span>
           <div class="three-columned-value-container">
             <span class="three-columned-value"
-              >{{ singleDevicePrice | number: ".2-2" }} €</span
+              >{{ singleDevicePrice | number: ".2-2" }}
+              <span class="euro-symbol">€</span></span
             >
           </div>
         </div>
         <div class="block">
           <span class="title">Total price of devices</span>
           <div class="three-columned-value-container">
-            <span>{{ totalDevicesPrice | number: ".2-2" }} €</span>
+            <span
+              >{{ totalDevicesPrice | number: ".2-2" }}
+              <span class="euro-symbol">€</span></span
+            >
           </div>
         </div>
       </div>
 
       <div class="field">
-        <span class="title"> Total monthly for device licenses </span>
-        <span class="value"> {{ fee | number: ".2-2" }} €</span>
+        <span class="title"> Monthly device license fee </span>
+        <span class="value">
+          {{ fee | number: ".2-2" }} <span class="euro-symbol">€</span></span
+        >
       </div>
       <div class="field">
         <span class="title"> VAT, % </span>
@@ -59,17 +65,24 @@
       </div>
       <div class="field">
         <span class="title"> VAT amount </span>
-        <span class="value"> {{ vatAmount | number: ".2-2" }} €</span>
+        <span class="value">
+          {{ vatAmount | number: ".2-2" }}
+          <span class="euro-symbol">€</span></span
+        >
       </div>
       <div class="field">
         <span class="title"> Total price without VAT </span>
         <span class="value">
-          {{ totalDevicesPriceWithoutVat | number: ".2-2" }} €</span
+          {{ totalDevicesPriceWithoutVat | number: ".2-2" }}
+          <span class="euro-symbol">€</span></span
         >
       </div>
       <div class="field">
         <span class="title"> Total price with VAT </span>
-        <span class="value"> {{ totalDevicesPrice | number: ".2-2" }} €</span>
+        <span class="value">
+          {{ totalDevicesPrice | number: ".2-2" }}
+          <span class="euro-symbol">€</span></span
+        >
       </div>
 
       <div class="button-container">

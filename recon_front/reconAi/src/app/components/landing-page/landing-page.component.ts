@@ -1,5 +1,12 @@
-import { setAppTitleAction } from './../../store/app/app.actions';
-import { selectAppTitle } from './../../store/app/app.selectors';
+import {
+  setAppTitleAction,
+  setBreadcrumbsAction,
+  setBreadcrumbsVisibilityAction,
+} from './../../store/app/app.actions';
+import {
+  selectAppTitle,
+  selectBreadcrumbsVisibility,
+} from './../../store/app/app.selectors';
 import { checkWhetherMatchesRouteWithoutProfileInit } from './../../core/helpers/withoutProfileInit';
 import {
   selectCurrentUserLoadingStatus,
@@ -13,6 +20,7 @@ import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { filter, map, tap } from 'rxjs/operators';
 import { Subscription, Observable } from 'rxjs';
 import { Location, DOCUMENT } from '@angular/common';
+import { BreadcrumbInterface } from 'app/constants/routes';
 
 @Component({
   selector: 'recon-landing-page',
@@ -20,12 +28,6 @@ import { Location, DOCUMENT } from '@angular/common';
   styleUrls: ['./landing-page.component.less'],
 })
 export class LandingPageComponent implements OnInit, OnDestroy {
-  title = '';
-  // from components, effects
-  titleChangesSubscription$: Subscription;
-  // from routing
-  changesFromRouting$: Subscription;
-
   constructor(
     // to get current url
     private location: Location,
@@ -36,9 +38,17 @@ export class LandingPageComponent implements OnInit, OnDestroy {
     @Inject(DOCUMENT) private document
   ) {}
 
+  title = '';
+  breadcrumbsVisibility = false;
+  // from components, effects
+  titleChangesSubscription$: Subscription;
+  // from routing
+  changesFromRouting$: Subscription;
+
   globalLoadingStatusSubscription$: Subscription;
   isGlobalLoading: boolean;
   globalLoadingStatus$ = this.store.pipe(select(selectGlobalLoadingStatus));
+  visibilityBreadcrumbsSubscription$: Subscription;
 
   ngOnInit(): void {
     // check if we have to call GET /profile
@@ -58,21 +68,62 @@ export class LandingPageComponent implements OnInit, OnDestroy {
         this.title = title;
       });
 
+    this.visibilityBreadcrumbsSubscription$ = this.store
+      .pipe(select(selectBreadcrumbsVisibility))
+      .subscribe((visibility) => {
+        this.breadcrumbsVisibility = visibility;
+      });
+
+    // refactor
     this.changesFromRouting$ = this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe(() => {
+        const breadcrumbs: BreadcrumbInterface[] = [];
         let page = this?.activatedRoute?.snapshot?.firstChild;
-        let title = this?.activatedRoute?.snapshot?.firstChild?.data.title;
+        let title = page?.data.title;
+        let url = page?.routeConfig.path || '';
+
+        if (
+          !page.data?.hideBreadcrumb &&
+          (page?.data?.breadcrumbTitle || title)
+        ) {
+          breadcrumbs.push({
+            url,
+            label: page.data.breadcrumbTitle || title,
+            id: page?.data?.breadcrumbId || '',
+          });
+        }
+
         let backgroundWithoutUnion = false;
+
         while (page.firstChild) {
           page = page?.firstChild;
+          url += '/' + page.routeConfig.path;
           if (page?.data?.title) {
             title = page?.data?.title;
           }
+          if (
+            !page.data?.hideBreadcrumb &&
+            (page?.data?.breadcrumbTitle || title)
+          ) {
+            breadcrumbs.push({
+              url,
+              label: page.data.breadcrumbTitle || title,
+              id: page?.data?.breadcrumbId || '',
+            });
+          }
         }
+
         if (title) {
           this.store.dispatch(setAppTitleAction({ title }));
         }
+
+        this.store.dispatch(setBreadcrumbsAction({ breadcrumbs }));
+        this.store.dispatch(
+          setBreadcrumbsVisibilityAction({
+            visibility: !!page?.data?.showBreadcrumbs,
+          })
+        );
         backgroundWithoutUnion = page?.data?.backgroundWithoutUnion;
         this.updateBodyClass(backgroundWithoutUnion);
       });
@@ -82,7 +133,6 @@ export class LandingPageComponent implements OnInit, OnDestroy {
     this.renderer.removeClass(this.document?.body, 'body-with-union');
     if (!backgroundWithoutUnion) {
       this.renderer.addClass(this.document?.body, 'body-with-union');
-
     }
   }
 
@@ -90,5 +140,6 @@ export class LandingPageComponent implements OnInit, OnDestroy {
     this.changesFromRouting$.unsubscribe();
     this.titleChangesSubscription$.unsubscribe();
     this.globalLoadingStatusSubscription$.unsubscribe();
+    this.visibilityBreadcrumbsSubscription$.unsubscribe();
   }
 }

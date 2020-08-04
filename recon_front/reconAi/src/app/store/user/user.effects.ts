@@ -92,6 +92,7 @@ import {
   signUpRelationsFormAnsServerFields,
 } from 'app/constants/types';
 import { CardServerInterface } from 'app/constants/types/card';
+import { loadCategoriesRequestedAction } from '../orders';
 
 @Injectable()
 export class UserEffects {
