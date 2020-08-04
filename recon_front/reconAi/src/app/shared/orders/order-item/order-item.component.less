@@ -41,8 +41,16 @@
                 color: @recon-gray;
             }
 
+
             span:last-child {
                 font-weight: 500;
+            }
+
+
+            span.euro-symbol {
+                color: @recon-black;
+                font-weight: 400;
+                font-size: 15px;
             }
         }
     }
@@ -58,6 +66,10 @@
         &>span {
             cursor: pointer;
             text-decoration: underline;
+
+            &:hover {
+                font-weight: 500;
+            }
         }
 
     }

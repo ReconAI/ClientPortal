@@ -57,7 +57,7 @@ export class RightInfoPartBlockComponent implements OnInit {
 
   validateInput(value: string | number) {
     const numberedValue = +value;
-    if (Number.isNaN(numberedValue)) {
+    if (Number.isNaN(numberedValue) || numberedValue < 0) {
       this.amount = 1;
     }
 

@@ -63,6 +63,8 @@ import { DeleteCardDialogComponent } from './components/card/card-view/delete-ca
 import { PurchasesListComponent } from './components/purchases/purchases-list/purchases-list.component';
 import { PurchasesEffects } from './store/purchases/purchases.effects';
 import { PurchaseCardContainer } from './components/purchases/purchase-card/purchase-card.container';
+import { BreadcrumbsComponent } from './components/landing-page/breadcrumbs/breadcrumbs.component';
+import { BreadcrumbsContainer } from './components/landing-page/breadcrumbs/breadcrumbs.container';
 
 @NgModule({
   declarations: [
@@ -105,6 +107,8 @@ import { PurchaseCardContainer } from './components/purchases/purchase-card/purc
     PurchasesListComponent,
     PurchasesListContainer,
     PurchaseCardContainer,
+    BreadcrumbsComponent,
+    BreadcrumbsContainer
   ],
   imports: [
     BrowserModule,

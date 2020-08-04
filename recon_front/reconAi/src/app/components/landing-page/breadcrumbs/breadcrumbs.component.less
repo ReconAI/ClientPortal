@@ -1,0 +1,49 @@
+@import "../../../../variables.less";
+
+ul.breadcrumbs-container {
+    height: 50px;
+    width: 100%;
+    background-color: @recon-background-input;
+    border: 1px solid @recon-border-input;
+    border-top: 0px;
+    box-sizing: border-box;
+    margin: 0px;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    padding: 0px;
+
+    li {
+
+        &.active {
+            a {
+                color: @recon-primary-green;
+
+                &:hover {
+                    color: @recon-primary-green;
+
+                }
+            }
+        }
+
+        display: inline;
+
+        &:first-child {
+            margin-left: 10%;
+        }
+
+        a {
+            color: @recon-gray;
+            text-decoration: none;
+
+            &:hover {
+                color: @recon-black;
+            }
+        }
+
+        .separator {
+            color: @recon-gray;
+            padding-right: 3px;
+        }
+    }
+}

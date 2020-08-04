@@ -20,6 +20,7 @@ const routes: Routes = [
     data: {
       title: 'Categories',
       backgroundWithoutUnion: true,
+      hideBreadcrumb: true,
     },
     component: DeviceListContainer,
   },
@@ -62,7 +63,10 @@ const routes: Routes = [
   {
     path: ':id',
     data: {
-      title: ' ',
+      title: '  ',
+      breadcrumbTitle: '...',
+      breadcrumbId: '%device-id',
+      showBreadcrumbs: true,
       backgroundWithoutUnion: true,
     },
     component: DeviceCardContainer,

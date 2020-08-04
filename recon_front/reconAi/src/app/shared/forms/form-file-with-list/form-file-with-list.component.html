@@ -5,11 +5,13 @@
     </object>
     {{ label | uppercase }}
   </label>
-
+  <!-- inputFiles.value = null to fix bug with the same removed and uploaded again file  -->
   <input
     id="file-upload"
     type="file"
     multiple
+    #inputFiles
+    (click)="inputFiles.value = null"
     (change)="onFilesChange($event)"
     [accept]="accept || ''"
   />
