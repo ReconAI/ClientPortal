@@ -1,5 +1,6 @@
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { Component, OnInit, Input } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'recon-form-file-with-list',
@@ -15,7 +16,7 @@ export class FormFileWithListComponent implements OnInit {
   @Input() maxSumSize = 0; // Bytes
   @Input() maxCountOfFiles = 20;
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder, private snackBar: MatSnackBar) {}
 
   ngOnInit(): void {}
 
@@ -28,6 +29,15 @@ export class FormFileWithListComponent implements OnInit {
   }
 
   onFilesChange(event): void {
+    if (
+      (event?.target?.files?.length || 0) + (this.files?.value?.length || 0) >
+      this.maxCountOfFiles
+    ) {
+      this.openSnackBar(
+        `Only ${this.maxCountOfFiles} files are available to download.`
+      );
+    }
+
     const newFilesWithCount: File[] =
       [...event?.target?.files, ...(this.files?.value || [])].slice(
         0,
@@ -41,6 +51,11 @@ export class FormFileWithListComponent implements OnInit {
       if (!this.maxSumSize || currentSum <= this.maxSumSize) {
         newFilesWithWeight.push(file);
       } else {
+        this.openSnackBar(
+          `You've exceeded the max weight of files. It is ${
+            this.maxSumSize / 1024 / 1024
+          } Mb.`
+        );
         currentSum -= file.size;
       }
     });
@@ -53,6 +68,13 @@ export class FormFileWithListComponent implements OnInit {
         this.files.push(this.fb.control(newFilesWithWeight[i]));
       }
     }
+  }
+
+  openSnackBar(text = '') {
+    this.snackBar.open(text, null, {
+      duration: 3 * 1000,
+      panelClass: ['recon-snackbar'],
+    });
   }
 
   openFileInTab(url: string) {

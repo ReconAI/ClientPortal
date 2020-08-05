@@ -26,13 +26,10 @@ const routes: Routes = [
     pathMatch: 'full',
   },
   {
-    path: 'catalog',
+    path: 'reporting',
     canActivate: [AuthRoleGuard],
-    data: {
-      title: 'Catalog',
-    },
     loadChildren: () =>
-      import('./catalog/catalog.module').then((m) => m.CatalogModule),
+      import('./reporting/reporting.module').then((m) => m.ReportingModule),
   },
   {
     path: 'users',
