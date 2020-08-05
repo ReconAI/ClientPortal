@@ -15,7 +15,8 @@
       <span>Device amount</span> <span class="without-euro">{{ amount }}</span>
     </div>
     <div class="field">
-      <span>VAT, %</span> <span class="without-euro">{{ vat }}</span>
+      <span>VAT, %</span>
+      <span class="without-euro">{{ vat | number: ".0-2" }}</span>
     </div>
     <div class="field">
       <span>VAT amount</span>
