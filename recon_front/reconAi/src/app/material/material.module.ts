@@ -19,32 +19,10 @@ import { MatCardModule } from '@angular/material/card';
 import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatRippleModule } from '@angular/material/core';
+import { MatRippleModule, MatNativeDateModule } from '@angular/material/core';
 import { MatRadioModule } from '@angular/material/radio';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 @NgModule({
-  imports: [
-    CommonModule,
-    MatToolbarModule,
-    MatButtonModule,
-    MatDividerModule,
-    MatDialogModule,
-    MatTabsModule,
-    MatIconModule,
-    MatMenuModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatProgressSpinnerModule,
-    MatSnackBarModule,
-    MatGridListModule,
-    MatTooltipModule,
-    MatTableModule,
-    MatCardModule,
-    MatSelectModule,
-    MatChipsModule,
-    MatAutocompleteModule,
-    MatRippleModule,
-    MatRadioModule,
-  ],
   exports: [
     MatToolbarModule,
     MatButtonModule,
@@ -66,7 +44,9 @@ import { MatRadioModule } from '@angular/material/radio';
     MatAutocompleteModule,
     MatRippleModule,
     MatRadioModule,
+    MatNativeDateModule,
+    MatDatepickerModule,
   ],
-  providers: [],
+  providers: [MatNativeDateModule],
 })
 export class MaterialModule {}

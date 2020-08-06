@@ -65,6 +65,7 @@ import { PurchasesEffects } from './store/purchases/purchases.effects';
 import { PurchaseCardContainer } from './components/purchases/purchase-card/purchase-card.container';
 import { BreadcrumbsComponent } from './components/landing-page/breadcrumbs/breadcrumbs.component';
 import { BreadcrumbsContainer } from './components/landing-page/breadcrumbs/breadcrumbs.container';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 @NgModule({
   declarations: [
@@ -108,7 +109,7 @@ import { BreadcrumbsContainer } from './components/landing-page/breadcrumbs/brea
     PurchasesListContainer,
     PurchaseCardContainer,
     BreadcrumbsComponent,
-    BreadcrumbsContainer
+    BreadcrumbsContainer,
   ],
   imports: [
     BrowserModule,
@@ -135,6 +136,7 @@ import { BreadcrumbsContainer } from './components/landing-page/breadcrumbs/brea
       PurchasesEffects,
     ]),
   ],
+  exports: [MatDatepickerModule],
   providers: [
     // token and headers
     { provide: HTTP_INTERCEPTORS, useClass: HeadersInterceptor, multi: true },

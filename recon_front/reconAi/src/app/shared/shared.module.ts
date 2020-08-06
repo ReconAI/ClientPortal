@@ -13,6 +13,7 @@ import { FormChipsComponent } from './forms/form-chips/form-chips.component';
 import { FormCheckboxComponent } from './forms/form-checkbox/form-checkbox.component';
 import { OrderItemComponent } from './orders/order-item/order-item.component';
 import { DeliveryInformationComponent } from './orders/delivery-information/delivery-information.component';
+import { FormSliderComponent } from './forms/form-slider/form-slider.component';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import { DeliveryInformationComponent } from './orders/delivery-information/deli
     FormCheckboxComponent,
     OrderItemComponent,
     DeliveryInformationComponent,
+    FormSliderComponent,
   ],
   imports: [
     MaterialModule,
@@ -45,6 +47,7 @@ import { DeliveryInformationComponent } from './orders/delivery-information/deli
     FormCheckboxComponent,
     OrderItemComponent,
     DeliveryInformationComponent,
+    FormSliderComponent
   ],
   providers: [],
 })

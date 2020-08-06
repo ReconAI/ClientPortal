@@ -5,6 +5,9 @@ import { ReportingListDevicesContainer } from './components/reporting-list-devic
 const routes: Routes = [
   {
     path: '',
+    data: {
+      title: ' ',
+    },
     component: ReportingListDevicesContainer,
   },
 ];
