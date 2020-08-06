@@ -1,0 +1,45 @@
+@import "../../../../variables.less";
+
+.content {
+    align-items: center;
+    width: 100%;
+    margin-top: 20px;
+
+    .mat-select {
+        width: 90%;
+    }
+
+    form {
+        margin-top: 15px;
+        width: 90%;
+
+        label {
+            width: 100%;
+        }
+
+        input {
+            padding: 0 5px;
+            margin: 10px 0;
+            height: 30px;
+            border: 1px solid @recon-border-input;
+            width: calc(100% - 45px);
+
+            &:focus {
+                outline: 0px;
+                border: 1px solid @recon-black;
+
+            }
+        }
+    }
+
+    button {
+        margin: 20px 0;
+    }
+}
+
+.content,
+form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}

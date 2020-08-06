@@ -1,0 +1,35 @@
+<div class="recon-modal-title">
+  <h3>Set GPS</h3>
+  <mat-icon [mat-dialog-close]="true">close</mat-icon>
+</div>
+<div class="content">
+  <mat-select
+    class="recon-mat-selector"
+    [(ngModel)]="wayToSet"
+    placeholder="Choose way to set"
+  >
+    <mat-option value="map">Set on the map</mat-option>
+    <mat-divider></mat-divider>
+    <mat-option value="enter">Enter gps coordinates</mat-option>
+  </mat-select>
+
+  <form [formGroup]="coordinate" *ngIf="wayToSet === 'enter'">
+    <label>
+      LAT
+      <input formControlName="longitude" />
+    </label>
+
+    <label>
+      LNG
+      <input formControlName="longitude" />
+    </label>
+  </form>
+
+  <button
+    mat-raised-button
+    color="primary"
+    [disabled]="wayToSet === 'enter' && !coordinate.valid"
+  >
+    {{ wayToSet === "enter" ? "Save" : "Set" }}
+  </button>
+</div>

@@ -1,8 +1,24 @@
-<mat-tab-group>
-  <mat-tab label="Reporting"><div class="fake"></div></mat-tab>
-  <mat-tab label="Filtering"><div class="fake"></div></mat-tab>
-</mat-tab-group>
-
+<div class="header-container">
+  <mat-tab-group>
+    <mat-tab label="Reporting"><div class="fake"></div></mat-tab>
+    <mat-tab label="Filtering"><div class="fake"></div></mat-tab>
+  </mat-tab-group>
+  <button mat-raised-button color="accent" (click)="openDialog()">
+    SET GPS
+  </button>
+  <button mat-raised-button color="accent" [matMenuTriggerFor]="menu">
+    DOWNLOAD
+  </button>
+  <mat-menu #menu="matMenu" xPosition="before" class="recon-menu">
+    <button mat-menu-item>
+      .xmxl
+    </button>
+    <mat-divider></mat-divider>
+    <button mat-menu-item>
+      .csv
+    </button>
+  </mat-menu>
+</div>
 <div>
   <recon-reporting-filter></recon-reporting-filter>
 </div>
