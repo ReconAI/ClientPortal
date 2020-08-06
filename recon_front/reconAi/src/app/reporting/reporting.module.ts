@@ -9,7 +9,7 @@ import { ReportingListDevicesContainer } from './components/reporting-list-devic
 import { ReportingFilterComponent } from './components/reporting-filter/reporting-filter.component';
 import { SharedModule } from 'app/shared/shared.module';
 import { SetGpsDialogComponent } from './components/set-gps-dialog/set-gps-dialog.component';
-
+import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 @NgModule({
   declarations: [
     ReportingListDevicesComponent,
@@ -24,6 +24,7 @@ import { SetGpsDialogComponent } from './components/set-gps-dialog/set-gps-dialo
     ReactiveFormsModule,
     MaterialModule,
     SharedModule,
+    LeafletModule,
   ],
 })
 export class ReportingModule {}

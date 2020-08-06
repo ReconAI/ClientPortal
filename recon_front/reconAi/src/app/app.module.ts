@@ -66,7 +66,7 @@ import { PurchaseCardContainer } from './components/purchases/purchase-card/purc
 import { BreadcrumbsComponent } from './components/landing-page/breadcrumbs/breadcrumbs.component';
 import { BreadcrumbsContainer } from './components/landing-page/breadcrumbs/breadcrumbs.container';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-
+import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 @NgModule({
   declarations: [
     AppComponent,
@@ -135,6 +135,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
       OrdersEffects,
       PurchasesEffects,
     ]),
+    LeafletModule,
   ],
   exports: [MatDatepickerModule],
   providers: [
