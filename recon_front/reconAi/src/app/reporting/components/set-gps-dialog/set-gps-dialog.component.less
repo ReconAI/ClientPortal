@@ -3,15 +3,15 @@
 .content {
     align-items: center;
     width: 100%;
-    margin-top: 20px;
-
-    .mat-select {
-        width: 90%;
-    }
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 
     form {
-        margin-top: 15px;
-        width: 90%;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 25px;
 
         label {
             width: 100%;
@@ -29,6 +29,10 @@
                 border: 1px solid @recon-black;
 
             }
+
+            &.input-invalid {
+                border-color: @recon-error-input-border;
+            }
         }
     }
 
@@ -37,9 +41,7 @@
     }
 }
 
-.content,
-form {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+.second-map#second-map {
+    height: 300px;
+    width: 570px;
 }

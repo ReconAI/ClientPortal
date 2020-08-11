@@ -7,6 +7,7 @@ const routes: Routes = [
     path: '',
     data: {
       title: ' ',
+      backgroundWithoutUnion: true,
     },
     component: ReportingListDevicesContainer,
   },

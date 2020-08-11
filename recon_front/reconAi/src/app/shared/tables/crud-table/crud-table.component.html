@@ -1,70 +1,85 @@
-<mat-table [dataSource]="data">
-  <ng-container *ngFor="let column of columns" [matColumnDef]="column.id">
-    <ng-container *ngIf="column.width; else standardWidth">
-      <mat-header-cell
-        *matHeaderCellDef
-        [style.flex-basis]="column.width"
-        [style.flex-shrink]="0"
-        [style.flex-grow]="0"
-        >{{ column.header }}</mat-header-cell
-      >
-      <mat-cell
-        *matCellDef="let element"
-        [style.flex-basis]="column.width"
-        [style.flex-shrink]="0"
-        [style.flex-grow]="0"
-        >{{ renderElement(column, element) }}
-      </mat-cell></ng-container
-    >
-    <ng-template #standardWidth>
-      <mat-header-cell *matHeaderCellDef>{{ column.header }}</mat-header-cell>
-      <mat-cell *matCellDef="let element"
-        >{{ renderElement(column, element) }}
-      </mat-cell>
-    </ng-template>
-  </ng-container>
-
-  <ng-container *ngIf="isWithActions" matColumnDef="actions">
-    <mat-header-cell *matHeaderCellDef></mat-header-cell>
-    <mat-cell *matCellDef="let element">
-      <ng-container *ngIf="!shouldShowActionsForRow || shouldShowActionsForRow(element)">
-        <!-- make actions general if we need it -->
-        <button
-          mat-icon-button
-          aria-label="Actions"
-          [matMenuTriggerFor]="menu"
-          (click)="openActionsMenu($event)"
+<div class="crud-container">
+  <div class="table-container">
+    <mat-table [dataSource]="data">
+      <ng-container *ngFor="let column of columns" [matColumnDef]="column.id">
+        <ng-container *ngIf="column.width; else standardWidth">
+          <mat-header-cell
+            *matHeaderCellDef
+            [style.flex-basis]="column.width"
+            [style.flex-shrink]="0"
+            [style.flex-grow]="0"
+            >{{ column.header }}</mat-header-cell
+          >
+          <mat-cell
+            *matCellDef="let element"
+            [style.flex-basis]="column.width"
+            [style.flex-shrink]="0"
+            [style.flex-grow]="0"
+            >{{ renderElement(column, element) }}
+          </mat-cell></ng-container
         >
-          <mat-icon>more_vert</mat-icon>
-        </button>
-        <mat-menu #menu="matMenu" xPosition="before" class="recon-menu">
-          <button mat-menu-item (click)="deleteClick(element)">
-            Delete
-          </button>
-        </mat-menu>
+        <ng-template #standardWidth>
+          <mat-header-cell *matHeaderCellDef>{{
+            column.header
+          }}</mat-header-cell>
+          <mat-cell *matCellDef="let element"
+            >{{ renderElement(column, element) }}
+          </mat-cell>
+        </ng-template>
       </ng-container>
-    </mat-cell>
-  </ng-container>
 
-  <ng-container matColumnDef="pagination">
-    <mat-footer-cell *matFooterCellDef>
-      <recon-pagination
-        [currentPage]="currentPage"
-        [totalCount]="totalCount"
-        [pageSize]="pageSize"
-        (changePage$)="changePage($event)"
-      ></recon-pagination>
-    </mat-footer-cell>
-  </ng-container>
+      <ng-container *ngIf="isWithActions" matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef></mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <ng-container
+            *ngIf="!shouldShowActionsForRow || shouldShowActionsForRow(element)"
+          >
+            <!-- make actions general if we need it -->
+            <button
+              mat-icon-button
+              aria-label="Actions"
+              [matMenuTriggerFor]="menu"
+              (click)="openActionsMenu($event)"
+            >
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu" xPosition="before" class="recon-menu">
+              <button mat-menu-item (click)="deleteClick(element)">
+                Delete
+              </button>
+            </mat-menu>
+          </ng-container>
+        </mat-cell>
+      </ng-container>
 
-  <mat-header-row
-    *matHeaderRowDef="columnsIds"
-    class="recon-table-row"
-  ></mat-header-row>
-  <mat-row
-    *matRowDef="let row; columns: columnsIds"
-    (click)="rowClick(row)"
-    class="recon-table-row"
-  ></mat-row>
-  <mat-footer-row *matFooterRowDef="['pagination']"></mat-footer-row>
-</mat-table>
+      <!-- <ng-container matColumnDef="pagination">
+      <mat-footer-cell *matFooterCellDef>
+       
+      </mat-footer-cell>
+    </ng-container> -->
+
+      <mat-header-row
+        *matHeaderRowDef="columnsIds"
+        class="recon-table-row"
+      ></mat-header-row>
+      <mat-row
+        *matRowDef="let row; columns: columnsIds; let i = index"
+        (click)="rowClick(row)"
+        [ngClass]="{
+          selected:
+            (selectedIndex || selectedIndex === 0) && i === selectedIndex
+        }"
+        class="recon-table-row"
+      ></mat-row>
+      <!-- <mat-footer-row *matFooterRowDef="['pagination']"></mat-footer-row> -->
+    </mat-table>
+  </div>
+  <div class="pagination-container">
+    <recon-pagination
+      [currentPage]="currentPage"
+      [totalCount]="totalCount"
+      [pageSize]="pageSize"
+      (changePage$)="changePage($event)"
+    ></recon-pagination>
+  </div>
+</div>

@@ -1,6 +1,9 @@
+import { LatLngInterface } from './../../../core/helpers/markers';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ReconSelectOption } from './../../../shared/types/recon-select';
 import { Component, OnInit } from '@angular/core';
+import { tileLayer, latLng, marker, icon, Marker, Icon, Layer } from 'leaflet';
+import { generateMapMarker } from 'app/core/helpers/markers';
 
 @Component({
   selector: 'recon-set-gps-dialog',
@@ -8,25 +11,81 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./set-gps-dialog.component.less'],
 })
 export class SetGpsDialogComponent implements OnInit {
-  waysToSet: ReconSelectOption[] = [
-    {
-      label: 'Set on the map',
-      value: 'map',
-    },
-    {
-      label: 'Enter gps coordinates',
-      value: 'enter',
-    },
-  ];
-  wayToSet = this.waysToSet[0].value;
   coordinate: FormGroup;
+  readonly numberPattern = '^[-]?[0-9]+[.]?[0-9]*$';
 
   constructor(private fb: FormBuilder) {}
 
+  center = latLng(46.879966, -121.726909);
+  options = {
+    layers: [
+      tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '...',
+      }),
+    ],
+    id: 'second-map',
+    zoom: 7,
+    center: this.center,
+  };
+
+  layers: Layer[];
+
   ngOnInit(): void {
     this.coordinate = this.fb.group({
-      longitude: ['', Validators.required],
-      latitude: ['', Validators.required],
+      longitude: [
+        '',
+        Validators.compose([
+          Validators.required,
+          Validators.pattern(this.numberPattern),
+        ]),
+      ],
+      latitude: [
+        '',
+        Validators.compose([
+          Validators.required,
+          Validators.pattern(this.numberPattern),
+        ]),
+      ],
     });
+  }
+
+  setCenter({ lat, lng }: LatLngInterface): void {
+    this.center = latLng(lat, lng);
+  }
+
+  mapClick(props): void {
+    this.coordinate.setValue({
+      longitude: props.latlng.lng,
+      latitude: props.latlng.lat,
+    });
+
+    this.layers = [
+      generateMapMarker({
+        lat: props.latlng.lat,
+        lng: props.latlng.lng,
+      }),
+    ];
+  }
+
+  inputCoordinates(): void {
+    const isLatValid = this.coordinate.get('latitude').valid;
+    const isLngValid = this.coordinate.get('longitude').valid;
+
+    if (isLatValid && isLngValid) {
+      const newMarkerCoordinates = {
+        lat: this.coordinate.value.latitude,
+        lng: this.coordinate.value.longitude,
+      };
+      this.layers = [generateMapMarker(newMarkerCoordinates)];
+      this.setCenter(newMarkerCoordinates);
+    } else {
+      this.layers = [];
+    }
+  }
+
+  isValidInput(controlName: string): boolean {
+    const control = this.coordinate.get(controlName);
+    return !!(control.touched && control.errors);
   }
 }

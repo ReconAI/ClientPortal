@@ -22,9 +22,24 @@
 <div>
   <recon-reporting-filter></recon-reporting-filter>
 </div>
+<div>
+  <recon-crud-table
+    [data]="devices"
+    [columns]="columns"
+    [pageSize]="6"
+    [totalCount]="devices?.length"
+    [currentPage]="1"
+    [isWithActions]="false"
+    [selectedIndex]="selectedIndex"
+    (rowClick$)="clickRow($event)"
+  >
+  </recon-crud-table>
+</div>
 <div
-  style="height: 300px;"
+  class="map"
+  id="main-map"
   leaflet
   [leafletOptions]="options"
   [leafletLayers]="layers"
+  [(leafletCenter)]="center"
 ></div>
