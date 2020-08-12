@@ -39,7 +39,7 @@ export class FormFileWithListComponent implements OnInit {
     }
 
     const newFilesWithCount: File[] =
-      [...event?.target?.files, ...(this.files?.value || [])].slice(
+      [...(this.files?.value || []), ...event?.target?.files].slice(
         0,
         this.maxCountOfFiles
       ) || [];

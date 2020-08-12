@@ -5,6 +5,10 @@ import { ReportingListDevicesContainer } from './components/reporting-list-devic
 const routes: Routes = [
   {
     path: '',
+    data: {
+      title: ' ',
+      backgroundWithoutUnion: true,
+    },
     component: ReportingListDevicesContainer,
   },
 ];

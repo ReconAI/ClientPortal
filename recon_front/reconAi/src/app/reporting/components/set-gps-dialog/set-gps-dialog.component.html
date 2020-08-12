@@ -1,0 +1,46 @@
+<div class="recon-modal-title">
+  <h3>Set GPS</h3>
+  <mat-icon [mat-dialog-close]="true">close</mat-icon>
+</div>
+<div class="content">
+  <form [formGroup]="coordinate">
+    <label>
+      LAT
+      <input
+        formControlName="latitude"
+        [ngClass]="{
+          'input-invalid': isValidInput('latitude')
+        }"
+        (blur)="inputCoordinates()"
+      />
+    </label>
+
+    <label>
+      LNG
+      <input
+        formControlName="longitude"
+        [ngClass]="{
+          'input-invalid': isValidInput('longitude')
+        }"
+        (blur)="inputCoordinates()"
+      />
+    </label>
+  </form>
+
+  <div>
+    <div
+      class="second-map"
+      id="second-map"
+      leaflet
+      #secondMap
+      [leafletOptions]="options"
+      [leafletLayers]="layers"
+      [(leafletCenter)]="center"
+      (leafletClick)="mapClick($event)"
+    ></div>
+  </div>
+
+  <button mat-raised-button color="primary" [disabled]="!coordinate.valid">
+    Save
+  </button>
+</div>

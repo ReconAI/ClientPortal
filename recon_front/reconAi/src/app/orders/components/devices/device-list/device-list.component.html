@@ -25,7 +25,7 @@
 <div class="devices-page-container">
   <div class="sort-container">
     <mat-label>Sort by:</mat-label>
-    <mat-select [value]="ordering" (selectionChange)="changeOrdering($event)">
+    <mat-select [value]="ordering" class="recon-mat-selector" (selectionChange)="changeOrdering($event)">
       <ng-container *ngFor="let option of sortOptions">
         <mat-option [value]="option.value">{{ option.label }}</mat-option>
         <mat-divider></mat-divider>
