@@ -3,7 +3,12 @@
     <mat-tab label="Reporting"><div class="fake"></div></mat-tab>
     <mat-tab label="Filtering"><div class="fake"></div></mat-tab>
   </mat-tab-group>
-  <button mat-raised-button color="accent" (click)="openDialog()">
+  <button
+    mat-raised-button
+    color="accent"
+    (click)="openDialog()"
+    [disabled]="!(selectedIndex || selectedIndex === 0)"
+  >
     SET GPS
   </button>
   <button mat-raised-button color="accent" [matMenuTriggerFor]="menu">
@@ -32,6 +37,7 @@
     [isWithActions]="false"
     [selectedIndex]="selectedIndex"
     (rowClick$)="clickRow($event)"
+    (rowDoubleClick$)="navigateToDevice($event)"
   >
   </recon-crud-table>
 </div>

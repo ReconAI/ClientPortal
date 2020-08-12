@@ -1,3 +1,5 @@
+import { ReportingDeviceContainer } from './components/reporting-device/reporting-device.container';
+import { CoreModule } from './../core/core.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from './../material/material.module';
 import { NgModule } from '@angular/core';
@@ -10,12 +12,15 @@ import { ReportingFilterComponent } from './components/reporting-filter/reportin
 import { SharedModule } from 'app/shared/shared.module';
 import { SetGpsDialogComponent } from './components/set-gps-dialog/set-gps-dialog.component';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
+import { ReportingDeviceComponent } from './components/reporting-device/reporting-device.component';
 @NgModule({
   declarations: [
     ReportingListDevicesComponent,
     ReportingListDevicesContainer,
     ReportingFilterComponent,
     SetGpsDialogComponent,
+    ReportingDeviceComponent,
+    ReportingDeviceContainer,
   ],
   imports: [
     CommonModule,
@@ -25,6 +30,7 @@ import { LeafletModule } from '@asymmetrik/ngx-leaflet';
     MaterialModule,
     SharedModule,
     LeafletModule,
+    CoreModule,
   ],
 })
 export class ReportingModule {}

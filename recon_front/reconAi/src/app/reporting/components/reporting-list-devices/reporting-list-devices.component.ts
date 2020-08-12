@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { generateMapMarker } from './../../../core/helpers/markers';
 import { CrudTableColumn } from 'app/shared/types';
 import { SetGpsDialogComponent } from './../set-gps-dialog/set-gps-dialog.component';
@@ -13,7 +14,7 @@ import { LatLngInterface } from 'app/core/helpers/markers';
   styleUrls: ['./reporting-list-devices.component.less'],
 })
 export class ReportingListDevicesComponent implements OnInit {
-  constructor(private dialog: MatDialog) {}
+  constructor(private dialog: MatDialog, private router: Router) {}
   center = latLng(46.879966, -121.726909);
   selectedIndex = null;
 
@@ -22,18 +23,29 @@ export class ReportingListDevicesComponent implements OnInit {
       tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 18,
         id: 'main-map',
-        attribution: '...',
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       }),
     ],
     zoom: 7,
     center: this.center,
   };
 
+  // TODO:
+  // general method for creation
   layers = [1, 2, 3, 4, 5, 6].map((i) =>
-    generateMapMarker({
-      lat: 46.879966 + i * 2,
-      lng: -121.726909 - i * 2,
-    })
+    generateMapMarker(
+      {
+        lat: 46.879966 + i * 2,
+        lng: -121.726909 - i * 2,
+      },
+      {
+        clickHandler: () => {
+          this.router.navigate(['reporting', i]);
+        },
+        popupText: 'Click to navigate to device page',
+      }
+    )
   );
 
   columns: CrudTableColumn[] = [
@@ -48,9 +60,16 @@ export class ReportingListDevicesComponent implements OnInit {
       width: '150px',
     },
     {
-      header: 'Sensor GPS',
-      id: 'gps',
-      width: '200px',
+      header: 'Latitude',
+      id: 'latitude',
+      render: (device) => device.gps[0],
+      width: '100px',
+    },
+    {
+      header: 'Longitude',
+      id: 'longitude',
+      render: (device) => device.gps[1],
+      width: '100px',
     },
     {
       header: 'Project name',
@@ -182,13 +201,25 @@ export class ReportingListDevicesComponent implements OnInit {
           lat: 46.879966 + i * 2,
           lng: -121.726909 - i * 2,
         },
-        index === this.selectedIndex
+        {
+          isHighlighted: index === this.selectedIndex,
+          zIndex: index === this.selectedIndex ? 1000 : 500,
+          clickHandler: () => {
+            this.router.navigate(['reporting', i]);
+          },
+          popupText: 'Click to navigate to device page',
+        }
       )
     );
+
     this.setCenter({
       lat: device.gps[0],
       lng: device.gps[1],
     });
+  }
+
+  navigateToDevice(device): void {
+    this.router.navigate(['reporting', device.id]);
   }
 
   setCenter({ lat, lng }: LatLngInterface): void {

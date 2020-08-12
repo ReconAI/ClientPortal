@@ -19,6 +19,7 @@ export class CrudTableComponent implements OnInit {
 
   @Output() changePage$ = new EventEmitter<number>();
   @Output() rowClick$ = new EventEmitter<any>();
+  @Output() rowDoubleClick$ = new EventEmitter<any>();
   @Output() deleteClick$ = new EventEmitter<any>();
 
   constructor() {}
@@ -41,6 +42,10 @@ export class CrudTableComponent implements OnInit {
 
   rowClick(row) {
     this.rowClick$.emit(row);
+  }
+
+  rowDoubleClick(row) {
+    this.rowDoubleClick$.emit(row);
   }
 
   deleteClick(row) {
