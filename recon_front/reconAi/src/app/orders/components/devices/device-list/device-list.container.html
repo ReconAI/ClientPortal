@@ -1,5 +1,6 @@
 <recon-device-list
-  [categories]="categories$ | async"
+  [defaultCategory]="categoryName"
+  [categories]="categories"
   [devices]="devices$ | async"
   [totalCount]="totalCount$ | async"
   [currentPage]="currentPage$ | async"

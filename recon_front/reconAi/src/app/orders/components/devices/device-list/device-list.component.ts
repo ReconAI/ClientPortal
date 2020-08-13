@@ -34,10 +34,13 @@ export class DeviceListComponent implements OnInit {
   @Input() loadingStatus: boolean;
   @Input() isSuperAdmin = false;
   @Input() userId = '';
+  @Input() defaultCategory = '';
 
   @Output() loadData$ = new EventEmitter<PaginatedDeviceListRequestInterface>();
 
   @Input() ordering;
+
+  selectedTabIndex = 0;
   sortOptions = [
     {
       value: CREATED_DT_DESC,
@@ -60,7 +63,6 @@ export class DeviceListComponent implements OnInit {
   constructor(private router: Router) {}
 
   navigateTo(url: string): void {
-    console.log(url);
     this.router.navigate([url]);
   }
 
@@ -71,6 +73,7 @@ export class DeviceListComponent implements OnInit {
   // the order of categories is important
   tabChange(tabChangeEvent: MatTabChangeEvent): void {
     const category = this.categories[tabChangeEvent.index];
+    this.selectedTabIndex = tabChangeEvent.index;
     this.loadData({
       pagination: {
         currentPage: 1,
@@ -101,5 +104,11 @@ export class DeviceListComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    const defaultCategoryIndex = this.categories.findIndex(
+      ({ name }) => name === this.defaultCategory
+    );
+    this.selectedTabIndex =
+      defaultCategoryIndex === -1 ? 0 : defaultCategoryIndex;
+  }
 }

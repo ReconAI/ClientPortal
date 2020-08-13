@@ -26,18 +26,16 @@ const routes: Routes = [
     pathMatch: 'full',
   },
   {
-    path: 'catalog',
+    path: 'reporting',
     canActivate: [AuthRoleGuard],
-    data: {
-      title: 'Catalog',
-    },
     loadChildren: () =>
-      import('./catalog/catalog.module').then((m) => m.CatalogModule),
+      import('./reporting/reporting.module').then((m) => m.ReportingModule),
   },
   {
     path: 'users',
     canActivate: [AuthRoleGuard],
     data: {
+      title: 'User management',
       expectedRolePriority: UserRolesPriorities.DEVELOPER_ROLE,
     },
     loadChildren: () =>
@@ -45,6 +43,9 @@ const routes: Routes = [
   },
   {
     path: 'orders',
+    data: {
+      breadcrumbTitle: 'Order portal',
+    },
     loadChildren: () =>
       import('./orders/orders.module').then((m) => m.OrdersModule),
   },
@@ -78,19 +79,26 @@ const routes: Routes = [
   {
     path: 'invoice',
     canActivateChild: [IsPossibleToBuyGuard],
+    data: {
+      title: 'Invoice history',
+      breadcrumbTitle: 'History',
+    },
     children: [
       {
         path: '',
-        component: PurchasesListContainer,
         data: {
-          title: 'Invoice history',
+          hideBreadcrumb: true,
         },
+        component: PurchasesListContainer,
       },
       {
         path: ':id',
         component: PurchaseCardContainer,
         data: {
           title: ' ',
+          breadcrumbTitle: '...',
+          breadcrumbId: '%purchase-id',
+          showBreadcrumbs: true,
         },
       },
     ],

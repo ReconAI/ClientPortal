@@ -1,5 +1,8 @@
 import { PaginationResponseServerInterface } from './../../constants/types/requests';
-import { setAppTitleAction } from './../app/app.actions';
+import {
+  setAppTitleAction,
+  updateBreadcrumbByIdAction,
+} from './../app/app.actions';
 import { UserProfileFormInterface } from './../../constants/types/user';
 import { generalTransformFormErrorToObject } from './../../core/helpers/generalFormsErrorsTransformation';
 import {
@@ -144,6 +147,17 @@ export class UsersEffects {
               )
             ),
             tap((user) => {
+              this.store.dispatch(
+                updateBreadcrumbByIdAction({
+                  update: {
+                    oldId: '%user-id',
+                    newLabel: `User profile: ${user.user?.firstName || ''} ${
+                      user.user?.lastName || ''
+                    }`,
+                    newUrl: `/users/${id}`,
+                  },
+                })
+              );
               this.store.dispatch(
                 setAppTitleAction({
                   title: `Profile ${user.user?.firstName || ''} ${

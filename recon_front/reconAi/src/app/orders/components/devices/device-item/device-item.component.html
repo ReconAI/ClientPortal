@@ -29,6 +29,7 @@
   <img [src]="imgUrl || 'assets/noImage.png'" alt="Order picture" />
   <span>{{ name }}</span>
   <span
-    ><b>{{ price | number: ".2-2" }}</b> €</span
+    ><b>{{ price | number: ".2-2" }}</b>
+    <span class="euro-symbol"> €</span></span
   >
 </div>

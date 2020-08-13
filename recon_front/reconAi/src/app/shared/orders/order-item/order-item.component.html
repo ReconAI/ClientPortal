@@ -15,18 +15,29 @@
       <span>Device amount</span> <span class="without-euro">{{ amount }}</span>
     </div>
     <div class="field">
-      <span>VAT, %</span> <span class="without-euro">{{ vat }}</span>
+      <span>VAT, %</span>
+      <span class="without-euro">{{ vat | number: ".0-2" }}</span>
     </div>
     <div class="field">
-      <span>VAT amount</span> <span>{{ vatAmount | number: ".2-2" }} €</span>
+      <span>VAT amount</span>
+      <span
+        >{{ vatAmount | number: ".2-2" }}
+        <span class="euro-symbol">€</span></span
+      >
     </div>
     <div class="field">
       <span>Price without VAT</span>
-      <span>{{ priceWithoutVat | number: ".2-2" }} €</span>
+      <span
+        >{{ priceWithoutVat | number: ".2-2" }}
+        <span class="euro-symbol">€</span></span
+      >
     </div>
     <div class="field">
       <span>Price with VAT</span>
-      <span>{{ priceWithVat | number: ".2-2" }} €</span>
+      <span
+        >{{ priceWithVat | number: ".2-2" }}
+        <span class="euro-symbol">€</span></span
+      >
     </div>
     <div class="delete-field" *ngIf="!hideDelete">
       <span (click)="onDelete()">Delete</span>

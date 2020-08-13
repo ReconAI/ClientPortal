@@ -1,6 +1,7 @@
 import {
   CREATED_DT_DESC,
   ALL_CATEGORIES_ID_FOR_DEVICE,
+  SALES_PRICE_DESC,
 } from './../../orders/constants/requests';
 import { MetaClientInterface } from './../../constants/types/requests';
 import {
@@ -77,7 +78,7 @@ export interface OrdersState {
 
 const metaInit: MetaStoreDevicesInterface = {
   currentPage: 1,
-  ordering: CREATED_DT_DESC,
+  ordering: SALES_PRICE_DESC,
   categoryId: ALL_CATEGORIES_ID_FOR_DEVICE,
 };
 
