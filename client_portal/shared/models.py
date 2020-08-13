@@ -2,7 +2,6 @@
 Reporting tool models are located here
 """
 import binascii
-from datetime import timedelta, datetime
 import os
 import unicodedata
 from typing import Tuple, Optional, Iterable, Type
@@ -16,7 +15,6 @@ from django.db.models.deletion import Collector
 from django.db.transaction import atomic
 from django.utils.crypto import salted_hmac
 from django.utils.module_loading import import_string
-from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
 from recon_db_manager.models import CommonUser, Organization

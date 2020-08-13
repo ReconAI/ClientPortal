@@ -13,15 +13,22 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.conf import settings
 from django.conf.urls import url
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.core.files.storage import FileSystemStorage
+from django.http import HttpResponse
 from django.urls import path
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 
+from recon_db_manager.models import Organization
+from shared.helpers import MonthlyUsageCalculator
+from .pdf import Invoice
+from .serializers import UserInvoiceSerializer
 from .views.accounts import SignupView, ActivateView, CurrentUserProfileView, \
     ObtainAuthToken, LogoutView, ResetPassword, PasswordResetConfirmView, \
     PreSignupValidationView, CheckResetPasswordTokenView
@@ -29,6 +36,28 @@ from .views.cards import CardListView
 from .views.new_features import NewFeatureView
 from .views.orders import OrdersListView, OrderItemView
 from .views.user_management import UserList, UserItem, InvitationView
+
+
+def some_view(request):
+    organization = Organization.objects.prefetch_related('user_set').get(pk=4)
+    users = organization.user_set.all()
+    monthly_usage_calculator = MonthlyUsageCalculator(users, 4)
+    invoice_serializer = UserInvoiceSerializer(users, many=True)
+
+    Invoice(
+        organization,
+        monthly_usage_calculator,
+        invoice_serializer
+    ).generate()
+
+    fs = FileSystemStorage('/tmp')
+    with fs.open('mypdf.pdf') as pdf:
+        response = HttpResponse(pdf, content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="mypdf.pdf"'
+        return response
+
+    return response
+
 
 urlpatterns = [
     path('signup', SignupView.as_view(), name='signup'),
@@ -54,6 +83,8 @@ urlpatterns = [
     path('new-features', NewFeatureView.as_view(), name='new_feature.request'),
 
     path('admin/', admin.site.urls),
+
+    path('pdf', some_view),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

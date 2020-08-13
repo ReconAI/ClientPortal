@@ -1,0 +1,243 @@
+<html>
+<head>
+	<style>
+		@font-face {
+			font-family: Gentium;
+			src: url(http://example.com/fonts/Gentium.otf);
+		}
+
+		* {
+			font-family: Gentium;
+			font-size: 12px
+		}
+
+		.col-wrap {
+			display: flex;
+		}
+
+		.col-20 {
+			flex: 20%
+		}
+
+		.col-20 {
+			flex: 20%
+		}
+
+
+		.col-30 {
+			flex: 30%
+		}
+
+		.col-33 {
+			flex: 33%
+		}
+
+		.col-40 {
+			flex: 40%
+		}
+
+		.col-45 {
+			flex: 45%
+		}
+
+		.col-50 {
+			flex: 50%
+		}
+
+		.col-55 {
+			flex: 55%
+		}
+
+		.col-60 {
+			flex: 60%
+		}
+		
+		.col-70 {
+			flex: 70%
+		}
+
+
+		.col-80 {
+			flex: 80%
+		}
+
+		.uc {
+			text-transform: uppercase
+		}
+	</style>
+</head>
+<body>
+  <div class="col-wrap">
+	  <div class="col-40">
+		  <b>{{ root_organization.name }}</b>
+	  </div>
+	  <div class="col-60">
+		  <b>INVOICE {{ charge.id }}</b>
+	  </div>
+  </div>
+  <hr><br><br><br>
+  <div class="col-wrap">
+	  <div class="col-40">
+		  {{ organization.name }}
+		  <br>
+		  {{ organization.inv_address }}
+	  </div>
+	  <div class="col-60">
+		  <div class="col-wrap">
+			  <div class="col-40">Date:</div>
+			  <div class="col-60">{{ now }}</div>
+		  </div>
+		  <div class="col-wrap">
+			  <div class="col-40">Company ID:</div>
+			  <div class="col-60">{{ organization.id }}</div>
+		  </div>
+		  <div class="col-wrap">
+			  <div class="col-40">Bank Reference Code:</div>
+			  <div class="col-60">{{ bank_reference_code }}</div>
+		  </div>
+		  <div class="col-wrap">
+			  <div class="col-40">IBAN account number:</div>
+			  <div class="col-60">{{ iban }}</div>
+		  </div>
+		  <div class="col-wrap">
+			  <div class="col-40">BIC:</div>
+			  <div class="col-60">{{ bic }}</div>
+		  </div>
+		  <div class="col-wrap">
+			  <div class="col-40">Terms of Payment:</div>
+			  <div class="col-60">{{ terms_of_payment_days }} days net</div>
+		  </div>
+		  <div class="col-wrap">
+			  <div class="col-40">Due Date:</div>
+			  <div class="col-60">{{ due_date }}</div>
+		  </div>
+		  <div class="col-wrap">
+			  <div class="col-40">Interest Rate:</div>
+			  <div class="col-60">{{ interest_rate }}</div>
+		  </div>
+		  <div class="col-wrap">
+			  <div class="col-40">Currency:</div>
+			  <div class="col-60 uc">{{ currency }}</div>
+		  </div>
+		  <div class="col-wrap">
+			  <div class="col-40">Contact Person:</div>
+			  <div class="col-60">{{ root_organization.inv_firstname }} {{ root_organization.inv_lastname}}</div>
+		  </div>
+		  {% if charge.payment_id %}
+			  <div class="col-wrap">
+				  <div class="col-40">Payment ID:</div>
+				  <div class="col-60">{{ charge.payment_id }}</div>
+			  </div>
+			  <div class="col-wrap">
+				  <div class="col-40"><b>Status:</b></div>
+				  <div class="col-60"><b>Success</b></div>
+			  </div>
+		  {% else %}
+			  <div class="col-wrap">
+				  <div class="col-40"><b>Status:</b></div>
+				  <div class="col-60"><b>Fail</b></div>
+			  </div>
+		  {% endif %}
+	  </div>
+  </div>
+  <br><br><br>
+  <hr>
+  <br><br><br>
+  <table>
+	  <thead>
+		  <tr>
+			  <th>User ID within DB</th>
+			  <th>User full name</th>
+			  <th>Spent AWS cloud cost, {{ currency }}</th>
+			  <th>User license fee, {{ currency }}</th>
+			  <th>Total for each user, {{ currency }}</th>
+		  </tr>
+	  </thead>
+	  <tbody>
+		  {% for user in users %}
+		        <tr>
+					<td>{{ user.id }}</td>
+					<td>{{ user.fullname }}</td>
+			        <td>{{ user.cloud_cost|floatformat:"2" }}</td>
+			        <td>{{ user.license_fee|floatformat:"2" }}</td>
+			        <td>{{ user.total|floatformat:"2" }}</td>
+		        </tr>
+		  {% endfor %}
+		        <tr>
+			        <td><b>TOTAL:</b></td>
+			        <td><b>{{ users|length }} user(s)</b></td>
+			        <td><b>{{ monthly_usage_calculator.cloud_cost|floatformat:"2" }}</b></td>
+			        <td><b>{{ monthly_usage_calculator.license_fee|floatformat:"2" }}</b></td>
+			        <td><b>{{ monthly_usage_calculator.users_total|floatformat:"2" }}</b></td>
+		        </tr>
+	  </tbody>
+  </table>
+  <br><br><br>
+  <div class="col-wrap">
+	  <div class="col-80">
+		  Quantity of organization devices
+	  </div>
+	  <div class="col-20">
+		  <b>{{ monthly_usage_calculator.devices_cnt }}</b>
+	  </div>
+  </div>
+  <div class="col-wrap">
+	  <div class="col-80">
+		  Device license fee (for each device), {{ currency }}
+	  </div>
+	  <div class="col-20">
+		  <b>{{ device_license_fee }}</b>
+	  </div>
+  </div>
+  <div class="col-wrap">
+	  <div class="col-80">
+		  Total device license fee, {{ currency }}
+	  </div>
+	  <div class="col-20">
+		  <b>{{ monthly_usage_calculator.device_fee|floatformat:"2" }}</b>
+	  </div>
+  </div>
+  <br>
+  <div class="col-wrap">
+	  <div class="col-80">
+		  VAT value
+	  </div>
+	  <div class="col-20">
+		  <b>{{ vat }}%</b>
+	  </div>
+  </div>
+  <br>
+  <div class="col-wrap">
+	  <div class="col-80">
+		  Monthly total invoice value without VAT, {{ currency }}
+	  </div>
+	  <div class="col-20">
+		  <b>{{ monthly_usage_calculator.total|floatformat:"2" }}</b>
+	  </div>
+  </div>
+  <div class="col-wrap">
+	  <div class="col-80">
+		  Monthly total invoice value with VAT, {{ currency }}
+	  </div>
+	  <div class="col-20">
+		  <b>{{ total_with_vat|floatformat:"2" }}</b>
+	  </div>
+  </div>
+  <br><br><br>
+  <hr>
+  <div class="col-wrap">
+	  <div class="col-33">
+		  {{ root_organization.name }}<br />
+		  {{ root_organization.inv_address}}
+	  </div>
+	  <div class="col-33">
+		  Company ID: {{ root_organization.id }}<br />
+		  VAT-number: {{ root_organization.vat }}<br />
+		  Domicile: {{ domicile }}
+	  </div>
+	  <div class="col-33">
+		  Bank Connection: {{ bank_connection }}
+	  </div>
+  </div>
+</body>
+</html>

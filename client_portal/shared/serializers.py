@@ -105,6 +105,21 @@ class OrganizationSerializer(ReadOnlySerializerMixin,
         )
 
 
+class IaMUserSerializer(ReadOnlySerializerMixin, serializers.ModelSerializer):
+    """
+    IaM user serializer
+    """
+    class Meta:
+        """
+        User is serializer's model
+        """
+        model = get_user_model()
+        fields = (
+            'id', 'firstname', 'lastname', 'username', 'address',
+            'phone', 'email', 'created_dt', 'is_active'
+        )
+
+
 class UserSerializer(ReadOnlySerializerMixin, serializers.ModelSerializer):
     """
     Serializes user data

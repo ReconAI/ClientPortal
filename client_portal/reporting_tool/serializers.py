@@ -9,10 +9,12 @@ import boto3
 from botocore.client import BaseClient
 from botocore.config import Config
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
+from django.utils.module_loading import import_string
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-from rest_framework.fields import CharField, IntegerField, ListField
+from rest_framework.fields import CharField, IntegerField, ListField, empty
 from rest_framework.serializers import ModelSerializer
 from rest_framework.serializers import Serializer
 from rest_framework.utils.serializer_helpers import ReturnDict
@@ -20,6 +22,7 @@ from rest_framework.utils.serializer_helpers import ReturnDict
 from recon_db_manager.models import Organization, DevicePurchase
 from reporting_tool.forms.utils import SendEmailMixin
 from shared.fields import FileField
+from shared.models import User
 from shared.serializers import ReadOnlySerializerMixin, DeviceImageSerializer
 
 
@@ -135,10 +138,11 @@ class FeatureRequestSerializer(ReadOnlySerializerMixin,
         """
         destination = self.__destination(file)
 
-        self.s3_client.upload_fileobj(
-            file,
-            settings.AWS_CLIENT_PORTAL_BUCKET,
-            destination
+        self.s3_client.put_object(
+            Body=file,
+            Bucket=settings.AWS_CLIENT_PORTAL_BUCKET,
+            Key=destination,
+            Tagging="recon_owner=56"
         )
 
         return self.s3_client.generate_presigned_url(
@@ -174,7 +178,7 @@ class FeatureRequestSerializer(ReadOnlySerializerMixin,
 
     def save(self, **kwargs):
         return self.send_mail(
-            settings.INFO_EMAIL,
+            [settings.INFO_EMAIL],
             'emails/feature_request_subject.txt',
             'emails/feature_request.html',
             self.validated_data
@@ -289,3 +293,69 @@ class OrderSerializer(ModelSerializer):
                 'request': self.context.get('request')
             }
         ).data
+
+
+class UserInvoiceSerializer(ModelSerializer):
+    """
+    User invoice serializer logic
+    """
+    cloud_cost = serializers.SerializerMethodField(
+        method_name='format_cloud_cost'
+    )
+    license_fee = serializers.SerializerMethodField(
+        method_name='format_license_fee'
+    )
+    total = serializers.SerializerMethodField(
+        method_name='format_total'
+    )
+
+    USER_COST_HANDLER = 'shared.helpers.UserCostHandler'
+
+    def __init__(self, instance=None, data=empty, **kwargs):
+        """
+        :type instance: Optional[User]
+        :type data: dict
+        """
+        super().__init__(instance=instance, data=data, **kwargs)
+
+        self.__user_cost_handler = import_string(self.USER_COST_HANDLER)
+
+    class Meta:
+        """
+        Set of fileds is to be displayed on onvoice
+        """
+        model = get_user_model()
+        fields = ('id', 'fullname', 'cloud_cost', 'license_fee', 'total')
+
+    def format_cloud_cost(self, user: User) -> float:
+        """
+        :type user: User
+
+        :rtype: float
+        """
+        return round(
+            self.__user_cost_handler(user).cloud_cost,
+            2
+        )
+
+    def format_license_fee(self, user: User) -> float:
+        """
+        :type user: User
+
+        :rtype: float
+        """
+        return round(
+            self.__user_cost_handler(user).license_fee,
+            2
+        )
+
+    def format_total(self, user: User) -> float:
+        """
+        :type user: User
+
+        :rtype: float
+        """
+        return round(
+            self.__user_cost_handler(user).total,
+            2
+        )
