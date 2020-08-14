@@ -282,8 +282,10 @@ class OrderSerializer(ModelSerializer):
 
         :rtype: list
         """
+        images = purchase.device.images if purchase.device else []
+
         return DeviceImageSerializer(
-            purchase.device.images,
+            images,
             many=True,
             context={
                 'request': self.context.get('request')
