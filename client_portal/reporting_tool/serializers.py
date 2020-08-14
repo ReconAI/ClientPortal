@@ -186,11 +186,14 @@ class FeatureRequestSerializer(ReadOnlySerializerMixin,
 
         :rtype: dict
         """
+        organization = self.context.get('organization')
+
         return {
             'files_attached': self.__upload_files(validated_data.get('files')),
             'feed_links': validated_data.get('sensor_feed_links', []),
             'description': validated_data.get('description', ''),
-            'organization': self.context.get('organization')
+            'organization': organization,
+            'organization_name': getattr(organization, 'name', '')
         }
 
 
