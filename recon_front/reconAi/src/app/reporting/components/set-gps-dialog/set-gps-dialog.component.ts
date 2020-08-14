@@ -1,3 +1,4 @@
+import { TAMPERE_COORDINATES } from './../../../constants/globalVariables/globalVariables';
 import { LatLngInterface } from './../../../core/helpers/markers';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ReconSelectOption } from './../../../shared/types/recon-select';
@@ -16,7 +17,7 @@ export class SetGpsDialogComponent implements OnInit {
 
   constructor(private fb: FormBuilder) {}
 
-  center = latLng(46.879966, -121.726909);
+  center = TAMPERE_COORDINATES;
   options = {
     layers: [
       tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -25,7 +26,7 @@ export class SetGpsDialogComponent implements OnInit {
       }),
     ],
     id: 'second-map',
-    zoom: 7,
+    zoom: 10,
     center: this.center,
   };
 

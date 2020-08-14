@@ -1,0 +1,70 @@
+@import "../../../../variables.less";
+
+// this trick is used to get functionality of mat datepicker, but hide default view of one
+.mat-form-field {
+    opacity: 0;
+    height: 0;
+    width: 0;
+    position: absolute;
+}
+
+
+div.range-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    div.range-inputs-container {
+        display: flex;
+
+        .separator {
+            margin: 0 5px;
+        }
+
+        div {
+            &.block {
+                position: relative;
+
+                input,
+                input:disabled {
+                    background-color: white;
+                    text-align: center;
+                    height: 24px;
+                    border: 1px solid @recon-border-input;
+                    color: @recon-black;
+
+                    &.date {
+                        width: 110px;
+                        padding-left: 15px;
+                        border-right-color: transparent;
+
+                        &:focus {
+                            border-right: 1px solid @recon-black;
+                        }
+                    }
+
+                    &.time {
+                        padding-left: 3px;
+                        width: 74px;
+                    }
+
+                    &:focus {
+                        outline: 0px;
+                        border-color: @recon-black;
+                    }
+                }
+
+                div.calendar-container {
+                    position: absolute;
+                    top: 5px;
+                    left: 5px;
+                    cursor: pointer;
+                }
+            }
+
+
+        }
+
+    }
+}

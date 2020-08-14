@@ -1,5 +1,5 @@
 <div class="purchase-card" *ngIf="!(loadingStatus$ | async); else loading">
-  <ng-container *ngFor="let purchase of purchases$ | async">
+  <ng-container *ngFor="let purchase of purchases">
     <recon-order-item
       [orderId]="purchase.paymentId"
       [amount]="purchase.amount"
@@ -13,6 +13,13 @@
     ></recon-order-item>
     <mat-divider></mat-divider>
   </ng-container>
+  <recon-order-last-item
+    [vatAmount]="vatAmount"
+    [totalPriceWithoutVat]="totalAmountWithoutVat"
+    [totalPriceWithVat]="totalAmountWithVat"
+  >
+    ></recon-order-last-item
+  >
   <div class="delivery-container">
     <recon-delivery-information
       [phone]="phone$ | async"

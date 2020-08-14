@@ -14,7 +14,13 @@ const routes: Routes = [
   },
   {
     path: ':id',
-    component: ReportingDeviceContainer,
+    data: {
+      breadcrumbId: '%reporting-device-id',
+      breadcrumbTitle: '...',
+      backgroundWithoutUnion: true,
+      showBreadcrumbs: true,
+    },
+    component: ReportingListDevicesContainer,
   },
 ];
 

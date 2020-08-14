@@ -1,3 +1,5 @@
+import { OrderLastItemComponent } from './orders/order-last-item/order-last-item.component';
+
 import { CoreModule } from './../core/core.module';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from './../material/material.module';
@@ -14,7 +16,7 @@ import { FormCheckboxComponent } from './forms/form-checkbox/form-checkbox.compo
 import { OrderItemComponent } from './orders/order-item/order-item.component';
 import { DeliveryInformationComponent } from './orders/delivery-information/delivery-information.component';
 import { FormSliderComponent } from './forms/form-slider/form-slider.component';
-
+import { FormRangePickerComponent } from './forms/form-range-picker/form-range-picker.component';
 @NgModule({
   declarations: [
     FormInputComponent,
@@ -26,14 +28,16 @@ import { FormSliderComponent } from './forms/form-slider/form-slider.component';
     FormChipsComponent,
     FormCheckboxComponent,
     OrderItemComponent,
+    OrderLastItemComponent,
     DeliveryInformationComponent,
     FormSliderComponent,
+    FormRangePickerComponent,
   ],
   imports: [
+    CommonModule,
     MaterialModule,
     ReactiveFormsModule,
     FormsModule,
-    CommonModule,
     CoreModule,
   ],
   exports: [
@@ -47,7 +51,9 @@ import { FormSliderComponent } from './forms/form-slider/form-slider.component';
     FormCheckboxComponent,
     OrderItemComponent,
     DeliveryInformationComponent,
-    FormSliderComponent
+    FormSliderComponent,
+    FormRangePickerComponent,
+    OrderLastItemComponent,
   ],
   providers: [],
 })

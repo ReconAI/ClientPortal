@@ -1,8 +1,9 @@
+import { TAMPERE_COORDINATES } from './../../../constants/globalVariables/globalVariables';
 import { Router } from '@angular/router';
 import { generateMapMarker } from './../../../core/helpers/markers';
 import { CrudTableColumn } from 'app/shared/types';
 import { SetGpsDialogComponent } from './../set-gps-dialog/set-gps-dialog.component';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { tileLayer, latLng, marker, polygon, circle, icon } from 'leaflet';
 
@@ -15,7 +16,9 @@ import { LatLngInterface } from 'app/core/helpers/markers';
 })
 export class ReportingListDevicesComponent implements OnInit {
   constructor(private dialog: MatDialog, private router: Router) {}
-  center = latLng(46.879966, -121.726909);
+  @Input() isDevice = false;
+  center = TAMPERE_COORDINATES;
+
   selectedIndex = null;
 
   options = {
@@ -27,33 +30,14 @@ export class ReportingListDevicesComponent implements OnInit {
           '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       }),
     ],
-    zoom: 7,
+    zoom: 10,
     center: this.center,
   };
 
   // TODO:
   // general method for creation
-  layers = [1, 2, 3, 4, 5, 6].map((i) =>
-    generateMapMarker(
-      {
-        lat: 46.879966 + i * 2,
-        lng: -121.726909 - i * 2,
-      },
-      {
-        clickHandler: () => {
-          this.router.navigate(['reporting', i]);
-        },
-        popupText: 'Click to navigate to device page',
-      }
-    )
-  );
-
+  layers = [];
   columns: CrudTableColumn[] = [
-    {
-      header: 'Sensor ID',
-      id: 'id',
-      width: '100px',
-    },
     {
       header: 'Time stamp',
       id: 'createdDT',
@@ -204,10 +188,12 @@ export class ReportingListDevicesComponent implements OnInit {
         {
           isHighlighted: index === this.selectedIndex,
           zIndex: index === this.selectedIndex ? 1000 : 500,
-          clickHandler: () => {
-            this.router.navigate(['reporting', i]);
-          },
-          popupText: 'Click to navigate to device page',
+          clickHandler: !this.isDevice
+            ? () => {
+                this.router.navigate(['reporting', i]);
+              }
+            : () => {},
+          popupText: !this.isDevice ? 'Click to navigate to device page' : '',
         }
       )
     );
@@ -219,14 +205,44 @@ export class ReportingListDevicesComponent implements OnInit {
   }
 
   navigateToDevice(device): void {
-    this.router.navigate(['reporting', device.id]);
+    if (!this.isDevice) {
+      this.router.navigate(['reporting', device.id]);
+    }
   }
 
   setCenter({ lat, lng }: LatLngInterface): void {
     this.center = latLng(lat, lng);
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    if (!this.isDevice) {
+      this.columns = [
+        {
+          header: 'Sensor ID',
+          id: 'id',
+          width: '100px',
+        },
+        ...this.columns,
+      ];
+    }
+
+    this.layers = [1, 2, 3, 4, 5, 6].map((i) =>
+      generateMapMarker(
+        {
+          lat: 46.879966 + i * 2,
+          lng: -121.726909 - i * 2,
+        },
+        {
+          clickHandler: !this.isDevice
+            ? () => {
+                this.router.navigate(['reporting', i]);
+              }
+            : () => {},
+          popupText: !this.isDevice ? 'Click to navigate to device page' : '',
+        }
+      )
+    );
+  }
 
   openDialog(): void {
     this.dialog.open(SetGpsDialogComponent, {
