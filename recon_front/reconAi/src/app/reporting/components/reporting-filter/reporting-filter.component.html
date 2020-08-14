@@ -1,17 +1,42 @@
 <div class="filter-container">
-  <recon-form-slider [(ngModel)]="isOr" label="And / Or"></recon-form-slider>
-  <!-- <mat-form-field appearance="fill">
-    <mat-label>Enter a date range</mat-label>
-    <mat-date-range-input [rangePicker]="picker">
-      <div>
-
+  <div class="filters">
+    <recon-form-slider [(ngModel)]="isOr" label="And / Or"></recon-form-slider>
+    <recon-form-range-picker label="Time stamp"></recon-form-range-picker>
+  </div>
+  <div class="button-container">
+    <button
+      mat-raised-button
+      color="primary"
+      class="filter"
+      [matMenuTriggerFor]="menu"
+    >
+      <img src="assets/icons/add-filter.svg" height="25" width="25" />
+    </button>
+    <mat-menu #menu="matMenu" xPosition="before" class="recon-menu">
+      <div class="filter-item" matRipple (click)="$event.stopPropagation()">
+        <recon-form-checkbox></recon-form-checkbox>
+        Time Stamp
       </div>
-      <input matStartDate placeholder="Start date" />
-      <input matEndDate placeholder="End date" />
-    </mat-date-range-input>
-    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-    <mat-date-range-picker #picker></mat-date-range-picker>
-  </mat-form-field> -->
-
-  <mat-date-range-picker #picker></mat-date-range-picker>
+      <mat-divider></mat-divider>
+      <div class="filter-item" matRipple (click)="$event.stopPropagation()">
+        <recon-form-checkbox></recon-form-checkbox>
+        Sensor ID
+      </div>
+      <mat-divider></mat-divider>
+      <div class="filter-item" matRipple (click)="$event.stopPropagation()">
+        <recon-form-checkbox></recon-form-checkbox>
+        Sensor GPS
+      </div>
+      <mat-divider></mat-divider>
+      <div class="filter-item" matRipple (click)="$event.stopPropagation()">
+        <recon-form-checkbox></recon-form-checkbox>
+        Event/Object
+      </div>
+      <mat-divider></mat-divider>
+      <div class="filter-item" matRipple (click)="$event.stopPropagation()">
+        <recon-form-checkbox></recon-form-checkbox>
+        Tagged data
+      </div>
+    </mat-menu>
+  </div>
 </div>

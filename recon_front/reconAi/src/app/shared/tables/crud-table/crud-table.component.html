@@ -52,12 +52,6 @@
         </mat-cell>
       </ng-container>
 
-      <!-- <ng-container matColumnDef="pagination">
-      <mat-footer-cell *matFooterCellDef>
-       
-      </mat-footer-cell>
-    </ng-container> -->
-
       <mat-header-row
         *matHeaderRowDef="columnsIds"
         class="recon-table-row"
@@ -65,13 +59,13 @@
       <mat-row
         *matRowDef="let row; columns: columnsIds; let i = index"
         (click)="rowClick(row)"
+        (reconDoubleClick)="rowDoubleClick(row)"
         [ngClass]="{
           selected:
             (selectedIndex || selectedIndex === 0) && i === selectedIndex
         }"
         class="recon-table-row"
       ></mat-row>
-      <!-- <mat-footer-row *matFooterRowDef="['pagination']"></mat-footer-row> -->
     </mat-table>
   </div>
   <div class="pagination-container">

@@ -1,0 +1,30 @@
+<div class="range-container">
+  <span class="label">{{ label }}</span>
+  <div class="range-inputs-container">
+    <div class="block left-part">
+      <input class="date" [value]="getDatePresentation(start)" disabled />
+      <input class="time" [value]="getTimePresentation(start)" />
+      <div class="calendar-container" (click)="picker.open()">
+        <img src="assets/icons/calendar.svg" height="18" width="18" />
+      </div>
+    </div>
+    <span class="separator"> ― </span>
+    <div class="block right-part">
+      <input class="date" [value]="getDatePresentation(end)" disabled />
+      <input class="time" [value]="getTimePresentation(end)" />
+      <div class="calendar-container" (click)="picker.open()">
+        <img src="assets/icons/calendar.svg" height="18" width="18" />
+      </div>
+    </div>
+    <mat-date-range-picker #picker></mat-date-range-picker>
+
+    <!-- part for trick with display: none -->
+    <mat-form-field>
+      <mat-label>Enter a date range</mat-label>
+      <mat-date-range-input [rangePicker]="picker">
+        <input matStartDate placeholder="Start date" [(ngModel)]="start" />
+        <input matEndDate placeholder="End date" [(ngModel)]="end" />
+      </mat-date-range-input>
+    </mat-form-field>
+  </div>
+</div>

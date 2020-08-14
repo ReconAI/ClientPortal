@@ -636,6 +636,7 @@ export class OrdersEffects {
           .pipe(
             map(({ id }) => payBasketSucceededAction({ id })),
             tap(() => {
+              this.router.navigate(['orders']);
               this.basketService.deleteDevicesOfUser(+userProfileId);
               this.store.dispatch(loadBasketOverviewRequestedAction());
             }),
