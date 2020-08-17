@@ -4,18 +4,8 @@ Custom serializer fields range
 
 import base64
 
-from django.core.files.base import ContentFile as ContentFileBase
+from django.core.files.base import ContentFile
 from rest_framework.fields import FileField as FileFieldBase
-
-
-class ContentFile(ContentFileBase):
-    """
-    Content file accepting file extension
-    """
-    def __init__(self, content, ext, name=None):
-        super().__init__(content, name=name)
-
-        self.ext = ext
 
 
 class FileField(FileFieldBase):
@@ -28,12 +18,17 @@ class FileField(FileFieldBase):
 
         :rtype: ContentFile
         """
-        _format, _file_str = data.split(';base64,')
-        _name, ext = _format.split('/')
-        name = _name.split(":")[-1]
+        file_str, name = self.__normalize(data)
 
-        file = ContentFile(base64.b64decode(_file_str),
-                           ext=ext,
-                           name='{}.{}'.format(name, ext))
+        file = ContentFile(base64.b64decode(file_str),
+                           name=name)
 
         return super().to_internal_value(file)
+
+    @staticmethod
+    def __normalize(data: str) -> (str, str):
+        _name_mime, _file_str = data.split(';base64,')
+        _name, _ = _name_mime.split(';data:')
+        _, _name = _name.split("name:")
+
+        return _file_str, _name
