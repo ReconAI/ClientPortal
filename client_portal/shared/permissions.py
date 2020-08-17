@@ -156,14 +156,4 @@ class PaymentRequired(IsSuperUser):
 
         :rtype: bool
         """
-        if super().has_permission(request, view):
-            return True
-
-        organization = request.user.organization
-
-        if not organization.first_charge_happened or organization.is_root:
-            return True
-
-        last_charge = organization.latest_charge
-
-        return last_charge and last_charge.is_successful
+        return True

@@ -117,13 +117,15 @@ class UserCostHandler:
     Calculates how much user owes for period passed
     """
 
-    def __init__(self, user: 'User'):
+    def __init__(self, user: 'User',
+                 user_license_fee: float):
         """
         :type user: User
+        :type user_license_fee: float
         """
         self.__user = user
         self.__cloud_cost = Decimal(0)
-        self.license_fee = Decimal(settings.USER_LICENSE_FEE)
+        self.license_fee = Decimal(user_license_fee)
 
     @property
     def cloud_cost(self) -> Union[Decimal, float]:
@@ -145,13 +147,19 @@ class MonthlyUsageCalculator:
     Calculates how much company owes for period passed
     """
 
-    def __init__(self, users: List['User'], devices_cnt: int = 0):
+    def __init__(self, users: List['User'],
+                 device_license_fee: float,
+                 user_license_fee: float,
+                 devices_cnt: int = 0):
         """
         :type users: List['User']
+        :type device_license_fee: float
+        :type user_license_fee: float
         :type devices_cnt: int
         """
         self.__users = users
-        self.__devices_license_fee = Decimal(settings.DEVICE_LICENSE_FEE)
+        self.__devices_license_fee = Decimal(device_license_fee)
+        self.__user_license_fee = user_license_fee
         self.devices_cnt = Decimal(devices_cnt)
 
     @property
@@ -160,7 +168,10 @@ class MonthlyUsageCalculator:
         :rtype: Decimal
         """
         return functools.reduce(
-            lambda carry, user: carry + UserCostHandler(user).license_fee,
+            lambda carry, user: carry + UserCostHandler(
+                user,
+                self.__user_license_fee
+            ).license_fee,
             self.__users,
             Decimal(0)
         )
@@ -171,7 +182,10 @@ class MonthlyUsageCalculator:
         :rtype: Decimal
         """
         return functools.reduce(
-            lambda carry, user: carry + UserCostHandler(user).cloud_cost,
+            lambda carry, user: carry + UserCostHandler(
+                user,
+                self.__user_license_fee
+            ).cloud_cost,
             self.__users,
             Decimal(0)
         )
@@ -253,3 +267,26 @@ class OrganizationCharger:
         )
 
         return payment_methods.get('data', [])[0].id
+
+    @property
+    def user_license_fee(self) -> float:
+        """
+        :rtype: float
+        """
+        return self.__fee_if_first_payment(settings.USER_LICENSE_FEE)
+
+    @property
+    def device_license_fee(self) -> float:
+        """
+        :rtype: float
+        """
+        return self.__fee_if_first_payment(settings.DEVICE_LICENSE_FEE)
+
+    def __fee_if_first_payment(self, dimension: float) -> float:
+        """
+        :rtype: float
+        """
+        if self.__last_payment_dt is not None:
+            return dimension
+
+        return .0

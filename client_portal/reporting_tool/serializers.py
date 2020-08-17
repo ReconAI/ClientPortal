@@ -311,13 +311,16 @@ class UserInvoiceSerializer(ModelSerializer):
 
     USER_COST_HANDLER = 'shared.helpers.UserCostHandler'
 
-    def __init__(self, instance=None, data=empty, **kwargs):
+    def __init__(self, instance=None, data=empty, user_license_fee: float = 0,
+                 **kwargs):
         """
+        :type user_license_fee: float
         :type instance: Optional[User]
         :type data: dict
         """
         super().__init__(instance=instance, data=data, **kwargs)
 
+        self.__user_license_fee = user_license_fee
         self.__user_cost_handler = import_string(self.USER_COST_HANDLER)
 
     class Meta:
@@ -334,7 +337,7 @@ class UserInvoiceSerializer(ModelSerializer):
         :rtype: float
         """
         return round(
-            self.__user_cost_handler(user).cloud_cost,
+            self.__user_cost_handler(user, self.__user_license_fee).cloud_cost,
             2
         )
 
@@ -345,7 +348,7 @@ class UserInvoiceSerializer(ModelSerializer):
         :rtype: float
         """
         return round(
-            self.__user_cost_handler(user).license_fee,
+            self.__user_cost_handler(user, self.__user_license_fee).license_fee,
             2
         )
 
@@ -356,6 +359,6 @@ class UserInvoiceSerializer(ModelSerializer):
         :rtype: float
         """
         return round(
-            self.__user_cost_handler(user).total,
+            self.__user_cost_handler(user, self.__user_license_fee).total,
             2
         )

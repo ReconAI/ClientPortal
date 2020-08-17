@@ -3,12 +3,15 @@ Recurrent charges logic is enclosed in the module
 """
 
 import datetime
+from typing import List, Dict
 
 from argparse import ArgumentParser
 from django.conf import settings
 from django.core.management import BaseCommand
+from django.db.models import Count
 from django.db.models.functions import Trim, TruncSecond
 from django.db.models.query import QuerySet
+from django.db.transaction import atomic
 from django.utils.timezone import now
 from recon_db_manager.models import Organization, RecurrentCharge, Ecosystem, \
     DeviceInstance, EdgeNode
@@ -53,14 +56,10 @@ class Command(SendEmailMixin, BaseCommand):
         """
         organizations = self.get_queryset()
 
-        a = list(organizations.values_list('id', flat=True)) # todo fix
-        print(a)
-        # l = EdgeNode
-        l = DeviceInstance.objects.filter(edge_nodes__ecosystems__organization_id__in=a).all()
-
         for organization in organizations:
             self.charge_organization(organization)
 
+    @atomic(settings.RECON_AI_CONNECTION_NAME)
     def charge_organization(self, organization: Organization):
         """
         Charge organization if necessary
@@ -79,7 +78,9 @@ class Command(SendEmailMixin, BaseCommand):
             # todo implement aws costs retrieval
             monthly_usage_calculator = MonthlyUsageCalculator(
                 users,
-                len(organization.edgenode_set.all())
+                organization_charger.device_license_fee,
+                organization_charger.user_license_fee,
+                getattr(organization, 'device_cnt', 0)
             )
 
             amount = StripePrice(PriceWithTax(
@@ -89,14 +90,21 @@ class Command(SendEmailMixin, BaseCommand):
 
             payment_id = organization_charger.charge(amount)
 
-            charge = self.__create_charge(organization, payment_id, amount)
+            charge = self.__create_charge(organization, payment_id,
+                                          amount, organization_charger)
+
+            user_invoice_serializer = UserInvoiceSerializer(
+                users,
+                user_license_fee=organization_charger.user_license_fee,
+                many=True
+            )
 
             # Generate invoice
             invoice = Invoice(
                 organization,
                 self.__root_organization,
                 monthly_usage_calculator,
-                UserInvoiceSerializer(users, many=True),
+                user_invoice_serializer,
                 charge
             ).generate()
 
@@ -108,21 +116,24 @@ class Command(SendEmailMixin, BaseCommand):
 
     @staticmethod
     def __create_charge(organization: Organization, payment_id: str,
-                        amount: int) -> RecurrentCharge:
+                        amount: int,
+                        organization_charger: OrganizationCharger
+                        ) -> RecurrentCharge:
         """
         :type organization: Organization
         :type payment_id: str
         :type amount: int
+        :type organization_charger: OrganizationCharger
 
         :rtype: RecurrentCharge
         """
         return RecurrentCharge.objects.create(
             organization=organization,
             payment_id=payment_id,
-            device_license_fee=settings.DEVICE_LICENSE_FEE,
-            user_license_fee=settings.USER_LICENSE_FEE,
+            device_license_fee=organization_charger.device_license_fee,
+            user_license_fee=organization_charger.user_license_fee,
             vat=settings.VAT,
-            device_cnt=len(organization.edgenode_set.all()),  # todo adjust
+            device_cnt=getattr(organization, 'device_cnt', 0),
             total=amount,
             invoice_data=''
         )
@@ -148,14 +159,13 @@ class Command(SendEmailMixin, BaseCommand):
             organization=organization
         )
 
-    @staticmethod
-    def get_queryset() -> QuerySet:
+    def get_queryset(self) -> QuerySet:
         """
         Companies are to be charged
 
         :rtype: QuerySet
         """
-        return Organization.objects.exclude(
+        organizations = Organization.objects.exclude(
             name=Organization.ROOT
         ).annotate(
             last_payment_id=Trim('recurrentcharge__payment_id'),
@@ -164,12 +174,36 @@ class Command(SendEmailMixin, BaseCommand):
             'id'
         ).filter(
             created_dt__lt=(now() - datetime.timedelta(
-                settings.TRIAL_PERIOD_DAYS + settings.CHARGE_EACH_N_DAYS))
+                settings.TRIAL_PERIOD_DAYS
+            ))
         ).order_by(
             '-id', '-created_dt'
         ).prefetch_related(
             'user_set', 'edgenode_set'
         ).all()
+
+        device_cnt = self.__device_cnt_query(
+            list(organizations.values_list('id', flat=True))
+        )
+
+        for organization in organizations:
+            organization.device_cnt = device_cnt.get(organization.id, 0)
+
+        return organizations
+
+    @staticmethod
+    def __device_cnt_query(organization_ids: List) -> Dict[int, int]:
+        device_cnt_query = DeviceInstance.objects.filter(
+            edge_nodes__ecosystems__organization_id__in=organization_ids
+        ).values('edge_nodes__organization_id').annotate(
+            cnt=Count('edge_nodes__organization_id')
+        ).all()
+
+        return {
+            item.get('edge_nodes__organization_id'): item.get('cnt', 0)
+            for item
+            in device_cnt_query
+        }
 
     def get_email_context(self, *args, **kwargs) -> dict:
         """

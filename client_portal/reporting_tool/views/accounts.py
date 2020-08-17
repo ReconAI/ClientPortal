@@ -23,7 +23,6 @@ from reporting_tool.forms.accounts import PreSignupForm, SignupForm, \
     CheckResetPasswordTokenForm, SetPasswordForm, UserEditForm, \
     UserAndOrganizationEditForm
 from reporting_tool.forms.organization import OrganizationForm
-from reporting_tool.settings import RECON_AI_CONNECTION_NAME
 from reporting_tool.tokens import PasswordResetTokenGenerator
 from shared.models import Token
 from shared.permissions import IsNotAuthenticated, IsActive, \
@@ -85,7 +84,7 @@ class SignupView(APIView, FormMixin):
     permission_classes = (IsNotAuthenticated,)
 
     @atomic(using='default')
-    @atomic(using=RECON_AI_CONNECTION_NAME)
+    @atomic(using=settings.RECON_AI_CONNECTION_NAME)
     @swagger_auto_schema(
         request_body=forms_to_formserializer(UserForm, OrganizationForm),
         responses=get_responses(status.HTTP_201_CREATED,
@@ -123,7 +122,7 @@ class ActivateView(APIView, FormMixin):
     permission_classes = (IsNotAuthenticated,)
 
     @atomic(using='default')
-    @atomic(using=RECON_AI_CONNECTION_NAME)
+    @atomic(using=settings.RECON_AI_CONNECTION_NAME)
     @swagger_auto_schema(
         responses=get_responses(status.HTTP_200_OK,
                                 status.HTTP_400_BAD_REQUEST,
