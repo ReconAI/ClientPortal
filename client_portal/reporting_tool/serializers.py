@@ -150,11 +150,10 @@ class FeatureRequestSerializer(ReadOnlySerializerMixin,
         )
 
     def __destination(self, file: ContentFile) -> str:
-        return '{}/organization_{}/{}.{}'.format(
+        return '{}/organization_{}/{}'.format(
             self.FILES_UPLOAD_KEY,
             self.context.get('organization').id,
-            uuid.uuid1(),
-            file.ext
+            file.name
         )
 
     @property
