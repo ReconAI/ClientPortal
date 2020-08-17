@@ -10,7 +10,8 @@ from django.core.management import BaseCommand
 from django.db.models.functions import Trim, TruncSecond
 from django.db.models.query import QuerySet
 from django.utils.timezone import now
-from recon_db_manager.models import Organization, RecurrentCharge
+from recon_db_manager.models import Organization, RecurrentCharge, Ecosystem, \
+    DeviceInstance, EdgeNode
 from reporting_tool.forms.utils import SendEmailMixin
 from reporting_tool.pdf import Invoice
 from reporting_tool.serializers import UserInvoiceSerializer
@@ -51,6 +52,11 @@ class Command(SendEmailMixin, BaseCommand):
         :type kwargs: dict
         """
         organizations = self.get_queryset()
+
+        a = list(organizations.values_list('id', flat=True)) # todo fix
+        print(a)
+        # l = EdgeNode
+        l = DeviceInstance.objects.filter(edge_nodes__ecosystems__organization_id__in=a).all()
 
         for organization in organizations:
             self.charge_organization(organization)
