@@ -358,6 +358,11 @@ class AbstractPaymentMethodManager(ABC):
         :rtype: Iterable[object]
         """
 
+    def cards(self) -> Iterable[object]:
+        """
+        :rtype: Iterable[object]
+        """
+
 
 class AbstractCustomerManager(ABC):
     """
@@ -435,6 +440,17 @@ class PaymentMethodManager(AbstractPaymentMethodManager):
         return self.__source.list(
             customer=self._customer.id,
             type=method_type,
+            api_key=settings.STRIPE_SECRET_KEY,
+            **params
+        )
+
+    def cards(self, **params) -> stripe.ListObject:
+        """
+        :rtype: stripe.ListObject
+        """
+        return self.__source.list(
+            customer=self._customer.id,
+            type=self.CARD_METHOD,
             api_key=settings.STRIPE_SECRET_KEY,
             **params
         )

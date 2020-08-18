@@ -11,8 +11,6 @@ from django.conf import settings
 from django.utils.timezone import now
 from stripe.error import CardError
 
-from shared.managers import PaymentMethodManager
-
 
 class PriceInterface(ABC):
     """
@@ -262,9 +260,8 @@ class OrganizationCharger:
         """
         :rtype: str
         """
-        payment_methods = self.__organization.customer.payment_methods().list(
-            PaymentMethodManager.CARD_METHOD
-        )
+        payment_methods = self.__organization.customer.\
+            payment_methods().cards()
 
         return payment_methods.get('data', [])[0].id
 
