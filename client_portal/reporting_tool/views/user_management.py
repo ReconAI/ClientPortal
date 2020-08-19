@@ -145,14 +145,7 @@ class UserItem(GenericAPIView, FormMixin):
         })
 
     @swagger_auto_schema(
-        responses=get_responses(
-            status.HTTP_200_OK,
-            status.HTTP_400_BAD_REQUEST,
-            status.HTTP_404_NOT_FOUND,
-            status.HTTP_403_FORBIDDEN,
-            status.HTTP_405_METHOD_NOT_ALLOWED,
-            status.HTTP_422_UNPROCESSABLE_ENTITY
-        ),
+        responses=DEFAULT_UNSAFE_REQUEST_RESPONSES,
         request_body=form_to_formserializer(UserEditForm),
         tags=['User Management'],
         operation_summary="User data update",

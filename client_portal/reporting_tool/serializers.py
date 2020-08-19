@@ -2,7 +2,6 @@
 Reporting tool serializers range
 """
 import functools
-import uuid
 from typing import List
 
 import boto3
@@ -366,3 +365,27 @@ class UserInvoiceSerializer(ModelSerializer):
             self.__user_cost_handler(user, self.__user_license_fee).total,
             2
         )
+
+
+class DefaultPaymentMethodSerializer(ReadOnlySerializerMixin, Serializer):
+    """
+    Default payment method modification serializer
+    """
+
+    is_card = serializers.BooleanField(required=True, allow_null=False)
+    card_id = serializers.CharField(required=False)
+
+    def update(self, instance: Organization,
+               validated_data: dict) -> Organization:
+        """
+        :type instance: Organization
+        :type validated_data: dict
+
+        :rtype: Organization
+        """
+        is_card = validated_data.get('is_card')
+
+        instance.is_invoice_payment_method = not is_card
+        instance.save()
+
+        return instance

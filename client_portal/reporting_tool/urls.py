@@ -26,7 +26,7 @@ from rest_framework import permissions
 from .views.accounts import SignupView, ActivateView, CurrentUserProfileView, \
     ObtainAuthToken, LogoutView, ResetPassword, PasswordResetConfirmView, \
     PreSignupValidationView, CheckResetPasswordTokenView
-from .views.cards import CardListView
+from .views.payment_methods import CardListView, DefaultPaymentMethodView
 from .views.new_features import NewFeatureView
 from .views.orders import OrdersListView, OrderItemView
 from .views.user_management import UserList, UserItem, InvitationView
@@ -39,6 +39,7 @@ urlpatterns = [
     path('profile', CurrentUserProfileView.as_view(), name='profile'),
     path('logout', LogoutView.as_view(), name='logout'),
     path('cards', CardListView.as_view(), name='cards.list'),
+    path('payment-methods', DefaultPaymentMethodView.as_view(), name='payment_methods.set_default'),
     path('orders', OrdersListView.as_view(), name='orders.list'),
     path('orders/<str:payment_id>', OrderItemView.as_view(), name='orders.item'),
 

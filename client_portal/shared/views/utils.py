@@ -214,6 +214,12 @@ class RetrieveAPIView(RetrieveModelMixin, GenericAPIView):
     """
 
 
+class UpdateAPIView(UpdateModelMixin, GenericAPIView):
+    """
+    Generic update API view
+    """
+
+
 class RetrieveUpdateDestroyAPIView(RetrieveModelMixin, UpdateModelMixin,
                                    DestroyModelMixin, GenericAPIView):
     """

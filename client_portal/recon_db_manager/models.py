@@ -35,6 +35,7 @@ class Organization(models.Model):
     inv_phone = models.CharField(null=True, blank=True, max_length=255)
     inv_email = models.EmailField(null=True, blank=True, max_length=255)
     created_dt = models.DateTimeField(auto_now_add=True)
+    is_invoice_payment_method = models.BooleanField(default=False)
 
     class Meta:
         """

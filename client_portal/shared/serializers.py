@@ -101,7 +101,8 @@ class OrganizationSerializer(ReadOnlySerializerMixin,
         fields = (
             'name', 'vat', 'main_firstname', 'main_lastname', 'main_address',
             'main_phone', 'main_email', 'inv_firstname', 'inv_lastname',
-            'inv_address', 'inv_phone', 'inv_email'
+            'inv_address', 'inv_phone', 'inv_email',
+            'is_invoice_payment_method'
         )
 
 
