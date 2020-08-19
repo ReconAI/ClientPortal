@@ -1,4 +1,7 @@
-import { updateBreadcrumbByIdAction } from './../../../store/app/app.actions';
+import {
+  updateBreadcrumbByIdAction,
+  setAppTitleAction,
+} from './../../../store/app/app.actions';
 import { ActivatedRoute } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
@@ -19,14 +22,25 @@ export class ReportingListDevicesContainer implements OnInit {
     this.id = +this.activateRoute.snapshot.paramMap.get('id');
 
     if (this.id) {
+      const label = `Singular device data: ${this.id}`;
       this.store.dispatch(
         updateBreadcrumbByIdAction({
           update: {
             oldId: '%reporting-device-id',
-            newLabel: `Singular device data: ${this.id}`,
+            newLabel: label,
             newUrl: `reporting/${this.id}`,
           },
         })
+      );
+
+      setTimeout(
+        () =>
+          this.store.dispatch(
+            setAppTitleAction({
+              title: `Singular device data: ${this.id}`,
+            })
+          ),
+        0
       );
     }
   }

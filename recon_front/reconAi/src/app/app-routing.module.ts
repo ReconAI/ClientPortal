@@ -135,7 +135,7 @@ const routes: Routes = [
     path: '**',
     component: PageNotFoundComponent,
     data: {
-      title: 'Not found',
+      title: '  ',
     },
   },
 ];

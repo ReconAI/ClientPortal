@@ -2,16 +2,44 @@
   <span class="label">{{ label }}</span>
   <div class="range-inputs-container">
     <div class="block left-part">
-      <input class="date" [value]="getDatePresentation(start)" disabled />
-      <input class="time" [value]="getTimePresentation(start)" />
+      <input class="date" [value]="startDateFormatted" disabled />
+      <div class="time-container">
+        <input
+          class="time hours"
+          placeholder="00"
+          [(ngModel)]="startTimeHours"
+          (blur)="changeTime('start.hours', $event.target.value)"
+        />
+        :
+        <input
+          class="time minutes"
+          placeholder="00"
+          [(ngModel)]="startTimeMinutes"
+          (blur)="changeTime('start.minutes', $event.target.value)"
+        />
+      </div>
       <div class="calendar-container" (click)="picker.open()">
         <img src="assets/icons/calendar.svg" height="18" width="18" />
       </div>
     </div>
     <span class="separator"> ― </span>
     <div class="block right-part">
-      <input class="date" [value]="getDatePresentation(end)" disabled />
-      <input class="time" [value]="getTimePresentation(end)" />
+      <input class="date" [value]="endDateFormatted" disabled />
+      <div class="time-container">
+        <input
+          class="time hours"
+          placeholder="00"
+          [(ngModel)]="endTimeHours"
+          (blur)="changeTime('end.hours', $event.target.value)"
+        />
+        :
+        <input
+          class="time minutes"
+          placeholder="00"
+          [(ngModel)]="endTimeMinutes"
+          (blur)="changeTime('end.minutes', $event.target.value)"
+        />
+      </div>
       <div class="calendar-container" (click)="picker.open()">
         <img src="assets/icons/calendar.svg" height="18" width="18" />
       </div>
@@ -22,8 +50,18 @@
     <mat-form-field>
       <mat-label>Enter a date range</mat-label>
       <mat-date-range-input [rangePicker]="picker">
-        <input matStartDate placeholder="Start date" [(ngModel)]="start" />
-        <input matEndDate placeholder="End date" [(ngModel)]="end" />
+        <input
+          matStartDate
+          placeholder="Start date"
+          [value]="start"
+          (dateChange)="handleChanges('start', $event.target.value)"
+        />
+        <input
+          matEndDate
+          placeholder="End date"
+          [value]="end"
+          (dateChange)="handleChanges('end', $event.target.value)"
+        />
       </mat-date-range-input>
     </mat-form-field>
   </div>

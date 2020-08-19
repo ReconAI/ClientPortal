@@ -18,11 +18,14 @@ export class SetGpsDialogComponent implements OnInit {
   constructor(private fb: FormBuilder) {}
 
   center = TAMPERE_COORDINATES;
+  // move to general
   options = {
     layers: [
       tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 18,
-        attribution: '...',
+        minZoom: 3,
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       }),
     ],
     id: 'second-map',

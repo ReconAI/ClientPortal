@@ -17,6 +17,9 @@ import { OrderItemComponent } from './orders/order-item/order-item.component';
 import { DeliveryInformationComponent } from './orders/delivery-information/delivery-information.component';
 import { FormSliderComponent } from './forms/form-slider/form-slider.component';
 import { FormRangePickerComponent } from './forms/form-range-picker/form-range-picker.component';
+import { FilterInputComponent } from './forms/filters/filter-input/filter-input.component';
+import { FilterInputCheckboxComponent } from './forms/filters/filter-input-checkbox/filter-input-checkbox.component';
+import { FilterThreeInputsComponent } from './forms/filters/filter-three-inputs/filter-three-inputs.component';
 @NgModule({
   declarations: [
     FormInputComponent,
@@ -32,6 +35,9 @@ import { FormRangePickerComponent } from './forms/form-range-picker/form-range-p
     DeliveryInformationComponent,
     FormSliderComponent,
     FormRangePickerComponent,
+    FilterInputComponent,
+    FilterInputCheckboxComponent,
+    FilterThreeInputsComponent,
   ],
   imports: [
     CommonModule,
@@ -54,6 +60,9 @@ import { FormRangePickerComponent } from './forms/form-range-picker/form-range-p
     FormSliderComponent,
     FormRangePickerComponent,
     OrderLastItemComponent,
+    FilterInputComponent,
+    FilterInputCheckboxComponent,
+    FilterThreeInputsComponent,
   ],
   providers: [],
 })

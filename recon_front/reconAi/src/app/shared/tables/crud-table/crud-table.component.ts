@@ -17,6 +17,8 @@ export class CrudTableComponent implements OnInit {
   @Input() isWithActions = true;
   @Input() shouldShowActionsForRow;
 
+  @Input() rowTooltipText: string = null;
+  @Input() allCellsTooltipText: string = null;
   @Output() changePage$ = new EventEmitter<number>();
   @Output() rowClick$ = new EventEmitter<any>();
   @Output() rowDoubleClick$ = new EventEmitter<any>();

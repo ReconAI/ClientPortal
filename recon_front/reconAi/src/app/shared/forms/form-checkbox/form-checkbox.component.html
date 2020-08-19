@@ -1,5 +1,12 @@
 <label class="checkbox-button">
-  <input type="checkbox" class="checkbox-button__input" [checked]="checked" />
+  <input
+    type="checkbox"
+    class="checkbox-button__input"
+    [checked]="checked"
+    (blur)="onTouched()"
+    [disabled]="disabled"
+    (click)="changeStatus($event.target.checked)"
+  />
   <span class="checkbox-button__control"></span>
   <span class="checkbox-button__label">{{ label }}</span>
 </label>

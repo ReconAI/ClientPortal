@@ -1,0 +1,23 @@
+div.three-inputs-container,
+div.inputs-container {
+    display: flex;
+    align-items: center;
+}
+
+div.three-inputs-container {
+    flex-direction: column;
+    justify-content: center;
+
+    div.input-container {
+        display: flex;
+        align-items: center;
+
+        label {
+            margin-right: 5px;
+        }
+
+        &:not(:first-child) {
+            margin-left: 5px;
+        }
+    }
+}

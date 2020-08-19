@@ -11,6 +11,7 @@
             >{{ column.header }}</mat-header-cell
           >
           <mat-cell
+            [matTooltip]="allCellsTooltipText"
             *matCellDef="let element"
             [style.flex-basis]="column.width"
             [style.flex-shrink]="0"
@@ -22,7 +23,7 @@
           <mat-header-cell *matHeaderCellDef>{{
             column.header
           }}</mat-header-cell>
-          <mat-cell *matCellDef="let element"
+          <mat-cell *matCellDef="let element" [matTooltip]="allCellsTooltipText"
             >{{ renderElement(column, element) }}
           </mat-cell>
         </ng-template>
@@ -64,6 +65,7 @@
           selected:
             (selectedIndex || selectedIndex === 0) && i === selectedIndex
         }"
+        [matTooltip]="rowTooltipText"
         class="recon-table-row"
       ></mat-row>
     </mat-table>

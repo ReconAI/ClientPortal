@@ -17,14 +17,16 @@ import { LatLngInterface } from 'app/core/helpers/markers';
 export class ReportingListDevicesComponent implements OnInit {
   constructor(private dialog: MatDialog, private router: Router) {}
   @Input() isDevice = false;
-  center = TAMPERE_COORDINATES;
+  center = latLng(48.879966, -123.726909);
 
   selectedIndex = null;
 
+  // move to general functions
   options = {
     layers: [
       tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 18,
+        minZoom: 3,
         id: 'main-map',
         attribution:
           '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
@@ -242,6 +244,11 @@ export class ReportingListDevicesComponent implements OnInit {
         }
       )
     );
+
+    this.setCenter({
+      lat: this.devices[0].gps[0],
+      lng: this.devices[0].gps[1],
+    });
   }
 
   openDialog(): void {
