@@ -1,17 +1,114 @@
-<div class="filter-container">
-  <recon-form-slider [(ngModel)]="isOr" label="And / Or"></recon-form-slider>
-  <!-- <mat-form-field appearance="fill">
-    <mat-label>Enter a date range</mat-label>
-    <mat-date-range-input [rangePicker]="picker">
-      <div>
-
-      </div>
-      <input matStartDate placeholder="Start date" />
-      <input matEndDate placeholder="End date" />
-    </mat-date-range-input>
-    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-    <mat-date-range-picker #picker></mat-date-range-picker>
-  </mat-form-field> -->
-
-  <mat-date-range-picker #picker></mat-date-range-picker>
+<div class="filter-container" [formGroup]="filtersForm">
+  <div class="filters" formArrayName="filters">
+    <div class="filter" [formGroupName]="0">
+      <recon-form-slider
+        formControlName="value"
+        label="And / Or"
+        *ngIf="isSelectedAtIndex(0)"
+      ></recon-form-slider>
+    </div>
+    <div class="filter" [formGroupName]="1">
+      <recon-filter-input
+        formControlName="value"
+        label="Sensor Id"
+        placeholder="Search..."
+        *ngIf="isSelectedAtIndex(1)"
+      ></recon-filter-input>
+    </div>
+    <div class="filter" [formGroupName]="2">
+      <recon-form-range-picker
+        label="Time stamp"
+        *ngIf="isSelectedAtIndex(2)"
+        formControlName="value"
+      ></recon-form-range-picker>
+    </div>
+    <div class="filter" [formGroupName]="3">
+      <recon-filter-input-checkbox
+        label="Project name"
+        checkboxLabel="Not equal"
+        placeholder="Search..."
+        formControlName="value"
+        *ngIf="isSelectedAtIndex(3)"
+      ></recon-filter-input-checkbox>
+    </div>
+    <div class="filter" [formGroupName]="4">
+      <recon-filter-input-checkbox
+        label="Edge Node name"
+        checkboxLabel="Not equal"
+        placeholder="Search..."
+        formControlName="value"
+        *ngIf="isSelectedAtIndex(4)"
+      ></recon-filter-input-checkbox>
+    </div>
+    <div class="filter" [formGroupName]="5">
+      <recon-filter-input
+        formControlName="value"
+        label="Event/Object"
+        placeholder="Search..."
+        *ngIf="isSelectedAtIndex(5)"
+      ></recon-filter-input>
+    </div>
+    <div class="filter" [formGroupName]="6">
+      <recon-filter-three-inputs
+        label="Location XYZ, mm"
+        leftLabel="X"
+        middleLabel="Y"
+        rightLabel="Z"
+        checkboxLabel="Invert"
+        formControlName="value"
+        *ngIf="isSelectedAtIndex(6)"
+      ></recon-filter-three-inputs>
+    </div>
+    <div class="filter" [formGroupName]="7">
+      <recon-filter-input-checkbox
+        label="Orient theta"
+        checkboxLabel="Invert"
+        placeholder="Search..."
+        formControlName="value"
+        *ngIf="isSelectedAtIndex(7)"
+      ></recon-filter-input-checkbox>
+    </div>
+    <div class="filter" [formGroupName]="8">
+      <recon-filter-input-checkbox
+        label="Orient phi"
+        checkboxLabel="Invert"
+        placeholder="Search..."
+        formControlName="value"
+        *ngIf="isSelectedAtIndex(8)"
+      ></recon-filter-input-checkbox>
+    </div>
+  </div>
+  <div class="button-container">
+    <button
+      mat-raised-button
+      color="primary"
+      class="filter"
+      [matMenuTriggerFor]="menu"
+    >
+      <img src="assets/icons/add-filter.svg" height="25" width="25" />
+    </button>
+    <ng-container [formGroup]="filtersForm">
+      <mat-menu #menu="matMenu" xPosition="before" class="recon-menu">
+        <ng-container formArrayName="filters">
+          <ng-container *ngFor="let filter of filtersList; let i = index">
+            <div
+              class="filter-item"
+              matRipple
+              (click)="$event.stopPropagation(); toggleSelectValueWithIndex(i)"
+              [formGroupName]="i"
+            >
+              <recon-form-checkbox
+                formControlName="selected"
+                (click)="$event.stopPropagation()"
+              ></recon-form-checkbox>
+              {{ filter.label }}
+            </div>
+            <mat-divider *ngIf="i !== filtersList.length - 1"></mat-divider>
+          </ng-container>
+        </ng-container>
+      </mat-menu>
+    </ng-container>
+  </div>
 </div>
+
+{{ jsonForm }}

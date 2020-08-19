@@ -3,26 +3,40 @@
     <mat-tab label="Reporting"><div class="fake"></div></mat-tab>
     <mat-tab label="Filtering"><div class="fake"></div></mat-tab>
   </mat-tab-group>
-  <button mat-raised-button color="accent" (click)="openDialog()">
-    SET GPS
-  </button>
-  <button mat-raised-button color="accent" [matMenuTriggerFor]="menu">
-    DOWNLOAD
-  </button>
-  <mat-menu #menu="matMenu" xPosition="before" class="recon-menu">
-    <button mat-menu-item>
-      .xmxl
+  <ng-container *ngIf="!isDevice; else onlineStreaming">
+    <button
+      mat-raised-button
+      color="accent"
+      (click)="openDialog()"
+      [disabled]="!(selectedIndex || selectedIndex === 0)"
+    >
+      SET GPS
     </button>
-    <mat-divider></mat-divider>
-    <button mat-menu-item>
-      .csv
+    <button mat-raised-button color="accent" [matMenuTriggerFor]="menu">
+      DOWNLOAD
     </button>
-  </mat-menu>
+    <mat-menu #menu="matMenu" xPosition="before" class="recon-menu">
+      <button mat-menu-item>
+        .xmxl
+      </button>
+      <mat-divider></mat-divider>
+      <button mat-menu-item>
+        .csv
+      </button>
+    </mat-menu>
+  </ng-container>
+  <ng-template #onlineStreaming>
+    <button mat-raised-button color="accent" class="online-streaming">
+      <mat-icon aria-hidden="false" aria-label="person" class="person_icon"
+        >play_arrow</mat-icon
+      >Online streaming
+    </button>
+  </ng-template>
 </div>
 <div>
   <recon-reporting-filter></recon-reporting-filter>
 </div>
-<div>
+<div *ngIf="columns && columns.length">
   <recon-crud-table
     [data]="devices"
     [columns]="columns"
@@ -31,7 +45,9 @@
     [currentPage]="1"
     [isWithActions]="false"
     [selectedIndex]="selectedIndex"
+    allCellsTooltipText="Double click to navigate to device page"
     (rowClick$)="clickRow($event)"
+    (rowDoubleClick$)="navigateToDevice($event)"
   >
   </recon-crud-table>
 </div>

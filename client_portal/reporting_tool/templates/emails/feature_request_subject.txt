@@ -1,3 +1,3 @@
 {% load i18n %}{% autoescape off %}
-{% blocktrans %}New Feature Request from organization{% endblocktrans %} {{ organization.name }}
+{% blocktrans %}New Feature Request from organization {{ organization_name }}{% endblocktrans %}
 {% endautoescape %}

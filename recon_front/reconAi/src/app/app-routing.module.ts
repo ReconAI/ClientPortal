@@ -28,6 +28,9 @@ const routes: Routes = [
   {
     path: 'reporting',
     canActivate: [AuthRoleGuard],
+    data: {
+      breadcrumbTitle: 'Reporting',
+    },
     loadChildren: () =>
       import('./reporting/reporting.module').then((m) => m.ReportingModule),
   },
@@ -132,7 +135,7 @@ const routes: Routes = [
     path: '**',
     component: PageNotFoundComponent,
     data: {
-      title: 'Not found',
+      title: '  ',
     },
   },
 ];

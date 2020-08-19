@@ -1381,7 +1381,7 @@ class DetectedObjects(models.Model):
     object_type = models.CharField(null=True, blank=True, max_length=3,
                                    db_column='objectType')
     created_dt = models.DateTimeField(null=True, blank=True, auto_now_add=True)
-    file = models.ForeignKey(FileStorage, models.DO_NOTHING,
+    file = models.ForeignKey(FileStorage, models.DO_NOTHING, null=True,
                              db_column='fileId')
     parameters = JSONField(null=True, blank=True, db_column='parametersJSON')
 

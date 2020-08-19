@@ -1,0 +1,33 @@
+<div class="three-inputs-container">
+  <label> {{ label }}</label>
+  <div class="inputs-container">
+    <div class="input-container">
+      <label>{{ leftLabel }}</label>
+      <recon-filter-input
+        [(ngModel)]="left"
+        (changeVal)="changeValue()"
+      ></recon-filter-input>
+    </div>
+    <div class="input-container">
+      <label>{{ middleLabel }}</label>
+      <recon-filter-input
+        [(ngModel)]="middle"
+        (changeVal)="changeValue()"
+      ></recon-filter-input>
+    </div>
+    <div class="input-container">
+      <label>{{ rightLabel }}</label>
+      <recon-filter-input
+        [(ngModel)]="right"
+        (changeVal)="changeValue()"
+      ></recon-filter-input>
+    </div>
+    <div class="input-container">
+      <recon-form-checkbox
+        [(ngModel)]="checked"
+        [label]="checkboxLabel"
+        (changeVal)="changeValue()"
+      ></recon-form-checkbox>
+    </div>
+  </div>
+</div>

@@ -154,11 +154,10 @@ class FeatureRequestSerializer(ReadOnlySerializerMixin,
         )
 
     def __destination(self, file: ContentFile) -> str:
-        return '{}/organization_{}/{}.{}'.format(
+        return '{}/organization_{}/{}'.format(
             self.FILES_UPLOAD_KEY,
             self.context.get('organization').id,
-            uuid.uuid1(),
-            file.ext
+            file.name
         )
 
     @property
@@ -190,11 +189,14 @@ class FeatureRequestSerializer(ReadOnlySerializerMixin,
 
         :rtype: dict
         """
+        organization = self.context.get('organization')
+
         return {
             'files_attached': self.__upload_files(validated_data.get('files')),
             'feed_links': validated_data.get('sensor_feed_links', []),
             'description': validated_data.get('description', ''),
-            'organization': self.context.get('organization')
+            'organization': organization,
+            'organization_name': getattr(organization, 'name', '')
         }
 
 
@@ -286,8 +288,10 @@ class OrderSerializer(ModelSerializer):
 
         :rtype: list
         """
+        images = purchase.device.images if purchase.device else []
+
         return DeviceImageSerializer(
-            purchase.device.images,
+            images,
             many=True,
             context={
                 'request': self.context.get('request')

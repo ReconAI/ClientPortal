@@ -2,6 +2,7 @@
 
 .filter-container {
     margin: 15px 0;
+    padding: 0 10px;
     background-color: @recon-background-input;
     width: 100%;
     height: 85px;
@@ -9,5 +10,30 @@
 
     display: flex;
     align-items: center;
+    justify-content: space-between;
+
+    div.filters {
+        display: flex;
+        align-items: center;
+        width: 80%;
+        height: 57px;
+        overflow-x: auto;
+
+        div.filter {
+            margin-left: 10px;
+        }
+    }
+
+    button.filter {
+        min-width: 60px;
+    }
 }
 
+.filter-item {
+    width: 100%;
+    box-sizing: border-box;
+    cursor: pointer;
+    padding: 7px 0px 7px 5px;
+    display: flex;
+    align-items: center;
+}

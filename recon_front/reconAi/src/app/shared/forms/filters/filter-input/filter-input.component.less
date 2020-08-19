@@ -1,0 +1,54 @@
+@import "../../../../../variables.less";
+
+.field-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    div.input-container {
+        width: 100%;
+        display: flex;
+
+        input {
+            box-sizing: border-box;
+            width: 100%;
+            height: 26px;
+            padding-left: 3px;
+            background-color: white;
+            border: 1px solid @recon-border-input;
+
+            &:focus {
+                outline: 0;
+                border: 1px solid @recon-black;
+            }
+
+            &.with-search {
+                width: calc(100% - 26px);
+
+            }
+        }
+
+        div.icon-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-sizing: border-box;
+            border: 1px solid @recon-border-input;
+
+            border-left: 0px;
+            width: 26px;
+            color: @recon-black;
+
+            height: 26px;
+            background-color: white;
+
+            &:hover {
+                .mat-icon {
+                    opacity: 0.7;
+                }
+            }
+        }
+    }
+}
