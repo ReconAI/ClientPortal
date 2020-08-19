@@ -1614,6 +1614,7 @@ class RecurrentCharge(models.Model):
     payment_id = models.CharField(
         max_length=255, null=True, db_column='paymentId'
     )
+    is_invoice = models.BooleanField(default=False)
     device_license_fee = models.DecimalField(
         null=False, blank=False, max_digits=16,
         decimal_places=2, db_column='deviceLicenseFee'

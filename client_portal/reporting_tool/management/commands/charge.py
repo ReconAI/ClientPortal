@@ -9,12 +9,14 @@ from argparse import ArgumentParser
 from django.conf import settings
 from django.core.management import BaseCommand
 from django.db.models import Count
-from django.db.models.functions import Trim, TruncSecond
+from django.db.models.expressions import F
+from django.db.models.functions import TruncSecond
 from django.db.models.query import QuerySet
 from django.db.transaction import atomic
 from django.utils.timezone import now
-from recon_db_manager.models import Organization, RecurrentCharge, Ecosystem, \
-    DeviceInstance, EdgeNode
+
+from recon_db_manager.models import Organization, RecurrentCharge, \
+    DeviceInstance
 from reporting_tool.forms.utils import SendEmailMixin
 from reporting_tool.pdf import Invoice
 from reporting_tool.serializers import UserInvoiceSerializer
@@ -69,7 +71,8 @@ class Command(SendEmailMixin, BaseCommand):
         organization_charger = OrganizationCharger(
             organization,
             organization.last_payment_id,
-            organization.last_payment_dt
+            organization.last_payment_dt,
+            organization.is_invoice
         )
 
         if organization_charger.is_to_be_charged:
@@ -116,13 +119,13 @@ class Command(SendEmailMixin, BaseCommand):
 
     @staticmethod
     def __create_charge(organization: Organization, payment_id: str,
-                        amount: int,
+                        amount: float,
                         organization_charger: OrganizationCharger
                         ) -> RecurrentCharge:
         """
         :type organization: Organization
         :type payment_id: str
-        :type amount: int
+        :type amount: float
         :type organization_charger: OrganizationCharger
 
         :rtype: RecurrentCharge
@@ -135,6 +138,7 @@ class Command(SendEmailMixin, BaseCommand):
             vat=settings.VAT,
             device_cnt=getattr(organization, 'device_cnt', 0),
             total=amount,
+            is_invoice=organization_charger.is_invoice,
             invoice_data=''
         )
 
@@ -168,8 +172,9 @@ class Command(SendEmailMixin, BaseCommand):
         organizations = Organization.objects.exclude(
             name=Organization.ROOT
         ).annotate(
-            last_payment_id=Trim('recurrentcharge__payment_id'),
-            last_payment_dt=TruncSecond('recurrentcharge__created_dt')
+            last_payment_id=F('recurrentcharge__payment_id'),
+            last_payment_dt=TruncSecond('recurrentcharge__created_dt'),
+            is_invoice=F('recurrentcharge__is_invoice')
         ).distinct(
             'id'
         ).filter(

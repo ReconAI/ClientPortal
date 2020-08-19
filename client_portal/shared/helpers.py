@@ -217,21 +217,28 @@ class OrganizationCharger:
 
     def __init__(self, organization: 'Organization',
                  last_payment_id: Optional[str] = None,
-                 last_payment_dt: Optional[datetime] = None):
+                 last_payment_dt: Optional[datetime] = None,
+                 is_invoice: bool = False
+                 ):
         """
         :type organization: Organization
-        :param last_payment_id: Optional[str]
-        :param last_payment_dt: Optional[datetime]
+        :type last_payment_id: Optional[str]
+        :type last_payment_dt: Optional[datetime]
+        :type is_invoice: bool
         """
         self.__organization = organization
         self.__last_payment_id = last_payment_id
         self.__last_payment_dt = last_payment_dt
+        self.__is_invoice = is_invoice
 
-    def charge(self, amount: int) -> Optional[str]:
+    def charge(self, amount: float) -> Optional[str]:
         """
         :rtype: str
         """
         try:
+            if self.__organization.is_invoice_payment_method:
+                return None
+
             payment = self.__organization.customer.pay(
                 amount=amount,
                 payment_method=self.__organization_payment_method,
@@ -246,7 +253,7 @@ class OrganizationCharger:
         """
         :rtype: bool
         """
-        if self.__last_payment_id:
+        if self.__last_payment_id or self.__is_invoice:
             return (
                 self.__last_payment_dt
                 + timedelta(days=settings.CHARGE_EACH_N_DAYS)
@@ -278,6 +285,10 @@ class OrganizationCharger:
         :rtype: float
         """
         return self.__fee_if_first_payment(settings.DEVICE_LICENSE_FEE)
+
+    @property
+    def is_invoice(self) -> bool:
+        return self.__organization.is_invoice_payment_method
 
     def __fee_if_first_payment(self, dimension: float) -> float:
         """
