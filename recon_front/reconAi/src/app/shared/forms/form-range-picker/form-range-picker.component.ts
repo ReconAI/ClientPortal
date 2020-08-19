@@ -1,4 +1,13 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { NgControl } from '@angular/forms';
+import {
+  Component,
+  OnInit,
+  Input,
+  Output,
+  EventEmitter,
+  Optional,
+  Self,
+} from '@angular/core';
 import moment from 'moment';
 
 @Component({
@@ -7,22 +16,136 @@ import moment from 'moment';
   styleUrls: ['./form-range-picker.component.less'],
 })
 export class FormRangePickerComponent implements OnInit {
-  start: string;
-  end: string;
+  start: Date;
+  end: Date;
+
+  startTimeHours = '00';
+  startTimeMinutes = '00';
+  endTimeHours = '00';
+  endTimeMinutes = '00';
+
   @Input() label = '';
-  constructor() {}
+  @Input() disabled = false;
+  @Output() changeVal = new EventEmitter<any>();
+
+  constructor(@Optional() @Self() public controlDir: NgControl) {
+    controlDir.valueAccessor = this;
+  }
 
   ngOnInit(): void {}
 
-  handleChanges(event): void {
-    console.log(event);
+  onChange = (value: any) => {};
+  onTouched = () => {};
+
+  registerOnChange(fn) {
+    this.onChange = fn;
   }
 
-  getDatePresentation(dateStr: string): string {
+  registerOnTouched(fn) {
+    this.onTouched = fn;
+  }
+
+  setDisabledState?(isDisabled: boolean): void {
+    this.disabled = isDisabled;
+  }
+
+  // type
+  writeValue(value) {
+    this.start = value.start || null;
+    this.end = value.end || null;
+
+    // start time date
+    this.onChange(value);
+    this.changeVal.emit(value);
+  }
+
+  handleChanges(type: string, value): void {
+    // it's used not to send not valid changes
+    if (type === 'start') {
+      this.start = value;
+    }
+    if (type === 'end') {
+      this.end = value;
+    }
+    if (this.start && this.end) {
+      this.onChange({
+        start: moment(this.start),
+        end: moment(this.end),
+      });
+      this.startTimeHours = this.getTimeHoursPresentation(this.start);
+      this.startTimeMinutes = this.getTimeMinutesPresentation(this.start);
+      this.endTimeHours = this.getTimeHoursPresentation(this.end);
+      this.endTimeMinutes = this.getTimeMinutesPresentation(this.end);
+    }
+  }
+
+  formatTime(value: string, type = 'hours') {
+    const intValue = +value;
+
+    if (
+      !intValue ||
+      intValue < 0 ||
+      (type === 'hours' && intValue > 23) ||
+      (type === 'minutes' && intValue > 59)
+    ) {
+      return '00';
+    }
+
+    if (intValue < 10) {
+      return `0${intValue}`;
+    }
+
+    return value;
+  }
+
+  changeTime(type: string, value: string): void {
+    if (type === 'start.hours') {
+      this.startTimeHours = this.formatTime(value, 'hours');
+    }
+    if (type === 'start.minutes') {
+      this.startTimeMinutes = this.formatTime(value, 'minutes');
+    }
+    if (type === 'end.hours') {
+      this.endTimeHours = this.formatTime(value, 'hours');
+    }
+    if (type === 'end.minutes') {
+      this.endTimeMinutes = this.formatTime(value, 'minutes');
+    }
+    this.start = new Date(
+      `${moment(this.start).format('YYYY-MM-DD')} ${this.startTimeHours}:${
+        this.startTimeMinutes
+      }`
+    );
+
+    this.end = new Date(
+      `${moment(this.end).format('YYYY-MM-DD')} ${this.endTimeHours}:${
+        this.endTimeMinutes
+      }`
+    );
+
+    this.onChange({
+      start: moment(this.start),
+      end: moment(this.end),
+    });
+  }
+
+  get startDateFormatted(): string {
+    return this.getDatePresentation(this.start);
+  }
+
+  get endDateFormatted(): string {
+    return this.getDatePresentation(this.end);
+  }
+
+  getDatePresentation(dateStr: Date): string {
     return (dateStr && moment(dateStr).format('YYYY.MM.DD')) || '';
   }
 
-  getTimePresentation(dateStr: string): string {
-    return (dateStr && moment(dateStr).format('HH:mm:ss')) || '';
+  getTimeHoursPresentation(dateStr: Date): string {
+    return (dateStr && moment(dateStr).format('HH')) || '';
+  }
+
+  getTimeMinutesPresentation(dateStr: Date): string {
+    return (dateStr && moment(dateStr).format('mm')) || '';
   }
 }

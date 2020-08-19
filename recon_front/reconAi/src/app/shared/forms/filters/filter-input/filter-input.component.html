@@ -1,0 +1,18 @@
+<div class="field-container">
+  <label [for]="uniqueId">{{ label }} </label>
+  <div class="input-container">
+    <input
+      [ngClass]="{ 'with-search': isWithSearchIcon }"
+      [id]="uniqueId"
+      [value]="value"
+      class="recon-filter-input"
+      [placeholder]="placeholder"
+      [disabled]="disabled"
+      (input)="changeValue($event.target.value)"
+      (blur)="onTouched()"
+    />
+    <div class="icon-container" *ngIf="isWithSearchIcon">
+      <mat-icon>search</mat-icon>
+    </div>
+  </div>
+</div>
