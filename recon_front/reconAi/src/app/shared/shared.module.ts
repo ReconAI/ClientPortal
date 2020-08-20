@@ -20,6 +20,8 @@ import { FormRangePickerComponent } from './forms/form-range-picker/form-range-p
 import { FilterInputComponent } from './forms/filters/filter-input/filter-input.component';
 import { FilterInputCheckboxComponent } from './forms/filters/filter-input-checkbox/filter-input-checkbox.component';
 import { FilterThreeInputsComponent } from './forms/filters/filter-three-inputs/filter-three-inputs.component';
+import { FilterSelectComponent } from './forms/filters/filter-select/filter-select.component';
+import { FilterTwoInputsComponent } from './forms/filters/filter-two-inputs/filter-two-inputs.component';
 @NgModule({
   declarations: [
     FormInputComponent,
@@ -38,6 +40,8 @@ import { FilterThreeInputsComponent } from './forms/filters/filter-three-inputs/
     FilterInputComponent,
     FilterInputCheckboxComponent,
     FilterThreeInputsComponent,
+    FilterSelectComponent,
+    FilterTwoInputsComponent,
   ],
   imports: [
     CommonModule,
@@ -63,6 +67,8 @@ import { FilterThreeInputsComponent } from './forms/filters/filter-three-inputs/
     FilterInputComponent,
     FilterInputCheckboxComponent,
     FilterThreeInputsComponent,
+    FilterSelectComponent,
+    FilterTwoInputsComponent,
   ],
   providers: [],
 })

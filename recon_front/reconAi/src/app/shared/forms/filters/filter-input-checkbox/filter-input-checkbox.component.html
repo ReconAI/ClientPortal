@@ -1,13 +1,15 @@
 <div class="input-checkbox-container">
   <label> {{ label }}</label>
   <div class="inputs-container">
-    <recon-filter-input
-      [(ngModel)]="inputValue"
-      [placeholder]="placeholder"
-      [isWithSearchIcon]="true"
-      (changeVal)="changeValues()"
-    >
-    </recon-filter-input>
+    <div class="input-icon">
+      <recon-filter-input
+        [(ngModel)]="inputValue"
+        [placeholder]="placeholder"
+        [isWithSearchIcon]="true"
+        (changeVal)="changeValues()"
+      >
+      </recon-filter-input>
+    </div>
     <recon-form-checkbox
       [(ngModel)]="checked"
       [label]="checkboxLabel"

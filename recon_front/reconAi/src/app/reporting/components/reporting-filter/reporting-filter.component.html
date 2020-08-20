@@ -1,13 +1,21 @@
 <div class="filter-container" [formGroup]="filtersForm">
   <div class="filters" formArrayName="filters">
-    <div class="filter" [formGroupName]="0">
+    <div
+      class="filter"
+      [ngClass]="{ 'shown-filter': isSelectedAtIndex(0) }"
+      [formGroupName]="0"
+    >
       <recon-form-slider
         formControlName="value"
         label="And / Or"
         *ngIf="isSelectedAtIndex(0)"
       ></recon-form-slider>
     </div>
-    <div class="filter" [formGroupName]="1">
+    <div
+      class="filter input-filter"
+      [ngClass]="{ 'shown-filter': isSelectedAtIndex(1) }"
+      [formGroupName]="1"
+    >
       <recon-filter-input
         formControlName="value"
         label="Sensor Id"
@@ -15,14 +23,22 @@
         *ngIf="isSelectedAtIndex(1)"
       ></recon-filter-input>
     </div>
-    <div class="filter" [formGroupName]="2">
+    <div
+      class="filter"
+      [ngClass]="{ 'shown-filter': isSelectedAtIndex(2) }"
+      [formGroupName]="2"
+    >
       <recon-form-range-picker
         label="Time stamp"
         *ngIf="isSelectedAtIndex(2)"
         formControlName="value"
       ></recon-form-range-picker>
     </div>
-    <div class="filter" [formGroupName]="3">
+    <div
+      class="filter input-checkbox-filter"
+      [ngClass]="{ 'shown-filter': isSelectedAtIndex(3) }"
+      [formGroupName]="3"
+    >
       <recon-filter-input-checkbox
         label="Project name"
         checkboxLabel="Not equal"
@@ -31,7 +47,11 @@
         *ngIf="isSelectedAtIndex(3)"
       ></recon-filter-input-checkbox>
     </div>
-    <div class="filter" [formGroupName]="4">
+    <div
+      class="filter input-checkbox-filter"
+      [ngClass]="{ 'shown-filter': isSelectedAtIndex(4) }"
+      [formGroupName]="4"
+    >
       <recon-filter-input-checkbox
         label="Edge Node name"
         checkboxLabel="Not equal"
@@ -40,7 +60,11 @@
         *ngIf="isSelectedAtIndex(4)"
       ></recon-filter-input-checkbox>
     </div>
-    <div class="filter" [formGroupName]="5">
+    <div
+      class="filter input-filter"
+      [ngClass]="{ 'shown-filter': isSelectedAtIndex(5) }"
+      [formGroupName]="5"
+    >
       <recon-filter-input
         formControlName="value"
         label="Event/Object"
@@ -48,7 +72,11 @@
         *ngIf="isSelectedAtIndex(5)"
       ></recon-filter-input>
     </div>
-    <div class="filter" [formGroupName]="6">
+    <div
+      class="filter"
+      [ngClass]="{ 'shown-filter': isSelectedAtIndex(6) }"
+      [formGroupName]="6"
+    >
       <recon-filter-three-inputs
         label="Location XYZ, mm"
         leftLabel="X"
@@ -59,7 +87,11 @@
         *ngIf="isSelectedAtIndex(6)"
       ></recon-filter-three-inputs>
     </div>
-    <div class="filter" [formGroupName]="7">
+    <div
+      class="filter input-checkbox-filter"
+      [ngClass]="{ 'shown-filter': isSelectedAtIndex(7) }"
+      [formGroupName]="7"
+    >
       <recon-filter-input-checkbox
         label="Orient theta"
         checkboxLabel="Invert"
@@ -68,7 +100,11 @@
         *ngIf="isSelectedAtIndex(7)"
       ></recon-filter-input-checkbox>
     </div>
-    <div class="filter" [formGroupName]="8">
+    <div
+      class="filter input-checkbox-filter"
+      [ngClass]="{ 'shown-filter': isSelectedAtIndex(8) }"
+      [formGroupName]="8"
+    >
       <recon-filter-input-checkbox
         label="Orient phi"
         checkboxLabel="Invert"
@@ -76,6 +112,79 @@
         formControlName="value"
         *ngIf="isSelectedAtIndex(8)"
       ></recon-filter-input-checkbox>
+    </div>
+    <div
+      class="filter"
+      [ngClass]="{ 'shown-filter': isSelectedAtIndex(9) }"
+      [formGroupName]="9"
+    >
+      <recon-filter-select
+        label="Traffic flow"
+        formControlName="value"
+        [options]="trafficFlowOptions"
+        *ngIf="isSelectedAtIndex(9)"
+      ></recon-filter-select>
+    </div>
+    <div
+      class="filter"
+      [ngClass]="{ 'shown-filter': isSelectedAtIndex(10) }"
+      [formGroupName]="10"
+    >
+      <recon-filter-select
+        label="Vehicle classification"
+        formControlName="value"
+        [options]="vehicleOptions"
+        *ngIf="isSelectedAtIndex(10)"
+      ></recon-filter-select>
+    </div>
+    <div
+      class="filter"
+      [ngClass]="{ 'shown-filter': isSelectedAtIndex(11) }"
+      [formGroupName]="11"
+    >
+      <recon-filter-select
+        label="Pedestrian transit method classification"
+        formControlName="value"
+        [options]="pedestrianOptions"
+        *ngIf="isSelectedAtIndex(11)"
+      ></recon-filter-select>
+    </div>
+    <div
+      class="filter"
+      [ngClass]="{ 'shown-filter': isSelectedAtIndex(12) }"
+      [formGroupName]="12"
+    >
+      <recon-filter-two-inputs
+        label="Ambient temperature, C"
+        formControlName="value"
+        leftPlaceholder="From"
+        rightPlaceholder="To"
+        *ngIf="isSelectedAtIndex(12)"
+      ></recon-filter-two-inputs>
+    </div>
+    <div
+      class="filter"
+      [ngClass]="{ 'shown-filter': isSelectedAtIndex(13) }"
+      [formGroupName]="13"
+    >
+      <recon-filter-two-inputs
+        label="Road temperature, C"
+        formControlName="value"
+        leftPlaceholder="From"
+        rightPlaceholder="To"
+        *ngIf="isSelectedAtIndex(13)"
+      ></recon-filter-two-inputs>
+    </div>
+    <div
+      class="filter checkbox-filter"
+      [ngClass]="{ 'shown-filter': isSelectedAtIndex(14) }"
+      [formGroupName]="14"
+    >
+      <recon-form-checkbox
+        label="Tagged data"
+        formControlName="value"
+        *ngIf="isSelectedAtIndex(14)"
+      ></recon-form-checkbox>
     </div>
   </div>
   <div class="button-container">
@@ -110,5 +219,3 @@
     </ng-container>
   </div>
 </div>
-
-{{ jsonForm }}

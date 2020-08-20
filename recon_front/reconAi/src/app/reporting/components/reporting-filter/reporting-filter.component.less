@@ -18,9 +18,30 @@
         width: 80%;
         height: 57px;
         overflow-x: auto;
+        height: 100%;
 
         div.filter {
+            display: none;
             margin-left: 10px;
+
+            &.shown-filter {
+                display: block;
+            }
+
+            &.input-filter {
+                min-width: 100px;
+                width: 100px;
+            }
+
+            &.input-checkbox-filter {
+                min-width: 240px;
+                width: 240px;
+            }
+
+            &.checkbox-filter {
+                min-width: 115px;
+                width: 115px;
+            }
         }
     }
 

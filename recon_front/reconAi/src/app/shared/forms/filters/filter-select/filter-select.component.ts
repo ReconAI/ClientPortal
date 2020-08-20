@@ -1,37 +1,38 @@
-import { ReconSelectOption } from './../../types/recon-select';
+import { NgControl } from '@angular/forms';
+import { ReconSelectOption } from 'app/shared/types';
 import {
   Component,
   OnInit,
-  Optional,
-  Self,
-  Input,
   Output,
+  Input,
   EventEmitter,
+  Self,
+  Optional,
+  ViewEncapsulation,
 } from '@angular/core';
-import { ControlValueAccessor, NgControl } from '@angular/forms';
-import { v4 as uuid } from 'uuid';
 
 @Component({
-  selector: 'recon-form-select',
-  templateUrl: './form-select.component.html',
-  styleUrls: ['./form-select.component.less'],
+  selector: 'recon-filter-select',
+  templateUrl: './filter-select.component.html',
+  styleUrls: ['./filter-select.component.less'],
+  encapsulation: ViewEncapsulation.None,
 })
-export class FormSelectComponent implements ControlValueAccessor, OnInit {
+export class FilterSelectComponent implements OnInit {
   constructor(@Optional() @Self() public controlDir: NgControl) {
     controlDir.valueAccessor = this;
   }
 
   selectedOption: ReconSelectOption;
-  uniqueId: string;
   @Input() label = '';
   @Input() options: ReconSelectOption[] = [];
   @Input() placeholder = '';
-  @Input() errorMessages: { [key: string]: string } = {};
   @Input() disabled = false;
-  @Input() showRequiredSymbol = false;
-
   @Output() changeVal = new EventEmitter<any>();
+
   isActive = false;
+
+  ngOnInit(): void {}
+
   onChange = (value: any) => {};
   onTouched = () => {};
 
@@ -40,8 +41,8 @@ export class FormSelectComponent implements ControlValueAccessor, OnInit {
       (option) => option?.value?.toString() === value?.toString()
     );
 
-    this.onChange(this.selectedOption?.value || '');
-    this.changeVal.emit(this.selectedOption?.value || '');
+    // this.onChange(this.selectedOption?.value || '');
+    // this.changeVal.emit(this.selectedOption?.value || '');
   }
 
   registerOnChange(fn) {
@@ -56,14 +57,6 @@ export class FormSelectComponent implements ControlValueAccessor, OnInit {
     this.disabled = isDisabled;
   }
 
-  get hasErrors() {
-    return (
-      this.controlDir.control &&
-      this.controlDir.control.touched &&
-      this.controlDir.control.errors
-    );
-  }
-
   optionClick(option: ReconSelectOption) {
     this.selectedOption = option;
     this.onChange(this.selectedOption.value);
@@ -75,19 +68,11 @@ export class FormSelectComponent implements ControlValueAccessor, OnInit {
     this.isActive = true;
   }
 
-  handleClickOutside() {
-    this.isActive = false;
-  }
-
   get headerLabel(): string {
     return (
       this.selectedOption?.label?.toString() ||
       this.placeholder ||
       'Choose an option'
     );
-  }
-
-  ngOnInit(): void {
-    this.uniqueId = uuid();
   }
 }
