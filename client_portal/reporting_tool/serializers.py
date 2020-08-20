@@ -350,8 +350,10 @@ class UserInvoiceSerializer(ModelSerializer):
 
         :rtype: float
         """
+        user_license_fee = self.__user_license_fee
+
         return round(
-            self.__user_cost_handler(user, self.__user_license_fee).license_fee,
+            self.__user_cost_handler(user, user_license_fee).license_fee,
             2
         )
 

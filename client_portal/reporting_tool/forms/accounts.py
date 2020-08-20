@@ -191,8 +191,8 @@ class SignupForm(SendEmailMixin):
             [user.email],
             'emails/account_activation_subject.txt',
             'emails/account_activation.html',
-            request,
-            user
+            request=request,
+            user=user
         )
 
         return (
@@ -393,4 +393,6 @@ class UserActivationForm(CheckUserTokenForm):
         user = self.user
 
         user.is_active = True
-        return user.save()
+        user.save()
+
+        return user
