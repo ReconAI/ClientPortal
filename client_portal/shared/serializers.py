@@ -7,6 +7,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.db.models import Model
 from django.forms import Form, BaseForm
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from drf_braces.serializers.form_serializer import FormSerializer
 from rest_framework import serializers
@@ -191,3 +192,32 @@ class DeviceImageSerializer(ModelSerializer):
         """
         model = DeviceImage
         fields = ('id', 'path')
+
+
+class TrialSerializer(ModelSerializer):
+    """
+    Trial serializer definition
+    """
+    days_left = serializers.SerializerMethodField(
+        method_name='trial_days_left'
+    )
+
+    class Meta:
+        """
+        Id and path are to be exposed
+        """
+        model = Organization
+        fields = ('days_left',)
+
+    @staticmethod
+    def trial_days_left(organization: Organization) -> int:
+        """
+        Informs how many days left before trial termination
+
+        :type organization: Organization
+
+        :rtype: int
+        """
+        days_left = (organization.trial_expires_on - now()).days
+
+        return days_left if days_left > 0 else 0

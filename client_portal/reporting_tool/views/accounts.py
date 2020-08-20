@@ -24,15 +24,16 @@ from reporting_tool.forms.accounts import PreSignupForm, SignupForm, \
     UserAndOrganizationEditForm
 from reporting_tool.forms.organization import OrganizationForm
 from reporting_tool.tokens import PasswordResetTokenGenerator
-from shared.models import Token
+from shared.models import Token, User
 from shared.permissions import IsNotAuthenticated, IsActive, \
     PaymentRequired
 from shared.serializers import form_to_formserializer, \
     forms_to_formserializer, AuthTokenSerializer, \
-    UserOrganizationSerializer
+    UserOrganizationSerializer, TrialSerializer
 from shared.swagger.headers import token_header
 from shared.swagger.responses import get_responses, token, http400, \
-    http405, http403, http401, data_serializer
+    http405, http403, http401, data_serializer, \
+    default_unsafe_responses_with_custom_success, data_message_serializer
 from shared.views.utils import CheckTokenMixin, FormMixin
 
 
@@ -121,21 +122,20 @@ class ActivateView(APIView, FormMixin):
 
     permission_classes = (IsNotAuthenticated,)
 
+    response_serializer = TrialSerializer
+
     @atomic(using='default')
     @atomic(using=settings.RECON_AI_CONNECTION_NAME)
     @swagger_auto_schema(
-        responses=get_responses(status.HTTP_200_OK,
-                                status.HTTP_400_BAD_REQUEST,
-                                status.HTTP_403_FORBIDDEN,
-                                status.HTTP_404_NOT_FOUND,
-                                status.HTTP_405_METHOD_NOT_ALLOWED,
-                                status.HTTP_422_UNPROCESSABLE_ENTITY),
+        responses=default_unsafe_responses_with_custom_success(
+            data_message_serializer(response_serializer)
+        ),
         tags=['Accounts'],
         operation_summary="Activates user account",
         operation_description='User account activation',
         request_body=form_to_formserializer(form_class),
     )
-    def put(self, request: Request, *args, **kwargs) -> JsonResponse:
+    def put(self, *args, **kwargs) -> JsonResponse:
         """
         User account activation
 
@@ -145,6 +145,9 @@ class ActivateView(APIView, FormMixin):
         return self.save_or_error(
             _('Activated')
         )
+
+    def response_data(self, instance: User) -> dict:
+        return self.response_serializer(instance.organization).data
 
 
 class CurrentUserProfileView(APIView, FormMixin):

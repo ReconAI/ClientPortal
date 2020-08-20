@@ -198,3 +198,5 @@ dmypy.json
 cython_debug/
 
 client_portal/media
+
+test.py

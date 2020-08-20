@@ -288,6 +288,11 @@ class OrganizationCharger:
 
     @property
     def is_invoice(self) -> bool:
+        """
+        Checks whether payment should be completed by invoice
+
+        :rtype: bool
+        """
         return self.__organization.is_invoice_payment_method
 
     def __fee_if_first_payment(self, dimension: float) -> float:

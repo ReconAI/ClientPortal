@@ -113,7 +113,11 @@ class AbstractIaMUserManager:
 
     @abstractmethod
     def get_or_create(self) -> object:
-        pass
+        """
+        Returns object or creates new one
+
+        :rtype: object
+        """
 
     @abstractmethod
     def update(self) -> object:
