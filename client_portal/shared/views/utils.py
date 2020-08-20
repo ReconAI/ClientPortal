@@ -55,6 +55,16 @@ class FormMixin(FormMixinBase):
             'data': self.request.data
         }
 
+    def response_data(self, instance) -> dict:
+        """
+        Data passed to response
+
+        :param instance:
+
+        :rtype: dict
+        """
+        return {}
+
     def save_or_error(self, success_message: str,
                       success_status: int = status.HTTP_200_OK,
                       form: BaseForm = None, **kwargs) -> JsonResponse:
@@ -72,11 +82,20 @@ class FormMixin(FormMixinBase):
             form = self.get_form()
 
         if form.is_valid():
-            form.save(**kwargs)
+            instance = form.save(**kwargs)
 
-            return JsonResponse({
+            response = {
                 'message': success_message
-            }, status=success_status)
+            }
+
+            response_data = self.response_data(instance)
+
+            if self.response_data(instance):
+                response['data'] = {
+                    **response_data
+                }
+
+            return JsonResponse(response, status=success_status)
 
         return JsonResponse({
             'errors': form.errors
@@ -211,6 +230,12 @@ class PlainListModelMixin:
 class RetrieveAPIView(RetrieveModelMixin, GenericAPIView):
     """
     Generic retrieve API view
+    """
+
+
+class UpdateAPIView(UpdateModelMixin, GenericAPIView):
+    """
+    Generic update API view
     """
 
 

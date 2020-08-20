@@ -72,11 +72,11 @@ class UserInvitationForm(ModelForm, RoleFieldMixin, SendEmailMixin):
         UserGroup.objects.create(user=user, group=role)
 
         self.send_mail(
-            user.email,
+            [user.email],
             'emails/user_invitation_subject.txt',
             'emails/user_invitation.html',
-            request,
-            user
+            request=request,
+            user=user
         )
 
         return user
@@ -164,5 +164,6 @@ class FollowInvitationForm(UserForm, CheckUserInvitationTokenForm):
         """
         self.instance.set_password(self.cleaned_data['password2'])
         self.instance.is_active = True
+        self.instance.save()
 
-        return self.instance.save()
+        return self.instance

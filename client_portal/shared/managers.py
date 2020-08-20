@@ -100,19 +100,27 @@ class AbstractIaMUserManager:
         self._instance = instance
 
     @abstractmethod
-    def get(self):
+    def get(self) -> object:
         """
         Gets user from the service
         """
 
     @abstractmethod
-    def create(self):
+    def create(self) -> object:
         """
         Creates a user within IaM
         """
 
     @abstractmethod
-    def update(self):
+    def get_or_create(self) -> object:
+        """
+        Returns object or creates new one
+
+        :rtype: object
+        """
+
+    @abstractmethod
+    def update(self) -> object:
         """
         Updates a user within IaM
         """
@@ -140,12 +148,18 @@ class AbstractIaMUserManager:
         :type group_name: str
         """
 
+    @abstractmethod
+    def get_access_key(self) -> str:
+        """
+        :rtype: str
+        """
+
 
 class IaMUserManager(AbstractIaMUserManager):
     """
     Manages data from IaM service
     """
-    __user_serializer = 'shared.serializers.UserSerializer'
+    __user_serializer = 'shared.serializers.IaMUserSerializer'
 
     def __init__(self, instance: 'User'):
         """
@@ -169,9 +183,17 @@ class IaMUserManager(AbstractIaMUserManager):
         """
         Creates a user within IaM
         """
-        self.__iam.create_user(UserName=self._instance.username,
-                               Tags=self.__tags)
+        user = self.__iam.create_user(UserName=self._instance.username,
+                                      Tags=self.__tags)
         self.add_user_to_group(settings.AWS_IAM_USER_GROUP)
+
+        return user
+
+    def get_or_create(self) -> object:
+        try:
+            return self.get()
+        except self.__iam.exceptions.NoSuchEntityException:
+            return self.create()
 
     def update(self):
         """
@@ -218,6 +240,26 @@ class IaMUserManager(AbstractIaMUserManager):
             GroupName=group_name
         )
 
+    def get_access_key(self) -> str:
+        if not self._instance.aws_secret_access_key:
+            self.get_or_create()
+
+            keys = self.__iam.create_access_key(
+                UserName=self._instance.username
+            )
+
+            self._instance.aws_access_key_id = keys.get(
+                'AccessKey', {}
+            ).get('AccessKeyId', '')
+
+            self._instance.aws_secret_access_key = keys.get(
+                'AccessKey', {}
+            ).get('SecretAccessKey', '')
+
+            self._instance.save()
+
+        return self._instance.aws_secret_access_key
+
     @property
     def __tags(self) -> List[Dict]:
         """
@@ -231,7 +273,7 @@ class IaMUserManager(AbstractIaMUserManager):
         return [
             {'Key': key, 'Value': str(value)}
             for key, value
-            in data
+            in data.items()
             if key not in exclude
         ]
 
@@ -277,6 +319,16 @@ class DummyIaMUserManager(AbstractIaMUserManager):
         :type group_name: str
         """
 
+    def get_or_create(self) -> object:
+        """
+        :rtype: object
+        """
+
+    def get_access_key(self) -> str:
+        """
+        :rtype: str
+        """
+
 
 class AbstractPaymentMethodManager(ABC):
     """
@@ -307,6 +359,11 @@ class AbstractPaymentMethodManager(ABC):
         """
         :type method_type: str
 
+        :rtype: Iterable[object]
+        """
+
+    def cards(self) -> Iterable[object]:
+        """
         :rtype: Iterable[object]
         """
 
@@ -387,6 +444,17 @@ class PaymentMethodManager(AbstractPaymentMethodManager):
         return self.__source.list(
             customer=self._customer.id,
             type=method_type,
+            api_key=settings.STRIPE_SECRET_KEY,
+            **params
+        )
+
+    def cards(self, **params) -> stripe.ListObject:
+        """
+        :rtype: stripe.ListObject
+        """
+        return self.__source.list(
+            customer=self._customer.id,
+            type=self.CARD_METHOD,
             api_key=settings.STRIPE_SECRET_KEY,
             **params
         )
@@ -477,3 +545,9 @@ class StripeCustomerManager(AbstractCustomerManager):
             return self.retrieve()
         except InvalidRequestError:
             return self.create()
+
+# class OrganizationManager(models.Manager):
+#     def exclude_root(self) -> 'QuerySet':
+#         from recon_db_manager.models import Organization
+#
+#         return self.exclude(name=Organization.ROOT)

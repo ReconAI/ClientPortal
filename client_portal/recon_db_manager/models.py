@@ -2,6 +2,7 @@
 Recon db mangaer are defined here
 """
 from datetime import datetime, timedelta
+from typing import Optional
 
 from django.conf import settings
 from django.contrib.postgres.fields import JSONField
@@ -34,6 +35,7 @@ class Organization(models.Model):
     inv_phone = models.CharField(null=True, blank=True, max_length=255)
     inv_email = models.EmailField(null=True, blank=True, max_length=255)
     created_dt = models.DateTimeField(auto_now_add=True)
+    is_invoice_payment_method = models.BooleanField(default=False)
 
     class Meta:
         """
@@ -49,6 +51,13 @@ class Organization(models.Model):
         return cls.objects.get(name=cls.ROOT)
 
     @property
+    def is_root(self) -> bool:
+        """
+        :rtype: bool
+        """
+        return self.name == self.ROOT
+
+    @property
     def customer(self) -> 'AbstractCustomerManager':
         """
         :rtype: AbstractCustomerManager
@@ -60,7 +69,18 @@ class Organization(models.Model):
         """
         :rtype: datetime
         """
-        return self.created_dt + timedelta(days=settings.TRIAL_PERIOD_DAYS)
+        return (
+            self.created_dt + timedelta(days=settings.TRIAL_PERIOD_DAYS)
+        )
+
+    @property
+    def first_charge_on(self) -> datetime:
+        """
+        :rtype: datetime
+        """
+        return (self.created_dt + timedelta(
+            days=settings.TRIAL_PERIOD_DAYS + settings.CHARGE_EACH_N_DAYS
+        ))
 
     @property
     def is_on_trial(self) -> bool:
@@ -68,6 +88,21 @@ class Organization(models.Model):
         :rtype: bool
         """
         return self.trial_expires_on > now()
+
+    @property
+    def first_charge_happened(self) -> bool:
+        """
+        :rtype: bool
+        """
+        return self.first_charge_on < now()
+
+    @property
+    def latest_charge(self) -> Optional['RecurrentCharge']:
+        """
+        :rtype: Optional['RecurrentCharge']
+        """
+        return self.recurrentcharge_set.distinct(
+            'organization_id').order_by('-organization_id').first()
 
 
 class CommonUser(models.Model):
@@ -88,12 +123,25 @@ class CommonUser(models.Model):
     user_level = models.CharField(null=True, blank=True, max_length=3)
     is_active = models.BooleanField(null=False, default=False,
                                     db_column='isEmailVerified')
+    aws_access_key_id = models.CharField(null=True, max_length=255,
+                                         db_column='awsAccessKeyId')
+    aws_secret_access_key = models.CharField(null=True, max_length=255,
+                                             db_column='awsSecretAccessKey')
 
     class Meta:
         """
         CommonUser model's Meta class specification
         """
         abstract = True
+
+    @property
+    def fullname(self) -> str:
+        """
+        User fullname mask
+
+        :rtype: str
+        """
+        return '{} {}'.format(self.firstname, self.lastname)
 
 
 class User(CommonUser):
@@ -1334,7 +1382,7 @@ class DetectedObjects(models.Model):
     object_type = models.CharField(null=True, blank=True, max_length=3,
                                    db_column='objectType')
     created_dt = models.DateTimeField(null=True, blank=True, auto_now_add=True)
-    file = models.ForeignKey(FileStorage, models.DO_NOTHING,
+    file = models.ForeignKey(FileStorage, models.DO_NOTHING, null=True,
                              db_column='fileId')
     parameters = JSONField(null=True, blank=True, db_column='parametersJSON')
 
@@ -1552,3 +1600,49 @@ class DevicePurchase(models.Model):
         Device purchase model's Meta class specification
         """
         db_table = 'DevicePurchases'
+
+
+class RecurrentCharge(models.Model):
+    """
+    Recurrent charges model
+    """
+    id = models.BigAutoField(primary_key=True)
+    organization = models.ForeignKey(
+        Organization, on_delete=models.CASCADE,
+        null=False, blank=False, db_column='organizationId'
+    )
+    payment_id = models.CharField(
+        max_length=255, null=True, db_column='paymentId'
+    )
+    is_invoice = models.BooleanField(default=False)
+    device_license_fee = models.DecimalField(
+        null=False, blank=False, max_digits=16,
+        decimal_places=2, db_column='deviceLicenseFee'
+    )
+    user_license_fee = models.DecimalField(
+        null=False, blank=False, max_digits=16,
+        decimal_places=2, db_column='userLicenseFee'
+    )
+    device_cnt = models.PositiveIntegerField(
+        null=False, default=0, db_column='deviceCnt'
+    )
+    vat = models.DecimalField(
+        null=False, blank=False, max_digits=16,
+        decimal_places=2, db_column='VAT'
+    )
+    total = models.PositiveIntegerField(null=False, blank=False)
+    created_dt = models.DateTimeField(auto_now_add=True)
+    invoice_data = JSONField(db_column='invoiceData')
+
+    class Meta:
+        """
+        Recurrent charge model's Meta class specification
+        """
+        db_table = 'RecurrentCharges'
+
+    @property
+    def is_successful(self) -> bool:
+        """
+        :rtype: bool
+        """
+        return self.payment_id is not None

@@ -18,7 +18,7 @@ def sync_iam_user(instance: User, created: bool, **kwargs):
     :type kwargs: dict
     """
     if created:
-        return instance.iam.create()
+        return instance.iam.get_or_create()
 
     return instance.iam.update()
 

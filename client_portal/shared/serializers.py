@@ -7,6 +7,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.db.models import Model
 from django.forms import Form, BaseForm
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from drf_braces.serializers.form_serializer import FormSerializer
 from rest_framework import serializers
@@ -101,7 +102,23 @@ class OrganizationSerializer(ReadOnlySerializerMixin,
         fields = (
             'name', 'vat', 'main_firstname', 'main_lastname', 'main_address',
             'main_phone', 'main_email', 'inv_firstname', 'inv_lastname',
-            'inv_address', 'inv_phone', 'inv_email'
+            'inv_address', 'inv_phone', 'inv_email',
+            'is_invoice_payment_method'
+        )
+
+
+class IaMUserSerializer(ReadOnlySerializerMixin, serializers.ModelSerializer):
+    """
+    IaM user serializer
+    """
+    class Meta:
+        """
+        User is serializer's model
+        """
+        model = get_user_model()
+        fields = (
+            'id', 'firstname', 'lastname', 'username', 'address',
+            'phone', 'email', 'created_dt', 'is_active'
         )
 
 
@@ -175,3 +192,32 @@ class DeviceImageSerializer(ModelSerializer):
         """
         model = DeviceImage
         fields = ('id', 'path')
+
+
+class TrialSerializer(ModelSerializer):
+    """
+    Trial serializer definition
+    """
+    days_left = serializers.SerializerMethodField(
+        method_name='trial_days_left'
+    )
+
+    class Meta:
+        """
+        Id and path are to be exposed
+        """
+        model = Organization
+        fields = ('days_left',)
+
+    @staticmethod
+    def trial_days_left(organization: Organization) -> int:
+        """
+        Informs how many days left before trial termination
+
+        :type organization: Organization
+
+        :rtype: int
+        """
+        days_left = (organization.trial_expires_on - now()).days
+
+        return days_left if days_left > 0 else 0

@@ -2,7 +2,7 @@
 Views associated with user management. There are actions admin can
 perform over users within admin's company.
 """
-
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db.models.query import QuerySet
 from django.db.transaction import atomic
@@ -19,16 +19,17 @@ from rest_framework.views import APIView
 
 from reporting_tool.forms.user_management import UserInvitationForm, \
     FollowInvitationForm, CheckUserInvitationTokenForm, UserEditForm
-from reporting_tool.settings import RECON_AI_CONNECTION_NAME
+from shared.models import User
 from shared.permissions import IsCompanyAdmin, IsActive, \
     IsNotAuthenticated, PaymentRequired
 from shared.serializers import UserSerializer, \
-    form_to_formserializer, UserOrganizationSerializer
+    form_to_formserializer, UserOrganizationSerializer, TrialSerializer
 from shared.swagger.headers import token_header
 from shared.swagger.responses import data_serializer, http401, \
-    http405, http404, http403, get_responses, data_message_serializer, \
+    http405, http404, http403, data_message_serializer, \
     http400, DEFAULT_UNSAFE_REQUEST_RESPONSES, \
-    DEFAULT_DELETE_REQUEST_RESPONSES, DEFAULT_GET_REQUESTS_RESPONSES
+    DEFAULT_DELETE_REQUEST_RESPONSES, DEFAULT_GET_REQUESTS_RESPONSES, \
+    default_unsafe_responses_with_custom_success
 from shared.views.utils import CheckTokenMixin, FormMixin
 
 
@@ -78,7 +79,7 @@ class UserList(ListCreateAPIView, FormMixin):
         )
 
     @atomic(using='default')
-    @atomic(using=RECON_AI_CONNECTION_NAME)
+    @atomic(using=settings.RECON_AI_CONNECTION_NAME)
     def create(self, request: Request, *args, **kwargs) -> JsonResponse:
         """
         :type request: Request
@@ -146,14 +147,7 @@ class UserItem(GenericAPIView, FormMixin):
         })
 
     @swagger_auto_schema(
-        responses=get_responses(
-            status.HTTP_200_OK,
-            status.HTTP_400_BAD_REQUEST,
-            status.HTTP_404_NOT_FOUND,
-            status.HTTP_403_FORBIDDEN,
-            status.HTTP_405_METHOD_NOT_ALLOWED,
-            status.HTTP_422_UNPROCESSABLE_ENTITY
-        ),
+        responses=DEFAULT_UNSAFE_REQUEST_RESPONSES,
         request_body=form_to_formserializer(UserEditForm),
         tags=['User Management'],
         operation_summary="User data update",
@@ -164,7 +158,7 @@ class UserItem(GenericAPIView, FormMixin):
         ]
     )
     @atomic(using='default')
-    @atomic(using=RECON_AI_CONNECTION_NAME)
+    @atomic(using=settings.RECON_AI_CONNECTION_NAME)
     def put(self, request, *args, **kwargs) -> JsonResponse:
         """
         :rtype: JsonResponse
@@ -209,6 +203,8 @@ class InvitationView(APIView, FormMixin, CheckTokenMixin):
 
     check_token_form_class = CheckUserInvitationTokenForm
 
+    response_serializer = TrialSerializer
+
     @swagger_auto_schema(
         responses={
             status.HTTP_200_OK: data_message_serializer(UserSerializer),
@@ -236,13 +232,8 @@ class InvitationView(APIView, FormMixin, CheckTokenMixin):
         return self.check_token()
 
     @swagger_auto_schema(
-        responses=get_responses(
-            status.HTTP_200_OK,
-            status.HTTP_400_BAD_REQUEST,
-            status.HTTP_404_NOT_FOUND,
-            status.HTTP_403_FORBIDDEN,
-            status.HTTP_405_METHOD_NOT_ALLOWED,
-            status.HTTP_422_UNPROCESSABLE_ENTITY
+        responses=default_unsafe_responses_with_custom_success(
+            data_message_serializer(response_serializer)
         ),
         request_body=form_to_formserializer(form_class),
         tags=['User Management'],
@@ -258,3 +249,6 @@ class InvitationView(APIView, FormMixin, CheckTokenMixin):
         return self.save_or_error(
             _('You are successfully registered')
         )
+
+    def response_data(self, instance: User) -> dict:
+        return self.response_serializer(instance.organization).data
