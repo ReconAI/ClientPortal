@@ -160,7 +160,7 @@ export class ReportingListDevicesComponent implements OnInit {
 
   devices = [];
 
-  clickRow(device): void {
+  setSelectedDevice(device): void {
     this.selectedIndex = this.devices.findIndex(({ id }) => id === device.id);
     this.layers = [1, 2, 3, 4, 5, 6].map((i, index) =>
       generateMapMarker(
@@ -252,6 +252,8 @@ export class ReportingListDevicesComponent implements OnInit {
       )
     );
 
+    this.setSelectedDevice(this.devices[0]);
+
     this.setCenter({
       lat: this.devices[0].gps[0],
       lng: this.devices[0].gps[1],
@@ -259,8 +261,13 @@ export class ReportingListDevicesComponent implements OnInit {
   }
 
   openDialog(): void {
+    const selectedDevice = this.devices[this.selectedIndex];
     this.dialog.open(SetGpsDialogComponent, {
       width: '600px',
+      data: {
+        lat: selectedDevice.gps[0],
+        lng: selectedDevice.gps[1],
+      },
     });
   }
 }

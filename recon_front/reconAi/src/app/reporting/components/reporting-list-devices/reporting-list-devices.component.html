@@ -49,7 +49,7 @@
       [allCellsTooltipText]="
         !this.isDevice ? 'Double click to navigate to device page' : null
       "
-      (rowClick$)="clickRow($event)"
+      (rowClick$)="setSelectedDevice($event)"
       (rowDoubleClick$)="navigateToDevice($event)"
     >
     </recon-crud-table>

@@ -1,9 +1,10 @@
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { TAMPERE_COORDINATES } from './../../../constants/globalVariables/globalVariables';
 import { LatLngInterface } from './../../../core/helpers/markers';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ReconSelectOption } from './../../../shared/types/recon-select';
-import { Component, OnInit } from '@angular/core';
-import { tileLayer, latLng, marker, icon, Marker, Icon, Layer } from 'leaflet';
+import { Component, OnInit, Inject } from '@angular/core';
+import { tileLayer, latLng, Layer } from 'leaflet';
 import { generateMapMarker } from 'app/core/helpers/markers';
 
 @Component({
@@ -15,9 +16,13 @@ export class SetGpsDialogComponent implements OnInit {
   coordinate: FormGroup;
   readonly numberPattern = '^[-]?[0-9]+[.]?[0-9]*$';
 
-  constructor(private fb: FormBuilder) {}
+  constructor(
+    private fb: FormBuilder,
+    @Inject(MAT_DIALOG_DATA)
+    public data: LatLngInterface
+  ) {}
 
-  center = TAMPERE_COORDINATES;
+  center = null;
   // move to general
   options = {
     layers: [
@@ -30,7 +35,7 @@ export class SetGpsDialogComponent implements OnInit {
     ],
     id: 'second-map',
     zoom: 10,
-    center: this.center,
+    center: null,
   };
 
   layers: Layer[];
@@ -38,20 +43,38 @@ export class SetGpsDialogComponent implements OnInit {
   ngOnInit(): void {
     this.coordinate = this.fb.group({
       longitude: [
-        '',
+        this.data.lng || '',
         Validators.compose([
           Validators.required,
           Validators.pattern(this.numberPattern),
         ]),
       ],
       latitude: [
-        '',
+        this.data.lat || '',
         Validators.compose([
           Validators.required,
           Validators.pattern(this.numberPattern),
         ]),
       ],
     });
+
+    this.center =
+      (this.data && latLng(this.data.lat, this.data.lng)) ||
+      TAMPERE_COORDINATES;
+
+    if (this.data) {
+      this.layers = [
+        generateMapMarker({
+          lat: this.data.lat,
+          lng: this.data.lng,
+        }),
+      ];
+    }
+
+    this.options = {
+      ...this.options,
+      center: this.center,
+    };
   }
 
   setCenter({ lat, lng }: LatLngInterface): void {
