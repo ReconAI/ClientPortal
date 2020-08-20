@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { generateMapMarker } from './../../../core/helpers/markers';
 import { CrudTableColumn } from 'app/shared/types';
 import { SetGpsDialogComponent } from './../set-gps-dialog/set-gps-dialog.component';
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, NgZone } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { tileLayer, latLng, marker, polygon, circle, icon } from 'leaflet';
 
@@ -15,7 +15,11 @@ import { LatLngInterface } from 'app/core/helpers/markers';
   styleUrls: ['./reporting-list-devices.component.less'],
 })
 export class ReportingListDevicesComponent implements OnInit {
-  constructor(private dialog: MatDialog, private router: Router) {}
+  constructor(
+    private dialog: MatDialog,
+    private router: Router,
+    private zone: NgZone
+  ) {}
   @Input() isDevice = false;
   center = latLng(48.879966, -123.726909);
 
@@ -154,30 +158,7 @@ export class ReportingListDevicesComponent implements OnInit {
     },
   ];
 
-  devices = [1, 2, 3, 4, 5, 6].map((i) => ({
-    id: i,
-    createdDT: moment(),
-    gps: [46.879966 + i * 2, -121.726909 - i * 2],
-    projectName: i,
-    nodeName: i,
-    isEvent: i % 2,
-    locationX: i,
-    locationY: i,
-    locationZ: i,
-    theta: i,
-    phi: i,
-    objectClass: i,
-    platNumber: i,
-    trafficFlow: i,
-    vehicle: i,
-    pedestrianFlow: i,
-    weatherCondition: i,
-    roadWeatherConditionSurveillance: i,
-    taggedData: i,
-    plate: i,
-    face: i,
-    fileTag: i,
-  }));
+  devices = [];
 
   clickRow(device): void {
     this.selectedIndex = this.devices.findIndex(({ id }) => id === device.id);
@@ -192,7 +173,7 @@ export class ReportingListDevicesComponent implements OnInit {
           zIndex: index === this.selectedIndex ? 1000 : 500,
           clickHandler: !this.isDevice
             ? () => {
-                this.router.navigate(['reporting', i]);
+                this.zone.run(() => this.router.navigate(['reporting', i]));
               }
             : () => {},
           popupText: !this.isDevice ? 'Click to navigate to device page' : '',
@@ -228,6 +209,32 @@ export class ReportingListDevicesComponent implements OnInit {
       ];
     }
 
+    this.devices = [1, 2, 3, 4, 5, 6].map((i) => ({
+      id: i,
+      createdDT: moment(),
+      gps: [46.879966 + i * 2, -121.726909 - i * 2],
+      projectName: i,
+      nodeName: i,
+      isEvent: i % 2,
+      locationX: i,
+      locationY: i,
+      locationZ: i,
+      theta: i,
+      phi: i,
+      objectClass: i,
+      platNumber: i,
+      trafficFlow: i,
+      vehicle: i,
+      pedestrianFlow: i,
+      weatherCondition: i,
+      roadWeatherConditionSurveillance: i,
+      taggedData: i,
+      plate: i,
+      face: i,
+      fileTag: i,
+    }));
+
+    // general
     this.layers = [1, 2, 3, 4, 5, 6].map((i) =>
       generateMapMarker(
         {
@@ -237,7 +244,7 @@ export class ReportingListDevicesComponent implements OnInit {
         {
           clickHandler: !this.isDevice
             ? () => {
-                this.router.navigate(['reporting', i]);
+                this.zone.run(() => this.router.navigate(['reporting', i]));
               }
             : () => {},
           popupText: !this.isDevice ? 'Click to navigate to device page' : '',

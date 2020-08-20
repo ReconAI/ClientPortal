@@ -1,3 +1,4 @@
+import { ReconSelectOption } from 'app/shared/types';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import moment from 'moment';
@@ -69,18 +70,78 @@ export class ReportingFilterComponent implements OnInit {
     },
     {
       label: 'Traffic flow',
+      value: '',
     },
     {
       label: 'Vehicle classification',
+      value: '',
     },
     {
       label: 'Pedestrian transit method classification',
+      value: '',
     },
     {
       label: 'Ambient temperature, C',
+      value: {
+        left: '',
+        right: '',
+      },
     },
     {
       label: 'Road temperature, C',
+      value: {
+        left: '',
+        right: '',
+      },
+    },
+    {
+      label: 'Tagged data',
+      value: false,
+    },
+  ];
+
+  trafficFlowOptions: ReconSelectOption[] = [
+    {
+      label: 'First',
+      value: 1,
+    },
+    {
+      label: 'Second',
+      value: 2,
+    },
+    {
+      label: 'Third',
+      value: 3,
+    },
+  ];
+
+  vehicleOptions: ReconSelectOption[] = [
+    {
+      label: 'First',
+      value: 1,
+    },
+    {
+      label: 'Second',
+      value: 2,
+    },
+    {
+      label: 'Third',
+      value: 3,
+    },
+  ];
+
+  pedestrianOptions: ReconSelectOption[] = [
+    {
+      label: 'First',
+      value: 1,
+    },
+    {
+      label: 'Second',
+      value: 2,
+    },
+    {
+      label: 'Third',
+      value: 3,
     },
   ];
 

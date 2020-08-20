@@ -1,0 +1,20 @@
+<div class="two-inputs-container">
+  <label> {{ label }}</label>
+  <div class="inputs-container">
+    <div class="input-container">
+      <recon-filter-input
+        [(ngModel)]="left"
+        [placeholder]="leftPlaceholder"
+        (changeVal)="changeValue()"
+      ></recon-filter-input>
+    </div>
+    <span class="separator"> ― </span>
+    <div class="input-container">
+      <recon-filter-input
+        [(ngModel)]="right"
+        [placeholder]="rightPlaceholder"
+        (changeVal)="changeValue()"
+      ></recon-filter-input>
+    </div>
+  </div>
+</div>
