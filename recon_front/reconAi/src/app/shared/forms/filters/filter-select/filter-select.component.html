@@ -1,0 +1,50 @@
+<div
+  class="filter-select"
+  [ngClass]="{
+    'is-active': isActive,
+    'without-value': !selectedOption?.value
+  }"
+  tabindex="0"
+  (blur)="onTouched()"
+>
+  <label class="filter-select-label" *ngIf="label">{{ label }}</label>
+  <div
+    class="filter-select-header"
+    (click)="headerClick()"
+    [matMenuTriggerFor]="menu"
+    #trigger="matMenuTrigger"
+  >
+    <span>{{ headerLabel }}</span>
+    <div class="filter-select-icon">
+      <mat-icon aria-hidden="false" aria-label="person">{{
+        trigger.menuOpen ? "keyboard_arrow_up" : "keyboard_arrow_down"
+      }}</mat-icon>
+    </div>
+  </div>
+  <mat-menu
+    #menu="matMenu"
+    xPosition="before"
+    class="filter-select-menu recon-menu"
+  >
+    <ng-container *ngFor="let option of options; let i = index">
+      <button mat-menu-item (click)="optionClick(option)">
+        {{ option.label }}
+      </button>
+      <mat-divider></mat-divider>
+    </ng-container>
+  </mat-menu>
+</div>
+<!-- <div
+  class="select-body"
+  [ngClass]="{
+    'is-active': isActive
+  }"
+>
+  <div
+    class="select-item"
+    *ngFor="let option of options"
+    (click)="optionClick(option)"
+  >
+    {{ option.label }}
+  </div>
+</div> -->
