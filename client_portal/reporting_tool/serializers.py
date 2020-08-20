@@ -179,7 +179,7 @@ class FeatureRequestSerializer(ReadOnlySerializerMixin,
             [settings.INFO_EMAIL],
             'emails/feature_request_subject.txt',
             'emails/feature_request.html',
-            self.validated_data
+            validated_data=self.validated_data
         )
 
     def get_email_context(self, validated_data: dict, *args, **kwargs) -> dict:
