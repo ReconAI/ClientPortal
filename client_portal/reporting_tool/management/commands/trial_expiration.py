@@ -57,7 +57,7 @@ class Command(BaseCommand, SendEmailMixin):
             if organization_users:
                 for user in organization_users:
                     self.send_mail(
-                        user.get('email'),
+                        [user.get('email')],
                         'emails/trial_expiration_subject.txt',
                         'emails/trial_expiration.html',
                         **user

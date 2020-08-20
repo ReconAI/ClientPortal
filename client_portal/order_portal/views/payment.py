@@ -1,7 +1,7 @@
 """
 Payment views module
 """
-
+from django.conf import settings
 from django.db.transaction import atomic
 from django.utils.translation import gettext_lazy as _
 from drf_yasg.utils import swagger_auto_schema
@@ -12,7 +12,6 @@ from rest_framework.response import Response
 
 from order_portal.serizalizers import BasketOverviewSerializer, \
     PaymentSerializer, BasketSerializer, PaymentIntentSerializer
-from order_portal.settings import RECON_AI_CONNECTION_NAME
 from recon_db_manager.models import Device
 from shared.permissions import IsCompanyDeveloper, IsActive
 from shared.swagger.headers import token_header
@@ -88,7 +87,7 @@ class BasketPayView(CreateAPIView):
         ],
         operation_description='Carries payment out and puts data to db'
     )
-    @atomic(RECON_AI_CONNECTION_NAME)
+    @atomic(settings.RECON_AI_CONNECTION_NAME)
     def post(self, request: Request, *args, **kwargs) -> Response:
         serializer = self.get_serializer(data=request.data)
 

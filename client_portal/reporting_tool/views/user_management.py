@@ -2,7 +2,7 @@
 Views associated with user management. There are actions admin can
 perform over users within admin's company.
 """
-
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db.models.query import QuerySet
 from django.db.transaction import atomic
@@ -19,7 +19,6 @@ from rest_framework.views import APIView
 
 from reporting_tool.forms.user_management import UserInvitationForm, \
     FollowInvitationForm, CheckUserInvitationTokenForm, UserEditForm
-from reporting_tool.settings import RECON_AI_CONNECTION_NAME
 from shared.permissions import IsCompanyAdmin, IsActive, \
     IsNotAuthenticated, PaymentRequired
 from shared.serializers import UserSerializer, \
@@ -78,7 +77,7 @@ class UserList(ListCreateAPIView, FormMixin):
         )
 
     @atomic(using='default')
-    @atomic(using=RECON_AI_CONNECTION_NAME)
+    @atomic(using=settings.RECON_AI_CONNECTION_NAME)
     def create(self, request: Request, *args, **kwargs) -> JsonResponse:
         """
         :type request: Request
@@ -146,14 +145,7 @@ class UserItem(GenericAPIView, FormMixin):
         })
 
     @swagger_auto_schema(
-        responses=get_responses(
-            status.HTTP_200_OK,
-            status.HTTP_400_BAD_REQUEST,
-            status.HTTP_404_NOT_FOUND,
-            status.HTTP_403_FORBIDDEN,
-            status.HTTP_405_METHOD_NOT_ALLOWED,
-            status.HTTP_422_UNPROCESSABLE_ENTITY
-        ),
+        responses=DEFAULT_UNSAFE_REQUEST_RESPONSES,
         request_body=form_to_formserializer(UserEditForm),
         tags=['User Management'],
         operation_summary="User data update",
@@ -164,7 +156,7 @@ class UserItem(GenericAPIView, FormMixin):
         ]
     )
     @atomic(using='default')
-    @atomic(using=RECON_AI_CONNECTION_NAME)
+    @atomic(using=settings.RECON_AI_CONNECTION_NAME)
     def put(self, request, *args, **kwargs) -> JsonResponse:
         """
         :rtype: JsonResponse

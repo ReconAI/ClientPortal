@@ -72,7 +72,7 @@ class UserInvitationForm(ModelForm, RoleFieldMixin, SendEmailMixin):
         UserGroup.objects.create(user=user, group=role)
 
         self.send_mail(
-            user.email,
+            [user.email],
             'emails/user_invitation_subject.txt',
             'emails/user_invitation.html',
             request,

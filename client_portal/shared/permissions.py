@@ -156,8 +156,4 @@ class PaymentRequired(IsSuperUser):
 
         :rtype: bool
         """
-
-        return (
-            super().has_permission(request, view)
-            or request.user.organization.is_on_trial
-        )
+        return True

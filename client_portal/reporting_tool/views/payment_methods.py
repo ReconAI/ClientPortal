@@ -1,28 +1,29 @@
 """
 Cards views set
 """
-
+from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 
 from reporting_tool.serializers import AttachPaymentMethodSerializer, \
-    DetachPaymentMethodSerializer, PaymentMethodSerializer
+    DetachPaymentMethodSerializer, PaymentMethodSerializer, \
+    DefaultPaymentMethodSerializer
 from shared.managers import PaymentMethodManager
 from shared.permissions import IsCompanyDeveloper, IsActive
 from shared.swagger.headers import token_header
 from shared.swagger.responses import DEFAULT_UNSAFE_REQUEST_RESPONSES, \
     default_get_responses_with_custom_success, data_serializer_many
-from shared.views.utils import ListCreateAPIView
+from shared.views.utils import ListCreateAPIView, UpdateAPIView
 
 
 class CardListView(ListCreateAPIView):
     """
     Cards manipulation list view
     """
-    permission_classes = (IsAuthenticated, IsActive,
-                          IsCompanyDeveloper)
+    permission_classes = (IsAuthenticated, IsActive, IsCompanyDeveloper)
 
     serializer_class = AttachPaymentMethodSerializer
 
@@ -92,3 +93,27 @@ class CardListView(ListCreateAPIView):
                 data=request.data
             )
         )
+
+
+@method_decorator(name='put', decorator=swagger_auto_schema(
+    responses=DEFAULT_UNSAFE_REQUEST_RESPONSES,
+    tags=['Payment methods'],
+    operation_summary='Set default payment method',
+    operation_description='Updates default payment method',
+    manual_parameters=[
+        token_header(),
+    ]
+))
+class DefaultPaymentMethodView(UpdateAPIView):
+    """
+    Updated default payment method
+    """
+
+    permission_classes = (IsAuthenticated, IsActive, IsCompanyDeveloper)
+
+    serializer_class = DefaultPaymentMethodSerializer
+
+    update_success_message = _('Default payment method is changed')
+
+    def get_object(self):
+        return self.request.user.organization

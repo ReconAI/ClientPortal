@@ -188,7 +188,7 @@ class SignupForm(SendEmailMixin):
         user = self._user_form.save()
 
         self.send_mail(
-            user.email,
+            [user.email],
             'emails/account_activation_subject.txt',
             'emails/account_activation.html',
             request,
