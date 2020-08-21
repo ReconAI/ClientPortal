@@ -10,8 +10,6 @@ export interface PreSignUpInterface {
   password2: string;
 }
 
-
-
 export const transformPreSignUpUserForm = ({
   login,
   password1,
@@ -55,4 +53,18 @@ export const transformSignUpFormToRequest = (
   inv_address: user.invoicing.address,
   inv_phone: user.invoicing.phone,
   inv_email: user.invoicing.email,
+});
+
+export interface DaysLeftServerInterface {
+  days_left: number;
+}
+
+export interface DaysLeftClientInterface {
+  daysLeft: number;
+}
+
+export const transformDaysLeftFromServer = ({
+  days_left,
+}: DaysLeftServerInterface): DaysLeftClientInterface => ({
+  daysLeft: days_left,
 });

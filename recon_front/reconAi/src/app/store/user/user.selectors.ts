@@ -112,6 +112,12 @@ export const selectCurrentUserProfileOrganizationLastName = createSelector(
     organization?.lastName || ''
 );
 
+export const selectCurrentUserProfileOrganizationDefaultCardId = createSelector(
+  selectCurrentUserOrganization,
+  (organization: UserProfileFormOrganizationInterface): string =>
+    organization?.defaultCardId
+);
+
 // User
 export const selectCurrentUserProfileUser = createSelector(
   selectUser,

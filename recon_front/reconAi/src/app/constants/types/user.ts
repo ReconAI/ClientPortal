@@ -56,6 +56,7 @@ export interface UserProfileFormOrganizationInterface {
   vat: string;
   firstName: string;
   lastName: string;
+  defaultCardId?: string;
 }
 
 export interface CredentialsRequestInterface {
@@ -119,6 +120,7 @@ export interface ServerUserOrganizationInterface {
   inv_address: string;
   inv_phone: string;
   inv_email: string;
+  is_invoice_payment_method?: boolean;
 }
 
 export const SERVER_USER_ROLES = [

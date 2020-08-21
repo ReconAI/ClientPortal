@@ -18,6 +18,7 @@ import {
 import { HttpErrorResponse } from '@angular/common/http';
 import { SignUpRequestInterface } from '../signUp/signUp.server.helpers';
 import { getBase64 } from 'app/core/helpers';
+import { INVOICING_ACCOUNT } from 'app/constants';
 export interface UserTransformationResponse extends UserProfileFormInterface {
   isAuthenticated?: boolean;
   role: UserRoleTypes | null;
@@ -51,6 +52,9 @@ export const transformUserResponse = (
     email: response.organization.main_email,
     address: response.organization.main_address,
     vat: response.organization.vat,
+    defaultCardId: response.organization.is_invoice_payment_method
+      ? INVOICING_ACCOUNT
+      : null,
   },
   invoicing: {
     firstName: response.organization.inv_firstname,
@@ -206,4 +210,21 @@ export const transformNewRequestToServer = async ({
     sensor_feed_links: newRequestFeature.feedLinks,
     files: based64Files,
   };
+};
+
+export interface SetDefaultPaymentMethodClientInterface {
+  cardId: string;
+}
+
+export interface SetDefaultPaymentMethodServerInterface {
+  is_card: boolean;
+  card_id?: string;
+}
+
+export const transformSetDefaultPaymentToServer = ({
+  cardId,
+}: SetDefaultPaymentMethodClientInterface): SetDefaultPaymentMethodServerInterface => {
+  return cardId === INVOICING_ACCOUNT
+    ? { is_card: false }
+    : { is_card: true, card_id: cardId };
 };

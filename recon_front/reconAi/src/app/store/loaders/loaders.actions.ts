@@ -38,6 +38,7 @@ export enum LoadersActionTypes {
   SET_PURCHASE_LIST_LOADING_STATUS = '[Loaders | Purchases] Set Purchase List Loading Status',
   SET_PURCHASE_LOADING_STATUS = '[Loaders | Purchases] Set Purchase Loading Status',
   SET_NEW_FEATURE_REQUEST_LOADING_STATUS = '[Loaders | User] Set New Feature Request Loading Status',
+  SET_DEFAULT_PAYMENT_METHOD_LOADING_STATUS = '[Loaders | User] Set Default Payment Method Loading Status',
 }
 
 export interface LoaderInterface {
@@ -227,5 +228,11 @@ export const setPurchaseLoadingStatusAction = createAction(
 // users -> new feature request
 export const setNewFeatureRequestLoadingStatusAction = createAction(
   LoadersActionTypes.SET_NEW_FEATURE_REQUEST_LOADING_STATUS,
+  props<LoaderInterface>()
+);
+
+// default payment method
+export const setDefaultPaymentMethodLoadingStatusAction = createAction(
+  LoadersActionTypes.SET_DEFAULT_PAYMENT_METHOD_LOADING_STATUS,
   props<LoaderInterface>()
 );

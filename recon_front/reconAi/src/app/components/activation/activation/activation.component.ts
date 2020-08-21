@@ -30,6 +30,6 @@ export class ActivationComponent implements OnInit {
       })
     );
 
-    this.router.navigate(['/']);
+    this.router.navigate(['/orders']);
   }
 }

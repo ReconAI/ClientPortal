@@ -1,6 +1,7 @@
 <ng-container *ngIf="!(loadingStatus$ | async); else loading">
   <recon-payment-methods
     [possiblePayments]="possiblePayments$ | async"
+    [defaultCardId]="selectDefaultCardId$ | async"
     (selectPayment$)="selectPayment($event)"
   ></recon-payment-methods>
 </ng-container>

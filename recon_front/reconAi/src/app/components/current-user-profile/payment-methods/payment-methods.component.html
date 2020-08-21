@@ -8,8 +8,6 @@
     class="radio-button"
     *ngFor="let payment of possiblePayments"
     [value]="payment.value"
-    [disabled]="'invoicing_account' === payment.value"
-    [matTooltip]="'invoicing_account' === payment.value ? invoicingTooltip : ''"
   >
     {{ payment.label }}
   </mat-radio-button>
