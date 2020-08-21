@@ -1,3 +1,4 @@
+import { OnlineStreamingComponent } from './../reporting-list-devices/online-streaming/online-streaming.component';
 import { TAMPERE_COORDINATES } from './../../../constants/globalVariables/globalVariables';
 import { Router } from '@angular/router';
 import { generateMapMarker } from './../../../core/helpers/markers';
@@ -191,6 +192,10 @@ export class ReportingListDevicesComponent implements OnInit {
     if (!this.isDevice) {
       this.router.navigate(['reporting', device.id]);
     }
+  }
+
+  openStreaming(): void {
+    this.dialog.open(OnlineStreamingComponent);
   }
 
   setCenter({ lat, lng }: LatLngInterface): void {

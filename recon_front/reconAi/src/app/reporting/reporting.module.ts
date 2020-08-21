@@ -13,6 +13,7 @@ import { SharedModule } from 'app/shared/shared.module';
 import { SetGpsDialogComponent } from './components/set-gps-dialog/set-gps-dialog.component';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { ReportingDeviceComponent } from './components/reporting-device/reporting-device.component';
+import { OnlineStreamingComponent } from './components/reporting-list-devices/online-streaming/online-streaming.component';
 @NgModule({
   declarations: [
     ReportingListDevicesComponent,
@@ -21,6 +22,7 @@ import { ReportingDeviceComponent } from './components/reporting-device/reportin
     SetGpsDialogComponent,
     ReportingDeviceComponent,
     ReportingDeviceContainer,
+    OnlineStreamingComponent,
   ],
   imports: [
     CommonModule,

@@ -27,7 +27,12 @@
       </mat-menu>
     </ng-container>
     <ng-template #onlineStreaming>
-      <button mat-raised-button color="accent" class="online-streaming">
+      <button
+        mat-raised-button
+        color="accent"
+        class="online-streaming"
+        (click)="openStreaming()"
+      >
         <mat-icon aria-hidden="false" aria-label="person" class="person_icon"
           >play_arrow</mat-icon
         >Online streaming
