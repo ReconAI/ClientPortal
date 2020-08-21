@@ -150,9 +150,9 @@ export class ReportingFilterComponent implements OnInit {
   ngOnInit(): void {
     this.filtersForm = this.fb.group({
       filters: this.fb.array([
-        ...this.filtersList.map((filter) =>
+        ...this.filtersList.map((filter, i) =>
           this.fb.group({
-            selected: false,
+            selected: i === 0 || false,
             ...filter,
           })
         ),
