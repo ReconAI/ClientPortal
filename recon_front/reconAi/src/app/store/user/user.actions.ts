@@ -15,6 +15,7 @@ import {
   LoadCardsRequestClientInterface,
   DeleteUserCardRequestInterface,
   NewRequestFeatureClientInterface,
+  SetDefaultPaymentMethodClientInterface,
 } from './user.server.helpers';
 import { createAction, props } from '@ngrx/store';
 import { ResetPasswordWithMetaInterface } from 'app/constants/types/resetPassword';
@@ -73,6 +74,10 @@ export enum UserActionTypes {
   NEW_REQUEST_FEATURE_SUCCEEDED = '[User] New Request Feature Succeeded',
   NEW_REQUEST_FEATURE_ERROR = '[User] New Request Feature Error',
   RESET_NEW_REQUEST_FEATURE_ERROR = '[User] Reset New Request Feature Error',
+
+  SET_DEFAULT_PAYMENT_METHOD_REQUESTED = '[User] Set Default Payment Method Requested',
+  SET_DEFAULT_PAYMENT_METHOD_SUCCEEDED = '[User] Set Default Payment Method Succeeded',
+  SET_DEFAULT_PAYMENT_METHOD_ERROR = '[User] Set Default Payment Method Error',
 }
 
 export const loadCurrentUserRequestedAction = createAction(
@@ -247,4 +252,19 @@ export const newRequestFeatureErrorAction = createAction(
 
 export const resetNewRequestFeatureErrorAction = createAction(
   UserActionTypes.RESET_NEW_REQUEST_FEATURE_ERROR
+);
+
+// default payment method
+export const setDefaultPaymentMethodRequestedAction = createAction(
+  UserActionTypes.SET_DEFAULT_PAYMENT_METHOD_REQUESTED,
+  props<SetDefaultPaymentMethodClientInterface>()
+);
+
+export const setDefaultPaymentMethodSucceededAction = createAction(
+  UserActionTypes.SET_DEFAULT_PAYMENT_METHOD_SUCCEEDED,
+  props<SetDefaultPaymentMethodClientInterface>()
+);
+
+export const setDefaultPaymentMethodErrorAction = createAction(
+  UserActionTypes.SET_DEFAULT_PAYMENT_METHOD_ERROR
 );

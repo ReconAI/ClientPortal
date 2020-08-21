@@ -13,7 +13,12 @@
     "
   />
   <span class="msg">{{ data.message }}</span>
-  <button mat-raised-button color="primary" [mat-dialog-close]="true">
+  <button
+    mat-raised-button
+    color="primary"
+    [mat-dialog-close]="true"
+    (click)="navigateToOrderPortal()"
+  >
     CONTINUE
   </button>
 </div>

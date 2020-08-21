@@ -78,6 +78,7 @@ export class YourOrderComponent implements OnInit, OnDestroy {
     private actionsSubject: ActionsSubject,
     private dialog: MatDialog
   ) {}
+
   ngOnInit(): void {
     this.succeededPaymentSubscription$ = this.succeededPaymentAction$.subscribe(
       ({ id }) => {

@@ -7,6 +7,7 @@ import {
 import {
   UserTransformationResponse,
   LoadCardsRequestClientInterface,
+  SetDefaultPaymentMethodClientInterface,
 } from './user.server.helpers';
 import {
   UserRoleTypes,
@@ -36,7 +37,9 @@ import {
   resetAttachCardErrorAction,
   newRequestFeatureErrorAction,
   resetNewRequestFeatureErrorAction,
+  setDefaultPaymentMethodSucceededAction,
 } from './user.actions';
+import { INVOICING_ACCOUNT } from 'app/constants';
 
 export interface UserErrorsInterface {
   login: string;
@@ -247,6 +250,17 @@ const resetNewRequestFeatureErrorReducer = (state: UserState): UserState => ({
   },
 });
 
+const setDefaultPaymentMethodSucceededReducer = (
+  state: UserState,
+  { cardId }: SetDefaultPaymentMethodClientInterface
+): UserState => ({
+  ...state,
+  organization: {
+    ...state.organization,
+    defaultCardId: (cardId === INVOICING_ACCOUNT && INVOICING_ACCOUNT) || null,
+  },
+});
+
 const userReducer = createReducer(
   initialState,
   on(loadCurrentUserSucceededAction, loadCurrentUserSucceededReducer),
@@ -267,7 +281,11 @@ const userReducer = createReducer(
   on(attachCardErrorAction, attachCardErrorReducer),
   on(resetAttachCardErrorAction, resetAttachCardErrorReducer),
   on(newRequestFeatureErrorAction, newRequestFeatureErrorReducer),
-  on(resetNewRequestFeatureErrorAction, resetNewRequestFeatureErrorReducer)
+  on(resetNewRequestFeatureErrorAction, resetNewRequestFeatureErrorReducer),
+  on(
+    setDefaultPaymentMethodSucceededAction,
+    setDefaultPaymentMethodSucceededReducer
+  )
 );
 
 export function reducer(state: UserState | undefined, action: Action) {

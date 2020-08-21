@@ -18,11 +18,13 @@ import {
 interface SignUpErrors {
   preSignUp: string;
   signUp: FormServerErrorInterface;
+  daysLeft: number;
 }
 
 const initialSignUpErrors = {
   preSignUp: null,
   signUp: null,
+  daysLeft: null,
 };
 export interface SignUpState {
   username: string;
@@ -106,7 +108,10 @@ const signUpReducer = createReducer(
   on(signUpUserErrorAction, signUpUserErrorReducer),
   on(resetSignUpUserErrorAction, resetSignUpUserErrorReducer),
   on(resetSignUpAction, resetSignUpReducer),
-  on(setIsSuccessSignUpOpenableStatusAction, setIsSuccessSignUpOpenableStatusReducer),
+  on(
+    setIsSuccessSignUpOpenableStatusAction,
+    setIsSuccessSignUpOpenableStatusReducer
+  )
 );
 
 export function reducer(state: SignUpState | undefined, action: Action) {

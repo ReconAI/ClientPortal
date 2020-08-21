@@ -24,6 +24,7 @@ import {
   setUserCardsLoadingStatusAction,
   setDetachCardLoadingStatusAction,
   setNewFeatureRequestLoadingStatusAction,
+  setDefaultPaymentMethodLoadingStatusAction,
 } from './../loaders/loaders.actions';
 import { LocalStorageService } from './../../core/services/localStorage/local-storage.service';
 import { Action, Store, select } from '@ngrx/store';
@@ -41,6 +42,8 @@ import {
   transformDetachCardRequestToServer,
   NewRequestFeatureClientInterface,
   transformNewRequestToServer,
+  SetDefaultPaymentMethodClientInterface,
+  transformSetDefaultPaymentToServer,
 } from './user.server.helpers';
 import {
   UserActionTypes,
@@ -70,6 +73,8 @@ import {
   deleteUserCardErrorAction,
   newRequestFeatureSucceededAction,
   newRequestFeatureErrorAction,
+  setDefaultPaymentMethodSucceededAction,
+  setDefaultPaymentMethodErrorAction,
 } from './user.actions';
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
@@ -474,6 +479,39 @@ export class UserEffects {
             );
           })
         )
+      )
+    )
+  );
+
+  setDefaultPaymentMethod$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<SetDefaultPaymentMethodClientInterface & Action>(
+        UserActionTypes.SET_DEFAULT_PAYMENT_METHOD_REQUESTED
+      ),
+      tap(() => {
+        this.store.dispatch(
+          setDefaultPaymentMethodLoadingStatusAction({
+            status: true,
+          })
+        );
+      }),
+      switchMap((paymentMethod) =>
+        this.httpClient
+          .put<void>(
+            '/api/payment-methods',
+            transformSetDefaultPaymentToServer(paymentMethod)
+          )
+          .pipe(
+            map(() => setDefaultPaymentMethodSucceededAction(paymentMethod)),
+            catchError((error) => of(setDefaultPaymentMethodErrorAction())),
+            finalize(() => {
+              this.store.dispatch(
+                setDefaultPaymentMethodLoadingStatusAction({
+                  status: false,
+                })
+              );
+            })
+          )
       )
     )
   );
