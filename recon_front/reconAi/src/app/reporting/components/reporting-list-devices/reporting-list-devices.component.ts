@@ -1,5 +1,4 @@
 import { PaginationRequestInterface } from './../../../constants/types/requests';
-import { setChosenReportingDeviceAction } from './../../../store/reporting/reporting.actions';
 import { Store } from '@ngrx/store';
 import { OnlineStreamingComponent } from './../reporting-list-devices/online-streaming/online-streaming.component';
 import { TAMPERE_COORDINATES } from './../../../constants/globalVariables/globalVariables';
@@ -185,7 +184,6 @@ export class ReportingListDevicesComponent implements OnInit {
 
   navigateToDevice(device: ReportingDeviceClientInterface): void {
     if (!this.isDevice) {
-      this.store.dispatch(setChosenReportingDeviceAction({ device }));
       this.router.navigate(['reporting', device.id]);
     }
   }

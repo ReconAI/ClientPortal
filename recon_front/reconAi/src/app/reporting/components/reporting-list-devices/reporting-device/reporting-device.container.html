@@ -1,10 +1,13 @@
-<ng-container *ngIf="selectedDevice$ | async; else notFound">
-  <recon-reporting-list-devices
-    [isDevice]="true"
-    [count]="1"
-    [currentPage]="1"
-    [pageSize]="1"
-    [devices]="[selectedDevice$ | async]"
-  ></recon-reporting-list-devices>
+<ng-container *ngIf="!(loadingStatus$ | async); else loading">
+  <ng-container *ngIf="selectedDevice$ | async; else notFound">
+    <recon-reporting-list-devices
+      [isDevice]="true"
+      [count]="1"
+      [currentPage]="1"
+      [pageSize]="1"
+      [devices]="[selectedDevice$ | async]"
+    ></recon-reporting-list-devices>
+  </ng-container>
+  <ng-template #notFound>Not found.</ng-template>
 </ng-container>
-<ng-template #notFound>Not found</ng-template>
+<ng-template #loading>Loading...</ng-template>

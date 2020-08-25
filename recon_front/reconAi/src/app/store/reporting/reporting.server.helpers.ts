@@ -65,7 +65,6 @@ export interface ReportingDeviceClientInterface {
 export interface SetSelectedReportingDeviceClientInterface {
   device: ReportingDeviceClientInterface;
 }
-
 export const transformReportingDeviceFromServer = (
   device: ReportingDeviceServerInterface
 ): ReportingDeviceClientInterface => ({
@@ -92,6 +91,12 @@ export const transformReportingDeviceFromServer = (
   plate: device.license_plate_location,
   face: device.face_location,
   fileTag: device.cad_file_tag,
+});
+
+export const transformReportingDeviceCardFromServer = (
+  device: ReportingDeviceServerInterface
+): SetSelectedReportingDeviceClientInterface => ({
+  device: transformReportingDeviceFromServer(device),
 });
 
 export const transformReportingPaginatedDeviceListFromServer = (

@@ -1,4 +1,4 @@
-import { setAppTitleAction } from './../../../../store/app/app.actions';
+import { selectReportingDeviceLoadingStatus } from './../../../../store/loaders/loaders.selectors';
 import { ReportingDeviceClientInterface } from './../../../../store/reporting/reporting.server.helpers';
 import { Store, select } from '@ngrx/store';
 import { ActivatedRoute } from '@angular/router';
@@ -7,6 +7,7 @@ import { Observable } from 'rxjs';
 import { AppState } from 'app/store/reducers';
 import { selectReportingSelectedDevice } from 'app/store/reporting/reporting.selectors';
 import { updateBreadcrumbByIdAction } from 'app/store/app';
+import { loadReportingDeviceRequestedAction } from 'app/store/reporting';
 
 @Component({
   selector: 'recon-reporting-device-container',
@@ -20,6 +21,10 @@ export class ReportingDeviceContainer implements OnInit {
     private store: Store<AppState>
   ) {}
 
+  loadingStatus$: Observable<boolean> = this.store.pipe(
+    select(selectReportingDeviceLoadingStatus)
+  );
+
   selectedDevice$: Observable<ReportingDeviceClientInterface> = this.store.pipe(
     select(selectReportingSelectedDevice)
   );
@@ -27,27 +32,6 @@ export class ReportingDeviceContainer implements OnInit {
   ngOnInit(): void {
     this.id = +this.activateRoute.snapshot.paramMap.get('id');
 
-    if (this.id) {
-      const label = `Singular device data: ${this.id}`;
-      this.store.dispatch(
-        updateBreadcrumbByIdAction({
-          update: {
-            oldId: '%reporting-device-id',
-            newLabel: label,
-            newUrl: `reporting/${this.id}`,
-          },
-        })
-      );
-
-      setTimeout(
-        () =>
-          this.store.dispatch(
-            setAppTitleAction({
-              title: `Singular device data: ${this.id}`,
-            })
-          ),
-        0
-      );
-    }
+    this.store.dispatch(loadReportingDeviceRequestedAction({ id: this.id }));
   }
 }

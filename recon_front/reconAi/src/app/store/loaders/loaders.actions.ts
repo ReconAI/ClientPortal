@@ -40,6 +40,7 @@ export enum LoadersActionTypes {
   SET_NEW_FEATURE_REQUEST_LOADING_STATUS = '[Loaders | User] Set New Feature Request Loading Status',
   SET_DEFAULT_PAYMENT_METHOD_LOADING_STATUS = '[Loaders | User] Set Default Payment Method Loading Status',
   SET_REPORTING_DEVICE_LIST_LOADING_STATUS = '[Loaders | Reporting] Set Reporting Device List Loading Status',
+  SET_REPORTING_DEVICE_LOADING_STATUS = '[Loaders | Reporting] Set Reporting Device Loading Status',
 }
 
 export interface LoaderInterface {
@@ -241,5 +242,10 @@ export const setDefaultPaymentMethodLoadingStatusAction = createAction(
 // reporting
 export const setReportingDeviceListLoadingStatusAction = createAction(
   LoadersActionTypes.SET_REPORTING_DEVICE_LIST_LOADING_STATUS,
+  props<LoaderInterface>()
+);
+
+export const setReportingDeviceLoadingStatusAction = createAction(
+  LoadersActionTypes.SET_REPORTING_DEVICE_LOADING_STATUS,
   props<LoaderInterface>()
 );
