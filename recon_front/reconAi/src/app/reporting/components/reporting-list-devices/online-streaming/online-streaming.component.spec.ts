@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ReportingDeviceComponent } from './reporting-device.component';
+import { OnlineStreamingComponent } from './online-streaming.component';
 
-describe('ReportingDeviceComponent', () => {
-  let component: ReportingDeviceComponent;
-  let fixture: ComponentFixture<ReportingDeviceComponent>;
+describe('OnlineStreamingComponent', () => {
+  let component: OnlineStreamingComponent;
+  let fixture: ComponentFixture<OnlineStreamingComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ReportingDeviceComponent ]
+      declarations: [ OnlineStreamingComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ReportingDeviceComponent);
+    fixture = TestBed.createComponent(OnlineStreamingComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

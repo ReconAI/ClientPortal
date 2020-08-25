@@ -1,6 +1,7 @@
-import { ReportingDeviceContainer } from './components/reporting-device/reporting-device.container';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+
+import { ReportingDeviceContainer } from './components/reporting-list-devices/reporting-device/reporting-device.container';
 import { ReportingListDevicesContainer } from './components/reporting-list-devices/reporting-list-devices.container';
 
 const routes: Routes = [
@@ -20,7 +21,7 @@ const routes: Routes = [
       backgroundWithoutUnion: true,
       showBreadcrumbs: true,
     },
-    component: ReportingListDevicesContainer,
+    component: ReportingDeviceContainer,
   },
 ];
 

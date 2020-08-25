@@ -1,3 +1,4 @@
+import { DaysLeftClientInterface } from './../signUp/signUp.server.helpers';
 import { UserTransformationResponse } from './../user/user.server.helpers';
 import { ActivationInterface } from './../../constants/types/activation';
 import {

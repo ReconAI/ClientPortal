@@ -1,4 +1,5 @@
-import { ReportingDeviceContainer } from './components/reporting-device/reporting-device.container';
+import { ReportingDeviceContainer } from './components/reporting-list-devices/reporting-device/reporting-device.container';
+
 import { CoreModule } from './../core/core.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from './../material/material.module';
@@ -12,15 +13,15 @@ import { ReportingFilterComponent } from './components/reporting-filter/reportin
 import { SharedModule } from 'app/shared/shared.module';
 import { SetGpsDialogComponent } from './components/set-gps-dialog/set-gps-dialog.component';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
-import { ReportingDeviceComponent } from './components/reporting-device/reporting-device.component';
+import { OnlineStreamingComponent } from './components/reporting-list-devices/online-streaming/online-streaming.component';
 @NgModule({
   declarations: [
     ReportingListDevicesComponent,
     ReportingListDevicesContainer,
     ReportingFilterComponent,
     SetGpsDialogComponent,
-    ReportingDeviceComponent,
     ReportingDeviceContainer,
+    OnlineStreamingComponent,
   ],
   imports: [
     CommonModule,

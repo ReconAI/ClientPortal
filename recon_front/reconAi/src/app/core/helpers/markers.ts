@@ -1,4 +1,5 @@
-import { marker, icon } from 'leaflet';
+import { TAMPERE_COORDINATES } from './../../constants/globalVariables/globalVariables';
+import { marker, icon, tileLayer } from 'leaflet';
 
 export interface LatLngInterface {
   lat: number;
@@ -18,6 +19,20 @@ const defaultParams: MarkerParamsInterface = {
   isHighlighted: false,
   popupText: null,
 };
+
+export const generateDefaultMap = (center) => ({
+  layers: [
+    tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 18,
+      minZoom: 3,
+      id: 'main-map',
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    }),
+  ],
+  zoom: 10,
+  center: center || TAMPERE_COORDINATES,
+});
 
 export const generateMapMarker = (
   latLng: LatLngInterface,

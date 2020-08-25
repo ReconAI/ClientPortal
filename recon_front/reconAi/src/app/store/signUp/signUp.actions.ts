@@ -3,7 +3,10 @@ import {
   FormServerErrorInterface,
   ObjectFormErrorInterface,
 } from './../../constants/types/requests';
-import { PreSignUpInterface } from './signUp.server.helpers';
+import {
+  PreSignUpInterface,
+  DaysLeftClientInterface,
+} from './signUp.server.helpers';
 import { SignUpState } from './signUp.reducer';
 import { createAction, props } from '@ngrx/store';
 import { UserProfileFormInterface } from 'app/constants/types';
@@ -26,6 +29,8 @@ export enum SignUpActionTypes {
 
   SET_IS_SIGN_UP_OPENABLE_STATUS = '[Sign Up] Set Sign Up Openable Status',
   RESET_SIGN_UP = '[Sign Up] Reset',
+  SET_DAYS_LEFT = '[Sign Up] Set Days Left',
+  SET_SIGN_UP_TYPE = '[Sign Up] Set Sign Up Type',
 }
 
 export const signUpUserRequestedAction = createAction(
@@ -84,6 +89,11 @@ export const activationErrorAction = createAction(
 
 export const resetSignUpAction = createAction(SignUpActionTypes.RESET_SIGN_UP);
 
+export const setDaysLeftAction = createAction(
+  SignUpActionTypes.SET_DAYS_LEFT,
+  props<DaysLeftClientInterface>()
+);
+
 export interface IsSuccessSignUpOpenableActionInterface {
   status: boolean;
 }
@@ -91,4 +101,13 @@ export interface IsSuccessSignUpOpenableActionInterface {
 export const setIsSuccessSignUpOpenableStatusAction = createAction(
   SignUpActionTypes.SET_IS_SIGN_UP_OPENABLE_STATUS,
   props<IsSuccessSignUpOpenableActionInterface>()
+);
+
+export interface SetSignUpTypePayloadInterface {
+  signUpType: string;
+}
+
+export const setSignUpTypeAction = createAction(
+  SignUpActionTypes.SET_SIGN_UP_TYPE,
+  props<SetSignUpTypePayloadInterface>()
 );

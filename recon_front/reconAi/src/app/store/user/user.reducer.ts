@@ -38,6 +38,8 @@ import {
   newRequestFeatureErrorAction,
   resetNewRequestFeatureErrorAction,
   setDefaultPaymentMethodSucceededAction,
+  SetAuthActionPayloadInterface,
+  setAuthStatusAction,
 } from './user.actions';
 import { INVOICING_ACCOUNT } from 'app/constants';
 
@@ -261,6 +263,14 @@ const setDefaultPaymentMethodSucceededReducer = (
   },
 });
 
+const setAuthStatusReducer = (
+  state: UserState,
+  { status }: SetAuthActionPayloadInterface
+): UserState => ({
+  ...state,
+  isAuthenticated: status,
+});
+
 const userReducer = createReducer(
   initialState,
   on(loadCurrentUserSucceededAction, loadCurrentUserSucceededReducer),
@@ -285,7 +295,8 @@ const userReducer = createReducer(
   on(
     setDefaultPaymentMethodSucceededAction,
     setDefaultPaymentMethodSucceededReducer
-  )
+  ),
+  on(setAuthStatusAction, setAuthStatusReducer)
 );
 
 export function reducer(state: UserState | undefined, action: Action) {

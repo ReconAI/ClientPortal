@@ -18,7 +18,8 @@ from rest_framework.serializers import ModelSerializer
 from rest_framework.serializers import Serializer
 from rest_framework.utils.serializer_helpers import ReturnDict
 
-from recon_db_manager.models import Organization, DevicePurchase
+from recon_db_manager.models import Organization, DevicePurchase, RelevantData, \
+    Project
 from reporting_tool.forms.utils import SendEmailMixin
 from shared.fields import FileField
 from shared.models import User
@@ -391,3 +392,98 @@ class DefaultPaymentMethodSerializer(ReadOnlySerializerMixin, Serializer):
         instance.save()
 
         return instance
+
+
+class ProjectSerializer(ModelSerializer):
+    class Meta:
+        model = Project
+        fields = (
+            'id', 'name'
+        )
+
+
+class RelevantDataSerializer(ModelSerializer):
+    project = ProjectSerializer()
+    ecosystem_name = serializers.SerializerMethodField('format_ecosystem_name')
+    edge_node_name = serializers.SerializerMethodField('format_edge_node_name')
+    event_object = serializers.SerializerMethodField('format_event_object')
+    object_class = serializers.SerializerMethodField('format_object_class')
+    license_plate = serializers.SerializerMethodField('format_license_plate')
+    traffic_flow = serializers.SerializerMethodField('format_traffic_flow')
+    ambient_weather = serializers.SerializerMethodField('format_ambient_weather')
+    road_weather = serializers.SerializerMethodField('format_road_weather')
+    stopped_vehicles_detection = serializers.SerializerMethodField(
+        'format_stopped_vehicles_detection'
+    )
+    tagged_data = serializers.SerializerMethodField('format_tagged_data')
+    license_plate_location = serializers.SerializerMethodField(
+        'format_license_plate_location'
+    )
+    face_location = serializers.SerializerMethodField('format_face_location')
+    cad_file_tag = serializers.SerializerMethodField('format_cad_file_tag')
+
+    class Meta:
+        model = RelevantData
+        fields = (
+            'id', 'sensor_GPS_lat', 'sensor_GPS_long', 'location_x',
+            'location_y', 'location_z', 'orient_theta', 'orient_phi',
+            'timestamp', 'project',
+
+            'ecosystem_name', 'edge_node_name', 'event_object', 'object_class',
+            'license_plate', 'traffic_flow', 'ambient_weather', 'road_weather',
+            'stopped_vehicles_detection', 'tagged_data',
+            'license_plate_location', 'face_location', 'cad_file_tag'
+        )
+
+    @staticmethod
+    def format_ecosystem_name(instance):
+        return 'ITMF'
+
+    @staticmethod
+    def format_edge_node_name(instance):
+        return 'ITMF-1'
+
+    @staticmethod
+    def format_event_object(instance):
+        return 'Object'
+
+    @staticmethod
+    def format_object_class(instance):
+        return 'Car, Bus, Truck, Van, Trailer, Tractor'
+
+    @staticmethod
+    def format_license_plate(instance):
+        return 'AMV752'
+
+    @staticmethod
+    def format_traffic_flow(instance):
+        return '4 persons per minute to the direction 1, ' \
+               '7 persons per minute to the direction 2'
+
+    @staticmethod
+    def format_ambient_weather(instance):
+        return 'Clear'
+
+    @staticmethod
+    def format_road_weather(instance):
+        return 'Wet & Slushy'
+
+    @staticmethod
+    def format_stopped_vehicles_detection(instance):
+        return 'Bounding box location'
+
+    @staticmethod
+    def format_tagged_data(instance):
+        return 'Link'
+
+    @staticmethod
+    def format_license_plate_location(instance):
+        return 'Bounding box location'
+
+    @staticmethod
+    def format_face_location(instance):
+        return 'Bounding box location'
+
+    @staticmethod
+    def format_cad_file_tag(instance):
+        return 'Link to CAD file'

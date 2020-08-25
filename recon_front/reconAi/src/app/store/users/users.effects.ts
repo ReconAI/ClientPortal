@@ -1,3 +1,12 @@
+import {
+  setDaysLeftAction,
+  setIsSuccessSignUpOpenableStatusAction,
+  setSignUpTypeAction,
+} from './../signUp/signUp.actions';
+import {
+  DaysLeftServerInterface,
+  transformDaysLeftFromServer,
+} from './../signUp/signUp.server.helpers';
 import { PaginationResponseServerInterface } from './../../constants/types/requests';
 import {
   setAppTitleAction,
@@ -77,6 +86,8 @@ import { AddUserInterface } from 'app/users/constants';
 import { transformUserResponse } from '../user/user.server.helpers';
 import { PaginationRequestInterface } from 'app/constants/types/requests';
 import { calculatePageAfterDelete } from 'app/core/helpers';
+import { setAuthStatusAction } from '../user/user.actions';
+import { INVITATION_SIGN_UP } from 'app/constants/signUp';
 
 @Injectable()
 export class UsersEffects {
@@ -291,6 +302,7 @@ export class UsersEffects {
               );
             }),
             catchError((error) => {
+              // TO DO CHECK REDIRECT
               this.router.navigate(['/']);
               return of(inviteUserErrorAction());
             }),
@@ -321,14 +333,36 @@ export class UsersEffects {
       withLatestFrom(this.store.pipe(select(selectInvitedActivation))),
       switchMap(([user, activation]) =>
         this.httpClient
-          .put(
+          .put<DaysLeftServerInterface>(
             `/api/users/invitations`,
             transformInviteSignUpUserToServer(user, activation)
           )
           .pipe(
-            map(() => invitationSignUpSucceededAction()),
+            map((daysLeft) => {
+              this.store.dispatch(
+                setDaysLeftAction(transformDaysLeftFromServer(daysLeft))
+              );
+              // to go through not auth guard
+              this.store.dispatch(
+                setAuthStatusAction({
+                  status: false,
+                })
+              );
+              this.store.dispatch(
+                setSignUpTypeAction({
+                  signUpType: INVITATION_SIGN_UP,
+                })
+              );
+              this.store.dispatch(
+                setIsSuccessSignUpOpenableStatusAction({
+                  status: true,
+                })
+              );
+
+              return invitationSignUpSucceededAction();
+            }),
             tap(() => {
-              this.router.navigate(['/']);
+              this.router.navigate(['/registration/success']);
             }),
             catchError((error) =>
               of(

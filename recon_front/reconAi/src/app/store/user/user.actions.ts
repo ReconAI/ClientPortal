@@ -78,6 +78,8 @@ export enum UserActionTypes {
   SET_DEFAULT_PAYMENT_METHOD_REQUESTED = '[User] Set Default Payment Method Requested',
   SET_DEFAULT_PAYMENT_METHOD_SUCCEEDED = '[User] Set Default Payment Method Succeeded',
   SET_DEFAULT_PAYMENT_METHOD_ERROR = '[User] Set Default Payment Method Error',
+
+  SET_AUTH_STATUS = '[User] Set Auth Status',
 }
 
 export const loadCurrentUserRequestedAction = createAction(
@@ -267,4 +269,13 @@ export const setDefaultPaymentMethodSucceededAction = createAction(
 
 export const setDefaultPaymentMethodErrorAction = createAction(
   UserActionTypes.SET_DEFAULT_PAYMENT_METHOD_ERROR
+);
+
+export interface SetAuthActionPayloadInterface {
+  status: boolean;
+}
+
+export const setAuthStatusAction = createAction(
+  UserActionTypes.SET_AUTH_STATUS,
+  props<SetAuthActionPayloadInterface>()
 );
