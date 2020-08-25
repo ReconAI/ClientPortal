@@ -1,3 +1,4 @@
+import { ReportingEffects } from './store/reporting/reporting.effects';
 import { PurchasesListContainer } from './components/purchases/purchases-list/purchases-list.container';
 import { CreateCardDialogContainer } from './components/card/create-card/create-card-dialog/create-card-dialog.container';
 import { BasketContainer } from './components/landing-page/header/basket/basket.container';
@@ -134,6 +135,7 @@ import { LeafletModule } from '@asymmetrik/ngx-leaflet';
       UsersEffects,
       OrdersEffects,
       PurchasesEffects,
+      ReportingEffects,
     ]),
     LeafletModule,
   ],

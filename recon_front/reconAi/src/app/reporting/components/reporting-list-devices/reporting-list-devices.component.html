@@ -1,73 +1,70 @@
-<ng-container *ngIf="devices?.length && layers?.length; else loading">
-  <div class="header-container">
-    <mat-tab-group>
-      <mat-tab label="Reporting"><div class="fake"></div></mat-tab>
-      <mat-tab label="Filtering"><div class="fake"></div></mat-tab>
-    </mat-tab-group>
-    <ng-container *ngIf="!isDevice; else onlineStreaming">
-      <button
-        mat-raised-button
-        color="accent"
-        (click)="openDialog()"
-        [disabled]="!(selectedIndex || selectedIndex === 0)"
-      >
-        SET GPS
-      </button>
-      <button mat-raised-button color="accent" [matMenuTriggerFor]="menu">
-        DOWNLOAD
-      </button>
-      <mat-menu #menu="matMenu" xPosition="before" class="recon-menu">
-        <button mat-menu-item>
-          .xmxl
-        </button>
-        <mat-divider></mat-divider>
-        <button mat-menu-item>
-          .csv
-        </button>
-      </mat-menu>
-    </ng-container>
-    <ng-template #onlineStreaming>
-      <button
-        mat-raised-button
-        color="accent"
-        class="online-streaming"
-        (click)="openStreaming()"
-      >
-        <mat-icon aria-hidden="false" aria-label="person" class="person_icon"
-          >play_arrow</mat-icon
-        >Online streaming
-      </button>
-    </ng-template>
-  </div>
-  <div>
-    <recon-reporting-filter></recon-reporting-filter>
-  </div>
-  <div *ngIf="columns && columns.length">
-    <recon-crud-table
-      [data]="devices"
-      [columns]="columns"
-      [pageSize]="6"
-      [totalCount]="devices?.length"
-      [currentPage]="1"
-      [isWithActions]="false"
-      [selectedIndex]="selectedIndex"
-      [allCellsTooltipText]="
-        !this.isDevice ? 'Double click to navigate to device page' : null
-      "
-      (rowClick$)="setSelectedDevice($event)"
-      (rowDoubleClick$)="navigateToDevice($event)"
+<div class="header-container">
+  <mat-tab-group>
+    <mat-tab label="Reporting"><div class="fake"></div></mat-tab>
+    <mat-tab label="Filtering"><div class="fake"></div></mat-tab>
+  </mat-tab-group>
+  <ng-container *ngIf="!isDevice; else onlineStreaming">
+    <button
+      mat-raised-button
+      color="accent"
+      (click)="openDialog()"
+      [disabled]="!(selectedIndex || selectedIndex === 0)"
     >
-    </recon-crud-table>
-  </div>
-  <div
-    class="map"
-    id="main-map"
-    leaflet
-    [leafletOptions]="options"
-    [leafletLayers]="layers"
-    [(leafletCenter)]="center"
-  ></div>
-</ng-container>
-<ng-template #loading>
-  Loading...
-</ng-template>
+      SET GPS
+    </button>
+    <button mat-raised-button color="accent" [matMenuTriggerFor]="menu">
+      DOWNLOAD
+    </button>
+    <mat-menu #menu="matMenu" xPosition="before" class="recon-menu">
+      <button mat-menu-item>
+        .xmxl
+      </button>
+      <mat-divider></mat-divider>
+      <button mat-menu-item>
+        .csv
+      </button>
+    </mat-menu>
+  </ng-container>
+  <ng-template #onlineStreaming>
+    <button
+      mat-raised-button
+      color="accent"
+      class="online-streaming"
+      (click)="openStreaming()"
+    >
+      <mat-icon aria-hidden="false" aria-label="person" class="person_icon"
+        >play_arrow</mat-icon
+      >Online streaming
+    </button>
+  </ng-template>
+</div>
+<div>
+  <recon-reporting-filter></recon-reporting-filter>
+</div>
+<div>
+  <recon-crud-table
+    [data]="devices"
+    [columns]="columns"
+    [pageSize]="pageSize"
+    [totalCount]="count"
+    [currentPage]="currentPage"
+    [isWithActions]="false"
+    [selectedIndex]="selectedIndex"
+    [allCellsTooltipText]="
+      !this.isDevice ? 'Double click to navigate to device page' : null
+    "
+    (rowClick$)="setSelectedDevice($event)"
+    (rowDoubleClick$)="navigateToDevice($event)"
+    (changePage$)="loadDevices($event)"
+  >
+  </recon-crud-table>
+</div>
+<div
+  *ngIf="center && options"
+  class="map"
+  id="main-map"
+  leaflet
+  [leafletOptions]="options"
+  [leafletLayers]="layers"
+  [(leafletCenter)]="center"
+></div>

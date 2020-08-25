@@ -1,15 +1,30 @@
+import { PaginationRequestInterface } from './../../../constants/types/requests';
+import { setChosenReportingDeviceAction } from './../../../store/reporting/reporting.actions';
+import { Store } from '@ngrx/store';
 import { OnlineStreamingComponent } from './../reporting-list-devices/online-streaming/online-streaming.component';
 import { TAMPERE_COORDINATES } from './../../../constants/globalVariables/globalVariables';
 import { Router } from '@angular/router';
-import { generateMapMarker } from './../../../core/helpers/markers';
+import {
+  generateMapMarker,
+  generateDefaultMap,
+} from './../../../core/helpers/markers';
 import { CrudTableColumn } from 'app/shared/types';
 import { SetGpsDialogComponent } from './../set-gps-dialog/set-gps-dialog.component';
-import { Component, OnInit, Input, NgZone } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  NgZone,
+  EventEmitter,
+  Output,
+} from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { tileLayer, latLng, marker, polygon, circle, icon } from 'leaflet';
 
 import moment from 'moment';
 import { LatLngInterface } from 'app/core/helpers/markers';
+import { ReportingDeviceClientInterface } from 'app/store/reporting/reporting.server.helpers';
+import { AppState } from 'app/store/reducers';
 @Component({
   selector: 'recon-reporting-list-devices',
   templateUrl: './reporting-list-devices.component.html',
@@ -19,52 +34,43 @@ export class ReportingListDevicesComponent implements OnInit {
   constructor(
     private dialog: MatDialog,
     private router: Router,
-    private zone: NgZone
+    private zone: NgZone,
+    // remove!!!
+    private store: Store<AppState>
   ) {}
+
   @Input() isDevice = false;
-  center = latLng(48.879966, -123.726909);
+  @Input() currentPage = 1;
+  @Input() count = 1;
+  @Input() pageSize = 1;
+  @Input() devices: ReportingDeviceClientInterface[] = [];
+  @Output() loadDevices$ = new EventEmitter<number>();
 
+  center = null;
   selectedIndex = null;
-
-  // move to general functions
-  options = {
-    layers: [
-      tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 18,
-        minZoom: 3,
-        id: 'main-map',
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      }),
-    ],
-    zoom: 10,
-    center: this.center,
-  };
-
-  // TODO:
-  // general method for creation
+  options = null;
   layers = [];
   columns: CrudTableColumn[] = [
     {
       header: 'Time stamp',
-      id: 'createdDT',
+      id: 'timestamp',
       width: '150px',
     },
     {
       header: 'Latitude',
-      id: 'latitude',
-      render: (device) => device.gps[0],
+      id: 'lat',
       width: '100px',
     },
     {
       header: 'Longitude',
-      id: 'longitude',
-      render: (device) => device.gps[1],
+      id: 'lng',
       width: '100px',
     },
     {
       header: 'Project name',
       id: 'projectName',
+      render: ({ project }: ReportingDeviceClientInterface): string =>
+        project?.name,
       width: '100px',
     },
     {
@@ -109,13 +115,13 @@ export class ReportingListDevicesComponent implements OnInit {
     },
     {
       header: 'License plat number',
-      id: 'platNumber',
+      id: 'plateNumber',
       width: '100px',
     },
     {
       header: 'Traffic flow',
       id: 'trafficFlow',
-      width: '100px',
+      width: '400px',
     },
     {
       header: 'Vehicle classification',
@@ -129,12 +135,12 @@ export class ReportingListDevicesComponent implements OnInit {
     },
     {
       header: 'Ambient weather condition',
-      id: 'weatherCondition',
+      id: 'ambientWeather',
       width: '100px',
     },
     {
       header: 'Road weather condition surveillance',
-      id: 'roadWeatherConditionSurveillance',
+      id: 'roadWeather',
       width: '100px',
     },
     {
@@ -159,37 +165,27 @@ export class ReportingListDevicesComponent implements OnInit {
     },
   ];
 
-  devices = [];
+  setSelectedDevice(device: ReportingDeviceClientInterface): void {
+    this.selectedIndex = this.devices.findIndex(({ id }) => id === device?.id);
 
-  setSelectedDevice(device): void {
-    this.selectedIndex = this.devices.findIndex(({ id }) => id === device.id);
-    this.layers = [1, 2, 3, 4, 5, 6].map((i, index) =>
-      generateMapMarker(
-        {
-          lat: 46.879966 + i * 2,
-          lng: -121.726909 - i * 2,
-        },
-        {
-          isHighlighted: index === this.selectedIndex,
-          zIndex: index === this.selectedIndex ? 1000 : 500,
-          clickHandler: !this.isDevice
-            ? () => {
-                this.zone.run(() => this.router.navigate(['reporting', i]));
-              }
-            : () => {},
-          popupText: !this.isDevice ? 'Click to navigate to device page' : '',
-        }
-      )
-    );
+    if (this.selectedIndex > -1) {
+      this.generateLayersFromDevices();
 
-    this.setCenter({
-      lat: device.gps[0],
-      lng: device.gps[1],
-    });
+      this.setCenter({
+        lat: +device.lat,
+        lng: +device.lng,
+      });
+    } else {
+      this.setCenter({
+        lat: TAMPERE_COORDINATES.lat,
+        lng: TAMPERE_COORDINATES.lng,
+      });
+    }
   }
 
-  navigateToDevice(device): void {
+  navigateToDevice(device: ReportingDeviceClientInterface): void {
     if (!this.isDevice) {
+      this.store.dispatch(setChosenReportingDeviceAction({ device }));
       this.router.navigate(['reporting', device.id]);
     }
   }
@@ -200,6 +196,27 @@ export class ReportingListDevicesComponent implements OnInit {
 
   setCenter({ lat, lng }: LatLngInterface): void {
     this.center = latLng(lat, lng);
+  }
+
+  generateLayersFromDevices(): void {
+    this.layers = this.devices.map((device, index) =>
+      generateMapMarker(
+        {
+          lat: +device.lat,
+          lng: +device.lng,
+        },
+        {
+          isHighlighted: index === this.selectedIndex,
+          zIndex: index === this.selectedIndex ? 1000 : 500,
+          clickHandler: !this.isDevice
+            ? () => {
+                this.zone.run(() => this.navigateToDevice(device));
+              }
+            : () => {},
+          popupText: !this.isDevice ? 'Click to navigate to device page' : '',
+        }
+      )
+    );
   }
 
   ngOnInit(): void {
@@ -214,55 +231,8 @@ export class ReportingListDevicesComponent implements OnInit {
       ];
     }
 
-    this.devices = [1, 2, 3, 4, 5, 6].map((i) => ({
-      id: i,
-      createdDT: moment(),
-      gps: [46.879966 + i * 2, -121.726909 - i * 2],
-      projectName: i,
-      nodeName: i,
-      isEvent: i % 2,
-      locationX: i,
-      locationY: i,
-      locationZ: i,
-      theta: i,
-      phi: i,
-      objectClass: i,
-      platNumber: i,
-      trafficFlow: i,
-      vehicle: i,
-      pedestrianFlow: i,
-      weatherCondition: i,
-      roadWeatherConditionSurveillance: i,
-      taggedData: i,
-      plate: i,
-      face: i,
-      fileTag: i,
-    }));
-
-    // general
-    this.layers = [1, 2, 3, 4, 5, 6].map((i) =>
-      generateMapMarker(
-        {
-          lat: 46.879966 + i * 2,
-          lng: -121.726909 - i * 2,
-        },
-        {
-          clickHandler: !this.isDevice
-            ? () => {
-                this.zone.run(() => this.router.navigate(['reporting', i]));
-              }
-            : () => {},
-          popupText: !this.isDevice ? 'Click to navigate to device page' : '',
-        }
-      )
-    );
-
     this.setSelectedDevice(this.devices[0]);
-
-    this.setCenter({
-      lat: this.devices[0].gps[0],
-      lng: this.devices[0].gps[1],
-    });
+    this.options = generateDefaultMap(this.center);
   }
 
   openDialog(): void {
@@ -270,9 +240,15 @@ export class ReportingListDevicesComponent implements OnInit {
     this.dialog.open(SetGpsDialogComponent, {
       width: '600px',
       data: {
-        lat: selectedDevice.gps[0],
-        lng: selectedDevice.gps[1],
+        lat: selectedDevice.lat,
+        lng: selectedDevice.lng,
       },
     });
+  }
+
+  loadDevices(page: number): void {
+    if (!this.isDevice) {
+      this.loadDevices$.emit(page);
+    }
   }
 }
