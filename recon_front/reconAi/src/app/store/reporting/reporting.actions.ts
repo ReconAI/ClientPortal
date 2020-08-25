@@ -13,7 +13,9 @@ export enum ReportingActionTypes {
   LOAD_REPORTING_DEVICE_LIST_SUCCEEDED = '[Reporting] Load Reporting Device List Succeeded',
   LOAD_REPORTING_DEVICE_LIST_ERROR = '[Reporting] Load Reporting Device List Error',
 
-  SET_CHOSEN_REPORTING_DEVICE = '[Reporting] Set Chosen Reporting Device',
+  LOAD_REPORTING_DEVICE_REQUESTED = '[Reporting] Load Reporting Device Requested',
+  LOAD_REPORTING_DEVICE_SUCCEEDED = '[Reporting] Load Reporting Device Succeeded',
+  LOAD_REPORTING_DEVICE_ERROR = '[Reporting] Load Reporting Device Error',
 }
 
 export const loadReportingDeviceListRequestedAction = createAction(
@@ -29,8 +31,20 @@ export const loadReportingDeviceListSucceededAction = createAction(
 export const loadReportingDeviceListErrorAction = createAction(
   ReportingActionTypes.LOAD_REPORTING_DEVICE_LIST_ERROR
 );
+export interface LoadReportingDevicePayloadInterface {
+  id: number;
+}
 
-export const setChosenReportingDeviceAction = createAction(
-  ReportingActionTypes.SET_CHOSEN_REPORTING_DEVICE,
+export const loadReportingDeviceRequestedAction = createAction(
+  ReportingActionTypes.LOAD_REPORTING_DEVICE_REQUESTED,
+  props<LoadReportingDevicePayloadInterface>()
+);
+
+export const loadReportingDeviceSucceededAction = createAction(
+  ReportingActionTypes.LOAD_REPORTING_DEVICE_SUCCEEDED,
   props<SetSelectedReportingDeviceClientInterface>()
+);
+
+export const loadReportingDeviceErrorAction = createAction(
+  ReportingActionTypes.LOAD_REPORTING_DEVICE_ERROR
 );

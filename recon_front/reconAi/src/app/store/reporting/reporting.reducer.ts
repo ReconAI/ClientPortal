@@ -9,7 +9,7 @@ import {
 } from './reporting.server.helpers';
 import {
   loadReportingDeviceListSucceededAction,
-  setChosenReportingDeviceAction,
+  loadReportingDeviceSucceededAction,
 } from './reporting.actions';
 
 export interface ReportingState {
@@ -37,13 +37,18 @@ const setChosenReportingDeviceReducer = (
   { type, device }: Action & SetSelectedReportingDeviceClientInterface
 ): ReportingState => ({ ...state, selectedDevice: device });
 
+const loadReportingDeviceSucceededReducer = (
+  state: ReportingState,
+  { type, device }: Action & SetSelectedReportingDeviceClientInterface
+): ReportingState => ({ ...state, selectedDevice: device });
+
 const reportingReducer = createReducer(
   initialState,
   on(
     loadReportingDeviceListSucceededAction,
     loadReportingDeviceListSucceededReducer
   ),
-  on(setChosenReportingDeviceAction, setChosenReportingDeviceReducer)
+  on(loadReportingDeviceSucceededAction, loadReportingDeviceSucceededReducer)
 );
 
 export function reducer(state: ReportingState | undefined, action: Action) {
