@@ -16,6 +16,10 @@ import {
   NgZone,
   EventEmitter,
   Output,
+  ViewChild,
+  TemplateRef,
+  AfterViewInit,
+  ChangeDetectorRef,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { tileLayer, latLng, marker, polygon, circle, icon } from 'leaflet';
@@ -29,14 +33,20 @@ import { AppState } from 'app/store/reducers';
   templateUrl: './reporting-list-devices.component.html',
   styleUrls: ['./reporting-list-devices.component.less'],
 })
-export class ReportingListDevicesComponent implements OnInit {
+export class ReportingListDevicesComponent implements OnInit, AfterViewInit {
   constructor(
     private dialog: MatDialog,
     private router: Router,
     private zone: NgZone,
-    // remove!!!
-    private store: Store<AppState>
+    private cdr: ChangeDetectorRef
   ) {}
+
+  @ViewChild('taggedDataTemplate') taggedDataTemplate: TemplateRef<
+    ReportingDeviceClientInterface
+  >;
+  @ViewChild('cadTagTemplate') cadTagTemplate: TemplateRef<
+    ReportingDeviceClientInterface
+  >;
 
   @Input() isDevice = false;
   @Input() currentPage = 1;
@@ -49,120 +59,7 @@ export class ReportingListDevicesComponent implements OnInit {
   selectedIndex = null;
   options = null;
   layers = [];
-  columns: CrudTableColumn[] = [
-    {
-      header: 'Time stamp',
-      id: 'timestamp',
-      width: '150px',
-    },
-    {
-      header: 'Latitude',
-      id: 'lat',
-      width: '100px',
-    },
-    {
-      header: 'Longitude',
-      id: 'lng',
-      width: '100px',
-    },
-    {
-      header: 'Project name',
-      id: 'projectName',
-      render: ({ project }: ReportingDeviceClientInterface): string =>
-        project?.name,
-      width: '100px',
-    },
-    {
-      header: 'Edge Node name',
-      id: 'nodeName',
-      width: '100px',
-    },
-    {
-      header: 'Event/Object',
-      id: 'isEvent',
-      width: '100px',
-    },
-    {
-      header: 'Location X',
-      id: 'locationX',
-      width: '100px',
-    },
-    {
-      header: 'Location Y',
-      id: 'locationY',
-      width: '100px',
-    },
-    {
-      header: 'Location Z',
-      id: 'locationZ',
-      width: '100px',
-    },
-    {
-      header: 'Orient theta',
-      id: 'theta',
-      width: '100px',
-    },
-    {
-      header: 'Orient phi',
-      id: 'phi',
-      width: '100px',
-    },
-    {
-      header: 'Object class',
-      id: 'objectClass',
-      width: '100px',
-    },
-    {
-      header: 'License plat number',
-      id: 'plateNumber',
-      width: '100px',
-    },
-    {
-      header: 'Traffic flow',
-      id: 'trafficFlow',
-      width: '400px',
-    },
-    {
-      header: 'Vehicle classification',
-      id: 'vehicle',
-      width: '100px',
-    },
-    {
-      header: 'Pedestrian flow',
-      id: 'pedestrianFlow',
-      width: '100px',
-    },
-    {
-      header: 'Ambient weather condition',
-      id: 'ambientWeather',
-      width: '100px',
-    },
-    {
-      header: 'Road weather condition surveillance',
-      id: 'roadWeather',
-      width: '100px',
-    },
-    {
-      header: 'Tagged data',
-      id: 'taggedData',
-      width: '100px',
-    },
-    {
-      header: 'License plate',
-      id: 'plate',
-      width: '100px',
-    },
-    {
-      header: 'Face',
-      id: 'face',
-      width: '100px',
-    },
-    {
-      header: 'CAD file tag',
-      id: 'fileTag',
-      width: '100px',
-    },
-  ];
+  columns: CrudTableColumn[] = [];
 
   setSelectedDevice(device: ReportingDeviceClientInterface): void {
     this.selectedIndex = this.devices.findIndex(({ id }) => id === device?.id);
@@ -218,6 +115,128 @@ export class ReportingListDevicesComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.setSelectedDevice(this.devices[0]);
+    this.options = generateDefaultMap(this.center);
+  }
+
+  ngAfterViewInit() {
+    this.columns = [
+      {
+        header: 'Time stamp',
+        id: 'timestamp',
+        width: '150px',
+      },
+      {
+        header: 'Latitude',
+        id: 'lat',
+        width: '100px',
+      },
+      {
+        header: 'Longitude',
+        id: 'lng',
+        width: '100px',
+      },
+      {
+        header: 'Project name',
+        id: 'projectName',
+        render: ({ project }: ReportingDeviceClientInterface): string =>
+          project?.name,
+        width: '100px',
+      },
+      {
+        header: 'Edge Node name',
+        id: 'nodeName',
+        width: '100px',
+      },
+      {
+        header: 'Event/Object',
+        id: 'isEvent',
+        width: '100px',
+      },
+      {
+        header: 'Location X',
+        id: 'locationX',
+        width: '100px',
+      },
+      {
+        header: 'Location Y',
+        id: 'locationY',
+        width: '100px',
+      },
+      {
+        header: 'Location Z',
+        id: 'locationZ',
+        width: '100px',
+      },
+      {
+        header: 'Orient theta',
+        id: 'theta',
+        width: '100px',
+      },
+      {
+        header: 'Orient phi',
+        id: 'phi',
+        width: '100px',
+      },
+      {
+        header: 'Object class',
+        id: 'objectClass',
+        width: '100px',
+      },
+      {
+        header: 'License plat number',
+        id: 'plateNumber',
+        width: '100px',
+      },
+      {
+        header: 'Traffic flow',
+        id: 'trafficFlow',
+        width: '400px',
+      },
+      {
+        header: 'Vehicle classification',
+        id: 'vehicle',
+        width: '100px',
+      },
+      {
+        header: 'Pedestrian flow',
+        id: 'pedestrianFlow',
+        width: '100px',
+      },
+      {
+        header: 'Ambient weather condition',
+        id: 'ambientWeather',
+        width: '100px',
+      },
+      {
+        header: 'Road weather condition surveillance',
+        id: 'roadWeather',
+        width: '100px',
+      },
+      {
+        header: 'Tagged data',
+        id: 'taggedData',
+        width: '100px',
+        cellTemplate: this.taggedDataTemplate,
+      },
+      {
+        header: 'License plate',
+        id: 'plate',
+        width: '100px',
+      },
+      {
+        header: 'Face',
+        id: 'face',
+        width: '100px',
+      },
+      {
+        header: 'CAD file tag',
+        id: 'fileTag',
+        width: '100px',
+        cellTemplate: this.cadTagTemplate,
+      },
+    ];
+
     if (!this.isDevice) {
       this.columns = [
         {
@@ -228,9 +247,8 @@ export class ReportingListDevicesComponent implements OnInit {
         ...this.columns,
       ];
     }
-
-    this.setSelectedDevice(this.devices[0]);
-    this.options = generateDefaultMap(this.center);
+    // to run one more round of change detection
+    this.cdr.detectChanges();
   }
 
   openDialog(): void {
@@ -248,5 +266,9 @@ export class ReportingListDevicesComponent implements OnInit {
     if (!this.isDevice) {
       this.loadDevices$.emit(page);
     }
+  }
+
+  goToUrl(url: string): void {
+    window.open(url, '_blank');
   }
 }

@@ -41,7 +41,7 @@
 <div>
   <recon-reporting-filter></recon-reporting-filter>
 </div>
-<div>
+<div *ngIf="columns?.length">
   <recon-crud-table
     [data]="devices"
     [columns]="columns"
@@ -68,3 +68,21 @@
   [leafletLayers]="layers"
   [(leafletCenter)]="center"
 ></div>
+
+<ng-template #taggedDataTemplate let-element="element">
+  <span
+    class="table-link"
+    (click)="$event.stopPropagation(); goToUrl(element.taggedData)"
+  >
+    Link
+  </span>
+</ng-template>
+
+<ng-template #cadTagTemplate let-element="element">
+  <span
+    class="table-link"
+    (click)="$event.stopPropagation(); goToUrl(element.fileTag)"
+  >
+    Link to cad file
+  </span>
+</ng-template>
