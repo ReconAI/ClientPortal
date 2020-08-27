@@ -27,6 +27,7 @@ export class FilterInputComponent implements OnInit, ControlValueAccessor {
   @Input() disabled = false;
   @Input() isWithSearchIcon = false;
   @Output() changeVal = new EventEmitter<string>();
+  @Output() blurVal = new EventEmitter<string>();
 
   onChange = (value: any) => {};
   onTouched = () => {};
@@ -47,9 +48,16 @@ export class FilterInputComponent implements OnInit, ControlValueAccessor {
   }
 
   changeValue(value: string): void {
+    this.value = value;
     this.onChange(value);
-    this.changeVal.emit(this.value);
+    this.changeVal.emit(value);
   }
+
+  blurValue(): void {
+    this.onTouched();
+    this.blurVal.emit(this.value);
+  }
+
 
   setDisabledState?(isDisabled: boolean): void {
     this.disabled = isDisabled;

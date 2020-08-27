@@ -32,6 +32,7 @@ export class FilterThreeInputsComponent implements OnInit {
   checked = false;
   @Input() disabled = false;
   @Output() changeVal = new EventEmitter<FilterThreeInputsInterface>();
+  @Output() blurVal = new EventEmitter<FilterThreeInputsInterface>();
 
   @Input() leftPlaceholder = '';
   @Input() middlePlaceholder = '';
@@ -79,6 +80,16 @@ export class FilterThreeInputsComponent implements OnInit {
 
     this.onChange(newValue);
     this.changeVal.emit(newValue);
+  }
+
+  blurValue(): void {
+    this.onTouched();
+    this.blurVal.emit({
+      left: this.left,
+      middle: this.middle,
+      right: this.right,
+      checked: this.checked,
+    });
   }
 
   ngOnInit(): void {}

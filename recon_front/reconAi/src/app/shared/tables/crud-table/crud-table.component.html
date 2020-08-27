@@ -16,15 +16,41 @@
             [style.flex-basis]="column.width"
             [style.flex-shrink]="0"
             [style.flex-grow]="0"
-            >{{ renderElement(column, element) }}
+          >
+            <ng-container *ngIf="column.cellTemplate; else withoutTemplate">
+              <ng-template
+                [ngTemplateOutletContext]="{
+                  element: element
+                }"
+                [ngTemplateOutlet]="column.cellTemplate"
+              >
+              </ng-template>
+            </ng-container>
+            <ng-template #withoutTemplate>
+              {{ renderElement(column, element) }}
+            </ng-template>
           </mat-cell></ng-container
         >
         <ng-template #standardWidth>
           <mat-header-cell *matHeaderCellDef>{{
             column.header
           }}</mat-header-cell>
-          <mat-cell *matCellDef="let element" [matTooltip]="allCellsTooltipText"
-            >{{ renderElement(column, element) }}
+          <mat-cell
+            *matCellDef="let element"
+            [matTooltip]="allCellsTooltipText"
+          >
+            <ng-container *ngIf="column.cellTemplate; else withoutTemplate">
+              <ng-template
+                [ngTemplateOutletContext]="{
+                  element: element
+                }"
+                [ngTemplateOutlet]="column.cellTemplate"
+              >
+              </ng-template>
+            </ng-container>
+            <ng-template #withoutTemplate>
+              {{ renderElement(column, element) }}
+            </ng-template>
           </mat-cell>
         </ng-template>
       </ng-container>

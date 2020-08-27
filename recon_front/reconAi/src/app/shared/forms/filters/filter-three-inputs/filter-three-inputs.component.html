@@ -6,6 +6,7 @@
       <recon-filter-input
         [(ngModel)]="left"
         (changeVal)="changeValue()"
+        (blurVal)="blurValue()"
       ></recon-filter-input>
     </div>
     <div class="input-container">
@@ -13,6 +14,7 @@
       <recon-filter-input
         [(ngModel)]="middle"
         (changeVal)="changeValue()"
+        (blurVal)="blurValue()"
       ></recon-filter-input>
     </div>
     <div class="input-container">
@@ -20,13 +22,14 @@
       <recon-filter-input
         [(ngModel)]="right"
         (changeVal)="changeValue()"
+        (blurVal)="blurValue()"
       ></recon-filter-input>
     </div>
     <div class="input-container">
       <recon-form-checkbox
         [(ngModel)]="checked"
         [label]="checkboxLabel"
-        (changeVal)="changeValue()"
+        (changeVal)="changeValue(); blurValue()"
       ></recon-form-checkbox>
     </div>
   </div>

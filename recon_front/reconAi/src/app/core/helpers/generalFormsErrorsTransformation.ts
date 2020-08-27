@@ -46,7 +46,7 @@ export const generalTransformFormErrorToObject = (
           (finalError, key) => ({
             ...finalError,
             [relations[key] || key]: isValuesToString
-              ? errors[key]?.join(' ')
+              ? '\n' + errors[key]?.join('\n')
               : errors[key],
           }),
           {}

@@ -31,8 +31,8 @@ export class FormSliderComponent implements ControlValueAccessor, OnInit {
   writeValue(value: boolean) {
     this.checked = !!value;
 
-    this.onChange(this.checked);
-    this.changeVal.emit(this.checked);
+    // this.onChange(this.checked);
+    // this.changeVal.emit(this.checked);
   }
 
   registerOnChange(fn) {
@@ -41,6 +41,11 @@ export class FormSliderComponent implements ControlValueAccessor, OnInit {
 
   registerOnTouched(fn) {
     this.onTouched = fn;
+  }
+
+  changeValue(value: boolean) {
+    this.onChange(value);
+    this.changeVal.emit(value);
   }
 
   setDisabledState?(isDisabled: boolean): void {

@@ -1,3 +1,4 @@
+import { FiltersService } from './../../core/services/filters/filters.service';
 import { selectCurrentUserProfileId } from 'app/store/user/user.selectors';
 import { BasketService } from './../../core/services/basket/basket.service';
 import { UserRolesPriorities } from './../../constants/types/user';
@@ -107,7 +108,8 @@ export class UserEffects {
     private store: Store<AppState>,
     private router: Router,
     private localStorageService: LocalStorageService,
-    private basketService: BasketService
+    private basketService: BasketService,
+    private filtersService: FiltersService
   ) {}
 
   loadCurrentUser$: Observable<Action> = createEffect(() =>
@@ -208,6 +210,7 @@ export class UserEffects {
           }),
           tap(() => {
             this.basketService.deleteDevicesOfUser(+userId);
+            this.filtersService.resetUserFilters(+userId);
             this.store.dispatch(resetCurrentUserAction());
             this.router.navigate(['/']);
           }),

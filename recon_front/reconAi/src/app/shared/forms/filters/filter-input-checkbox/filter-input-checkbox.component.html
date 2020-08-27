@@ -7,13 +7,14 @@
         [placeholder]="placeholder"
         [isWithSearchIcon]="true"
         (changeVal)="changeValues()"
+        (blurVal)="blurValue()"
       >
       </recon-filter-input>
     </div>
     <recon-form-checkbox
       [(ngModel)]="checked"
       [label]="checkboxLabel"
-      (changeVal)="changeValues()"
+      (changeVal)="changeValues(); blurValue()"
     ></recon-form-checkbox>
   </div>
 </div>
