@@ -115,12 +115,11 @@ class RelevantDataFilter(filters.FilterSet):
     timestamp = DateTimeFromToRangeFilter(field_name="timestamp", lookup_expr='range')
     orient_theta = NumericRangeFilter(field_name="orient_theta", lookup_expr='range')
     orient_phi = NumericRangeFilter(field_name="orient_phi", lookup_expr='range')
-    # max_price = filters.NumberFilter(field_name="price", lookup_expr='lte')
 
-    is_and = filters.BooleanFilter()
+    logical_and = filters.BooleanFilter()
 
-    IS_AND_TO_APPLY = True
-    IS_AND_FIELD_NAME = 'is_and'
+    LOGICAL_AND = True
+    LOGICAL_AND_FIELD_NAME = 'logical_and'
 
     class Meta:
         model = RelevantData
@@ -157,7 +156,7 @@ class RelevantDataFilter(filters.FilterSet):
             key: value
             for key, value
             in cleaned_data.items()
-            if key != self.IS_AND_FIELD_NAME
+            if key != self.LOGICAL_AND_FIELD_NAME
         }
 
     def __apply_filterset(self,
@@ -173,10 +172,15 @@ class RelevantDataFilter(filters.FilterSet):
         return queryset
 
     def __apply_filter(self, conditions, condition):
-        if self.__is_and_to_apply():
+        if self.__logical_and_to_apply():
             return conditions & condition
 
         return conditions | condition
 
-    def __is_and_to_apply(self) -> bool:
-        return self.form.cleaned_data.get('is_and', self.IS_AND_TO_APPLY)
+    def __logical_and_to_apply(self) -> bool:
+        logical_and = self.form.cleaned_data.get('logical_and')
+
+        if logical_and is None:
+            return self.LOGICAL_AND
+
+        return logical_and
