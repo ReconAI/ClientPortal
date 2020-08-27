@@ -1,9 +1,11 @@
 from django.utils.decorators import method_decorator
+from django_filters import rest_framework as filters
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 
 from recon_db_manager.models import RelevantData
+from reporting_tool.filters import RelevantDataFilter
 from reporting_tool.serializers import RelevantDataSerializer
 from shared.permissions import IsActive, PaymentRequired
 from shared.swagger.headers import token_header
@@ -17,7 +19,7 @@ class RelevantDataGet:
 
     permission_classes = (IsAuthenticated, IsActive, PaymentRequired)
 
-    queryset = RelevantData.objects.all()
+    queryset = RelevantData.objects.select_related('project').all()
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
@@ -32,7 +34,9 @@ class RelevantDataGet:
     ]
 ))
 class RelevantDataView(RelevantDataGet, ListAPIView):
-    pass
+    filter_backends = (filters.DjangoFilterBackend,)
+
+    filterset_class = RelevantDataFilter
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
