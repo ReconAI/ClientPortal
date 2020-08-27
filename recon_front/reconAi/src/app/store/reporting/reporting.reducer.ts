@@ -1,3 +1,4 @@
+import { FilterItemInterface } from './../../reporting/constants/types/filters';
 import {
   MetaClientInterface,
   PaginationResponseClientInterface,
@@ -10,18 +11,22 @@ import {
 import {
   loadReportingDeviceListSucceededAction,
   loadReportingDeviceSucceededAction,
+  setUserFiltersAction,
+  SetUserFiltersPayloadInterface,
 } from './reporting.actions';
 
 export interface ReportingState {
   list: ReportingDeviceClientInterface[];
   meta: MetaClientInterface;
   selectedDevice: ReportingDeviceClientInterface;
+  filters: FilterItemInterface[];
 }
 
 export const initialState: ReportingState = {
   list: [],
   meta: null,
   selectedDevice: null,
+  filters: [],
 };
 
 const loadReportingDeviceListSucceededReducer = (
@@ -32,15 +37,15 @@ const loadReportingDeviceListSucceededReducer = (
   }: Action & PaginationResponseClientInterface<ReportingDeviceClientInterface>
 ): ReportingState => ({ ...state, list: payload.list, meta: payload.meta });
 
-const setChosenReportingDeviceReducer = (
-  state: ReportingState,
-  { type, device }: Action & SetSelectedReportingDeviceClientInterface
-): ReportingState => ({ ...state, selectedDevice: device });
-
 const loadReportingDeviceSucceededReducer = (
   state: ReportingState,
   { type, device }: Action & SetSelectedReportingDeviceClientInterface
 ): ReportingState => ({ ...state, selectedDevice: device });
+
+const setUserFiltersReducer = (
+  state: ReportingState,
+  { type, filters }: Action & SetUserFiltersPayloadInterface
+): ReportingState => ({ ...state, filters });
 
 const reportingReducer = createReducer(
   initialState,
@@ -48,7 +53,8 @@ const reportingReducer = createReducer(
     loadReportingDeviceListSucceededAction,
     loadReportingDeviceListSucceededReducer
   ),
-  on(loadReportingDeviceSucceededAction, loadReportingDeviceSucceededReducer)
+  on(loadReportingDeviceSucceededAction, loadReportingDeviceSucceededReducer),
+  on(setUserFiltersAction, setUserFiltersReducer)
 );
 
 export function reducer(state: ReportingState | undefined, action: Action) {

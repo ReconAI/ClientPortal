@@ -6,7 +6,6 @@ import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AppState } from 'app/store/reducers';
 import { selectReportingSelectedDevice } from 'app/store/reporting/reporting.selectors';
-import { updateBreadcrumbByIdAction } from 'app/store/app';
 import { loadReportingDeviceRequestedAction } from 'app/store/reporting';
 
 @Component({

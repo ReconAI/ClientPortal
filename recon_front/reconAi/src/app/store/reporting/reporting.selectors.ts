@@ -1,3 +1,4 @@
+import { FilterItemInterface } from 'app/reporting/constants/types/filters';
 import { MetaClientInterface } from './../../constants/types/requests';
 import { ReportingDeviceClientInterface } from './reporting.server.helpers';
 import { createSelector } from '@ngrx/store';
@@ -37,4 +38,9 @@ export const selectReportingSelectedDevice = createSelector(
   selectReporting,
   (reporting: ReportingState): ReportingDeviceClientInterface =>
     reporting?.selectedDevice || null
+);
+
+export const selectUserFilters = createSelector(
+  selectReporting,
+  (reporting: ReportingState): FilterItemInterface[] => reporting?.filters || []
 );

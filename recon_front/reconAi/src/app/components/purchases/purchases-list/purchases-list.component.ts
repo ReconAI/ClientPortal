@@ -25,6 +25,12 @@ export class PurchasesListComponent implements OnInit {
       id: 'date',
     },
     {
+      header: 'Type',
+      id: 'type',
+      render: (purchase: PurchaseClientInterface) =>
+        purchase.type === 'purchase' ? 'Purchase device' : 'Monthly invoice',
+    },
+    {
       header: 'Amount, €',
       id: 'total',
     },

@@ -39,7 +39,7 @@
   </ng-template>
 </div>
 <div>
-  <recon-reporting-filter></recon-reporting-filter>
+  <recon-reporting-filter-container></recon-reporting-filter-container>
 </div>
 <div *ngIf="columns?.length">
   <recon-crud-table
@@ -67,7 +67,10 @@
   [leafletOptions]="options"
   [leafletLayers]="layers"
   [(leafletCenter)]="center"
-></div>
+  (leafletMapReady)="onMapReady($event)"
+>
+  >
+</div>
 
 <ng-template #taggedDataTemplate let-element="element">
   <span

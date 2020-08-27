@@ -1,3 +1,4 @@
+import { FilterItemInterface } from './../../reporting/constants/types/filters';
 import {
   PaginationRequestInterface,
   PaginationResponseClientInterface,
@@ -16,6 +17,9 @@ export enum ReportingActionTypes {
   LOAD_REPORTING_DEVICE_REQUESTED = '[Reporting] Load Reporting Device Requested',
   LOAD_REPORTING_DEVICE_SUCCEEDED = '[Reporting] Load Reporting Device Succeeded',
   LOAD_REPORTING_DEVICE_ERROR = '[Reporting] Load Reporting Device Error',
+
+  SET_USER_FILTERS = '[Reporting] Set User Filters',
+  RESET_USER_FILTERS = '[Reporting] Reset User Filters',
 }
 
 export const loadReportingDeviceListRequestedAction = createAction(
@@ -47,4 +51,17 @@ export const loadReportingDeviceSucceededAction = createAction(
 
 export const loadReportingDeviceErrorAction = createAction(
   ReportingActionTypes.LOAD_REPORTING_DEVICE_ERROR
+);
+
+export interface SetUserFiltersPayloadInterface {
+  filters: FilterItemInterface[];
+}
+
+export const setUserFiltersAction = createAction(
+  ReportingActionTypes.SET_USER_FILTERS,
+  props<SetUserFiltersPayloadInterface>()
+);
+
+export const resetUserFiltersAction = createAction(
+  ReportingActionTypes.RESET_USER_FILTERS
 );

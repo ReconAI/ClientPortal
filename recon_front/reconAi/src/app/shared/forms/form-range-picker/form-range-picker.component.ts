@@ -54,9 +54,8 @@ export class FormRangePickerComponent implements OnInit {
     this.start = value.start || null;
     this.end = value.end || null;
 
-    // start time date
-    this.onChange(value);
-    this.changeVal.emit(value);
+    // this.onChange(value);
+    // this.changeVal.emit(value);
   }
 
   handleChanges(type: string, value): void {
@@ -69,6 +68,10 @@ export class FormRangePickerComponent implements OnInit {
     }
     if (this.start && this.end) {
       this.onChange({
+        start: moment(this.start),
+        end: moment(this.end),
+      });
+      this.changeVal.emit({
         start: moment(this.start),
         end: moment(this.end),
       });
@@ -124,6 +127,10 @@ export class FormRangePickerComponent implements OnInit {
     );
 
     this.onChange({
+      start: moment(this.start),
+      end: moment(this.end),
+    });
+    this.changeVal.emit({
       start: moment(this.start),
       end: moment(this.end),
     });

@@ -22,12 +22,13 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { tileLayer, latLng, marker, polygon, circle, icon } from 'leaflet';
+import { latLng, Map } from 'leaflet';
 
-import moment from 'moment';
+import * as L from 'leaflet';
+import 'leaflet.heat/dist/leaflet-heat.js';
+
 import { LatLngInterface } from 'app/core/helpers/markers';
 import { ReportingDeviceClientInterface } from 'app/store/reporting/reporting.server.helpers';
-import { AppState } from 'app/store/reducers';
 @Component({
   selector: 'recon-reporting-list-devices',
   templateUrl: './reporting-list-devices.component.html',
@@ -270,5 +271,80 @@ export class ReportingListDevicesComponent implements OnInit, AfterViewInit {
 
   goToUrl(url: string): void {
     window.open(url, '_blank');
+  }
+
+  onMapReady(map: Map) {
+    // // workaround
+    //   L.heatLayer(
+    //     [
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [34, 34, 1],
+    //       [56, 57, 0.6],
+    //       [56, 58, 1],
+    //     ],
+    //     {
+    //     }
+    //   ).addTo(map);
   }
 }
