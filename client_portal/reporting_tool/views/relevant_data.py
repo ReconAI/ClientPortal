@@ -1,4 +1,5 @@
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -8,10 +9,10 @@ from reporting_tool.serializers import RelevantDataSerializer, \
     RelevantDataSetGPSSerializer
 from shared.permissions import IsActive, PaymentRequired
 from shared.swagger.headers import token_header
-from shared.swagger.responses import default_get_responses_with_custom_success, \
-    data_serializer
+from shared.swagger.responses import \
+    default_get_responses_with_custom_success, data_serializer, \
+    DEFAULT_UNSAFE_REQUEST_RESPONSES
 from shared.views.utils import RetrieveAPIView, UpdateAPIView
-from django.utils.translation import gettext_lazy as _
 
 
 class RelevantDataGet:
@@ -53,9 +54,7 @@ class RelevantDataItemView(RelevantDataGet, RetrieveAPIView):
 
 
 @method_decorator(name='put', decorator=swagger_auto_schema(
-    responses=default_get_responses_with_custom_success(
-        data_serializer(RelevantDataSetGPSSerializer)
-    ),
+    responses=DEFAULT_UNSAFE_REQUEST_RESPONSES,
     tags=['Relevant data'],
     operation_summary='Relevant data set GPS',
     operation_description='Sets GPS for an entry of relevant data',
