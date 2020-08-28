@@ -1,1 +1,10 @@
-<recon-reporting-list-devices [isDevice]="!!id"></recon-reporting-list-devices>
+<ng-container *ngIf="!(loadingStatus$ | async); else loading">
+  <recon-reporting-list-devices
+    [count]="count$ | async"
+    [currentPage]="currentPage$ | async"
+    [pageSize]="pageSize$ | async"
+    [devices]="reportingDeviceList$ | async"
+    (loadDevices$)="loadDevices($event)"
+  ></recon-reporting-list-devices>
+</ng-container>
+<ng-template #loading>Loading...</ng-template>

@@ -8,7 +8,7 @@
       [placeholder]="placeholder"
       [disabled]="disabled"
       (input)="changeValue($event.target.value)"
-      (blur)="onTouched()"
+      (blur)="blurValue()"
     />
     <div class="icon-container" *ngIf="isWithSearchIcon">
       <mat-icon>search</mat-icon>

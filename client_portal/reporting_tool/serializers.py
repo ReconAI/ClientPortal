@@ -487,3 +487,18 @@ class RelevantDataSerializer(ModelSerializer):
     @staticmethod
     def format_cad_file_tag(instance):
         return 'Link to CAD file'
+
+
+class RelevantDataSetGPSSerializer(ModelSerializer):
+    lat = serializers.FloatField(
+        required=True, allow_null=False,max_value=180,
+        min_value=-180, source='sensor_GPS_lat'
+    )
+    long = serializers.FloatField(
+        required=True, allow_null=False, max_value=180,
+        min_value=-180, source='sensor_GPS_long'
+    )
+
+    class Meta:
+        model = RelevantData
+        fields = ('lat', 'long')

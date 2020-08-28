@@ -87,16 +87,6 @@ export class DeviceListContainer implements OnInit, OnDestroy {
     const defaultCategory = this.categories.find(
       ({ name }) => name === this.categoryName
     );
-
-    console.log(
-      {
-        pagination: {
-          categoryId: defaultCategory?.id || -1,
-          ...pagination,
-        },
-      },
-      'PAGINATION'
-    );
     this.store.dispatch(
       updateDeviceListMetaAction({
         pagination: {

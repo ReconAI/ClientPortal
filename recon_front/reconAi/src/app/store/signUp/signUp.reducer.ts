@@ -1,4 +1,7 @@
-import { PreSignUpInterface } from './signUp.server.helpers';
+import {
+  PreSignUpInterface,
+  DaysLeftClientInterface,
+} from './signUp.server.helpers';
 import {
   FormServerErrorInterface,
   ObjectFormErrorInterface,
@@ -13,18 +16,19 @@ import {
   resetSignUpAction,
   IsSuccessSignUpOpenableActionInterface,
   setIsSuccessSignUpOpenableStatusAction,
+  setDaysLeftAction,
+  SetSignUpTypePayloadInterface,
+  setSignUpTypeAction,
 } from './signUp.actions';
 
 interface SignUpErrors {
   preSignUp: string;
   signUp: FormServerErrorInterface;
-  daysLeft: number;
 }
 
 const initialSignUpErrors = {
   preSignUp: null,
   signUp: null,
-  daysLeft: null,
 };
 export interface SignUpState {
   username: string;
@@ -32,6 +36,8 @@ export interface SignUpState {
   password2: string;
   isPossibleToOpenSignUp: boolean;
   errors: SignUpErrors;
+  daysLeft: number;
+  type: string;
 }
 
 export const initialState: SignUpState = {
@@ -40,6 +46,8 @@ export const initialState: SignUpState = {
   password2: null,
   isPossibleToOpenSignUp: false,
   errors: initialSignUpErrors,
+  daysLeft: 30,
+  type: null,
 };
 
 const setPreSignUpInfoReducer = (
@@ -96,6 +104,24 @@ const setIsSuccessSignUpOpenableStatusReducer = (
 ): SignUpState => ({
   ...state,
   isPossibleToOpenSignUp: status,
+  daysLeft: status ? state.daysLeft : 30,
+  type: status ? state.type : null,
+});
+
+const setDaysLeftReducer = (
+  state: SignUpState,
+  { daysLeft }: Action & DaysLeftClientInterface
+): SignUpState => ({
+  ...state,
+  daysLeft,
+});
+
+const setSignUpTypeReducer = (
+  state: SignUpState,
+  { signUpType }: Action & SetSignUpTypePayloadInterface
+): SignUpState => ({
+  ...state,
+  type: signUpType,
 });
 
 const resetSignUpReducer = (): SignUpState => initialState;
@@ -111,7 +137,9 @@ const signUpReducer = createReducer(
   on(
     setIsSuccessSignUpOpenableStatusAction,
     setIsSuccessSignUpOpenableStatusReducer
-  )
+  ),
+  on(setDaysLeftAction, setDaysLeftReducer),
+  on(setSignUpTypeAction, setSignUpTypeReducer)
 );
 
 export function reducer(state: SignUpState | undefined, action: Action) {

@@ -1,203 +1,243 @@
+import { PaginationRequestInterface } from './../../../constants/types/requests';
+import { Store } from '@ngrx/store';
+import { OnlineStreamingComponent } from './../reporting-list-devices/online-streaming/online-streaming.component';
 import { TAMPERE_COORDINATES } from './../../../constants/globalVariables/globalVariables';
 import { Router } from '@angular/router';
-import { generateMapMarker } from './../../../core/helpers/markers';
+import {
+  generateMapMarker,
+  generateDefaultMap,
+} from './../../../core/helpers/markers';
 import { CrudTableColumn } from 'app/shared/types';
 import { SetGpsDialogComponent } from './../set-gps-dialog/set-gps-dialog.component';
-import { Component, OnInit, Input, NgZone } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  NgZone,
+  EventEmitter,
+  Output,
+  ViewChild,
+  TemplateRef,
+  AfterViewInit,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { tileLayer, latLng, marker, polygon, circle, icon } from 'leaflet';
+import { latLng, Map } from 'leaflet';
 
-import moment from 'moment';
+import * as L from 'leaflet';
+import 'leaflet.heat/dist/leaflet-heat.js';
+
 import { LatLngInterface } from 'app/core/helpers/markers';
+import { ReportingDeviceClientInterface } from 'app/store/reporting/reporting.server.helpers';
 @Component({
   selector: 'recon-reporting-list-devices',
   templateUrl: './reporting-list-devices.component.html',
   styleUrls: ['./reporting-list-devices.component.less'],
 })
-export class ReportingListDevicesComponent implements OnInit {
+export class ReportingListDevicesComponent implements OnInit, AfterViewInit {
   constructor(
     private dialog: MatDialog,
     private router: Router,
-    private zone: NgZone
+    private zone: NgZone,
+    private cdr: ChangeDetectorRef
   ) {}
+
+  @ViewChild('taggedDataTemplate') taggedDataTemplate: TemplateRef<
+    ReportingDeviceClientInterface
+  >;
+  @ViewChild('cadTagTemplate') cadTagTemplate: TemplateRef<
+    ReportingDeviceClientInterface
+  >;
+
   @Input() isDevice = false;
-  center = latLng(48.879966, -123.726909);
+  @Input() currentPage = 1;
+  @Input() count = 1;
+  @Input() pageSize = 1;
+  @Input() devices: ReportingDeviceClientInterface[] = [];
+  @Output() loadDevices$ = new EventEmitter<number>();
 
+  center = null;
   selectedIndex = null;
-
-  // move to general functions
-  options = {
-    layers: [
-      tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 18,
-        minZoom: 3,
-        id: 'main-map',
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      }),
-    ],
-    zoom: 10,
-    center: this.center,
-  };
-
-  // TODO:
-  // general method for creation
+  options = null;
   layers = [];
-  columns: CrudTableColumn[] = [
-    {
-      header: 'Time stamp',
-      id: 'createdDT',
-      width: '150px',
-    },
-    {
-      header: 'Latitude',
-      id: 'latitude',
-      render: (device) => device.gps[0],
-      width: '100px',
-    },
-    {
-      header: 'Longitude',
-      id: 'longitude',
-      render: (device) => device.gps[1],
-      width: '100px',
-    },
-    {
-      header: 'Project name',
-      id: 'projectName',
-      width: '100px',
-    },
-    {
-      header: 'Edge Node name',
-      id: 'nodeName',
-      width: '100px',
-    },
-    {
-      header: 'Event/Object',
-      id: 'isEvent',
-      width: '100px',
-    },
-    {
-      header: 'Location X',
-      id: 'locationX',
-      width: '100px',
-    },
-    {
-      header: 'Location Y',
-      id: 'locationY',
-      width: '100px',
-    },
-    {
-      header: 'Location Z',
-      id: 'locationZ',
-      width: '100px',
-    },
-    {
-      header: 'Orient theta',
-      id: 'theta',
-      width: '100px',
-    },
-    {
-      header: 'Orient phi',
-      id: 'phi',
-      width: '100px',
-    },
-    {
-      header: 'Object class',
-      id: 'objectClass',
-      width: '100px',
-    },
-    {
-      header: 'License plat number',
-      id: 'platNumber',
-      width: '100px',
-    },
-    {
-      header: 'Traffic flow',
-      id: 'trafficFlow',
-      width: '100px',
-    },
-    {
-      header: 'Vehicle classification',
-      id: 'vehicle',
-      width: '100px',
-    },
-    {
-      header: 'Pedestrian flow',
-      id: 'pedestrianFlow',
-      width: '100px',
-    },
-    {
-      header: 'Ambient weather condition',
-      id: 'weatherCondition',
-      width: '100px',
-    },
-    {
-      header: 'Road weather condition surveillance',
-      id: 'roadWeatherConditionSurveillance',
-      width: '100px',
-    },
-    {
-      header: 'Tagged data',
-      id: 'taggedData',
-      width: '100px',
-    },
-    {
-      header: 'License plate',
-      id: 'plate',
-      width: '100px',
-    },
-    {
-      header: 'Face',
-      id: 'face',
-      width: '100px',
-    },
-    {
-      header: 'CAD file tag',
-      id: 'fileTag',
-      width: '100px',
-    },
-  ];
+  columns: CrudTableColumn[] = [];
 
-  devices = [];
+  setSelectedDevice(device: ReportingDeviceClientInterface): void {
+    this.selectedIndex = this.devices.findIndex(({ id }) => id === device?.id);
 
-  setSelectedDevice(device): void {
-    this.selectedIndex = this.devices.findIndex(({ id }) => id === device.id);
-    this.layers = [1, 2, 3, 4, 5, 6].map((i, index) =>
-      generateMapMarker(
-        {
-          lat: 46.879966 + i * 2,
-          lng: -121.726909 - i * 2,
-        },
-        {
-          isHighlighted: index === this.selectedIndex,
-          zIndex: index === this.selectedIndex ? 1000 : 500,
-          clickHandler: !this.isDevice
-            ? () => {
-                this.zone.run(() => this.router.navigate(['reporting', i]));
-              }
-            : () => {},
-          popupText: !this.isDevice ? 'Click to navigate to device page' : '',
-        }
-      )
-    );
+    if (this.selectedIndex > -1) {
+      this.generateLayersFromDevices();
 
-    this.setCenter({
-      lat: device.gps[0],
-      lng: device.gps[1],
-    });
+      this.setCenter({
+        lat: +device.lat,
+        lng: +device.lng,
+      });
+    } else {
+      this.setCenter({
+        lat: TAMPERE_COORDINATES.lat,
+        lng: TAMPERE_COORDINATES.lng,
+      });
+    }
   }
 
-  navigateToDevice(device): void {
+  navigateToDevice(device: ReportingDeviceClientInterface): void {
     if (!this.isDevice) {
       this.router.navigate(['reporting', device.id]);
     }
+  }
+
+  openStreaming(): void {
+    this.dialog.open(OnlineStreamingComponent);
   }
 
   setCenter({ lat, lng }: LatLngInterface): void {
     this.center = latLng(lat, lng);
   }
 
+  generateLayersFromDevices(): void {
+    this.layers = this.devices.map((device, index) =>
+      generateMapMarker(
+        {
+          lat: +device.lat,
+          lng: +device.lng,
+        },
+        {
+          isHighlighted: index === this.selectedIndex,
+          zIndex: index === this.selectedIndex ? 1000 : 500,
+          clickHandler: !this.isDevice
+            ? () => {
+                this.zone.run(() => this.navigateToDevice(device));
+              }
+            : () => {},
+          popupText: !this.isDevice ? 'Click to navigate to device page' : '',
+        }
+      )
+    );
+  }
+
   ngOnInit(): void {
+    this.setSelectedDevice(this.devices[0]);
+    this.options = generateDefaultMap(this.center);
+  }
+
+  ngAfterViewInit() {
+    this.columns = [
+      {
+        header: 'Time stamp',
+        id: 'timestamp',
+        width: '150px',
+      },
+      {
+        header: 'Latitude',
+        id: 'lat',
+        width: '100px',
+      },
+      {
+        header: 'Longitude',
+        id: 'lng',
+        width: '100px',
+      },
+      {
+        header: 'Project name',
+        id: 'projectName',
+        render: ({ project }: ReportingDeviceClientInterface): string =>
+          project?.name,
+        width: '100px',
+      },
+      {
+        header: 'Edge Node name',
+        id: 'nodeName',
+        width: '100px',
+      },
+      {
+        header: 'Event/Object',
+        id: 'isEvent',
+        width: '100px',
+      },
+      {
+        header: 'Location X',
+        id: 'locationX',
+        width: '100px',
+      },
+      {
+        header: 'Location Y',
+        id: 'locationY',
+        width: '100px',
+      },
+      {
+        header: 'Location Z',
+        id: 'locationZ',
+        width: '100px',
+      },
+      {
+        header: 'Orient theta',
+        id: 'theta',
+        width: '100px',
+      },
+      {
+        header: 'Orient phi',
+        id: 'phi',
+        width: '100px',
+      },
+      {
+        header: 'Object class',
+        id: 'objectClass',
+        width: '100px',
+      },
+      {
+        header: 'License plat number',
+        id: 'plateNumber',
+        width: '100px',
+      },
+      {
+        header: 'Traffic flow',
+        id: 'trafficFlow',
+        width: '400px',
+      },
+      {
+        header: 'Vehicle classification',
+        id: 'vehicle',
+        width: '100px',
+      },
+      {
+        header: 'Pedestrian flow',
+        id: 'pedestrianFlow',
+        width: '100px',
+      },
+      {
+        header: 'Ambient weather condition',
+        id: 'ambientWeather',
+        width: '100px',
+      },
+      {
+        header: 'Road weather condition surveillance',
+        id: 'roadWeather',
+        width: '100px',
+      },
+      {
+        header: 'Tagged data',
+        id: 'taggedData',
+        width: '100px',
+        cellTemplate: this.taggedDataTemplate,
+      },
+      {
+        header: 'License plate',
+        id: 'plate',
+        width: '100px',
+      },
+      {
+        header: 'Face',
+        id: 'face',
+        width: '100px',
+      },
+      {
+        header: 'CAD file tag',
+        id: 'fileTag',
+        width: '100px',
+        cellTemplate: this.cadTagTemplate,
+      },
+    ];
+
     if (!this.isDevice) {
       this.columns = [
         {
@@ -208,56 +248,8 @@ export class ReportingListDevicesComponent implements OnInit {
         ...this.columns,
       ];
     }
-
-    this.devices = [1, 2, 3, 4, 5, 6].map((i) => ({
-      id: i,
-      createdDT: moment(),
-      gps: [46.879966 + i * 2, -121.726909 - i * 2],
-      projectName: i,
-      nodeName: i,
-      isEvent: i % 2,
-      locationX: i,
-      locationY: i,
-      locationZ: i,
-      theta: i,
-      phi: i,
-      objectClass: i,
-      platNumber: i,
-      trafficFlow: i,
-      vehicle: i,
-      pedestrianFlow: i,
-      weatherCondition: i,
-      roadWeatherConditionSurveillance: i,
-      taggedData: i,
-      plate: i,
-      face: i,
-      fileTag: i,
-    }));
-
-    // general
-    this.layers = [1, 2, 3, 4, 5, 6].map((i) =>
-      generateMapMarker(
-        {
-          lat: 46.879966 + i * 2,
-          lng: -121.726909 - i * 2,
-        },
-        {
-          clickHandler: !this.isDevice
-            ? () => {
-                this.zone.run(() => this.router.navigate(['reporting', i]));
-              }
-            : () => {},
-          popupText: !this.isDevice ? 'Click to navigate to device page' : '',
-        }
-      )
-    );
-
-    this.setSelectedDevice(this.devices[0]);
-
-    this.setCenter({
-      lat: this.devices[0].gps[0],
-      lng: this.devices[0].gps[1],
-    });
+    // to run one more round of change detection
+    this.cdr.detectChanges();
   }
 
   openDialog(): void {
@@ -265,9 +257,94 @@ export class ReportingListDevicesComponent implements OnInit {
     this.dialog.open(SetGpsDialogComponent, {
       width: '600px',
       data: {
-        lat: selectedDevice.gps[0],
-        lng: selectedDevice.gps[1],
+        lat: selectedDevice.lat,
+        lng: selectedDevice.lng,
       },
     });
+  }
+
+  loadDevices(page: number): void {
+    if (!this.isDevice) {
+      this.loadDevices$.emit(page);
+    }
+  }
+
+  goToUrl(url: string): void {
+    window.open(url, '_blank');
+  }
+
+  onMapReady(map: Map) {
+    // // workaround
+    //   L.heatLayer(
+    //     [
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [58, 56, 0.2],
+    //       [57, 57, 0.8],
+    //       [34, 34, 1],
+    //       [56, 57, 0.6],
+    //       [56, 58, 1],
+    //     ],
+    //     {
+    //     }
+    //   ).addTo(map);
   }
 }

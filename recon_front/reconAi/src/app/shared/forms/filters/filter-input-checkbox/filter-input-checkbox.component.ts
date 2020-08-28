@@ -19,12 +19,14 @@ export interface FilterInputPropsInterface {
   templateUrl: './filter-input-checkbox.component.html',
   styleUrls: ['./filter-input-checkbox.component.less'],
 })
-export class FilterInputCheckboxComponent implements OnInit, ControlValueAccessor {
+export class FilterInputCheckboxComponent
+  implements OnInit, ControlValueAccessor {
   @Input() label = '';
   @Input() checkboxLabel = '';
   @Input() placeholder = 'Search...';
   @Input() disabled = false;
   @Output() changeVal = new EventEmitter<FilterInputPropsInterface>();
+  @Output() blurVal = new EventEmitter<FilterInputPropsInterface>();
 
   inputValue = '';
   checked = false;
@@ -62,6 +64,14 @@ export class FilterInputCheckboxComponent implements OnInit, ControlValueAccesso
       checked: this.checked,
     });
     this.changeVal.emit({
+      inputValue: this.inputValue,
+      checked: this.checked,
+    });
+  }
+
+  blurValue(): void {
+    this.onTouched();
+    this.blurVal.emit({
       inputValue: this.inputValue,
       checked: this.checked,
     });

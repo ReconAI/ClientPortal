@@ -46,3 +46,13 @@ export const selectIsSuccessSignUpOpenable = createSelector(
   selectSignUp,
   (signUp: SignUpState): boolean => signUp.isPossibleToOpenSignUp
 );
+
+export const selectSignUpDaysLeft = createSelector(
+  selectSignUp,
+  (signUp: SignUpState): number => signUp?.daysLeft || 0
+);
+
+export const selectSignUpType = createSelector(
+  selectSignUp,
+  (signUp: SignUpState): string => signUp?.type || null
+);

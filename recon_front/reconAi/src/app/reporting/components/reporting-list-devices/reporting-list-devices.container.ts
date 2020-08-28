@@ -1,47 +1,51 @@
+import { PaginationRequestInterface } from './../../../constants/types/requests';
 import {
-  updateBreadcrumbByIdAction,
-  setAppTitleAction,
-} from './../../../store/app/app.actions';
-import { ActivatedRoute } from '@angular/router';
+  selectReportingDeviceList,
+  selectReportingDeviceListMetaCurrentPage,
+  selectReportingDeviceListMetaCount,
+  selectReportingDeviceListMetaPageSize,
+} from './../../../store/reporting/reporting.selectors';
+import { ReportingDeviceClientInterface } from './../../../store/reporting/reporting.server.helpers';
 import { Component, OnInit } from '@angular/core';
-import { Store } from '@ngrx/store';
+import { Store, select } from '@ngrx/store';
 import { AppState } from 'app/store/reducers';
+import { loadReportingDeviceListRequestedAction } from 'app/store/reporting';
+import { Observable } from 'rxjs';
+import { selectReportingDeviceListLoadingStatus } from 'app/store/loaders/loaders.selectors';
 
 @Component({
   selector: 'recon-reporting-list-devices-container',
   templateUrl: './reporting-list-devices.container.html',
 })
 export class ReportingListDevicesContainer implements OnInit {
-  id: number;
-  constructor(
-    private activateRoute: ActivatedRoute,
-    private store: Store<AppState>
-  ) {}
+  constructor(private store: Store<AppState>) {}
+
+  reportingDeviceList$: Observable<
+    ReportingDeviceClientInterface[]
+  > = this.store.pipe(select(selectReportingDeviceList));
+
+  currentPage$: Observable<number> = this.store.pipe(
+    select(selectReportingDeviceListMetaCurrentPage)
+  );
+  count$: Observable<number> = this.store.pipe(
+    select(selectReportingDeviceListMetaCount)
+  );
+  pageSize$: Observable<number> = this.store.pipe(
+    select(selectReportingDeviceListMetaPageSize)
+  );
+  loadingStatus$: Observable<boolean> = this.store.pipe(
+    select(selectReportingDeviceListLoadingStatus)
+  );
+
+  loadDevices(page: number): void {
+    this.store.dispatch(loadReportingDeviceListRequestedAction({ page }));
+  }
 
   ngOnInit(): void {
-    this.id = +this.activateRoute.snapshot.paramMap.get('id');
-
-    if (this.id) {
-      const label = `Singular device data: ${this.id}`;
-      this.store.dispatch(
-        updateBreadcrumbByIdAction({
-          update: {
-            oldId: '%reporting-device-id',
-            newLabel: label,
-            newUrl: `reporting/${this.id}`,
-          },
-        })
-      );
-
-      setTimeout(
-        () =>
-          this.store.dispatch(
-            setAppTitleAction({
-              title: `Singular device data: ${this.id}`,
-            })
-          ),
-        0
-      );
-    }
+    this.store.dispatch(
+      loadReportingDeviceListRequestedAction({
+        page: 1,
+      })
+    );
   }
 }

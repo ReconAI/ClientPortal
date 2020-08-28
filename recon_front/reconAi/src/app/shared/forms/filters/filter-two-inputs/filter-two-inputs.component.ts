@@ -24,6 +24,7 @@ export class FilterTwoInputsComponent implements OnInit {
   right = '';
   @Input() disabled = false;
   @Output() changeVal = new EventEmitter<FilterTwoInputsInterface>();
+  @Output() blurVal = new EventEmitter<FilterTwoInputsInterface>();
 
   @Input() leftPlaceholder = '';
   @Input() rightPlaceholder = '';
@@ -65,6 +66,13 @@ export class FilterTwoInputsComponent implements OnInit {
 
     this.onChange(newValue);
     this.changeVal.emit(newValue);
+  }
+
+  blurValue(): void {
+    this.blurVal.emit({
+      left: this.left,
+      right: this.right,
+    });
   }
 
   ngOnInit(): void {}

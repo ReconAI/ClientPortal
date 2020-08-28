@@ -9,6 +9,7 @@
         formControlName="value"
         label="And / Or"
         *ngIf="isSelectedAtIndex(0)"
+        (changeVal)="changeValue()"
       ></recon-form-slider>
     </div>
     <div
@@ -21,6 +22,7 @@
         label="Sensor Id"
         placeholder="Search..."
         *ngIf="isSelectedAtIndex(1)"
+        (blurVal)="changeValue()"
       ></recon-filter-input>
     </div>
     <div
@@ -32,6 +34,7 @@
         label="Time stamp"
         *ngIf="isSelectedAtIndex(2)"
         formControlName="value"
+        (changeVal)="changeValue()"
       ></recon-form-range-picker>
     </div>
     <div
@@ -45,6 +48,7 @@
         placeholder="Search..."
         formControlName="value"
         *ngIf="isSelectedAtIndex(3)"
+        (blurVal)="changeValue()"
       ></recon-filter-input-checkbox>
     </div>
     <div
@@ -58,6 +62,7 @@
         placeholder="Search..."
         formControlName="value"
         *ngIf="isSelectedAtIndex(4)"
+        (blurVal)="changeValue()"
       ></recon-filter-input-checkbox>
     </div>
     <div
@@ -70,6 +75,7 @@
         label="Event/Object"
         placeholder="Search..."
         *ngIf="isSelectedAtIndex(5)"
+        (blurVal)="changeValue()"
       ></recon-filter-input>
     </div>
     <div
@@ -85,6 +91,7 @@
         checkboxLabel="Invert"
         formControlName="value"
         *ngIf="isSelectedAtIndex(6)"
+        (blurVal)="changeValue()"
       ></recon-filter-three-inputs>
     </div>
     <div
@@ -98,6 +105,7 @@
         placeholder="Search..."
         formControlName="value"
         *ngIf="isSelectedAtIndex(7)"
+        (blurVal)="changeValue()"
       ></recon-filter-input-checkbox>
     </div>
     <div
@@ -111,6 +119,7 @@
         placeholder="Search..."
         formControlName="value"
         *ngIf="isSelectedAtIndex(8)"
+        (blurVal)="changeValue()"
       ></recon-filter-input-checkbox>
     </div>
     <div
@@ -123,6 +132,7 @@
         formControlName="value"
         [options]="trafficFlowOptions"
         *ngIf="isSelectedAtIndex(9)"
+        (changeVal)="changeValue()"
       ></recon-filter-select>
     </div>
     <div
@@ -135,6 +145,7 @@
         formControlName="value"
         [options]="vehicleOptions"
         *ngIf="isSelectedAtIndex(10)"
+        (changeVal)="changeValue()"
       ></recon-filter-select>
     </div>
     <div
@@ -147,6 +158,7 @@
         formControlName="value"
         [options]="pedestrianOptions"
         *ngIf="isSelectedAtIndex(11)"
+        (changeVal)="changeValue()"
       ></recon-filter-select>
     </div>
     <div
@@ -160,6 +172,7 @@
         leftPlaceholder="From"
         rightPlaceholder="To"
         *ngIf="isSelectedAtIndex(12)"
+        (blurVal)="changeValue()"
       ></recon-filter-two-inputs>
     </div>
     <div
@@ -173,6 +186,7 @@
         leftPlaceholder="From"
         rightPlaceholder="To"
         *ngIf="isSelectedAtIndex(13)"
+        (blurVal)="changeValue()"
       ></recon-filter-two-inputs>
     </div>
     <div
@@ -184,6 +198,7 @@
         label="Tagged data"
         formControlName="value"
         *ngIf="isSelectedAtIndex(14)"
+        (changeVal)="changeValue()"
       ></recon-form-checkbox>
     </div>
   </div>
