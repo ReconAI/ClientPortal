@@ -1,11 +1,13 @@
 from django.db.models import QuerySet
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+from django_filters import rest_framework as filters
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 
 from recon_db_manager.models import RelevantData
+from reporting_tool.filters import RelevantDataFilter
 from reporting_tool.serializers import RelevantDataSerializer, \
     RelevantDataSetGPSSerializer
 from shared.permissions import IsActive, PaymentRequired
@@ -19,7 +21,7 @@ from shared.views.utils import RetrieveAPIView, UpdateAPIView
 class RelevantDataHandler:
     permission_classes = (IsAuthenticated, IsActive, PaymentRequired)
 
-    queryset = RelevantData.objects.all()
+    queryset = RelevantData.objects.select_related('project').all()
 
     def filter_queryset(self, queryset: QuerySet) -> QuerySet:
         return queryset.filter(
@@ -39,7 +41,12 @@ class RelevantDataHandler:
     ]
 ))
 class RelevantDataView(RelevantDataHandler, ListAPIView):
+    filter_backends = (filters.DjangoFilterBackend,)
+
+    filterset_class = RelevantDataFilter
+
     serializer_class = RelevantDataSerializer
+
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
