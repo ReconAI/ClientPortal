@@ -1255,10 +1255,10 @@ class RelevantData(models.Model):
     feature_model = models.ForeignKey(FeatureModel, models.DO_NOTHING,
                                       db_column="featureModelId")
     sensor_GPS_lat = models.DecimalField(null=True, blank=True,
-                                         max_digits=16, decimal_places=2,
+                                         max_digits=10, decimal_places=7,
                                          db_column='sensorGpsLat')
     sensor_GPS_long = models.DecimalField(null=True, blank=True,
-                                          max_digits=16, decimal_places=2,
+                                          max_digits=10, decimal_places=7,
                                           db_column='sensorGpsLong')
     rel_data_type = models.CharField(null=True, blank=True, max_length=255,
                                      db_column='relDataType')

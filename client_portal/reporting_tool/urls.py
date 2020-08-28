@@ -29,7 +29,8 @@ from .views.accounts import SignupView, ActivateView, CurrentUserProfileView, \
 from .views.payment_methods import CardListView, DefaultPaymentMethodView
 from .views.new_features import NewFeatureView
 from .views.orders import OrdersListView, OrderItemView
-from .views.relevant_data import RelevantDataView, RelevantDataItemView
+from .views.relevant_data import RelevantDataView, RelevantDataItemView, \
+    RelevantDataSetGPSView
 from .views.user_management import UserList, UserItem, InvitationView
 
 urlpatterns = [
@@ -58,6 +59,7 @@ urlpatterns = [
 
     path('relevant-data', RelevantDataView.as_view(), name='relevant_data.list'),
     path('relevant-data/<int:pk>', RelevantDataItemView.as_view(), name='relevant_data.item'),
+    path('relevant-data/<int:pk>/gps', RelevantDataSetGPSView.as_view(), name='relevant_data.set_gps'),
 
     path('admin/', admin.site.urls)
 ]
