@@ -1,3 +1,4 @@
+from django.db.models import QuerySet
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from drf_yasg.utils import swagger_auto_schema
@@ -15,12 +16,15 @@ from shared.swagger.responses import \
 from shared.views.utils import RetrieveAPIView, UpdateAPIView
 
 
-class RelevantDataGet:
-    serializer_class = RelevantDataSerializer
-
+class RelevantDataHandler:
     permission_classes = (IsAuthenticated, IsActive, PaymentRequired)
 
     queryset = RelevantData.objects.all()
+
+    def filter_queryset(self, queryset: QuerySet) -> QuerySet:
+        return queryset.filter(
+            project__organization_id=self.request.user.organization.id
+        )
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
@@ -34,8 +38,8 @@ class RelevantDataGet:
         token_header(),
     ]
 ))
-class RelevantDataView(RelevantDataGet, ListAPIView):
-    pass
+class RelevantDataView(RelevantDataHandler, ListAPIView):
+    serializer_class = RelevantDataSerializer
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
@@ -49,8 +53,8 @@ class RelevantDataView(RelevantDataGet, ListAPIView):
         token_header(),
     ]
 ))
-class RelevantDataItemView(RelevantDataGet, RetrieveAPIView):
-    pass
+class RelevantDataItemView(RelevantDataHandler, RetrieveAPIView):
+    serializer_class = RelevantDataSerializer
 
 
 @method_decorator(name='put', decorator=swagger_auto_schema(
@@ -62,11 +66,7 @@ class RelevantDataItemView(RelevantDataGet, RetrieveAPIView):
         token_header(),
     ]
 ))
-class RelevantDataSetGPSView(UpdateAPIView):
+class RelevantDataSetGPSView(RelevantDataHandler, UpdateAPIView):
     serializer_class = RelevantDataSetGPSSerializer
-
-    permission_classes = (IsAuthenticated, IsActive, PaymentRequired)
-
-    queryset = RelevantData.objects.all()
 
     update_success_message = _('GPS is updated successfully')
