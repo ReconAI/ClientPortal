@@ -31,6 +31,10 @@ class CharFilter(FilterMixin, filters.CharFilter):
     pass
 
 
+class BooleanFilter(FilterMixin, filters.BooleanFilter):
+    pass
+
+
 class RangeField(forms.CharField):
     CHUNKS_NUMBER = 2
     SEPARATOR = ';'
@@ -110,11 +114,18 @@ class RelevantDataFilersForm(Form):
 
 
 class RelevantDataFilter(filters.FilterSet):
-    id = NumberFilter(field_name="id", lookup_expr='exact')
+    sensor_id = NumberFilter(field_name="edge_node", lookup_expr='exact')
     project_name = CharFilter(field_name="project__name", lookup_expr='exact')
-    timestamp = DateTimeFromToRangeFilter(field_name="timestamp", lookup_expr='range')
-    orient_theta = NumericRangeFilter(field_name="orient_theta", lookup_expr='range')
-    orient_phi = NumericRangeFilter(field_name="orient_phi", lookup_expr='range')
+    timestamp = DateTimeFromToRangeFilter(
+        field_name="timestamp", lookup_expr='range'
+    )
+    orient_theta = NumericRangeFilter(
+        field_name="orient_theta", lookup_expr='range'
+    )
+    orient_phi = NumericRangeFilter(
+        field_name="orient_phi", lookup_expr='range'
+    )
+    is_tagged = BooleanFilter(field_name='is_tagged_data', lookup_expr='exact')
 
     logical_and = filters.BooleanFilter()
 
@@ -123,9 +134,11 @@ class RelevantDataFilter(filters.FilterSet):
 
     class Meta:
         model = RelevantData
-        fields = ['id', 'project_name']
+        fields = (
+            'sensor_id', 'project_name', 'timestamp', 'orient_theta',
+            'orient_phi', 'is_tagged'
+        )
         form = RelevantDataFilersForm
-        # fields = ['category', 'in_stock', 'min_price', 'max_price']
 
     def filter_queryset(self, queryset):
         filters_set = []

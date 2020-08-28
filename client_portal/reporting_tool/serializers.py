@@ -404,6 +404,7 @@ class ProjectSerializer(ModelSerializer):
 
 class RelevantDataSerializer(ModelSerializer):
     project = ProjectSerializer()
+    sensor_id = serializers.IntegerField(source='edge_node_id')
     ecosystem_name = serializers.SerializerMethodField('format_ecosystem_name')
     edge_node_name = serializers.SerializerMethodField('format_edge_node_name')
     event_object = serializers.SerializerMethodField('format_event_object')
@@ -425,7 +426,7 @@ class RelevantDataSerializer(ModelSerializer):
     class Meta:
         model = RelevantData
         fields = (
-            'id', 'sensor_GPS_lat', 'sensor_GPS_long', 'location_x',
+            'sensor_id', 'sensor_GPS_lat', 'sensor_GPS_long', 'location_x',
             'location_y', 'location_z', 'orient_theta', 'orient_phi',
             'timestamp', 'project',
 

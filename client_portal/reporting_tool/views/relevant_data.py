@@ -24,9 +24,11 @@ class RelevantDataHandler:
     queryset = RelevantData.objects.select_related('project').all()
 
     def filter_queryset(self, queryset: QuerySet) -> QuerySet:
-        return queryset.filter(
+        qs = queryset.filter(
             project__organization_id=self.request.user.organization.id
         )
+
+        return super().filter_queryset(qs)
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
@@ -46,7 +48,6 @@ class RelevantDataView(RelevantDataHandler, ListAPIView):
     filterset_class = RelevantDataFilter
 
     serializer_class = RelevantDataSerializer
-
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
