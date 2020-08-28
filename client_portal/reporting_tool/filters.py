@@ -88,7 +88,7 @@ class NumericRangeFilter(FilterMixin, filters.NumericRangeFilter):
     field_class = FloatRangeField
 
 
-class RelevantDataFilersForm(Form):
+class RelevantDataFiltersForm(Form):
     def __init__(self, data=None, *args, **kwargs):
         self.negated_fields = set()
 
@@ -113,32 +113,11 @@ class RelevantDataFilersForm(Form):
         return data
 
 
-class RelevantDataFilter(filters.FilterSet):
-    sensor_id = NumberFilter(field_name="edge_node", lookup_expr='exact')
-    project_name = CharFilter(field_name="project__name", lookup_expr='exact')
-    timestamp = DateTimeFromToRangeFilter(
-        field_name="timestamp", lookup_expr='range'
-    )
-    orient_theta = NumericRangeFilter(
-        field_name="orient_theta", lookup_expr='range'
-    )
-    orient_phi = NumericRangeFilter(
-        field_name="orient_phi", lookup_expr='range'
-    )
-    is_tagged = BooleanFilter(field_name='is_tagged_data', lookup_expr='exact')
-
+class FilterSet(filters.FilterSet):
     logical_and = filters.BooleanFilter()
 
     LOGICAL_AND = True
     LOGICAL_AND_FIELD_NAME = 'logical_and'
-
-    class Meta:
-        model = RelevantData
-        fields = (
-            'sensor_id', 'project_name', 'timestamp', 'orient_theta',
-            'orient_phi', 'is_tagged'
-        )
-        form = RelevantDataFilersForm
 
     def filter_queryset(self, queryset):
         filters_set = []
@@ -197,3 +176,38 @@ class RelevantDataFilter(filters.FilterSet):
             return self.LOGICAL_AND
 
         return logical_and
+
+
+class RelevantDataSensorFilter(FilterSet):
+    project_name = CharFilter(field_name="project__name", lookup_expr='exact')
+    timestamp = DateTimeFromToRangeFilter(
+        field_name="timestamp", lookup_expr='range'
+    )
+    orient_theta = NumericRangeFilter(
+        field_name="orient_theta", lookup_expr='range'
+    )
+    orient_phi = NumericRangeFilter(
+        field_name="orient_phi", lookup_expr='range'
+    )
+    is_tagged = BooleanFilter(field_name='is_tagged_data', lookup_expr='exact')
+
+    class Meta:
+        model = RelevantData
+        fields = (
+            'project_name', 'timestamp', 'orient_theta', 'orient_phi',
+            'is_tagged'
+        )
+        form = RelevantDataFiltersForm
+
+
+class RelevantDataFilter(RelevantDataSensorFilter):
+    sensor_id = NumberFilter(field_name="edge_node", lookup_expr='exact')
+
+    class Meta:
+        model = RelevantData
+        fields = (
+            'sensor_id', 'project_name', 'timestamp', 'orient_theta',
+            'orient_phi', 'is_tagged'
+        )
+        form = RelevantDataFiltersForm
+

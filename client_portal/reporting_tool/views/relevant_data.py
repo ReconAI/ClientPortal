@@ -7,7 +7,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 
 from recon_db_manager.models import RelevantData
-from reporting_tool.filters import RelevantDataFilter
+from reporting_tool.filters import RelevantDataFilter, RelevantDataSensorFilter
 from reporting_tool.serializers import RelevantDataSerializer, \
     RelevantDataSetGPSSerializer
 from shared.permissions import IsActive, PaymentRequired
@@ -55,14 +55,23 @@ class RelevantDataView(RelevantDataHandler, ListAPIView):
         data_serializer(RelevantDataSerializer)
     ),
     tags=['Relevant data'],
-    operation_summary='Relevant data item',
-    operation_description='Relevant data item view',
+    operation_summary='Sensor\'s relevant data',
+    operation_description='Displays source\'s relevant data',
     manual_parameters=[
         token_header(),
     ]
 ))
-class RelevantDataItemView(RelevantDataHandler, RetrieveAPIView):
+class RelevantDataSensorView(RelevantDataHandler, ListAPIView):
     serializer_class = RelevantDataSerializer
+
+    filter_backends = (filters.DjangoFilterBackend,)
+
+    filterset_class = RelevantDataSensorFilter
+
+    def filter_queryset(self, queryset: QuerySet) -> QuerySet:
+        qs = queryset.filter(edge_node_id=self.kwargs.get(self.lookup_field))
+
+        return super().filter_queryset(qs)
 
 
 @method_decorator(name='put', decorator=swagger_auto_schema(
