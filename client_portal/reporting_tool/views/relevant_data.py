@@ -4,12 +4,14 @@ from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 
 from recon_db_manager.models import RelevantData
-from reporting_tool.serializers import RelevantDataSerializer
+from reporting_tool.serializers import RelevantDataSerializer, \
+    RelevantDataSetGPSSerializer
 from shared.permissions import IsActive, PaymentRequired
 from shared.swagger.headers import token_header
 from shared.swagger.responses import default_get_responses_with_custom_success, \
     data_serializer
-from shared.views.utils import RetrieveAPIView
+from shared.views.utils import RetrieveAPIView, UpdateAPIView
+from django.utils.translation import gettext_lazy as _
 
 
 class RelevantDataGet:
@@ -48,3 +50,24 @@ class RelevantDataView(RelevantDataGet, ListAPIView):
 ))
 class RelevantDataItemView(RelevantDataGet, RetrieveAPIView):
     pass
+
+
+@method_decorator(name='put', decorator=swagger_auto_schema(
+    responses=default_get_responses_with_custom_success(
+        data_serializer(RelevantDataSetGPSSerializer)
+    ),
+    tags=['Relevant data'],
+    operation_summary='Relevant data set GPS',
+    operation_description='Sets GPS for an entry of relevant data',
+    manual_parameters=[
+        token_header(),
+    ]
+))
+class RelevantDataSetGPSView(UpdateAPIView):
+    serializer_class = RelevantDataSetGPSSerializer
+
+    permission_classes = (IsAuthenticated, IsActive, PaymentRequired)
+
+    queryset = RelevantData.objects.all()
+
+    update_success_message = _('GPS is updated successfully')
