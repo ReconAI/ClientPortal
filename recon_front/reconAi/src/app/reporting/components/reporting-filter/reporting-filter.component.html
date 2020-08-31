@@ -1,7 +1,7 @@
 <div class="filter-container" [formGroup]="filtersForm">
   <div class="filters" formArrayName="filters">
     <div
-      class="filter"
+      class="filter and-or"
       [ngClass]="{ 'shown-filter': isSelectedAtIndex(0) }"
       [formGroupName]="0"
     >
@@ -52,36 +52,22 @@
       ></recon-filter-input-checkbox>
     </div>
     <div
-      class="filter input-checkbox-filter"
+      class="filter input-filter"
       [ngClass]="{ 'shown-filter': isSelectedAtIndex(4) }"
       [formGroupName]="4"
-    >
-      <recon-filter-input-checkbox
-        label="Edge Node name"
-        checkboxLabel="Not equal"
-        placeholder="Search..."
-        formControlName="value"
-        *ngIf="isSelectedAtIndex(4)"
-        (blurVal)="changeValue()"
-      ></recon-filter-input-checkbox>
-    </div>
-    <div
-      class="filter input-filter"
-      [ngClass]="{ 'shown-filter': isSelectedAtIndex(5) }"
-      [formGroupName]="5"
     >
       <recon-filter-input
         formControlName="value"
         label="Event/Object"
         placeholder="Search..."
-        *ngIf="isSelectedAtIndex(5)"
+        *ngIf="isSelectedAtIndex(4)"
         (blurVal)="changeValue()"
       ></recon-filter-input>
     </div>
     <div
       class="filter"
-      [ngClass]="{ 'shown-filter': isSelectedAtIndex(6) }"
-      [formGroupName]="6"
+      [ngClass]="{ 'shown-filter': isSelectedAtIndex(5) }"
+      [formGroupName]="5"
     >
       <recon-filter-three-inputs
         label="Location XYZ, mm"
@@ -90,9 +76,23 @@
         rightLabel="Z"
         checkboxLabel="Invert"
         formControlName="value"
-        *ngIf="isSelectedAtIndex(6)"
+        *ngIf="isSelectedAtIndex(5)"
         (blurVal)="changeValue()"
       ></recon-filter-three-inputs>
+    </div>
+    <div
+      class="filter input-checkbox-filter"
+      [ngClass]="{ 'shown-filter': isSelectedAtIndex(6) }"
+      [formGroupName]="6"
+    >
+      <recon-filter-input-checkbox
+        label="Orient theta"
+        checkboxLabel="Invert"
+        placeholder="Search..."
+        formControlName="value"
+        *ngIf="isSelectedAtIndex(6)"
+        (blurVal)="changeValue()"
+      ></recon-filter-input-checkbox>
     </div>
     <div
       class="filter input-checkbox-filter"
@@ -100,7 +100,7 @@
       [formGroupName]="7"
     >
       <recon-filter-input-checkbox
-        label="Orient theta"
+        label="Orient phi"
         checkboxLabel="Invert"
         placeholder="Search..."
         formControlName="value"
@@ -109,18 +109,17 @@
       ></recon-filter-input-checkbox>
     </div>
     <div
-      class="filter input-checkbox-filter"
+      class="filter"
       [ngClass]="{ 'shown-filter': isSelectedAtIndex(8) }"
       [formGroupName]="8"
     >
-      <recon-filter-input-checkbox
-        label="Orient phi"
-        checkboxLabel="Invert"
-        placeholder="Search..."
+      <recon-filter-select
+        label="Traffic flow"
         formControlName="value"
+        [options]="trafficFlowOptions"
         *ngIf="isSelectedAtIndex(8)"
-        (blurVal)="changeValue()"
-      ></recon-filter-input-checkbox>
+        (changeVal)="changeValue()"
+      ></recon-filter-select>
     </div>
     <div
       class="filter"
@@ -128,9 +127,9 @@
       [formGroupName]="9"
     >
       <recon-filter-select
-        label="Traffic flow"
+        label="Vehicle classification"
         formControlName="value"
-        [options]="trafficFlowOptions"
+        [options]="vehicleOptions"
         *ngIf="isSelectedAtIndex(9)"
         (changeVal)="changeValue()"
       ></recon-filter-select>
@@ -141,9 +140,9 @@
       [formGroupName]="10"
     >
       <recon-filter-select
-        label="Vehicle classification"
+        label="Pedestrian transit method classification"
         formControlName="value"
-        [options]="vehicleOptions"
+        [options]="pedestrianOptions"
         *ngIf="isSelectedAtIndex(10)"
         (changeVal)="changeValue()"
       ></recon-filter-select>
@@ -153,13 +152,14 @@
       [ngClass]="{ 'shown-filter': isSelectedAtIndex(11) }"
       [formGroupName]="11"
     >
-      <recon-filter-select
-        label="Pedestrian transit method classification"
+      <recon-filter-two-inputs
+        label="Ambient temperature, C"
         formControlName="value"
-        [options]="pedestrianOptions"
+        leftPlaceholder="From"
+        rightPlaceholder="To"
         *ngIf="isSelectedAtIndex(11)"
-        (changeVal)="changeValue()"
-      ></recon-filter-select>
+        (blurVal)="changeValue()"
+      ></recon-filter-two-inputs>
     </div>
     <div
       class="filter"
@@ -167,7 +167,7 @@
       [formGroupName]="12"
     >
       <recon-filter-two-inputs
-        label="Ambient temperature, C"
+        label="Road temperature, C"
         formControlName="value"
         leftPlaceholder="From"
         rightPlaceholder="To"
@@ -176,33 +176,36 @@
       ></recon-filter-two-inputs>
     </div>
     <div
-      class="filter"
+      class="filter checkbox-filter"
       [ngClass]="{ 'shown-filter': isSelectedAtIndex(13) }"
       [formGroupName]="13"
-    >
-      <recon-filter-two-inputs
-        label="Road temperature, C"
-        formControlName="value"
-        leftPlaceholder="From"
-        rightPlaceholder="To"
-        *ngIf="isSelectedAtIndex(13)"
-        (blurVal)="changeValue()"
-      ></recon-filter-two-inputs>
-    </div>
-    <div
-      class="filter checkbox-filter"
-      [ngClass]="{ 'shown-filter': isSelectedAtIndex(14) }"
-      [formGroupName]="14"
     >
       <recon-form-checkbox
         label="Tagged data"
         formControlName="value"
-        *ngIf="isSelectedAtIndex(14)"
+        *ngIf="isSelectedAtIndex(13)"
         (changeVal)="changeValue()"
       ></recon-form-checkbox>
     </div>
   </div>
   <div class="button-container">
+    <div
+      mat-raised-button
+      matRipple
+      class="filter-button"
+      matTooltip="Apply filters"
+    >
+      <img src="assets/icons/magnifying-glass.svg" height="25" width="25" />
+    </div>
+    <div
+      mat-raised-button
+      matRipple
+      class="filter-button"
+      (click)="resetFilters()"
+      matTooltip="Reset filters"
+    >
+      <img src="assets/icons/cancel.svg" height="21" width="21" />
+    </div>
     <button
       mat-raised-button
       color="primary"

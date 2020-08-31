@@ -146,11 +146,6 @@ export class ReportingListDevicesComponent implements OnInit, AfterViewInit {
         width: '100px',
       },
       {
-        header: 'Edge Node name',
-        id: 'nodeName',
-        width: '100px',
-      },
-      {
         header: 'Event/Object',
         id: 'isEvent',
         width: '100px',
@@ -193,7 +188,7 @@ export class ReportingListDevicesComponent implements OnInit, AfterViewInit {
       {
         header: 'Traffic flow',
         id: 'trafficFlow',
-        width: '400px',
+        width: '700px',
       },
       {
         header: 'Vehicle classification',
