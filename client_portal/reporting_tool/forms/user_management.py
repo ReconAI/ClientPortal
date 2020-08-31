@@ -103,8 +103,7 @@ class UserInvitationForm(ModelForm, RoleFieldMixin, SendEmailMixin):
             )
         }
 
-    @staticmethod
-    def __generate_username(firstname: str, lastname: str):
+    def __generate_username(self, firstname: str, lastname: str):
         # get a slug of the firstname and last name.
         # it will normalize the string and add dashes for spaces
         # i.e. 'HaRrY POTTer' -> 'harry_potter'
@@ -116,9 +115,12 @@ class UserInvitationForm(ModelForm, RoleFieldMixin, SendEmailMixin):
         ).count()
 
         if count:
-            return '{}{}'.format(u_username, count)
+            while self.Meta.model.objects.filter(
+                    username='{}{}'.format(u_username, count)
+            ).exists():
+                count += 1
 
-        return u_username
+        return '{}{}'.format(u_username, count)
 
 
 class CheckUserInvitationTokenForm(CheckUserTokenForm):
