@@ -488,8 +488,8 @@ class RelevantDataSerializer(ModelSerializer):
 
 class RelevantDataSetGPSSerializer(ModelSerializer):
     lat = serializers.FloatField(
-        required=True, allow_null=False,max_value=180,
-        min_value=-180, source='sensor_GPS_lat'
+        required=True, allow_null=False,max_value=90,
+        min_value=-90, source='sensor_GPS_lat'
     )
     long = serializers.FloatField(
         required=True, allow_null=False, max_value=180,
