@@ -2,6 +2,7 @@
 Reporting tool serializers range
 """
 import functools
+import json
 from typing import List
 
 import boto3
@@ -405,89 +406,84 @@ class ProjectSerializer(ModelSerializer):
 class RelevantDataSerializer(ModelSerializer):
     project = ProjectSerializer()
     sensor_id = serializers.IntegerField(source='edge_node_id')
-    ecosystem_name = serializers.SerializerMethodField('format_ecosystem_name')
-    edge_node_name = serializers.SerializerMethodField('format_edge_node_name')
     event_object = serializers.SerializerMethodField('format_event_object')
     object_class = serializers.SerializerMethodField('format_object_class')
-    license_plate = serializers.SerializerMethodField('format_license_plate')
-    traffic_flow = serializers.SerializerMethodField('format_traffic_flow')
+
     ambient_weather = serializers.SerializerMethodField('format_ambient_weather')
     road_weather = serializers.SerializerMethodField('format_road_weather')
-    stopped_vehicles_detection = serializers.SerializerMethodField(
-        'format_stopped_vehicles_detection'
-    )
+
     tagged_data = serializers.SerializerMethodField('format_tagged_data')
     license_plate_location = serializers.SerializerMethodField(
         'format_license_plate_location'
     )
     face_location = serializers.SerializerMethodField('format_face_location')
     cad_file_tag = serializers.SerializerMethodField('format_cad_file_tag')
+    traffic_flow = serializers.SerializerMethodField('format_traffic_flow')
 
     class Meta:
         model = RelevantData
         fields = (
             'id', 'sensor_GPS_lat', 'sensor_GPS_long', 'location_x',
             'location_y', 'location_z', 'orient_theta', 'orient_phi',
-            'timestamp', 'project', 'sensor_id',
-
-            'ecosystem_name', 'edge_node_name', 'event_object', 'object_class',
-            'license_plate', 'traffic_flow', 'ambient_weather', 'road_weather',
-            'stopped_vehicles_detection', 'tagged_data',
-            'license_plate_location', 'face_location', 'cad_file_tag'
+            'timestamp', 'project', 'sensor_id', 'license_plate_number',
+            'event_object', 'object_class', 'traffic_flow', 'ambient_weather',
+            'road_weather', 'stopped_vehicle_detection', 'pedestrian_flow',
+            'tagged_data', 'license_plate_location', 'face_location',
+            'cad_file_tag'
         )
 
     @staticmethod
-    def format_ecosystem_name(instance):
-        return 'ITMF'
+    def __related_model_attr(instance: RelevantData, related: str,
+                             attr_name: str):
+        attr = getattr(instance, related, None)
+
+        if attr:
+            return getattr(attr, attr_name)
+
+        return '-'
+
+    def __type_code(self, instance: RelevantData, related: str):
+        return self.__related_model_attr(instance, related,
+                                         'short_description')
+
+    def __file(self, instance: RelevantData, related: str):
+        return self.__related_model_attr(instance, related, 'link')
 
     @staticmethod
-    def format_edge_node_name(instance):
-        return 'ITMF-1'
+    def __json(instance: RelevantData, attr_name: str):
+        return json.dumps(getattr(instance, attr_name))
+
+    def format_traffic_flow(self, instance: RelevantData):
+        return self.__json(instance, 'traffic_flow')
 
     @staticmethod
-    def format_event_object(instance):
-        return 'Object'
+    def format_event_object(instance: RelevantData):
+        if instance.event:
+            return instance.EVENT_TYPE
+
+        return instance.OBJECT_TYPE
+
+    def format_object_class(self, instance: RelevantData):
+        return self.__type_code(instance, 'object_class')
+
+    def format_ambient_weather(self, instance: RelevantData):
+        return self.__type_code(instance, 'ambient_weather_condition')
+
+    def format_road_weather(self, instance: RelevantData):
+        return self.__type_code(instance, 'road_weather_condition')
 
     @staticmethod
-    def format_object_class(instance):
-        return 'Car, Bus, Truck, Van, Trailer, Tractor'
+    def format_tagged_data(instance: RelevantData) -> str:
+        return instance.tagged_data.name
 
-    @staticmethod
-    def format_license_plate(instance):
-        return 'AMV752'
+    def format_license_plate_location(self, instance: RelevantData):
+        return self.__file(instance, 'license_plate')
 
-    @staticmethod
-    def format_traffic_flow(instance):
-        return '4 persons per minute to the direction 1, ' \
-               '7 persons per minute to the direction 2'
+    def format_face_location(self, instance: RelevantData):
+        return self.__file(instance, 'face')
 
-    @staticmethod
-    def format_ambient_weather(instance):
-        return 'Clear'
-
-    @staticmethod
-    def format_road_weather(instance):
-        return 'Wet & Slushy'
-
-    @staticmethod
-    def format_stopped_vehicles_detection(instance):
-        return 'Bounding box location'
-
-    @staticmethod
-    def format_tagged_data(instance):
-        return 'Link'
-
-    @staticmethod
-    def format_license_plate_location(instance):
-        return 'Bounding box location'
-
-    @staticmethod
-    def format_face_location(instance):
-        return 'Bounding box location'
-
-    @staticmethod
-    def format_cad_file_tag(instance):
-        return 'Link to CAD file'
+    def format_cad_file_tag(self, instance: RelevantData):
+        return self.__file(instance, 'cad_file_tag')
 
 
 class RelevantDataSetGPSSerializer(ModelSerializer):

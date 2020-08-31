@@ -10,6 +10,7 @@ from django.db import models
 from django.db.models import ImageField
 from django.utils.module_loading import import_string
 from django.utils.timezone import now
+from django.utils.translation import gettext_lazy as _
 
 from shared.helpers import Price, PriceWithTax
 
@@ -1241,55 +1242,6 @@ class QualityMetricStruct(models.Model):
         db_table = 'QualityMetricStruct'
 
 
-class RelevantData(models.Model):
-    """
-    RelevantData model
-    """
-    id = models.BigAutoField(primary_key=True)
-    device_instance = models.ForeignKey(DeviceInstance, models.DO_NOTHING,
-                                        db_column="deviceInstanceId")
-    project = models.ForeignKey(Project, models.DO_NOTHING,
-                                db_column="projectId")
-    edge_node = models.ForeignKey(EdgeNode, models.DO_NOTHING,
-                                  db_column="edgeNodeId")
-    feature_model = models.ForeignKey(FeatureModel, models.DO_NOTHING,
-                                      db_column="featureModelId")
-    sensor_GPS_lat = models.DecimalField(null=True, blank=True,
-                                         max_digits=10, decimal_places=7,
-                                         db_column='sensorGpsLat')
-    sensor_GPS_long = models.DecimalField(null=True, blank=True,
-                                          max_digits=10, decimal_places=7,
-                                          db_column='sensorGpsLong')
-    rel_data_type = models.CharField(null=True, blank=True, max_length=255,
-                                     db_column='relDataType')
-    value = models.IntegerField(null=True, blank=True)
-    object_model = models.ForeignKey(ObjectModel, models.DO_NOTHING,
-                                     db_column="objectModelId")
-    location_x = models.DecimalField(null=True, blank=True, max_digits=16,
-                                     decimal_places=2, db_column='locationX')
-    location_y = models.DecimalField(null=True, blank=True, max_digits=16,
-                                     decimal_places=2, db_column='locationY')
-    location_z = models.DecimalField(null=True, blank=True, max_digits=16,
-                                     decimal_places=2, db_column='locationZ')
-    orient_theta = models.DecimalField(null=True, blank=True, max_digits=16,
-                                       decimal_places=2,
-                                       db_column='orientTheta')
-    orient_phi = models.DecimalField(null=True, blank=True, max_digits=16,
-                                     decimal_places=2, db_column='orientPhi')
-    timestamp = models.DateTimeField(null=True, blank=True, auto_now_add=True)
-    is_tagged_data = models.BooleanField(null=True, blank=True,
-                                         db_column='isTaggedData')
-    tagged_data = models.ForeignKey(FrameDataset, models.DO_NOTHING,
-                                    db_column="taggedDataId")
-    parameters = JSONField(null=True, blank=True, db_column='parametersJSON')
-
-    class Meta:
-        """
-        RelevantData model's Meta class specification
-        """
-        db_table = 'RelevantData'
-
-
 class Frame(models.Model):
     """
     Frame model
@@ -1341,7 +1293,7 @@ class TypeCode(models.Model):
     id = models.BigAutoField(primary_key=True)
     type_name = models.CharField(max_length=255, db_column='typeName')
     order = models.IntegerField(null=True, blank=True, db_column='orderby')
-    value = models.CharField(null=True, blank=True, max_length=3)
+    value = models.CharField(null=True, blank=True, max_length=3, unique=True)
     short_description = models.CharField(null=True, blank=True, max_length=255,
                                          db_column='shortDescription')
     long_description = models.TextField(null=True, blank=True,
@@ -1370,6 +1322,96 @@ class FileStorage(models.Model):
         FileStorage model's Meta class specification
         """
         db_table = 'FileStorage'
+
+
+class RelevantData(models.Model):
+    """
+    RelevantData model
+    """
+    id = models.BigAutoField(primary_key=True)
+    device_instance = models.ForeignKey(DeviceInstance, models.DO_NOTHING,
+                                        db_column="deviceInstanceId")
+    project = models.ForeignKey(Project, models.DO_NOTHING,
+                                db_column="projectId")
+    edge_node = models.ForeignKey(EdgeNode, models.DO_NOTHING,
+                                  db_column="edgeNodeId")
+    feature_model = models.ForeignKey(FeatureModel, models.DO_NOTHING,
+                                      db_column="featureModelId")
+    event = models.ForeignKey(TypeCode, models.DO_NOTHING, max_length=3,
+                              null=True, blank=True, to_field='value',
+                              db_column='eventType',
+                              related_name='relevant_data_event'
+                              )
+    object_class = models.ForeignKey(TypeCode, models.DO_NOTHING, max_length=3,
+                                     null=True, blank=True, to_field='value',
+                                     db_column='objectClass')
+    ambient_weather_condition = models.ForeignKey(
+        TypeCode, models.DO_NOTHING, null=True, blank=True, max_length=3,
+        to_field='value', db_column='ambientWeatherCondition',
+        related_name='relevant_data_ambient_weather'
+    )
+    road_weather_condition = models.ForeignKey(
+        TypeCode, models.DO_NOTHING, null=True, blank=True, max_length=3,
+        to_field='value', db_column='roadWeatherCondition',
+        related_name='relevant_data_road_weather'
+    )
+    sensor_GPS_lat = models.DecimalField(null=True, blank=True,
+                                         max_digits=10, decimal_places=7,
+                                         db_column='sensorGpsLat')
+    sensor_GPS_long = models.DecimalField(null=True, blank=True,
+                                          max_digits=10, decimal_places=7,
+                                          db_column='sensorGpsLong')
+    license_plate_number = models.CharField(max_length=15, null=True,
+                                            blank=True,
+                                            db_column='licensePlateNumber')
+    rel_data_type = models.CharField(null=True, blank=True, max_length=255,
+                                     db_column='relDataType')
+    value = models.IntegerField(null=True, blank=True)
+    object_model = models.ForeignKey(ObjectModel, models.DO_NOTHING,
+                                     db_column="objectModelId")
+    location_x = models.DecimalField(null=True, blank=True, max_digits=16,
+                                     decimal_places=2, db_column='locationX')
+    location_y = models.DecimalField(null=True, blank=True, max_digits=16,
+                                     decimal_places=2, db_column='locationY')
+    location_z = models.DecimalField(null=True, blank=True, max_digits=16,
+                                     decimal_places=2, db_column='locationZ')
+    orient_theta = models.DecimalField(null=True, blank=True, max_digits=16,
+                                       decimal_places=2,
+                                       db_column='orientTheta')
+    orient_phi = models.DecimalField(null=True, blank=True, max_digits=16,
+                                     decimal_places=2, db_column='orientPhi')
+    timestamp = models.DateTimeField(null=True, blank=True, auto_now_add=True)
+    is_tagged_data = models.BooleanField(null=True, blank=True,
+                                         db_column='isTaggedData')
+    tagged_data = models.ForeignKey(FrameDataset, models.DO_NOTHING,
+                                    db_column="taggedDataId")
+    parameters = JSONField(null=True, blank=True, db_column='parametersJSON')
+    traffic_flow = JSONField(null=True, blank=True, db_column='trafficFlow')
+    pedestrian_flow = JSONField(null=True, blank=True,
+                                db_column='pedestrianFlow')
+    stopped_vehicle_detection = JSONField(null=True, blank=True,
+                                          db_column='stoppedVehicleDetection')
+    license_plate = models.ForeignKey(
+        FileStorage, models.DO_NOTHING, null=True, blank=True,
+        db_column='licensePlate', related_name='relevant_data_license_plate'
+    )
+    face = models.ForeignKey(
+        FileStorage, models.DO_NOTHING, null=True, blank=True,
+        db_column='face', related_name='relevant_data_face'
+    )
+    cad_file_tag = models.ForeignKey(
+        FileStorage, models.DO_NOTHING, null=True, blank=True,
+        db_column='cadFileTag'
+    )
+
+    EVENT_TYPE = _('Event')
+    OBJECT_TYPE = _('Object')
+
+    class Meta:
+        """
+        RelevantData model's Meta class specification
+        """
+        db_table = 'RelevantData'
 
 
 class DetectedObjects(models.Model):
