@@ -428,7 +428,7 @@ class RelevantDataSerializer(ModelSerializer):
         fields = (
             'id', 'sensor_GPS_lat', 'sensor_GPS_long', 'location_x',
             'location_y', 'location_z', 'orient_theta', 'orient_phi',
-            'timestamp', 'project',
+            'timestamp', 'project', 'sensor_id',
 
             'ecosystem_name', 'edge_node_name', 'event_object', 'object_class',
             'license_plate', 'traffic_flow', 'ambient_weather', 'road_weather',
