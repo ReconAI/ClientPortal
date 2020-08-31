@@ -27,7 +27,7 @@ class RelevantDataHandler:
         'event', 'object_class', 'tagged_data', 'license_plate',
         'face', 'cad_file_tag', 'ambient_weather_condition',
         'road_weather_condition'
-    ).order_by('-timestamp').all()
+    ).order_by('-id').all()
 
     def filter_queryset(self, queryset: QuerySet) -> QuerySet:
         qs = queryset.filter(
