@@ -426,7 +426,7 @@ class RelevantDataSerializer(ModelSerializer):
     class Meta:
         model = RelevantData
         fields = (
-            'sensor_id', 'sensor_GPS_lat', 'sensor_GPS_long', 'location_x',
+            'id', 'sensor_GPS_lat', 'sensor_GPS_long', 'location_x',
             'location_y', 'location_z', 'orient_theta', 'orient_phi',
             'timestamp', 'project',
 
