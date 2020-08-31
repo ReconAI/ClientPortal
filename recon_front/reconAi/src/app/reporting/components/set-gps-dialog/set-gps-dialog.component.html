@@ -2,6 +2,7 @@
   <h3>Set GPS</h3>
   <mat-icon [mat-dialog-close]="true">close</mat-icon>
 </div>
+<mat-error *ngIf="errors">{{ validationErrors }}</mat-error>
 <div class="content">
   <form [formGroup]="coordinate">
     <label>
@@ -42,7 +43,15 @@
     ></div>
   </div>
 
-  <button mat-raised-button color="primary" [disabled]="!coordinate.valid">
-    Save
+  <button
+    mat-raised-button
+    color="primary"
+    [disabled]="loadingStatus || !coordinate.valid"
+    (click)="onSend()"
+  >
+    <mat-icon *ngIf="loadingStatus; else loaded">
+      <mat-spinner color="primary" diameter="20"></mat-spinner>
+    </mat-icon>
+    <ng-template #loaded>SAVE</ng-template>
   </button>
 </div>

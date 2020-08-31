@@ -1,3 +1,4 @@
+import { SetGpsDialogContainer } from './../set-gps-dialog/set-gps-dialog.container';
 import { PaginationRequestInterface } from './../../../constants/types/requests';
 import { Store } from '@ngrx/store';
 import { OnlineStreamingComponent } from './../reporting-list-devices/online-streaming/online-streaming.component';
@@ -82,7 +83,7 @@ export class ReportingListDevicesComponent implements OnInit, AfterViewInit {
 
   navigateToDevice(device: ReportingDeviceClientInterface): void {
     if (!this.isDevice) {
-      this.router.navigate(['reporting', device.id]);
+      this.router.navigate(['reporting', device.sensorId]);
     }
   }
 
@@ -242,7 +243,7 @@ export class ReportingListDevicesComponent implements OnInit, AfterViewInit {
       this.columns = [
         {
           header: 'Sensor ID',
-          id: 'id',
+          id: 'sensorId',
           width: '100px',
         },
         ...this.columns,
@@ -254,19 +255,18 @@ export class ReportingListDevicesComponent implements OnInit, AfterViewInit {
 
   openDialog(): void {
     const selectedDevice = this.devices[this.selectedIndex];
-    this.dialog.open(SetGpsDialogComponent, {
+    this.dialog.open(SetGpsDialogContainer, {
       width: '600px',
       data: {
         lat: selectedDevice.lat,
         lng: selectedDevice.lng,
+        id: selectedDevice.id,
       },
     });
   }
 
   loadDevices(page: number): void {
-    if (!this.isDevice) {
-      this.loadDevices$.emit(page);
-    }
+    this.loadDevices$.emit(page);
   }
 
   goToUrl(url: string): void {

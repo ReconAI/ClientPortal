@@ -11,6 +11,7 @@ export interface ReportingDeviceProjectInterface {
 }
 
 export interface ReportingDeviceServerInterface {
+  sensor_id: number;
   id: number;
   sensor_GPS_lat: string;
   sensor_GPS_long: string;
@@ -38,6 +39,7 @@ export interface ReportingDeviceServerInterface {
 
 export interface ReportingDeviceClientInterface {
   id: number;
+  sensorId: number;
   lat: string;
   lng: string;
   locationX: string;
@@ -69,6 +71,7 @@ export const transformReportingDeviceFromServer = (
   device: ReportingDeviceServerInterface
 ): ReportingDeviceClientInterface => ({
   id: device.id,
+  sensorId: device.sensor_id,
   lat: device.sensor_GPS_lat,
   lng: device.sensor_GPS_long,
   locationX: device.location_x,
@@ -111,3 +114,28 @@ export const transformReportingPaginatedDeviceListFromServer = (
     transformReportingDeviceFromServer(device)
   ),
 });
+
+export interface SetGpsRequestInterface {
+  gps: {
+    id: number;
+    lat: number;
+    lng: number;
+  };
+}
+
+export interface SetGpsRequestServerInterface {
+  lat: number;
+  long: number;
+}
+
+export const transformSetGpsToServer = ({
+  gps,
+}: SetGpsRequestInterface): SetGpsRequestServerInterface => ({
+  lat: gps?.lat,
+  long: gps?.lng,
+});
+
+export const setGpsErrorFieldRelations = {
+  lat: 'LAT',
+  long: 'LNG',
+};

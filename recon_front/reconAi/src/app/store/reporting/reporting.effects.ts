@@ -1,3 +1,5 @@
+import { loadReportingDeviceListRequestedAction } from 'app/store/reporting';
+import { selectReportingDeviceListMetaCurrentPage } from './reporting.selectors';
 import {
   ReportingActionTypes,
   loadReportingDeviceListSucceededAction,
@@ -5,6 +7,8 @@ import {
   LoadReportingDevicePayloadInterface,
   loadReportingDeviceErrorAction,
   loadReportingDeviceSucceededAction,
+  setGpsSucceededAction,
+  setGpsErrorAction,
 } from './reporting.actions';
 import {
   PaginationRequestInterface,
@@ -17,19 +21,31 @@ import { HttpClient } from '@angular/common/http';
 import { AppState } from '../reducers';
 import { ServerUserInterface } from 'app/constants/types';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { Store, Action } from '@ngrx/store';
-import { tap, switchMap, map, catchError, finalize } from 'rxjs/operators';
+import { Store, Action, select } from '@ngrx/store';
+import {
+  tap,
+  switchMap,
+  map,
+  catchError,
+  finalize,
+  withLatestFrom,
+} from 'rxjs/operators';
 import {
   setReportingDeviceListLoadingStatusAction,
   setReportingDeviceLoadingStatusAction,
+  setGpsLoadingStatusAction,
 } from '../loaders';
 import {
   ReportingDeviceServerInterface,
   transformReportingPaginatedDeviceListFromServer,
   transformReportingDeviceFromServer,
   transformReportingDeviceCardFromServer,
+  SetGpsRequestInterface,
+  transformSetGpsToServer,
+  setGpsErrorFieldRelations,
 } from './reporting.server.helpers';
 import { updateBreadcrumbByIdAction, setAppTitleAction } from '../app';
+import { generalTransformFormErrorToObject } from 'app/core/helpers/generalFormsErrorsTransformation';
 
 @Injectable()
 export class ReportingEffects {
@@ -88,13 +104,15 @@ export class ReportingEffects {
           })
         );
       }),
-      switchMap(({ id }) =>
+      switchMap(({ id, page }) =>
         this.httpClient
-          .get<ReportingDeviceServerInterface>(`/api/relevant-data/${id}`)
+          .get<
+            PaginationResponseServerInterface<ReportingDeviceServerInterface>
+          >(`/api/sensors/${id}/relevant-data?page=${page}`)
           .pipe(
-            map((device) =>
+            map((devices) =>
               loadReportingDeviceSucceededAction(
-                transformReportingDeviceCardFromServer(device)
+                transformReportingPaginatedDeviceListFromServer(devices)
               )
             ),
             tap(() => {
@@ -119,6 +137,58 @@ export class ReportingEffects {
             finalize(() => {
               this.store.dispatch(
                 setReportingDeviceLoadingStatusAction({
+                  status: false,
+                })
+              );
+            })
+          )
+      )
+    )
+  );
+
+  setGpsRequested$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action & SetGpsRequestInterface>(
+        ReportingActionTypes.SET_GPS_REQUESTED
+      ),
+      tap(() => {
+        this.store.dispatch(
+          setGpsLoadingStatusAction({
+            status: true,
+          })
+        );
+      }),
+      withLatestFrom(
+        this.store.pipe(select(selectReportingDeviceListMetaCurrentPage))
+      ),
+      switchMap(([req, page]) =>
+        this.httpClient
+          .put<void>(
+            `/api/relevant-data/${req?.gps?.id}/gps`,
+            transformSetGpsToServer(req)
+          )
+          .pipe(
+            map(() => setGpsSucceededAction()),
+            tap(() => {
+              this.store.dispatch(
+                loadReportingDeviceListRequestedAction({
+                  page,
+                })
+              );
+            }),
+            catchError((error) =>
+              of(
+                setGpsErrorAction(
+                  generalTransformFormErrorToObject(
+                    error,
+                    setGpsErrorFieldRelations
+                  )
+                )
+              )
+            ),
+            finalize(() => {
+              this.store.dispatch(
+                setGpsLoadingStatusAction({
                   status: false,
                 })
               );

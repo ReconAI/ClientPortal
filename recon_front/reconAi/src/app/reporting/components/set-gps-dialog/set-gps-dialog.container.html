@@ -1,0 +1,7 @@
+<recon-set-gps-dialog
+  [lat]="data.lat"
+  [lng]="data.lng"
+  [loadingStatus]="loadingStatus$ | async"
+  [errors]="error$ | async"
+  (sendGps)="sendGps($event)"
+></recon-set-gps-dialog>

@@ -41,6 +41,7 @@ export enum LoadersActionTypes {
   SET_DEFAULT_PAYMENT_METHOD_LOADING_STATUS = '[Loaders | User] Set Default Payment Method Loading Status',
   SET_REPORTING_DEVICE_LIST_LOADING_STATUS = '[Loaders | Reporting] Set Reporting Device List Loading Status',
   SET_REPORTING_DEVICE_LOADING_STATUS = '[Loaders | Reporting] Set Reporting Device Loading Status',
+  SET_GPS_LOADING_STATUS = '[Loaders | Reporting] Set GPS Loading Status',
 }
 
 export interface LoaderInterface {
@@ -247,5 +248,10 @@ export const setReportingDeviceListLoadingStatusAction = createAction(
 
 export const setReportingDeviceLoadingStatusAction = createAction(
   LoadersActionTypes.SET_REPORTING_DEVICE_LOADING_STATUS,
+  props<LoaderInterface>()
+);
+
+export const setGpsLoadingStatusAction = createAction(
+  LoadersActionTypes.SET_GPS_LOADING_STATUS,
   props<LoaderInterface>()
 );
