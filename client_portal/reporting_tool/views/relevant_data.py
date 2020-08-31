@@ -15,13 +15,16 @@ from shared.swagger.headers import token_header
 from shared.swagger.responses import \
     default_get_responses_with_custom_success, data_serializer, \
     DEFAULT_UNSAFE_REQUEST_RESPONSES
-from shared.views.utils import RetrieveAPIView, UpdateAPIView
+from shared.views.utils import UpdateAPIView
 
 
 class RelevantDataHandler:
     permission_classes = (IsAuthenticated, IsActive, PaymentRequired)
 
-    queryset = RelevantData.objects.select_related('project').all()
+    queryset = RelevantData.objects.select_related(
+        'project', 'event', 'object_class', 'tagged_data', 'license_plate',
+        'face', 'cad_file_tag'
+    ).all()
 
     def filter_queryset(self, queryset: QuerySet) -> QuerySet:
         qs = queryset.filter(
