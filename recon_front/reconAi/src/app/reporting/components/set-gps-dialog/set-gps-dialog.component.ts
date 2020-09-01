@@ -1,10 +1,22 @@
+import { generalTransformationObjectErrorsForComponent } from './../../../core/helpers/generalFormsErrorsTransformation';
+import { FormServerErrorInterface } from './../../../constants/types/requests';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { TAMPERE_COORDINATES } from './../../../constants/globalVariables/globalVariables';
-import { LatLngInterface } from './../../../core/helpers/markers';
+import {
+  LatLngInterface,
+  generateDefaultMap,
+} from './../../../core/helpers/markers';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ReconSelectOption } from './../../../shared/types/recon-select';
-import { Component, OnInit, Inject } from '@angular/core';
-import { tileLayer, latLng, Layer } from 'leaflet';
+import {
+  Component,
+  OnInit,
+  Inject,
+  Input,
+  Output,
+  EventEmitter,
+} from '@angular/core';
+import { latLng, Layer } from 'leaflet';
 import { generateMapMarker } from 'app/core/helpers/markers';
 
 @Component({
@@ -13,6 +25,11 @@ import { generateMapMarker } from 'app/core/helpers/markers';
   styleUrls: ['./set-gps-dialog.component.less'],
 })
 export class SetGpsDialogComponent implements OnInit {
+  @Input() lat: number = TAMPERE_COORDINATES.lat;
+  @Input() lng: number = TAMPERE_COORDINATES.lng;
+  @Input() loadingStatus = false;
+  @Input() errors: FormServerErrorInterface = null;
+  @Output() sendGps = new EventEmitter<LatLngInterface>();
   coordinate: FormGroup;
   readonly numberPattern = '^[-]?[0-9]+[.]?[0-9]*$';
 
@@ -23,34 +40,20 @@ export class SetGpsDialogComponent implements OnInit {
   ) {}
 
   center = null;
-  // move to general
-  options = {
-    layers: [
-      tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 18,
-        minZoom: 3,
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      }),
-    ],
-    id: 'second-map',
-    zoom: 10,
-    center: null,
-  };
-
+  options = null;
   layers: Layer[];
 
   ngOnInit(): void {
     this.coordinate = this.fb.group({
       longitude: [
-        this.data.lng || '',
+        this.lng || '',
         Validators.compose([
           Validators.required,
           Validators.pattern(this.numberPattern),
         ]),
       ],
       latitude: [
-        this.data.lat || '',
+        this.lat || '',
         Validators.compose([
           Validators.required,
           Validators.pattern(this.numberPattern),
@@ -58,23 +61,20 @@ export class SetGpsDialogComponent implements OnInit {
       ],
     });
 
-    this.center =
-      (this.data && latLng(this.data.lat, this.data.lng)) ||
-      TAMPERE_COORDINATES;
+    this.center = latLng(this.lat, this.lng) || TAMPERE_COORDINATES;
 
-    if (this.data) {
-      this.layers = [
-        generateMapMarker({
-          lat: this.data.lat,
-          lng: this.data.lng,
-        }),
-      ];
-    }
+    this.layers = [
+      generateMapMarker({
+        lat: this.data.lat,
+        lng: this.data.lng,
+      }),
+    ];
 
-    this.options = {
-      ...this.options,
-      center: this.center,
-    };
+    this.options = generateDefaultMap(this.center);
+  }
+
+  get validationErrors(): string {
+    return generalTransformationObjectErrorsForComponent(this.errors);
   }
 
   setCenter({ lat, lng }: LatLngInterface): void {
@@ -114,5 +114,12 @@ export class SetGpsDialogComponent implements OnInit {
   isValidInput(controlName: string): boolean {
     const control = this.coordinate.get(controlName);
     return !!(control.touched && control.errors);
+  }
+
+  onSend(): void {
+    this.sendGps.emit({
+      lat: this.coordinate?.value?.latitude,
+      lng: this.coordinate?.value?.longitude,
+    });
   }
 }

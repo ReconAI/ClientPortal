@@ -1,3 +1,4 @@
+import { FormServerErrorInterface } from 'app/constants/types/requests';
 import { FilterItemInterface } from 'app/reporting/constants/types/filters';
 import { MetaClientInterface } from './../../constants/types/requests';
 import { ReportingDeviceClientInterface } from './reporting.server.helpers';
@@ -16,31 +17,58 @@ export const selectReportingDeviceList = createSelector(
 
 export const selectReportingDeviceListMeta = createSelector(
   selectReporting,
-  (reporting: ReportingState): MetaClientInterface => reporting.meta
+  (reporting: ReportingState): MetaClientInterface => reporting?.meta
 );
 
 export const selectReportingDeviceListMetaCurrentPage = createSelector(
   selectReportingDeviceListMeta,
-  (meta: MetaClientInterface): number => meta.currentPage
+  (meta: MetaClientInterface): number => meta?.currentPage
 );
 
 export const selectReportingDeviceListMetaCount = createSelector(
   selectReportingDeviceListMeta,
-  (meta: MetaClientInterface): number => meta.count
+  (meta: MetaClientInterface): number => meta?.count
 );
 
 export const selectReportingDeviceListMetaPageSize = createSelector(
   selectReportingDeviceListMeta,
-  (meta: MetaClientInterface): number => meta.pageSize
+  (meta: MetaClientInterface): number => meta?.pageSize
 );
 
-export const selectReportingSelectedDevice = createSelector(
+export const selectReportingSelectedDeviceList = createSelector(
   selectReporting,
-  (reporting: ReportingState): ReportingDeviceClientInterface =>
-    reporting?.selectedDevice || null
+  (reporting: ReportingState): ReportingDeviceClientInterface[] =>
+    reporting?.selectedDevice?.list || []
+);
+
+export const selectReportingSelectedDeviceListMeta = createSelector(
+  selectReporting,
+  (reporting: ReportingState): MetaClientInterface =>
+    reporting.selectedDevice?.meta
+);
+
+export const selectReportingSelectedDeviceListMetaCurrentPage = createSelector(
+  selectReportingSelectedDeviceListMeta,
+  (meta: MetaClientInterface): number => meta?.currentPage
+);
+
+export const selectReportingSelectedDeviceListMetaCount = createSelector(
+  selectReportingSelectedDeviceListMeta,
+  (meta: MetaClientInterface): number => meta?.count
+);
+
+export const selectReportingSelectedDeviceListMetaPageSize = createSelector(
+  selectReportingSelectedDeviceListMeta,
+  (meta: MetaClientInterface): number => meta?.pageSize
 );
 
 export const selectUserFilters = createSelector(
   selectReporting,
   (reporting: ReportingState): FilterItemInterface[] => reporting?.filters || []
+);
+
+export const selectSetGpsError = createSelector(
+  selectReporting,
+  (reporting: ReportingState): FormServerErrorInterface | null =>
+    reporting?.errors?.setGps
 );

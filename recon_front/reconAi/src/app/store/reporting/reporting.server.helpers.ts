@@ -11,6 +11,7 @@ export interface ReportingDeviceProjectInterface {
 }
 
 export interface ReportingDeviceServerInterface {
+  sensor_id: number;
   id: number;
   sensor_GPS_lat: string;
   sensor_GPS_long: string;
@@ -22,10 +23,9 @@ export interface ReportingDeviceServerInterface {
   timestamp: string;
   project: ReportingDeviceProjectInterface;
   ecosystem_name: string;
-  edge_node_name: string;
   event_object: string;
   object_class: string;
-  license_plate: string;
+  license_plate_number: string;
   traffic_flow: string;
   ambient_weather: string;
   road_weather: string;
@@ -38,6 +38,7 @@ export interface ReportingDeviceServerInterface {
 
 export interface ReportingDeviceClientInterface {
   id: number;
+  sensorId: number;
   lat: string;
   lng: string;
   locationX: string;
@@ -48,7 +49,6 @@ export interface ReportingDeviceClientInterface {
   timestamp: string;
   project: ReportingDeviceProjectInterface;
   ecosystemName: string;
-  nodeName: string;
   isEvent: string;
   objectClass: string;
   plateNumber: string;
@@ -69,6 +69,7 @@ export const transformReportingDeviceFromServer = (
   device: ReportingDeviceServerInterface
 ): ReportingDeviceClientInterface => ({
   id: device.id,
+  sensorId: device.sensor_id,
   lat: device.sensor_GPS_lat,
   lng: device.sensor_GPS_long,
   locationX: device.location_x,
@@ -79,10 +80,9 @@ export const transformReportingDeviceFromServer = (
   timestamp: moment(device.timestamp).format('YYYY-MM-DD, HH:mm'),
   project: device.project,
   ecosystemName: device.ecosystem_name,
-  nodeName: device.edge_node_name,
   isEvent: device.event_object,
   objectClass: device.event_object,
-  plateNumber: device.license_plate,
+  plateNumber: device.license_plate_number,
   trafficFlow: device.traffic_flow,
   ambientWeather: device.ambient_weather,
   roadWeather: device.road_weather,
@@ -111,3 +111,28 @@ export const transformReportingPaginatedDeviceListFromServer = (
     transformReportingDeviceFromServer(device)
   ),
 });
+
+export interface SetGpsRequestInterface {
+  gps: {
+    id: number;
+    lat: number;
+    lng: number;
+  };
+}
+
+export interface SetGpsRequestServerInterface {
+  lat: number;
+  long: number;
+}
+
+export const transformSetGpsToServer = ({
+  gps,
+}: SetGpsRequestInterface): SetGpsRequestServerInterface => ({
+  lat: gps?.lat,
+  long: gps?.lng,
+});
+
+export const setGpsErrorFieldRelations = {
+  lat: 'LAT',
+  long: 'LNG',
+};

@@ -38,6 +38,7 @@ import {
   setDefaultPaymentMethodLoadingStatusAction,
   setReportingDeviceListLoadingStatusAction,
   setReportingDeviceLoadingStatusAction,
+  setGpsLoadingStatusAction,
 } from './loaders.actions';
 import { createReducer, on, Action } from '@ngrx/store';
 
@@ -88,6 +89,7 @@ export interface LoadersState {
   // reporting
   reportingDeviceList: boolean;
   reportingDevice: boolean;
+  setGps: boolean;
 }
 
 const initialState: LoadersState = {
@@ -136,6 +138,7 @@ const initialState: LoadersState = {
   // reporting
   reportingDeviceList: false,
   reportingDevice: false,
+  setGps: false,
 };
 
 const setCurrentUserLoadingStatusReducer = (
@@ -334,6 +337,11 @@ const setReportingDeviceLoadingStatusReducer = (
   { status }: Action & LoaderInterface
 ): LoadersState => ({ ...state, reportingDevice: status });
 
+const setGpsLoadingStatusReducer = (
+  state: LoadersState,
+  { status }: Action & LoaderInterface
+): LoadersState => ({ ...state, setGps: status });
+
 const loadersReducer = createReducer(
   initialState,
   on(setCurrentUserLoadingStatusAction, setCurrentUserLoadingStatusReducer),
@@ -421,7 +429,8 @@ const loadersReducer = createReducer(
   on(
     setReportingDeviceLoadingStatusAction,
     setReportingDeviceLoadingStatusReducer
-  )
+  ),
+  on(setGpsLoadingStatusAction, setGpsLoadingStatusReducer)
 );
 
 export function reducer(state: LoadersState | undefined, action: Action) {

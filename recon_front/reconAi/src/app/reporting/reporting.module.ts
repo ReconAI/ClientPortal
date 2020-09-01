@@ -12,6 +12,7 @@ import { ReportingListDevicesContainer } from './components/reporting-list-devic
 import { ReportingFilterComponent } from './components/reporting-filter/reporting-filter.component';
 import { SharedModule } from 'app/shared/shared.module';
 import { SetGpsDialogComponent } from './components/set-gps-dialog/set-gps-dialog.component';
+import { SetGpsDialogContainer } from './components/set-gps-dialog/set-gps-dialog.container';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { OnlineStreamingComponent } from './components/reporting-list-devices/online-streaming/online-streaming.component';
 import { ReportingFilterContainer } from './components/reporting-filter/reporting-filter.container';
@@ -22,6 +23,7 @@ import { ReportingFilterContainer } from './components/reporting-filter/reportin
     ReportingFilterComponent,
     ReportingFilterContainer,
     SetGpsDialogComponent,
+    SetGpsDialogContainer,
     ReportingDeviceContainer,
     OnlineStreamingComponent,
   ],

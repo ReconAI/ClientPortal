@@ -1,3 +1,4 @@
+import { ObjectFormErrorInterface } from './../../constants/types/requests';
 import { FilterItemInterface } from './../../reporting/constants/types/filters';
 import {
   PaginationRequestInterface,
@@ -7,6 +8,7 @@ import { createAction, props } from '@ngrx/store';
 import {
   ReportingDeviceClientInterface,
   SetSelectedReportingDeviceClientInterface,
+  SetGpsRequestInterface,
 } from './reporting.server.helpers';
 
 export enum ReportingActionTypes {
@@ -20,6 +22,11 @@ export enum ReportingActionTypes {
 
   SET_USER_FILTERS = '[Reporting] Set User Filters',
   RESET_USER_FILTERS = '[Reporting] Reset User Filters',
+
+  SET_GPS_REQUESTED = '[Reporting] Set Gps Requested',
+  SET_GPS_SUCCEEDED = '[Reporting] Set Gps Succeeded',
+  SET_GPS_ERROR = '[Reporting] Set Gps Error',
+  RESET_SET_GPS_ERROR = '[Reporting] Reset Set Gps Error',
 }
 
 export const loadReportingDeviceListRequestedAction = createAction(
@@ -37,6 +44,7 @@ export const loadReportingDeviceListErrorAction = createAction(
 );
 export interface LoadReportingDevicePayloadInterface {
   id: number;
+  page: number;
 }
 
 export const loadReportingDeviceRequestedAction = createAction(
@@ -46,7 +54,7 @@ export const loadReportingDeviceRequestedAction = createAction(
 
 export const loadReportingDeviceSucceededAction = createAction(
   ReportingActionTypes.LOAD_REPORTING_DEVICE_SUCCEEDED,
-  props<SetSelectedReportingDeviceClientInterface>()
+  props<PaginationResponseClientInterface<ReportingDeviceClientInterface>>()
 );
 
 export const loadReportingDeviceErrorAction = createAction(
@@ -64,4 +72,22 @@ export const setUserFiltersAction = createAction(
 
 export const resetUserFiltersAction = createAction(
   ReportingActionTypes.RESET_USER_FILTERS
+);
+
+export const setGpsRequestedAction = createAction(
+  ReportingActionTypes.SET_GPS_REQUESTED,
+  props<SetGpsRequestInterface>()
+);
+
+export const setGpsSucceededAction = createAction(
+  ReportingActionTypes.SET_GPS_SUCCEEDED
+);
+
+export const setGpsErrorAction = createAction(
+  ReportingActionTypes.SET_GPS_ERROR,
+  props<ObjectFormErrorInterface>()
+);
+
+export const resetSetGpsErrorAction = createAction(
+  ReportingActionTypes.RESET_SET_GPS_ERROR,
 );

@@ -199,3 +199,8 @@ export const selectReportingDeviceLoadingStatus = createSelector(
   selectLoaders,
   (loaders: LoadersState): boolean => loaders.reportingDevice
 );
+
+export const selectSetGpsLoadingStatus = createSelector(
+  selectLoaders,
+  (loaders: LoadersState): boolean => loaders.setGps
+);
