@@ -189,13 +189,20 @@ class RelevantDataSensorFilter(FilterSet):
     orient_phi = NumericRangeFilter(
         field_name="orient_phi", lookup_expr='range'
     )
+    road_temperature = NumericRangeFilter(
+        field_name="road_temperature", lookup_expr='range'
+    )
+    ambient_temperature = NumericRangeFilter(
+        field_name="ambient_temperature", lookup_expr='range'
+    )
     is_tagged = BooleanFilter(field_name='is_tagged_data', lookup_expr='exact')
+
 
     class Meta:
         model = RelevantData
         fields = (
             'project_name', 'timestamp', 'orient_theta', 'orient_phi',
-            'is_tagged'
+            'is_tagged', 'road_temperature', 'ambient_temperature'
         )
         form = RelevantDataFiltersForm
 
