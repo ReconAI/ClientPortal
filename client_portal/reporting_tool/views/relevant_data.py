@@ -106,6 +106,11 @@ class RelevantDataTypeCodeList:
 
     permission_classes = (IsAuthenticated, IsActive, PaymentRequired)
 
+    def get_queryset(self) -> QuerySet:
+        return TypeCode.objects.filter(
+            type_name__in=self.TYPE_CODES
+        ).order_by('short_description')
+
     def filter_queryset(self, queryset: QuerySet) -> QuerySet:
         relevant_data_sq = RelevantData.objects.filter(
             project__organization_id=self.request.user.organization.id
@@ -133,10 +138,6 @@ class RelevantDataVehiclesView(RelevantDataTypeCodeList, PlainListModelMixin,
     
     EXISTENT_VALUES_COLUMN = 'vehicle_classification'
 
-    queryset = TypeCode.objects.filter(
-        type_name__in=TYPE_CODES
-    ).order_by('short_description')
-
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
     responses=default_get_responses_with_custom_success(
@@ -155,18 +156,14 @@ class RelevantDataEventsVehiclesView(RelevantDataTypeCodeList, PlainListModelMix
 
     EXISTENT_VALUES_COLUMN = 'object_class'
 
-    queryset = TypeCode.objects.filter(
-        type_name__in=TYPE_CODES
-    ).order_by('short_description')
-
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
     responses=default_get_responses_with_custom_success(
         data_serializer_many(TypeCodeSerializer)
     ),
     tags=['Relevant data'],
-    operation_summary='Event vehicles list',
-    operation_description='Available events and vehicles list',
+    operation_summary='Road conditions list',
+    operation_description='Available road conditions list',
     manual_parameters=[
         token_header(),
     ]
@@ -176,10 +173,6 @@ class RelevantDataRoadConditionsView(RelevantDataTypeCodeList,
     TYPE_CODES = [TypeCode.ROAD_CONDITIONS_TYPE]
 
     EXISTENT_VALUES_COLUMN = 'road_weather_condition'
-
-    queryset = TypeCode.objects.filter(
-        type_name__in=TYPE_CODES
-    ).order_by('short_description')
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
