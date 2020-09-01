@@ -6,16 +6,16 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 
-from recon_db_manager.models import RelevantData
+from recon_db_manager.models import RelevantData, TypeCode
 from reporting_tool.filters import RelevantDataFilter, RelevantDataSensorFilter
 from reporting_tool.serializers import RelevantDataSerializer, \
-    RelevantDataSetGPSSerializer
+    RelevantDataSetGPSSerializer, TypeCodeSerializer
 from shared.permissions import IsActive, PaymentRequired
 from shared.swagger.headers import token_header
 from shared.swagger.responses import \
     default_get_responses_with_custom_success, data_serializer, \
     DEFAULT_UNSAFE_REQUEST_RESPONSES
-from shared.views.utils import UpdateAPIView
+from shared.views.utils import UpdateAPIView, PlainListModelMixin
 
 
 class RelevantDataHandler:
@@ -93,3 +93,45 @@ class RelevantDataSetGPSView(RelevantDataHandler, UpdateAPIView):
     serializer_class = RelevantDataSetGPSSerializer
 
     update_success_message = _('GPS is updated successfully')
+
+
+class RelevantDataTypeCodeList(PlainListModelMixin, ListAPIView):
+    TYPE_CODES = []
+    EXISTENT_VALUES_COLUMN = ''
+    
+    serializer_class = TypeCodeSerializer
+
+    permission_classes = (IsAuthenticated, IsActive, PaymentRequired)
+
+    def filter_queryset(self, queryset: QuerySet) -> QuerySet:
+        relevant_data_sq = RelevantData.objects.filter(
+            project__organization_id=self.request.user.organization.id
+        ).exclude(**{
+            '{}__isnull'.format(self.EXISTENT_VALUES_COLUMN): True
+        }).distinct().values(self.EXISTENT_VALUES_COLUMN)
+
+        return queryset.filter(value__in=relevant_data_sq)
+    
+
+class RelevantDataVehicles(RelevantDataTypeCodeList):
+    TYPE_CODES = [TypeCode.OBJECT_TYPE]
+    
+    EXISTENT_VALUES_COLUMN = 'vehicle_classification'
+
+    queryset = TypeCode.objects.filter(
+        type_name__in=TYPE_CODES
+    ).order_by('short_description')
+
+
+class RelevantDataEventsVehicles(RelevantDataTypeCodeList):
+    TYPE_CODES = [TypeCode.OBJECT_TYPE, TypeCode.ROAD_EVENT_TYPE]
+
+    EXISTENT_VALUES_COLUMN = 'object_class'
+
+    queryset = TypeCode.objects.filter(
+        type_name__in=TYPE_CODES
+    ).order_by('short_description')
+
+
+    
+

@@ -20,7 +20,7 @@ from rest_framework.serializers import Serializer
 from rest_framework.utils.serializer_helpers import ReturnDict
 
 from recon_db_manager.models import Organization, DevicePurchase, RelevantData, \
-    Project
+    Project, TypeCode
 from reporting_tool.forms.utils import SendEmailMixin
 from shared.fields import FileField
 from shared.models import User
@@ -465,11 +465,10 @@ class RelevantDataSerializer(ModelSerializer):
         return instance.OBJECT_TYPE
 
     def format_vehicle_classification(self, instance: RelevantData):
-        return self.__type_code(instance, 'object_class')
+        return self.__type_code(instance, 'vehicle_classification')
 
-    @staticmethod
-    def format_object_class(instance: RelevantData):
-        return 'Object class'
+    def format_object_class(self, instance: RelevantData):
+        return self.__type_code(instance, 'object_class')
 
     def format_ambient_weather(self, instance: RelevantData):
         return self.__type_code(instance, 'ambient_weather_condition')
@@ -504,3 +503,9 @@ class RelevantDataSetGPSSerializer(ModelSerializer):
     class Meta:
         model = RelevantData
         fields = ('lat', 'long')
+
+
+class TypeCodeSerializer(ModelSerializer):
+    class Meta:
+        model = TypeCode
+        fields = ('value', 'short_description')

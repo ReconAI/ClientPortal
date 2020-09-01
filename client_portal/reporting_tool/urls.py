@@ -30,7 +30,7 @@ from .views.new_features import NewFeatureView
 from .views.orders import OrdersListView, OrderItemView
 from .views.payment_methods import CardListView, DefaultPaymentMethodView
 from .views.relevant_data import RelevantDataView, RelevantDataSetGPSView, \
-    RelevantDataSensorView
+    RelevantDataSensorView, RelevantDataVehicles, RelevantDataEventsVehicles
 from .views.user_management import UserList, UserItem, InvitationView
 
 urlpatterns = [
@@ -60,6 +60,8 @@ urlpatterns = [
     path('relevant-data', RelevantDataView.as_view(), name='relevant_data.list'),
     path('sensors/<int:pk>/relevant-data', RelevantDataSensorView.as_view(), name='relevant_data.item'),
     path('relevant-data/<int:pk>/gps', RelevantDataSetGPSView.as_view(), name='relevant_data.set_gps'),
+    path('relevant-data/vehicle-types', RelevantDataVehicles.as_view(), name='relevant_data.vehicle-types'),
+    path('relevant-data/event-objects', RelevantDataEventsVehicles.as_view(), name='relevant_data.event-objects'),
 
     path('admin/', admin.site.urls)
 ]
