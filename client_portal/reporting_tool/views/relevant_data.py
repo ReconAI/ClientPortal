@@ -2,19 +2,22 @@ from django.db.models import QuerySet
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django_filters import rest_framework as filters
+from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from recon_db_manager.models import RelevantData, TypeCode
-from reporting_tool.filters import RelevantDataFilter, RelevantDataSensorFilter
+from reporting_tool.filters import RelevantDataFilter, \
+    RelevantDataSensorFilter, ProjectFilter
 from reporting_tool.serializers import RelevantDataSerializer, \
     RelevantDataSetGPSSerializer, TypeCodeSerializer
 from shared.permissions import IsActive, PaymentRequired
 from shared.swagger.headers import token_header
 from shared.swagger.responses import \
     default_get_responses_with_custom_success, data_serializer, \
-    DEFAULT_UNSAFE_REQUEST_RESPONSES
+    DEFAULT_UNSAFE_REQUEST_RESPONSES, data_serializer_many
 from shared.views.utils import UpdateAPIView, PlainListModelMixin
 
 
@@ -95,13 +98,18 @@ class RelevantDataSetGPSView(RelevantDataHandler, UpdateAPIView):
     update_success_message = _('GPS is updated successfully')
 
 
-class RelevantDataTypeCodeList(PlainListModelMixin, ListAPIView):
+class RelevantDataTypeCodeList:
     TYPE_CODES = []
     EXISTENT_VALUES_COLUMN = ''
     
     serializer_class = TypeCodeSerializer
 
     permission_classes = (IsAuthenticated, IsActive, PaymentRequired)
+
+    def get_queryset(self) -> QuerySet:
+        return TypeCode.objects.filter(
+            type_name__in=self.TYPE_CODES
+        ).order_by('short_description')
 
     def filter_queryset(self, queryset: QuerySet) -> QuerySet:
         relevant_data_sq = RelevantData.objects.filter(
@@ -113,25 +121,93 @@ class RelevantDataTypeCodeList(PlainListModelMixin, ListAPIView):
         return queryset.filter(value__in=relevant_data_sq)
     
 
-class RelevantDataVehicles(RelevantDataTypeCodeList):
+@method_decorator(name='get', decorator=swagger_auto_schema(
+    responses=default_get_responses_with_custom_success(
+        data_serializer_many(TypeCodeSerializer)
+    ),
+    tags=['Relevant data'],
+    operation_summary='Vehicles list',
+    operation_description='Available vehicles list',
+    manual_parameters=[
+        token_header(),
+    ]
+))
+class RelevantDataVehiclesView(RelevantDataTypeCodeList, PlainListModelMixin,
+                               ListAPIView):
     TYPE_CODES = [TypeCode.OBJECT_TYPE]
     
     EXISTENT_VALUES_COLUMN = 'vehicle_classification'
 
-    queryset = TypeCode.objects.filter(
-        type_name__in=TYPE_CODES
-    ).order_by('short_description')
 
-
-class RelevantDataEventsVehicles(RelevantDataTypeCodeList):
+@method_decorator(name='get', decorator=swagger_auto_schema(
+    responses=default_get_responses_with_custom_success(
+        data_serializer_many(TypeCodeSerializer)
+    ),
+    tags=['Relevant data'],
+    operation_summary='Event vehicles list',
+    operation_description='Available events and vehicles list',
+    manual_parameters=[
+        token_header(),
+    ]
+))
+class RelevantDataEventsVehiclesView(RelevantDataTypeCodeList, PlainListModelMixin,
+                                     ListAPIView):
     TYPE_CODES = [TypeCode.OBJECT_TYPE, TypeCode.ROAD_EVENT_TYPE]
 
     EXISTENT_VALUES_COLUMN = 'object_class'
 
-    queryset = TypeCode.objects.filter(
-        type_name__in=TYPE_CODES
-    ).order_by('short_description')
+
+@method_decorator(name='get', decorator=swagger_auto_schema(
+    responses=default_get_responses_with_custom_success(
+        data_serializer_many(TypeCodeSerializer)
+    ),
+    tags=['Relevant data'],
+    operation_summary='Road conditions list',
+    operation_description='Available road conditions list',
+    manual_parameters=[
+        token_header(),
+    ]
+))
+class RelevantDataRoadConditionsView(RelevantDataTypeCodeList,
+                                     PlainListModelMixin, ListAPIView):
+    TYPE_CODES = [TypeCode.ROAD_CONDITIONS_TYPE]
+
+    EXISTENT_VALUES_COLUMN = 'road_weather_condition'
 
 
+@method_decorator(name='get', decorator=swagger_auto_schema(
+    responses=default_get_responses_with_custom_success(
+        openapi.Schema(
+            type=openapi.TYPE_ARRAY,
+            items=openapi.Schema(type=openapi.TYPE_STRING)
+        )
+    ),
+    tags=['Relevant data'],
+    operation_summary='Project names list',
+    operation_description='Returns project names list filtered by prefix',
+    manual_parameters=[
+        token_header(),
+    ]
+))
+class RelevantDataProjectsView(PlainListModelMixin, ListAPIView):
+    permission_classes = (IsAuthenticated, IsActive, PaymentRequired)
+
+    queryset = RelevantData.objects.distinct().all()
+
+    filter_backends = (filters.DjangoFilterBackend,)
+
+    filterset_class = ProjectFilter
     
+    def filter_queryset(self, queryset: queryset) -> QuerySet:
+        qs = queryset.filter(
+            project__organization_id=self.request.user.organization.id
+        )
 
+        return super().filter_queryset(qs)
+
+    def list(self, *args, **kwargs) -> Response:
+        queryset = self.filter_queryset(self.get_queryset())
+
+        return Response({
+            'data': queryset.values_list('project__name', flat=True)[:5]
+        })

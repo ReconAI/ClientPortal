@@ -10,7 +10,7 @@ from django_filters import rest_framework as filters
 from django_filters.constants import EMPTY_VALUES
 from rest_framework.exceptions import ValidationError
 
-from recon_db_manager.models import RelevantData
+from recon_db_manager.models import RelevantData, Project
 
 
 class FilterMixin:
@@ -202,13 +202,16 @@ class RelevantDataSensorFilter(FilterSet):
     event_object = CharFilter(
         field_name='object_class', lookup_expr='exact'
     )
+    road_weather_condition = CharFilter(
+        field_name='road_weather_condition', lookup_expr='exact'
+    )
 
     class Meta:
         model = RelevantData
         fields = (
             'project_name', 'timestamp', 'orient_theta', 'orient_phi',
             'is_tagged', 'vehicle_type', 'event_object',
-            'road_temperature', 'ambient_temperature'
+            'road_temperature', 'ambient_temperature', 'road_weather_condition'
         )
         form = RelevantDataFiltersForm
 
@@ -224,3 +227,10 @@ class RelevantDataFilter(RelevantDataSensorFilter):
         )
         form = RelevantDataFiltersForm
 
+
+class ProjectFilter(filters.FilterSet):
+    name = filters.CharFilter(field_name='project__name', lookup_expr='startswith')
+
+    class Meta:
+        model = RelevantData
+        fields = ('name', )
