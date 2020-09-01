@@ -1307,6 +1307,18 @@ class TypeCode(models.Model):
         """
         db_table = 'TypeCode'
 
+    ROAD_EVENT_TYPE = 'EnumRoadEvents'
+    OBJECT_TYPE = 'EnumDObjectTypes'
+    ROAD_CONDITIONS_TYPE = 'EnumRoadConditions'
+    WEATHER_CONDITIONS_TYPE = 'EnumWeatherConditions'
+    VERIFICATION_RESULTS_TYPE = 'EnumVerificationResults'
+    FILE_TYPE = 'EnumFileTypes'
+    USER_LEVEL_TYPE = 'EnumUserLevels'
+    LICENSE_TYPE = 'EnumLicenseTypes'
+    ALGORITHM_CLASS_TYPE = 'EnumAlgorithmClasses'
+    ALGORITHM_STATUS_TYPE = 'EnumAlgorithmStatuses'
+    DEVICE_TYPE = 'EnumDeviceTypes'
+
 
 class FileStorage(models.Model):
     """

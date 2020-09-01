@@ -196,13 +196,19 @@ class RelevantDataSensorFilter(FilterSet):
         field_name="ambient_temperature", lookup_expr='range'
     )
     is_tagged = BooleanFilter(field_name='is_tagged_data', lookup_expr='exact')
-
+    vehicle_type = CharFilter(
+        field_name='vehicle_classification', lookup_expr='exact'
+    )
+    event_object = CharFilter(
+        field_name='object_class', lookup_expr='exact'
+    )
 
     class Meta:
         model = RelevantData
         fields = (
             'project_name', 'timestamp', 'orient_theta', 'orient_phi',
-            'is_tagged', 'road_temperature', 'ambient_temperature'
+            'is_tagged', 'vehicle_type', 'event_object',
+            'road_temperature', 'ambient_temperature'
         )
         form = RelevantDataFiltersForm
 
