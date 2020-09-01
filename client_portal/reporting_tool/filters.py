@@ -10,7 +10,7 @@ from django_filters import rest_framework as filters
 from django_filters.constants import EMPTY_VALUES
 from rest_framework.exceptions import ValidationError
 
-from recon_db_manager.models import RelevantData
+from recon_db_manager.models import RelevantData, Project
 
 
 class FilterMixin:
@@ -224,3 +224,10 @@ class RelevantDataFilter(RelevantDataSensorFilter):
         )
         form = RelevantDataFiltersForm
 
+
+class ProjectFilter(filters.FilterSet):
+    name = filters.CharFilter(field_name='project__name', lookup_expr='startswith')
+
+    class Meta:
+        model = RelevantData
+        fields = ('name', )

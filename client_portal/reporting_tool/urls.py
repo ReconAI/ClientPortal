@@ -30,7 +30,9 @@ from .views.new_features import NewFeatureView
 from .views.orders import OrdersListView, OrderItemView
 from .views.payment_methods import CardListView, DefaultPaymentMethodView
 from .views.relevant_data import RelevantDataView, RelevantDataSetGPSView, \
-    RelevantDataSensorView, RelevantDataVehicles, RelevantDataEventsVehicles
+    RelevantDataSensorView, RelevantDataVehiclesView, \
+    RelevantDataEventsVehiclesView, \
+    RelevantDataProjectsView
 from .views.user_management import UserList, UserItem, InvitationView
 
 urlpatterns = [
@@ -58,10 +60,12 @@ urlpatterns = [
     path('new-features', NewFeatureView.as_view(), name='new_feature.request'),
 
     path('relevant-data', RelevantDataView.as_view(), name='relevant_data.list'),
-    path('sensors/<int:pk>/relevant-data', RelevantDataSensorView.as_view(), name='relevant_data.item'),
     path('relevant-data/<int:pk>/gps', RelevantDataSetGPSView.as_view(), name='relevant_data.set_gps'),
-    path('relevant-data/vehicle-types', RelevantDataVehicles.as_view(), name='relevant_data.vehicle-types'),
-    path('relevant-data/event-objects', RelevantDataEventsVehicles.as_view(), name='relevant_data.event-objects'),
+    path('relevant-data/vehicle-types', RelevantDataVehiclesView.as_view(), name='relevant_data.vehicle-types'),
+    path('relevant-data/event-objects', RelevantDataEventsVehiclesView.as_view(), name='relevant_data.event-objects'),
+    path('relevant-data/projects', RelevantDataProjectsView.as_view(), name='relevant_data.projects'),
+
+    path('sensors/<int:pk>/relevant-data', RelevantDataSensorView.as_view(), name='relevant_data.item'),
 
     path('admin/', admin.site.urls)
 ]

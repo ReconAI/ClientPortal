@@ -8,6 +8,7 @@ from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.utils.translation import gettext_lazy as _
 from rest_framework import exceptions
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import set_rollback
 from stripe.error import InvalidRequestError, CardError
@@ -38,13 +39,13 @@ def exception_handler(exc, *args, **kwargs) -> Optional[Response]:
             headers['Retry-After'] = '%d' % exc.wait
 
         if isinstance(exc.detail, (list, dict)):
-            data = exc.detail
+            detail = exc.detail
         else:
-            data = {
-                'errors': _(exc.detail)
-            }
+            detail = _(exc.detail)
 
         set_rollback()
-        return Response(data, status=exc.status_code, headers=headers)
+        return Response({
+            'errors': detail
+        }, status=exc.status_code, headers=headers)
 
     return None
