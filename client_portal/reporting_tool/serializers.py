@@ -441,7 +441,7 @@ class RelevantDataSerializer(ModelSerializer):
         if attr:
             return getattr(attr, attr_name)
 
-        return '-'
+        return None
 
     def __type_code(self, instance: RelevantData, related: str):
         return self.__related_model_attr(instance, related,
