@@ -32,7 +32,7 @@ from .views.payment_methods import CardListView, DefaultPaymentMethodView
 from .views.relevant_data import RelevantDataView, RelevantDataSetGPSView, \
     RelevantDataSensorView, RelevantDataVehiclesView, \
     RelevantDataEventsVehiclesView, \
-    RelevantDataProjectsView
+    RelevantDataProjectsView, RelevantDataRoadConditionsView
 from .views.user_management import UserList, UserItem, InvitationView
 
 urlpatterns = [
@@ -63,6 +63,7 @@ urlpatterns = [
     path('relevant-data/<int:pk>/gps', RelevantDataSetGPSView.as_view(), name='relevant_data.set_gps'),
     path('relevant-data/vehicle-types', RelevantDataVehiclesView.as_view(), name='relevant_data.vehicle-types'),
     path('relevant-data/event-objects', RelevantDataEventsVehiclesView.as_view(), name='relevant_data.event-objects'),
+    path('relevant-data/road-weather-conditions', RelevantDataRoadConditionsView.as_view(), name='relevant_data.roadn-weather-conditions'),
     path('relevant-data/projects', RelevantDataProjectsView.as_view(), name='relevant_data.projects'),
 
     path('sensors/<int:pk>/relevant-data', RelevantDataSensorView.as_view(), name='relevant_data.item'),

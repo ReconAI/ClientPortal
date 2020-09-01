@@ -162,6 +162,28 @@ class RelevantDataEventsVehiclesView(RelevantDataTypeCodeList, PlainListModelMix
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
     responses=default_get_responses_with_custom_success(
+        data_serializer_many(TypeCodeSerializer)
+    ),
+    tags=['Relevant data'],
+    operation_summary='Event vehicles list',
+    operation_description='Available events and vehicles list',
+    manual_parameters=[
+        token_header(),
+    ]
+))
+class RelevantDataRoadConditionsView(RelevantDataTypeCodeList,
+                                     PlainListModelMixin, ListAPIView):
+    TYPE_CODES = [TypeCode.ROAD_CONDITIONS_TYPE]
+
+    EXISTENT_VALUES_COLUMN = 'road_weather_condition'
+
+    queryset = TypeCode.objects.filter(
+        type_name__in=TYPE_CODES
+    ).order_by('short_description')
+
+
+@method_decorator(name='get', decorator=swagger_auto_schema(
+    responses=default_get_responses_with_custom_success(
         openapi.Schema(
             type=openapi.TYPE_ARRAY,
             items=openapi.Schema(type=openapi.TYPE_STRING)

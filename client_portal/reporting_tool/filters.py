@@ -202,13 +202,16 @@ class RelevantDataSensorFilter(FilterSet):
     event_object = CharFilter(
         field_name='object_class', lookup_expr='exact'
     )
+    road_weather_condition = CharFilter(
+        field_name='road_weather_condition', lookup_expr='exact'
+    )
 
     class Meta:
         model = RelevantData
         fields = (
             'project_name', 'timestamp', 'orient_theta', 'orient_phi',
             'is_tagged', 'vehicle_type', 'event_object',
-            'road_temperature', 'ambient_temperature'
+            'road_temperature', 'ambient_temperature', 'road_weather_condition'
         )
         form = RelevantDataFiltersForm
 
