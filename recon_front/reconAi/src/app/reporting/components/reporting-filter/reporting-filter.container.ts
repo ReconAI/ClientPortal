@@ -1,3 +1,4 @@
+import { selectRoadWeatherConditionList } from './../../../store/reporting/reporting.selectors';
 import { loadReportingDeviceListRequestedAction } from 'app/store/reporting';
 import {
   setApplyFiltersStatusAction,
@@ -5,18 +6,20 @@ import {
   projectNameListRequestedAction,
   projectNameListSucceededAction,
   vehicleTypeListRequestedAction,
+  roadWeatherConditionListRequestedAction,
 } from './../../../store/reporting/reporting.actions';
 import { FiltersService } from './../../../core/services/filters/filters.service';
 import { FilterItemInterface } from 'app/reporting/constants/types/filters';
 import { Observable, Subscription, of } from 'rxjs';
 import { Store, select } from '@ngrx/store';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { AppState } from 'app/store/reducers';
 import { selectCurrentUserProfileId } from 'app/store/user/user.selectors';
 import { ReconSelectOption } from 'app/shared/types';
 import {
   selectEventObjectList,
   selectProjectNameList,
+  selectVehicleTypeList,
 } from 'app/store/reporting/reporting.selectors';
 import { AutocompleteChangesInterface } from './reporting-filter.component';
 
@@ -30,6 +33,7 @@ export class ReportingFilterContainer implements OnInit, OnDestroy {
     private filtersService: FiltersService
   ) {}
 
+  @Input() isDevice = false;
   userId: number;
 
   currentUserIdSubscription$: Subscription;
@@ -40,6 +44,12 @@ export class ReportingFilterContainer implements OnInit, OnDestroy {
   filters$: Observable<FilterItemInterface[]>;
   eventObjects$: Observable<ReconSelectOption[]> = this.store.pipe(
     select(selectEventObjectList)
+  );
+  vehicleTypes$: Observable<ReconSelectOption[]> = this.store.pipe(
+    select(selectVehicleTypeList)
+  );
+  roadWeatherConditions$: Observable<ReconSelectOption[]> = this.store.pipe(
+    select(selectRoadWeatherConditionList)
   );
   projectNames$: Observable<string[]> = this.store.pipe(
     select(selectProjectNameList)
@@ -61,6 +71,7 @@ export class ReportingFilterContainer implements OnInit, OnDestroy {
 
     this.filters$ = of(this.filtersService.getUserFilters(this.userId));
     this.store.dispatch(eventObjectListRequestedAction());
+    this.store.dispatch(roadWeatherConditionListRequestedAction());
     this.store.dispatch(vehicleTypeListRequestedAction());
   }
 

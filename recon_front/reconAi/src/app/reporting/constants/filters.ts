@@ -1,11 +1,14 @@
 import { FilterTypes } from './../../core/constants/filters';
 import { FilterItemInterface } from './types/filters';
+import moment from 'moment';
+
 export const DEFAULT_FILTER_ARRAY: FilterItemInterface[] = [
   {
     label: 'Or / And',
     id: 'logical_and',
     type: FilterTypes.SLIDER,
     value: true,
+    selected: true,
   },
   {
     label: 'Sensor ID',
@@ -18,8 +21,8 @@ export const DEFAULT_FILTER_ARRAY: FilterItemInterface[] = [
     id: 'timestamp',
     type: FilterTypes.RANGE,
     value: {
-      start: null,
-      end: null,
+      start: moment(),
+      end: moment(),
     },
   },
   {
@@ -87,8 +90,14 @@ export const DEFAULT_FILTER_ARRAY: FilterItemInterface[] = [
     value: '',
   },
   {
+    label: 'Road condition classification',
+    id: 'road_weather_condition',
+    type: FilterTypes.SELECT,
+    value: '',
+  },
+  {
     label: 'Ambient temperature, C',
-    id: 'ambient_weather',
+    id: 'ambient_temperature',
     type: FilterTypes.TWO_INPUTS,
     value: {
       left: '',
@@ -97,7 +106,7 @@ export const DEFAULT_FILTER_ARRAY: FilterItemInterface[] = [
   },
   {
     label: 'Road temperature, C',
-    id: 'road_weather',
+    id: 'road_temperature',
     type: FilterTypes.TWO_INPUTS,
     value: {
       left: '',
@@ -106,7 +115,7 @@ export const DEFAULT_FILTER_ARRAY: FilterItemInterface[] = [
   },
   {
     label: 'Tagged data',
-    id: 'tagged_data',
+    id: 'is_tagged',
     type: FilterTypes.CHECKBOX,
     value: false,
   },

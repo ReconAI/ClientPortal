@@ -32,12 +32,10 @@ export class FilterTwoInputsCheckboxComponent implements OnInit {
   @Output() changeVal = new EventEmitter<FilterTwoInputsCheckboxInterface>();
   @Output() blurVal = new EventEmitter<FilterTwoInputsCheckboxInterface>();
 
-  @Input() leftPlaceholder = '';
-  @Input() middlePlaceholder = '';
-  @Input() rightPlaceholder = '';
+  @Input() leftPlaceholder = 'From';
+  @Input() rightPlaceholder = 'To';
 
   @Input() leftLabel = '';
-  @Input() middleLabel = '';
   @Input() rightLabel = '';
   @Input() checkboxLabel = '';
 

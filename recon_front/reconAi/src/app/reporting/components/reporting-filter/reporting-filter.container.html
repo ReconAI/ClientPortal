@@ -1,7 +1,10 @@
 <recon-reporting-filter
+  [isDevice]="isDevice"
   [initializedFilters]="filters$ | async"
   [eventObjects]="eventObjects$ | async"
   [projectNames]="projectNames$ | async"
+  [vehicleTypes]="vehicleTypes$ | async"
+  [roadWeatherConditions]="roadWeatherConditions$ | async"
   (changeFilters)="changeFilters($event)"
   (applyFilters)="applyFilters()"
   (resetFilters)="resetFilters()"

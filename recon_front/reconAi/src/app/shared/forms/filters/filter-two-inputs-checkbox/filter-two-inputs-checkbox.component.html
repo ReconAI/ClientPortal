@@ -6,6 +6,7 @@
       <recon-filter-input
         [(ngModel)]="left"
         (changeVal)="changeValue()"
+        [placeholder]="leftPlaceholder"
         (blurVal)="blurValue()"
       ></recon-filter-input>
     </div>
@@ -16,6 +17,7 @@
         [(ngModel)]="right"
         (changeVal)="changeValue()"
         (blurVal)="blurValue()"
+        [placeholder]="rightPlaceholder"
       ></recon-filter-input>
     </div>
     <div class="input-container">

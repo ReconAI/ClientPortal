@@ -19,7 +19,10 @@ export class ReportingFilterComponent implements OnInit {
   filtersForm: FormGroup;
   @Input() initializedFilters: FilterItemInterface[] = [];
   @Input() eventObjects: ReconSelectOption[] = [];
+  @Input() vehicleTypes: ReconSelectOption[] = [];
+  @Input() roadWeatherConditions: ReconSelectOption[] = [];
   @Input() projectNames: string[] = [];
+  @Input() isDevice = false;
 
   @Output() changeFilters = new EventEmitter<FilterItemInterface[]>();
   @Output() applyFilters = new EventEmitter();
@@ -33,21 +36,6 @@ export class ReportingFilterComponent implements OnInit {
     JSON.stringify(DEFAULT_FILTER_ARRAY)
   );
   trafficFlowOptions: ReconSelectOption[] = [
-    {
-      label: 'First',
-      value: 1,
-    },
-    {
-      label: 'Second',
-      value: 2,
-    },
-    {
-      label: 'Third',
-      value: 3,
-    },
-  ];
-
-  vehicleOptions: ReconSelectOption[] = [
     {
       label: 'First',
       value: 1,
@@ -114,9 +102,14 @@ export class ReportingFilterComponent implements OnInit {
     return control.value;
   }
 
+  isDisabledSensorId(i: number): boolean {
+    return i === 1 && this.isDevice;
+  }
+
   toggleSelectValueWithIndex(i: number): void {
     const control = this.filtersForm.get(`filters.${i}.selected`);
     control.setValue(!control.value);
+    this.changeValue();
   }
 
   changeValue() {
@@ -126,7 +119,7 @@ export class ReportingFilterComponent implements OnInit {
   clickResetFilters() {
     this.filtersList = JSON.parse(JSON.stringify(DEFAULT_FILTER_ARRAY));
     this.initDefaultFilterArray();
-    this.changeFilters.emit([]);
+    this.changeFilters.emit([DEFAULT_FILTER_ARRAY[0]]);
     this.resetFilters.emit();
   }
 

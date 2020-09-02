@@ -37,7 +37,9 @@
   </ng-template>
 </div>
 <div>
-  <recon-reporting-filter-container></recon-reporting-filter-container>
+  <recon-reporting-filter-container
+    [isDevice]="isDevice"
+  ></recon-reporting-filter-container>
 </div>
 <div *ngIf="columns?.length">
   <recon-crud-table

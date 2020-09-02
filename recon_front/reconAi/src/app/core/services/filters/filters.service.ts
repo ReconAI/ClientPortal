@@ -6,6 +6,7 @@ import {
   RangeValueInterface,
   InputCheckboxInterface,
   TwoInputsCheckboxInterface,
+  TwoInputsInterface,
 } from './../../constants/filters';
 import { LocalStorageService } from './../localStorage/local-storage.service';
 import { Injectable } from '@angular/core';
@@ -81,6 +82,13 @@ export class FiltersService {
     return `${typedValue.left};${typedValue.right}`;
   };
 
+  private transformTwoInputsFilterValue = ({
+    value,
+  }: FilterItemInterface): string => {
+    const typedValue = value as TwoInputsInterface;
+    return `${typedValue.left};${typedValue.right}`;
+  };
+
   private transformFilterField = (filter: FilterItemInterface): string => {
     let value = null;
     let field = filter.id;
@@ -110,6 +118,9 @@ export class FiltersService {
         field =
           ((filter.value as TwoInputsCheckboxInterface).checked ? '-' : '') +
           field;
+        break;
+      case FilterTypes.TWO_INPUTS:
+        value = this.transformTwoInputsFilterValue(filter);
         break;
     }
     return `${field}=${value}`;
