@@ -1,5 +1,13 @@
+import { OptionServerInterface } from './../../reporting/constants/types/filters';
+import { FiltersService } from './../../core/services/filters/filters.service';
 import { loadReportingDeviceListRequestedAction } from 'app/store/reporting';
-import { selectReportingDeviceListMetaCurrentPage } from './reporting.selectors';
+import {
+  selectReportingDeviceListMetaCurrentPage,
+  selectApplyFiltersStatus,
+  selectEventObjectList,
+  selectRoadWeatherConditionList,
+  selectVehicleTypeList,
+} from './reporting.selectors';
 import {
   ReportingActionTypes,
   loadReportingDeviceListSucceededAction,
@@ -9,6 +17,15 @@ import {
   loadReportingDeviceSucceededAction,
   setGpsSucceededAction,
   setGpsErrorAction,
+  eventObjectListSucceededAction,
+  eventObjectListErrorAction,
+  projectNameListSucceededAction,
+  projectNameListErrorAction,
+  roadWeatherConditionListRequestedAction,
+  roadWeatherConditionListSucceededAction,
+  roadWeatherConditionListErrorAction,
+  vehicleTypeListSucceededAction,
+  vehicleTypeListErrorAction,
 } from './reporting.actions';
 import {
   PaginationRequestInterface,
@@ -29,6 +46,7 @@ import {
   catchError,
   finalize,
   withLatestFrom,
+  debounceTime,
 } from 'rxjs/operators';
 import {
   setReportingDeviceListLoadingStatusAction,
@@ -43,9 +61,13 @@ import {
   SetGpsRequestInterface,
   transformSetGpsToServer,
   setGpsErrorFieldRelations,
+  transformEndpointWithApplyStatus,
+  transformOptionsFromServer,
+  AutocompleteNameServerInterface,
 } from './reporting.server.helpers';
 import { updateBreadcrumbByIdAction, setAppTitleAction } from '../app';
 import { generalTransformFormErrorToObject } from 'app/core/helpers/generalFormsErrorsTransformation';
+import { selectCurrentUserProfileId } from '../user/user.selectors';
 
 @Injectable()
 export class ReportingEffects {
@@ -53,7 +75,7 @@ export class ReportingEffects {
     private actions$: Actions,
     private httpClient: HttpClient,
     private store: Store<AppState>,
-    private router: Router
+    private filtersService: FiltersService
   ) {}
 
   loadReportingDeviceList$: Observable<Action> = createEffect(() =>
@@ -68,11 +90,22 @@ export class ReportingEffects {
           })
         );
       }),
-      switchMap(({ page }) =>
+      withLatestFrom(
+        this.store.pipe(select(selectApplyFiltersStatus)),
+        this.store.pipe(select(selectCurrentUserProfileId))
+      ),
+      switchMap(([{ page }, applyFiltersStatus, userId]) =>
         this.httpClient
           .get<
             PaginationResponseServerInterface<ReportingDeviceServerInterface>
-          >(`/api/relevant-data?page=${page}`)
+          >(
+            transformEndpointWithApplyStatus(
+              `/api/relevant-data?page=${page}`,
+              applyFiltersStatus,
+              +userId,
+              this.filtersService
+            )
+          )
           .pipe(
             map((devices) =>
               loadReportingDeviceListSucceededAction(
@@ -195,6 +228,110 @@ export class ReportingEffects {
             })
           )
       )
+    )
+  );
+
+  loadEventObjectList$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action>(ReportingActionTypes.EVENT_OBJECT_LIST_REQUESTED),
+      withLatestFrom(this.store.pipe(select(selectEventObjectList))),
+      switchMap(([_, eventObjects]) => {
+        // cache data
+        if (eventObjects && eventObjects.length) {
+          return of(eventObjectListSucceededAction({ options: eventObjects }));
+        }
+
+        return this.httpClient
+          .get<OptionServerInterface[]>(`/api/relevant-data/event-objects`)
+          .pipe(
+            map((response) =>
+              eventObjectListSucceededAction(
+                transformOptionsFromServer(response)
+              )
+            ),
+            catchError((error) => of(eventObjectListErrorAction()))
+          );
+      })
+    )
+  );
+
+  loadProjectNameList$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action & AutocompleteNameServerInterface>(
+        ReportingActionTypes.PROJECT_NAME_LIST_REQUESTED
+      ),
+      debounceTime(150),
+      switchMap(({ name }) => {
+        return this.httpClient
+          .get<string[]>(`/api/relevant-data/projects?name=${name}`)
+          .pipe(
+            map((response) =>
+              projectNameListSucceededAction({
+                names: response,
+              })
+            ),
+            catchError((error) => of(projectNameListErrorAction()))
+          );
+      })
+    )
+  );
+
+  roadWeatherConditionList$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action>(
+        ReportingActionTypes.ROAD_WEATHER_CONDITION_LIST_REQUESTED
+      ),
+      withLatestFrom(this.store.pipe(select(selectRoadWeatherConditionList))),
+      switchMap(([_, roadWeatherConditions]) => {
+        // cache data
+        if (roadWeatherConditions && roadWeatherConditions.length) {
+          return of(
+            roadWeatherConditionListSucceededAction({
+              options: roadWeatherConditions,
+            })
+          );
+        }
+
+        return this.httpClient
+          .get<OptionServerInterface[]>(
+            `/api/relevant-data/road-weather-conditions`
+          )
+          .pipe(
+            map((response) =>
+              roadWeatherConditionListSucceededAction(
+                transformOptionsFromServer(response)
+              )
+            ),
+            catchError((error) => of(roadWeatherConditionListErrorAction()))
+          );
+      })
+    )
+  );
+
+  vehicleTypeList$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action>(ReportingActionTypes.VEHICLE_TYPE_LIST_REQUESTED),
+      withLatestFrom(this.store.pipe(select(selectVehicleTypeList))),
+      switchMap(([_, vehicleTypes]) => {
+        if (vehicleTypes && vehicleTypes.length) {
+          return of(
+            vehicleTypeListSucceededAction({
+              options: vehicleTypes,
+            })
+          );
+        }
+
+        return this.httpClient
+          .get<OptionServerInterface[]>(`/api/relevant-data/vehicle-types`)
+          .pipe(
+            map((response) =>
+              vehicleTypeListSucceededAction(
+                transformOptionsFromServer(response)
+              )
+            ),
+            catchError((error) => of(vehicleTypeListErrorAction()))
+          );
+      })
     )
   );
 }

@@ -5,6 +5,11 @@ import moment from 'moment';
 import { FilterTypes } from 'app/core/constants/filters';
 import { FilterItemInterface } from 'app/reporting/constants/types/filters';
 import { DEFAULT_FILTER_ARRAY } from 'app/reporting/constants/filters';
+
+export interface AutocompleteChangesInterface {
+  value: string;
+  index: number;
+}
 @Component({
   selector: 'recon-reporting-filter',
   templateUrl: './reporting-filter.component.html',
@@ -13,8 +18,15 @@ import { DEFAULT_FILTER_ARRAY } from 'app/reporting/constants/filters';
 export class ReportingFilterComponent implements OnInit {
   filtersForm: FormGroup;
   @Input() initializedFilters: FilterItemInterface[] = [];
+  @Input() eventObjects: ReconSelectOption[] = [];
+  @Input() projectNames: string[] = [];
+
   @Output() changeFilters = new EventEmitter<FilterItemInterface[]>();
   @Output() applyFilters = new EventEmitter();
+  @Output() resetFilters = new EventEmitter();
+  @Output() changeAutocompleteFields = new EventEmitter<
+    AutocompleteChangesInterface
+  >();
 
   // order is important, it's related to the order of html file
   filtersList: FilterItemInterface[] = JSON.parse(
@@ -97,7 +109,7 @@ export class ReportingFilterComponent implements OnInit {
     });
   }
 
-  isSelectedAtIndex(i: number): void {
+  isSelectedAtIndex(i: number): boolean {
     const control = this.filtersForm.get(`filters.${i}.selected`);
     return control.value;
   }
@@ -111,13 +123,21 @@ export class ReportingFilterComponent implements OnInit {
     this.changeFilters.emit(this.filtersForm.value.filters);
   }
 
-  resetFilters() {
+  clickResetFilters() {
     this.filtersList = JSON.parse(JSON.stringify(DEFAULT_FILTER_ARRAY));
     this.initDefaultFilterArray();
     this.changeFilters.emit([]);
+    this.resetFilters.emit();
   }
 
   clickApply(): void {
     this.applyFilters.emit();
+  }
+
+  changeWithAutocomplete(value: string, index: number): void {
+    this.changeAutocompleteFields.emit({
+      value,
+      index,
+    });
   }
 }

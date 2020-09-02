@@ -27,6 +27,7 @@ export enum FilterTypes {
   SELECT = 'select',
   TWO_INPUTS = 'two inputs',
   CHECKBOX = 'checkbox',
+  TWO_INPUTS_CHECKBOX = 'two inputs checkbox',
 }
 
 export interface RangeValueInterface {
@@ -35,7 +36,7 @@ export interface RangeValueInterface {
 }
 
 export interface InputCheckboxInterface {
-  valueInput: string;
+  inputValue: string;
   checked: boolean;
 }
 
@@ -49,4 +50,10 @@ export interface ThreeInputsInterface {
 export interface TwoInputsInterface {
   left: string;
   right: string;
+}
+
+export interface TwoInputsCheckboxInterface {
+  left: string;
+  right: string;
+  checked: boolean;
 }

@@ -1,5 +1,10 @@
 <recon-reporting-filter
   [initializedFilters]="filters$ | async"
+  [eventObjects]="eventObjects$ | async"
+  [projectNames]="projectNames$ | async"
   (changeFilters)="changeFilters($event)"
+  (applyFilters)="applyFilters()"
+  (resetFilters)="resetFilters()"
+  (changeAutocompleteFields)="changeWithAutocomplete($event)"
 >
 </recon-reporting-filter>

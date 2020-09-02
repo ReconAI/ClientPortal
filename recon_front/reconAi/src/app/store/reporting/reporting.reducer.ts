@@ -1,3 +1,4 @@
+import { ReconSelectOption } from 'app/shared/types';
 import {
   FormServerErrorInterface,
   ObjectFormErrorInterface,
@@ -10,15 +11,22 @@ import {
 import { createReducer, Action, on } from '@ngrx/store';
 import {
   ReportingDeviceClientInterface,
-  SetSelectedReportingDeviceClientInterface,
+  OptionsPayloadInterface,
+  AutocompleteNameClientInterface,
 } from './reporting.server.helpers';
 import {
   loadReportingDeviceListSucceededAction,
   loadReportingDeviceSucceededAction,
-  setUserFiltersAction,
-  SetUserFiltersPayloadInterface,
   setGpsErrorAction,
   resetSetGpsErrorAction,
+  SetApplyFiltersStatusPayloadInterface,
+  setApplyFiltersStatusAction,
+  eventObjectListRequestedAction,
+  eventObjectListSucceededAction,
+  projectNameListSucceededAction,
+  roadWeatherConditionListSucceededAction,
+  vehicleTypeListRequestedAction,
+  vehicleTypeListSucceededAction,
 } from './reporting.actions';
 
 export interface ReportingErrorsInterface {
@@ -37,7 +45,11 @@ export interface ReportingState {
     meta: MetaClientInterface;
   };
   errors: ReportingErrorsInterface;
-  filters: FilterItemInterface[];
+  applyFilters: boolean;
+  eventObjects: ReconSelectOption[];
+  vehicleTypes: ReconSelectOption[];
+  roadWeatherConditions: ReconSelectOption[];
+  projectNames: string[];
 }
 
 export const initialState: ReportingState = {
@@ -48,7 +60,11 @@ export const initialState: ReportingState = {
     meta: null,
   },
   errors: reportingErrorsInitialization,
-  filters: [],
+  applyFilters: false,
+  eventObjects: [],
+  vehicleTypes: [],
+  roadWeatherConditions: [],
+  projectNames: [],
 };
 
 const loadReportingDeviceListSucceededReducer = (
@@ -85,10 +101,7 @@ const setGpsErrorReducer = (
   },
 });
 
-const resetSetGpsErrorReducer = (
-  state: ReportingState,
-  { type, errors }: ObjectFormErrorInterface & Action
-): ReportingState => ({
+const resetSetGpsErrorReducer = (state: ReportingState): ReportingState => ({
   ...state,
   errors: {
     ...state.errors,
@@ -96,10 +109,45 @@ const resetSetGpsErrorReducer = (
   },
 });
 
-const setUserFiltersReducer = (
+const setApplyFiltersStatusReducer = (
   state: ReportingState,
-  { type, filters }: Action & SetUserFiltersPayloadInterface
-): ReportingState => ({ ...state, filters });
+  { type, status }: SetApplyFiltersStatusPayloadInterface & Action
+): ReportingState => ({
+  ...state,
+  applyFilters: status,
+});
+
+const eventObjectListSucceededReducer = (
+  state: ReportingState,
+  { options }: OptionsPayloadInterface
+): ReportingState => ({
+  ...state,
+  eventObjects: options,
+});
+
+const roadWeatherConditionListSucceededReducer = (
+  state: ReportingState,
+  { options }: OptionsPayloadInterface
+): ReportingState => ({
+  ...state,
+  roadWeatherConditions: options,
+});
+
+const vehicleTypeListSucceededReducer = (
+  state: ReportingState,
+  { options }: OptionsPayloadInterface
+): ReportingState => ({
+  ...state,
+  vehicleTypes: options,
+});
+
+const projectNameListSucceededReducer = (
+  state: ReportingState,
+  { names }: AutocompleteNameClientInterface
+): ReportingState => ({
+  ...state,
+  projectNames: names,
+});
 
 const reportingReducer = createReducer(
   initialState,
@@ -108,9 +156,16 @@ const reportingReducer = createReducer(
     loadReportingDeviceListSucceededReducer
   ),
   on(loadReportingDeviceSucceededAction, loadReportingDeviceSucceededReducer),
-  on(setUserFiltersAction, setUserFiltersReducer),
   on(setGpsErrorAction, setGpsErrorReducer),
-  on(resetSetGpsErrorAction, resetSetGpsErrorReducer)
+  on(resetSetGpsErrorAction, resetSetGpsErrorReducer),
+  on(setApplyFiltersStatusAction, setApplyFiltersStatusReducer),
+  on(eventObjectListSucceededAction, eventObjectListSucceededReducer),
+  on(projectNameListSucceededAction, projectNameListSucceededReducer),
+  on(
+    roadWeatherConditionListSucceededAction,
+    roadWeatherConditionListSucceededReducer
+  ),
+  on(vehicleTypeListSucceededAction, vehicleTypeListSucceededReducer)
 );
 
 export function reducer(state: ReportingState | undefined, action: Action) {

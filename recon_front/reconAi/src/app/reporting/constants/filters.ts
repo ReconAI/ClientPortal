@@ -2,14 +2,14 @@ import { FilterTypes } from './../../core/constants/filters';
 import { FilterItemInterface } from './types/filters';
 export const DEFAULT_FILTER_ARRAY: FilterItemInterface[] = [
   {
-    label: 'And / Or',
-    id: 'and_or',
+    label: 'Or / And',
+    id: 'logical_and',
     type: FilterTypes.SLIDER,
-    value: false,
+    value: true,
   },
   {
     label: 'Sensor ID',
-    id: 'id',
+    id: 'sensor_id',
     type: FilterTypes.INPUT,
     value: '',
   },
@@ -24,17 +24,17 @@ export const DEFAULT_FILTER_ARRAY: FilterItemInterface[] = [
   },
   {
     label: 'Project name',
-    id: 'project',
+    id: 'project_name',
     type: FilterTypes.INPUT_CHECKBOX,
     value: {
-      valueInput: '',
+      inputValue: '',
       checked: false,
     },
   },
   {
     label: 'Event/Object',
     id: 'event_object',
-    type: FilterTypes.INPUT,
+    type: FilterTypes.SELECT,
     value: '',
   },
   {
@@ -51,18 +51,20 @@ export const DEFAULT_FILTER_ARRAY: FilterItemInterface[] = [
   {
     label: 'Orient theta',
     id: 'orient_theta',
-    type: FilterTypes.INPUT_CHECKBOX,
+    type: FilterTypes.TWO_INPUTS_CHECKBOX,
     value: {
-      valueInput: '',
+      left: '',
+      right: '',
       checked: false,
     },
   },
   {
     label: 'Orient phi',
     id: 'orient_phi',
-    type: FilterTypes.INPUT_CHECKBOX,
+    type: FilterTypes.TWO_INPUTS_CHECKBOX,
     value: {
-      valueInput: '',
+      left: '',
+      right: '',
       checked: false,
     },
   },

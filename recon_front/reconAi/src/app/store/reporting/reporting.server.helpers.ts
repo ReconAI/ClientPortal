@@ -1,3 +1,6 @@
+import { ReconSelectOption } from 'app/shared/types';
+import { OptionServerInterface } from './../../reporting/constants/types/filters';
+import { FiltersService } from './../../core/services/filters/filters.service';
 import {
   PaginationResponseServerInterface,
   PaginationResponseClientInterface,
@@ -136,3 +139,41 @@ export const setGpsErrorFieldRelations = {
   lat: 'LAT',
   long: 'LNG',
 };
+
+export const transformEndpointWithApplyStatus = (
+  url: string,
+  status: boolean,
+  userId: number,
+  fs: FiltersService
+) => {
+  if (!status) {
+    return url;
+  }
+
+  return `${url}&${fs.transformValuesForUserFromLocalStorage(userId)}`;
+};
+
+export const transformReportingOptionFromServer = (
+  option: OptionServerInterface
+): ReconSelectOption => ({
+  value: option.value,
+  label: option.short_description,
+});
+
+export interface OptionsPayloadInterface {
+  options: ReconSelectOption[];
+}
+
+export const transformOptionsFromServer = (
+  options: OptionServerInterface[]
+): OptionsPayloadInterface => ({
+  options: options.map((option) => transformReportingOptionFromServer(option)),
+});
+
+export interface AutocompleteNameServerInterface {
+  name: string;
+}
+
+export interface AutocompleteNameClientInterface {
+  names: string[];
+}

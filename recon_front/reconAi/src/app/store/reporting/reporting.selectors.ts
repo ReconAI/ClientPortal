@@ -1,3 +1,4 @@
+import { ReconSelectOption } from './../../shared/types/recon-select';
 import { FormServerErrorInterface } from 'app/constants/types/requests';
 import { FilterItemInterface } from 'app/reporting/constants/types/filters';
 import { MetaClientInterface } from './../../constants/types/requests';
@@ -62,13 +63,36 @@ export const selectReportingSelectedDeviceListMetaPageSize = createSelector(
   (meta: MetaClientInterface): number => meta?.pageSize
 );
 
-export const selectUserFilters = createSelector(
-  selectReporting,
-  (reporting: ReportingState): FilterItemInterface[] => reporting?.filters || []
-);
-
 export const selectSetGpsError = createSelector(
   selectReporting,
   (reporting: ReportingState): FormServerErrorInterface | null =>
     reporting?.errors?.setGps
+);
+
+export const selectApplyFiltersStatus = createSelector(
+  selectReporting,
+  (reporting: ReportingState): boolean => !!reporting?.applyFilters
+);
+
+export const selectEventObjectList = createSelector(
+  selectReporting,
+  (reporting: ReportingState): ReconSelectOption[] =>
+    reporting?.eventObjects || []
+);
+
+export const selectRoadWeatherConditionList = createSelector(
+  selectReporting,
+  (reporting: ReportingState): ReconSelectOption[] =>
+    reporting?.roadWeatherConditions || []
+);
+
+export const selectProjectNameList = createSelector(
+  selectReporting,
+  (reporting: ReportingState): string[] => reporting?.projectNames || []
+);
+
+export const selectVehicleTypeList = createSelector(
+  selectReporting,
+  (reporting: ReportingState): ReconSelectOption[] =>
+    reporting?.vehicleTypes || []
 );
