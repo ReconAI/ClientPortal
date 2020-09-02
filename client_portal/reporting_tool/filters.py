@@ -3,14 +3,14 @@ from typing import Any, Dict, Optional, List
 
 from dateutil.parser import parse, ParserError
 from django import forms
+from django.core.exceptions import ValidationError
 from django.db.models import Q, QuerySet
 from django.forms import Form
 from django.utils.translation import gettext_lazy as _
 from django_filters import rest_framework as filters
 from django_filters.constants import EMPTY_VALUES
-from rest_framework.exceptions import ValidationError
 
-from recon_db_manager.models import RelevantData, Project
+from recon_db_manager.models import RelevantData
 
 
 class FilterMixin:
@@ -229,7 +229,8 @@ class RelevantDataFilter(RelevantDataSensorFilter):
 
 
 class ProjectFilter(filters.FilterSet):
-    name = filters.CharFilter(field_name='project__name', lookup_expr='startswith')
+    name = filters.CharFilter(field_name='project__name',
+                              lookup_expr='istartswith')
 
     class Meta:
         model = RelevantData
