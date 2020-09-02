@@ -33,6 +33,7 @@ export interface ReportingDeviceServerInterface {
   ambient_weather: string;
   road_weather: string;
   stopped_vehicles_detection: string;
+  vehicle_classification: string;
   tagged_data: string;
   license_plate_location: string;
   face_location: string;
@@ -84,12 +85,12 @@ export const transformReportingDeviceFromServer = (
   project: device.project,
   ecosystemName: device.ecosystem_name,
   isEvent: device.event_object,
-  objectClass: device.event_object,
+  objectClass: device.object_class,
   plateNumber: device.license_plate_number,
   trafficFlow: device.traffic_flow,
   ambientWeather: device.ambient_weather,
   roadWeather: device.road_weather,
-  vehicle: device.stopped_vehicles_detection,
+  vehicle: device.vehicle_classification,
   taggedData: device.tagged_data,
   plate: device.license_plate_location,
   face: device.face_location,

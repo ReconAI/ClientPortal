@@ -82,10 +82,15 @@
 </ng-template>
 
 <ng-template #cadTagTemplate let-element="element">
+  
   <span
     class="table-link"
     (click)="$event.stopPropagation(); goToUrl(element.fileTag)"
+    *ngIf="element.fileTag; else noFileTag"
   >
     Link to cad file
   </span>
+  <ng-template #noFileTag>
+    No data
+  </ng-template>
 </ng-template>

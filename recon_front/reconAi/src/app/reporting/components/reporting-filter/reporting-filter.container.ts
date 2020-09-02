@@ -1,3 +1,4 @@
+import { ActivatedRoute } from '@angular/router';
 import { selectRoadWeatherConditionList } from './../../../store/reporting/reporting.selectors';
 import { loadReportingDeviceListRequestedAction } from 'app/store/reporting';
 import {
@@ -7,6 +8,7 @@ import {
   projectNameListSucceededAction,
   vehicleTypeListRequestedAction,
   roadWeatherConditionListRequestedAction,
+  loadReportingDeviceRequestedAction,
 } from './../../../store/reporting/reporting.actions';
 import { FiltersService } from './../../../core/services/filters/filters.service';
 import { FilterItemInterface } from 'app/reporting/constants/types/filters';
@@ -30,9 +32,10 @@ import { AutocompleteChangesInterface } from './reporting-filter.component';
 export class ReportingFilterContainer implements OnInit, OnDestroy {
   constructor(
     private store: Store<AppState>,
-    private filtersService: FiltersService
+    private filtersService: FiltersService,
+    private activatedRoute: ActivatedRoute
   ) {}
-
+  deviceId: number;
   @Input() isDevice = false;
   userId: number;
 
@@ -68,11 +71,26 @@ export class ReportingFilterContainer implements OnInit, OnDestroy {
         this.userId = +userId;
       }
     );
+    this.deviceId = +this.activatedRoute.snapshot.paramMap.get('id');
+
+    if (this.isDevice) {
+      this.filtersService.removeOneFilterForUser(this.userId, 'sensor_id');
+    }
 
     this.filters$ = of(this.filtersService.getUserFilters(this.userId));
     this.store.dispatch(eventObjectListRequestedAction());
     this.store.dispatch(roadWeatherConditionListRequestedAction());
     this.store.dispatch(vehicleTypeListRequestedAction());
+  }
+
+  loadData(): void {
+    if (this.isDevice) {
+      this.store.dispatch(
+        loadReportingDeviceRequestedAction({ page: 1, id: this.deviceId })
+      );
+    } else {
+      this.store.dispatch(loadReportingDeviceListRequestedAction({ page: 1 }));
+    }
   }
 
   applyFilters(): void {
@@ -81,7 +99,7 @@ export class ReportingFilterContainer implements OnInit, OnDestroy {
         status: true,
       })
     );
-    this.store.dispatch(loadReportingDeviceListRequestedAction({ page: 1 }));
+    this.loadData();
   }
 
   resetFilters(): void {
@@ -90,7 +108,8 @@ export class ReportingFilterContainer implements OnInit, OnDestroy {
         status: false,
       })
     );
-    this.store.dispatch(loadReportingDeviceListRequestedAction({ page: 1 }));
+
+    this.loadData();
     this.store.dispatch(projectNameListSucceededAction({ names: [] }));
   }
 

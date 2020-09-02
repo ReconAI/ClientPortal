@@ -260,21 +260,27 @@
       <mat-menu #menu="matMenu" xPosition="before" class="recon-menu">
         <ng-container formArrayName="filters">
           <ng-container *ngFor="let filter of filtersList; let i = index">
-            <div
-              class="filter-item"
-              [ngClass]="{disabled: isDisabledSensorId(i)}"
-              matRipple
-              (click)="$event.stopPropagation(); !isDisabledSensorId(i) && toggleSelectValueWithIndex(i)"
-              [formGroupName]="i"
-            >
-              <recon-form-checkbox
-                formControlName="selected"
-                [disabled]="isDisabledSensorId(i)"
-                (click)="$event.stopPropagation()"
-              ></recon-form-checkbox>
-              {{ filter.label }}
-            </div>
-            <mat-divider *ngIf="i !== filtersList.length - 1"></mat-divider>
+            <!-- we don't show Or/And, because we always show it -->
+            <ng-container *ngIf="i">
+              <div
+                class="filter-item"
+                [ngClass]="{ disabled: isDisabledSensorId(i) }"
+                matRipple
+                (click)="
+                  $event.stopPropagation();
+                  !isDisabledSensorId(i) && toggleSelectValueWithIndex(i)
+                "
+                [formGroupName]="i"
+              >
+                <recon-form-checkbox
+                  formControlName="selected"
+                  [disabled]="isDisabledSensorId(i)"
+                  (click)="$event.stopPropagation()"
+                ></recon-form-checkbox>
+                {{ filter.label }}
+              </div>
+              <mat-divider *ngIf="i !== filtersList.length - 1"></mat-divider>
+            </ng-container>
           </ng-container>
         </ng-container>
       </mat-menu>

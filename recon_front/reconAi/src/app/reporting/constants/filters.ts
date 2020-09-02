@@ -79,7 +79,7 @@ export const DEFAULT_FILTER_ARRAY: FilterItemInterface[] = [
   },
   {
     label: 'Vehicle classification',
-    id: 'stopped_vehicles_detection',
+    id: 'vehicle_type',
     type: FilterTypes.SELECT,
     value: '',
   },

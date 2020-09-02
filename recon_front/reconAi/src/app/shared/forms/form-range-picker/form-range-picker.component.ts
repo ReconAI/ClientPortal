@@ -49,11 +49,14 @@ export class FormRangePickerComponent implements OnInit {
     this.disabled = isDisabled;
   }
 
-  // type
   writeValue(value) {
     this.start = value.start || null;
     this.end = value.end || null;
 
+    this.startTimeHours = this.getTimeHoursPresentation(this.start);
+    this.startTimeMinutes = this.getTimeMinutesPresentation(this.start);
+    this.endTimeHours = this.getTimeHoursPresentation(this.end);
+    this.endTimeMinutes = this.getTimeMinutesPresentation(this.end);
     // this.onChange(value);
     // this.changeVal.emit(value);
   }
@@ -66,7 +69,28 @@ export class FormRangePickerComponent implements OnInit {
     if (type === 'end') {
       this.end = value;
     }
-    if (this.start && this.end) {
+
+    this.onChange({
+      start: moment(this.start),
+      end: moment(this.end),
+    });
+    this.changeVal.emit({
+      start: moment(this.start),
+      end: moment(this.end),
+    });
+    this.startTimeHours = this.getTimeHoursPresentation(this.start);
+    this.startTimeMinutes = this.getTimeMinutesPresentation(this.start);
+    this.endTimeHours = this.getTimeHoursPresentation(this.end);
+    this.endTimeMinutes = this.getTimeMinutesPresentation(this.end);
+    // }
+  }
+
+  closedStream(): void {
+    if (!this.end) {
+      this.end = new Date();
+      this.endTimeHours = this.getTimeHoursPresentation(this.end);
+      this.endTimeMinutes = this.getTimeMinutesPresentation(this.end);
+
       this.onChange({
         start: moment(this.start),
         end: moment(this.end),
@@ -75,10 +99,6 @@ export class FormRangePickerComponent implements OnInit {
         start: moment(this.start),
         end: moment(this.end),
       });
-      this.startTimeHours = this.getTimeHoursPresentation(this.start);
-      this.startTimeMinutes = this.getTimeMinutesPresentation(this.start);
-      this.endTimeHours = this.getTimeHoursPresentation(this.end);
-      this.endTimeMinutes = this.getTimeMinutesPresentation(this.end);
     }
   }
 

@@ -137,11 +137,22 @@ export class ReportingEffects {
           })
         );
       }),
-      switchMap(({ id, page }) =>
+      withLatestFrom(
+        this.store.pipe(select(selectApplyFiltersStatus)),
+        this.store.pipe(select(selectCurrentUserProfileId))
+      ),
+      switchMap(([{ id, page }, applyFiltersStatus, userId]) =>
         this.httpClient
           .get<
             PaginationResponseServerInterface<ReportingDeviceServerInterface>
-          >(`/api/sensors/${id}/relevant-data?page=${page}`)
+          >(
+            transformEndpointWithApplyStatus(
+              `/api/sensors/${id}/relevant-data?page=${page}`,
+              applyFiltersStatus,
+              +userId,
+              this.filtersService
+            )
+          )
           .pipe(
             map((devices) =>
               loadReportingDeviceSucceededAction(

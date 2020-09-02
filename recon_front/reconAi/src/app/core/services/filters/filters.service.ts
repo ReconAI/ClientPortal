@@ -2,7 +2,6 @@ import { Store } from '@ngrx/store';
 import {
   SetFiltersValueInterface,
   FilterTypes,
-  FilterWithValueInterface,
   RangeValueInterface,
   InputCheckboxInterface,
   TwoInputsCheckboxInterface,
@@ -48,6 +47,14 @@ export class FiltersService {
     });
   }
 
+  public removeOneFilterForUser(userId: number, filterId: string): void {
+    const oldFilters = this.localStorageService.getFiltersValue();
+    this.localStorageService.setFiltersValue({
+      ...(oldFilters || {}),
+      [userId]: (oldFilters[userId] || []).filter(({ id }) => id !== filterId),
+    });
+  }
+
   private transformSimpleFilterValue = ({
     value,
   }: FilterItemInterface): string => {
@@ -86,7 +93,7 @@ export class FiltersService {
     value,
   }: FilterItemInterface): string => {
     const typedValue = value as TwoInputsInterface;
-    return `${typedValue.left};${typedValue.right}`;
+    return `${typedValue.left}|${typedValue.right}`;
   };
 
   private transformFilterField = (filter: FilterItemInterface): string => {
