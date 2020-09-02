@@ -66,7 +66,7 @@ export class FiltersService {
       formatDate
     );
     const end = moment((value as RangeValueInterface).end).format(formatDate);
-    return `${start};${end}`;
+    return `${start}|${end}`;
   };
 
   private transformInputCheckboxFilterValue = ({
@@ -79,7 +79,7 @@ export class FiltersService {
     value,
   }: FilterItemInterface): string => {
     const typedValue = value as TwoInputsCheckboxInterface;
-    return `${typedValue.left};${typedValue.right}`;
+    return `${typedValue.left}|${typedValue.right}`;
   };
 
   private transformTwoInputsFilterValue = ({

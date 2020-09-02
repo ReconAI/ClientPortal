@@ -37,7 +37,7 @@ class BooleanFilter(FilterMixin, filters.BooleanFilter):
 
 class RangeField(forms.CharField):
     CHUNKS_NUMBER = 2
-    SEPARATOR = ';'
+    SEPARATOR = '|'
     
     default_error_messages = {
         'format_error': _('Value should consist of '
@@ -52,7 +52,7 @@ class RangeField(forms.CharField):
         result = [
             self._prepare(item)
             for item
-            in value.split(';')
+            in value.split(self.SEPARATOR)
         ]
 
         if result and len(result) != self.CHUNKS_NUMBER:
