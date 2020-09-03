@@ -26,6 +26,7 @@ export class FilterInputComponent implements OnInit, ControlValueAccessor {
   @Input() placeholder = '';
   @Input() disabled = false;
   @Input() isWithSearchIcon = false;
+  @Input() autocompleteOptions: string[] = [];
   @Output() changeVal = new EventEmitter<string>();
   @Output() blurVal = new EventEmitter<string>();
 
@@ -57,7 +58,6 @@ export class FilterInputComponent implements OnInit, ControlValueAccessor {
     this.onTouched();
     this.blurVal.emit(this.value);
   }
-
 
   setDisabledState?(isDisabled: boolean): void {
     this.disabled = isDisabled;

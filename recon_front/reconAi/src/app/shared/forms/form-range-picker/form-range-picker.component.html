@@ -44,7 +44,7 @@
         <img src="assets/icons/calendar.svg" height="18" width="18" />
       </div>
     </div>
-    <mat-date-range-picker #picker></mat-date-range-picker>
+    <mat-date-range-picker #picker (closed)="closedStream()"></mat-date-range-picker>
 
     <!-- part for trick with display: none -->
     <mat-form-field>

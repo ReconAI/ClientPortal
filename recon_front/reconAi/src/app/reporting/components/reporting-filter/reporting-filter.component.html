@@ -7,7 +7,7 @@
     >
       <recon-form-slider
         formControlName="value"
-        label="And / Or"
+        label="Or / And"
         *ngIf="isSelectedAtIndex(0)"
         (changeVal)="changeValue()"
       ></recon-form-slider>
@@ -46,23 +46,28 @@
         label="Project name"
         checkboxLabel="Not equal"
         placeholder="Search..."
+        [autocompleteOptions]="projectNames"
         formControlName="value"
         *ngIf="isSelectedAtIndex(3)"
         (blurVal)="changeValue()"
+        (changeVal)="changeWithAutocomplete($event.inputValue, 3)"
       ></recon-filter-input-checkbox>
     </div>
     <div
-      class="filter input-filter"
-      [ngClass]="{ 'shown-filter': isSelectedAtIndex(4) }"
+      class="filter"
+      [ngClass]="{
+        'shown-filter':
+          isSelectedAtIndex(4) && eventObjects && eventObjects.length
+      }"
+      *ngIf="isSelectedAtIndex(4) && eventObjects && eventObjects.length"
       [formGroupName]="4"
     >
-      <recon-filter-input
+      <recon-filter-select
         formControlName="value"
         label="Event/Object"
-        placeholder="Search..."
-        *ngIf="isSelectedAtIndex(4)"
-        (blurVal)="changeValue()"
-      ></recon-filter-input>
+        [options]="eventObjects"
+        (changeVal)="changeValue()"
+      ></recon-filter-select>
     </div>
     <div
       class="filter"
@@ -81,32 +86,32 @@
       ></recon-filter-three-inputs>
     </div>
     <div
-      class="filter input-checkbox-filter"
+      class="filter"
       [ngClass]="{ 'shown-filter': isSelectedAtIndex(6) }"
       [formGroupName]="6"
     >
-      <recon-filter-input-checkbox
+      <recon-filter-two-inputs-checkbox
         label="Orient theta"
         checkboxLabel="Invert"
         placeholder="Search..."
         formControlName="value"
         *ngIf="isSelectedAtIndex(6)"
         (blurVal)="changeValue()"
-      ></recon-filter-input-checkbox>
+      ></recon-filter-two-inputs-checkbox>
     </div>
     <div
-      class="filter input-checkbox-filter"
+      class="filter"
       [ngClass]="{ 'shown-filter': isSelectedAtIndex(7) }"
       [formGroupName]="7"
     >
-      <recon-filter-input-checkbox
+      <recon-filter-two-inputs-checkbox
         label="Orient phi"
         checkboxLabel="Invert"
         placeholder="Search..."
         formControlName="value"
         *ngIf="isSelectedAtIndex(7)"
         (blurVal)="changeValue()"
-      ></recon-filter-input-checkbox>
+      ></recon-filter-two-inputs-checkbox>
     </div>
     <div
       class="filter"
@@ -123,14 +128,17 @@
     </div>
     <div
       class="filter"
-      [ngClass]="{ 'shown-filter': isSelectedAtIndex(9) }"
+      [ngClass]="{
+        'shown-filter':
+          isSelectedAtIndex(9) && vehicleTypes && vehicleTypes.length
+      }"
+      *ngIf="isSelectedAtIndex(9) && vehicleTypes && vehicleTypes.length"
       [formGroupName]="9"
     >
       <recon-filter-select
         label="Vehicle classification"
         formControlName="value"
-        [options]="vehicleOptions"
-        *ngIf="isSelectedAtIndex(9)"
+        [options]="vehicleTypes"
         (changeVal)="changeValue()"
       ></recon-filter-select>
     </div>
@@ -149,17 +157,25 @@
     </div>
     <div
       class="filter"
-      [ngClass]="{ 'shown-filter': isSelectedAtIndex(11) }"
+      [ngClass]="{
+        'shown-filter':
+          isSelectedAtIndex(11) &&
+          roadWeatherConditions &&
+          roadWeatherConditions.length
+      }"
+      *ngIf="
+        isSelectedAtIndex(11) &&
+        roadWeatherConditions &&
+        roadWeatherConditions.length
+      "
       [formGroupName]="11"
     >
-      <recon-filter-two-inputs
-        label="Ambient temperature, C"
+      <recon-filter-select
+        label="Road condition classification"
         formControlName="value"
-        leftPlaceholder="From"
-        rightPlaceholder="To"
-        *ngIf="isSelectedAtIndex(11)"
-        (blurVal)="changeValue()"
-      ></recon-filter-two-inputs>
+        [options]="roadWeatherConditions"
+        (changeVal)="changeValue()"
+      ></recon-filter-select>
     </div>
     <div
       class="filter"
@@ -167,7 +183,7 @@
       [formGroupName]="12"
     >
       <recon-filter-two-inputs
-        label="Road temperature, C"
+        label="Ambient temperature, C"
         formControlName="value"
         leftPlaceholder="From"
         rightPlaceholder="To"
@@ -176,14 +192,28 @@
       ></recon-filter-two-inputs>
     </div>
     <div
-      class="filter checkbox-filter"
+      class="filter"
       [ngClass]="{ 'shown-filter': isSelectedAtIndex(13) }"
       [formGroupName]="13"
+    >
+      <recon-filter-two-inputs
+        label="Road temperature, C"
+        formControlName="value"
+        leftPlaceholder="From"
+        rightPlaceholder="To"
+        *ngIf="isSelectedAtIndex(13)"
+        (blurVal)="changeValue()"
+      ></recon-filter-two-inputs>
+    </div>
+    <div
+      class="filter checkbox-filter"
+      [ngClass]="{ 'shown-filter': isSelectedAtIndex(14) }"
+      [formGroupName]="14"
     >
       <recon-form-checkbox
         label="Tagged data"
         formControlName="value"
-        *ngIf="isSelectedAtIndex(13)"
+        *ngIf="isSelectedAtIndex(14)"
         (changeVal)="changeValue()"
       ></recon-form-checkbox>
     </div>
@@ -194,6 +224,7 @@
       matRipple
       class="filter-button"
       matTooltip="Apply filters"
+      (click)="clickApply()"
     >
       <img src="assets/icons/magnifying-glass.svg" height="25" width="25" />
     </div>
@@ -201,36 +232,55 @@
       mat-raised-button
       matRipple
       class="filter-button"
-      (click)="resetFilters()"
+      (click)="clickResetFilters()"
       matTooltip="Reset filters"
     >
       <img src="assets/icons/cancel.svg" height="21" width="21" />
     </div>
-    <button
+    <div
       mat-raised-button
-      color="primary"
-      class="filter"
+      matRipple
+      class="filter-button"
+      matTooltip="Filter selection"
       [matMenuTriggerFor]="menu"
+      #trigger="matMenuTrigger"
+      [ngClass]="{ 'green-filter': trigger.menuOpen }"
     >
-      <img src="assets/icons/add-filter.svg" height="25" width="25" />
-    </button>
+      <img
+        [src]="
+          trigger.menuOpen
+            ? 'assets/icons/add-filter.svg'
+            : 'assets/icons/add-filter-green.svg'
+        "
+        height="25"
+        width="25"
+      />
+    </div>
     <ng-container [formGroup]="filtersForm">
       <mat-menu #menu="matMenu" xPosition="before" class="recon-menu">
         <ng-container formArrayName="filters">
           <ng-container *ngFor="let filter of filtersList; let i = index">
-            <div
-              class="filter-item"
-              matRipple
-              (click)="$event.stopPropagation(); toggleSelectValueWithIndex(i)"
-              [formGroupName]="i"
-            >
-              <recon-form-checkbox
-                formControlName="selected"
-                (click)="$event.stopPropagation()"
-              ></recon-form-checkbox>
-              {{ filter.label }}
-            </div>
-            <mat-divider *ngIf="i !== filtersList.length - 1"></mat-divider>
+            <!-- we don't show Or/And, because we always show it -->
+            <ng-container *ngIf="i">
+              <div
+                class="filter-item"
+                [ngClass]="{ disabled: isDisabledSensorId(i) }"
+                matRipple
+                (click)="
+                  $event.stopPropagation();
+                  !isDisabledSensorId(i) && toggleSelectValueWithIndex(i)
+                "
+                [formGroupName]="i"
+              >
+                <recon-form-checkbox
+                  formControlName="selected"
+                  [disabled]="isDisabledSensorId(i)"
+                  (click)="$event.stopPropagation()"
+                ></recon-form-checkbox>
+                {{ filter.label }}
+              </div>
+              <mat-divider *ngIf="i !== filtersList.length - 1"></mat-divider>
+            </ng-container>
           </ng-container>
         </ng-container>
       </mat-menu>

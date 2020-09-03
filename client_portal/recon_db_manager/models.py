@@ -1307,6 +1307,18 @@ class TypeCode(models.Model):
         """
         db_table = 'TypeCode'
 
+    ROAD_EVENT_TYPE = 'EnumRoadEvents'
+    OBJECT_TYPE = 'EnumDObjectTypes'
+    ROAD_CONDITIONS_TYPE = 'EnumRoadConditions'
+    WEATHER_CONDITIONS_TYPE = 'EnumWeatherConditions'
+    VERIFICATION_RESULTS_TYPE = 'EnumVerificationResults'
+    FILE_TYPE = 'EnumFileTypes'
+    USER_LEVEL_TYPE = 'EnumUserLevels'
+    LICENSE_TYPE = 'EnumLicenseTypes'
+    ALGORITHM_CLASS_TYPE = 'EnumAlgorithmClasses'
+    ALGORITHM_STATUS_TYPE = 'EnumAlgorithmStatuses'
+    DEVICE_TYPE = 'EnumDeviceTypes'
+
 
 class FileStorage(models.Model):
     """
@@ -1345,6 +1357,11 @@ class RelevantData(models.Model):
     object_class = models.ForeignKey(TypeCode, models.DO_NOTHING, max_length=3,
                                      null=True, blank=True, to_field='value',
                                      db_column='objectClass')
+    vehicle_classification = models.ForeignKey(
+        TypeCode, models.DO_NOTHING, max_length=3, null=True, blank=True,
+        to_field='value', db_column='vehicleClassification',
+        related_name='relevant_data_vehicle_classification'
+    )
     ambient_weather_condition = models.ForeignKey(
         TypeCode, models.DO_NOTHING, null=True, blank=True, max_length=3,
         to_field='value', db_column='ambientWeatherCondition',
@@ -1380,6 +1397,14 @@ class RelevantData(models.Model):
                                        db_column='orientTheta')
     orient_phi = models.DecimalField(null=True, blank=True, max_digits=16,
                                      decimal_places=2, db_column='orientPhi')
+    road_temperature = models.DecimalField(
+        null=True, blank=True, max_digits=5, decimal_places=2,
+        db_column='roadTemperature'
+    )
+    ambient_temperature = models.DecimalField(
+        null=True, blank=True, max_digits=5, decimal_places=2,
+        db_column='ambientTemperature'
+    )
     timestamp = models.DateTimeField(null=True, blank=True, auto_now_add=True)
     is_tagged_data = models.BooleanField(null=True, blank=True,
                                          db_column='isTaggedData')

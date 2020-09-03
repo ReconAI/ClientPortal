@@ -3,12 +3,12 @@ from typing import Any, Dict, Optional, List
 
 from dateutil.parser import parse, ParserError
 from django import forms
+from django.core.exceptions import ValidationError
 from django.db.models import Q, QuerySet
 from django.forms import Form
 from django.utils.translation import gettext_lazy as _
 from django_filters import rest_framework as filters
 from django_filters.constants import EMPTY_VALUES
-from rest_framework.exceptions import ValidationError
 
 from recon_db_manager.models import RelevantData
 
@@ -37,7 +37,7 @@ class BooleanFilter(FilterMixin, filters.BooleanFilter):
 
 class RangeField(forms.CharField):
     CHUNKS_NUMBER = 2
-    SEPARATOR = ';'
+    SEPARATOR = '|'
     
     default_error_messages = {
         'format_error': _('Value should consist of '
@@ -52,7 +52,7 @@ class RangeField(forms.CharField):
         result = [
             self._prepare(item)
             for item
-            in value.split(';')
+            in value.split(self.SEPARATOR)
         ]
 
         if result and len(result) != self.CHUNKS_NUMBER:
@@ -189,13 +189,29 @@ class RelevantDataSensorFilter(FilterSet):
     orient_phi = NumericRangeFilter(
         field_name="orient_phi", lookup_expr='range'
     )
+    road_temperature = NumericRangeFilter(
+        field_name="road_temperature", lookup_expr='range'
+    )
+    ambient_temperature = NumericRangeFilter(
+        field_name="ambient_temperature", lookup_expr='range'
+    )
     is_tagged = BooleanFilter(field_name='is_tagged_data', lookup_expr='exact')
+    vehicle_type = CharFilter(
+        field_name='vehicle_classification', lookup_expr='exact'
+    )
+    event_object = CharFilter(
+        field_name='object_class', lookup_expr='exact'
+    )
+    road_weather_condition = CharFilter(
+        field_name='road_weather_condition', lookup_expr='exact'
+    )
 
     class Meta:
         model = RelevantData
         fields = (
             'project_name', 'timestamp', 'orient_theta', 'orient_phi',
-            'is_tagged'
+            'is_tagged', 'vehicle_type', 'event_object',
+            'road_temperature', 'ambient_temperature', 'road_weather_condition'
         )
         form = RelevantDataFiltersForm
 
@@ -211,3 +227,11 @@ class RelevantDataFilter(RelevantDataSensorFilter):
         )
         form = RelevantDataFiltersForm
 
+
+class ProjectFilter(filters.FilterSet):
+    name = filters.CharFilter(field_name='project__name',
+                              lookup_expr='istartswith')
+
+    class Meta:
+        model = RelevantData
+        fields = ('name', )

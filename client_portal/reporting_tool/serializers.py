@@ -20,7 +20,7 @@ from rest_framework.serializers import Serializer
 from rest_framework.utils.serializer_helpers import ReturnDict
 
 from recon_db_manager.models import Organization, DevicePurchase, RelevantData, \
-    Project
+    Project, TypeCode
 from reporting_tool.forms.utils import SendEmailMixin
 from shared.fields import FileField
 from shared.models import User
@@ -408,6 +408,7 @@ class RelevantDataSerializer(ModelSerializer):
     sensor_id = serializers.IntegerField(source='edge_node_id')
     event_object = serializers.SerializerMethodField('format_event_object')
     object_class = serializers.SerializerMethodField('format_object_class')
+    vehicle_classification = serializers.SerializerMethodField('format_vehicle_classification')
 
     ambient_weather = serializers.SerializerMethodField('format_ambient_weather')
     road_weather = serializers.SerializerMethodField('format_road_weather')
@@ -426,10 +427,10 @@ class RelevantDataSerializer(ModelSerializer):
             'id', 'sensor_GPS_lat', 'sensor_GPS_long', 'location_x',
             'location_y', 'location_z', 'orient_theta', 'orient_phi',
             'timestamp', 'project', 'sensor_id', 'license_plate_number',
-            'event_object', 'object_class', 'traffic_flow', 'ambient_weather',
-            'road_weather', 'stopped_vehicle_detection', 'pedestrian_flow',
-            'tagged_data', 'license_plate_location', 'face_location',
-            'cad_file_tag'
+            'event_object', 'object_class', 'vehicle_classification',
+            'traffic_flow', 'ambient_weather', 'road_weather',
+            'stopped_vehicle_detection', 'pedestrian_flow', 'tagged_data',
+            'license_plate_location', 'face_location', 'cad_file_tag'
         )
 
     @staticmethod
@@ -440,7 +441,7 @@ class RelevantDataSerializer(ModelSerializer):
         if attr:
             return getattr(attr, attr_name)
 
-        return '-'
+        return None
 
     def __type_code(self, instance: RelevantData, related: str):
         return self.__related_model_attr(instance, related,
@@ -462,6 +463,9 @@ class RelevantDataSerializer(ModelSerializer):
             return instance.EVENT_TYPE
 
         return instance.OBJECT_TYPE
+
+    def format_vehicle_classification(self, instance: RelevantData):
+        return self.__type_code(instance, 'vehicle_classification')
 
     def format_object_class(self, instance: RelevantData):
         return self.__type_code(instance, 'object_class')
@@ -499,3 +503,9 @@ class RelevantDataSetGPSSerializer(ModelSerializer):
     class Meta:
         model = RelevantData
         fields = ('lat', 'long')
+
+
+class TypeCodeSerializer(ModelSerializer):
+    class Meta:
+        model = TypeCode
+        fields = ('value', 'short_description')
