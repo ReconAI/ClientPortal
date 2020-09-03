@@ -1,0 +1,31 @@
+<div class="two-inputs-container">
+  <label> {{ label }}</label>
+  <div class="inputs-container">
+    <div class="input-container">
+      <label>{{ leftLabel }}</label>
+      <recon-filter-input
+        [(ngModel)]="left"
+        (changeVal)="changeValue()"
+        [placeholder]="leftPlaceholder"
+        (blurVal)="blurValue()"
+      ></recon-filter-input>
+    </div>
+    <span class="separator"> ― </span>
+    <div class="input-container">
+      <label>{{ rightLabel }}</label>
+      <recon-filter-input
+        [(ngModel)]="right"
+        (changeVal)="changeValue()"
+        (blurVal)="blurValue()"
+        [placeholder]="rightPlaceholder"
+      ></recon-filter-input>
+    </div>
+    <div class="input-container">
+      <recon-form-checkbox
+        [(ngModel)]="checked"
+        [label]="checkboxLabel"
+        (changeVal)="changeValue(); blurValue()"
+      ></recon-form-checkbox>
+    </div>
+  </div>
+</div>

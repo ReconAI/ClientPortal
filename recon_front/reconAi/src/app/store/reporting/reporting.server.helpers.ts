@@ -1,3 +1,6 @@
+import { ReconSelectOption } from 'app/shared/types';
+import { OptionServerInterface } from './../../reporting/constants/types/filters';
+import { FiltersService } from './../../core/services/filters/filters.service';
 import {
   PaginationResponseServerInterface,
   PaginationResponseClientInterface,
@@ -30,6 +33,7 @@ export interface ReportingDeviceServerInterface {
   ambient_weather: string;
   road_weather: string;
   stopped_vehicles_detection: string;
+  vehicle_classification: string;
   tagged_data: string;
   license_plate_location: string;
   face_location: string;
@@ -81,12 +85,12 @@ export const transformReportingDeviceFromServer = (
   project: device.project,
   ecosystemName: device.ecosystem_name,
   isEvent: device.event_object,
-  objectClass: device.event_object,
+  objectClass: device.object_class,
   plateNumber: device.license_plate_number,
   trafficFlow: device.traffic_flow,
   ambientWeather: device.ambient_weather,
   roadWeather: device.road_weather,
-  vehicle: device.stopped_vehicles_detection,
+  vehicle: device.vehicle_classification,
   taggedData: device.tagged_data,
   plate: device.license_plate_location,
   face: device.face_location,
@@ -136,3 +140,41 @@ export const setGpsErrorFieldRelations = {
   lat: 'LAT',
   long: 'LNG',
 };
+
+export const transformEndpointWithApplyStatus = (
+  url: string,
+  status: boolean,
+  userId: number,
+  fs: FiltersService
+) => {
+  if (!status) {
+    return url;
+  }
+
+  return `${url}&${fs.transformValuesForUserFromLocalStorage(userId)}`;
+};
+
+export const transformReportingOptionFromServer = (
+  option: OptionServerInterface
+): ReconSelectOption => ({
+  value: option.value,
+  label: option.short_description,
+});
+
+export interface OptionsPayloadInterface {
+  options: ReconSelectOption[];
+}
+
+export const transformOptionsFromServer = (
+  options: OptionServerInterface[]
+): OptionsPayloadInterface => ({
+  options: options.map((option) => transformReportingOptionFromServer(option)),
+});
+
+export interface AutocompleteNameServerInterface {
+  name: string;
+}
+
+export interface AutocompleteNameClientInterface {
+  names: string[];
+}

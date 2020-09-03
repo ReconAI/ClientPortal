@@ -22,6 +22,7 @@ import { FilterInputCheckboxComponent } from './forms/filters/filter-input-check
 import { FilterThreeInputsComponent } from './forms/filters/filter-three-inputs/filter-three-inputs.component';
 import { FilterSelectComponent } from './forms/filters/filter-select/filter-select.component';
 import { FilterTwoInputsComponent } from './forms/filters/filter-two-inputs/filter-two-inputs.component';
+import { FilterTwoInputsCheckboxComponent } from './forms/filters/filter-two-inputs-checkbox/filter-two-inputs-checkbox.component';
 @NgModule({
   declarations: [
     FormInputComponent,
@@ -42,6 +43,7 @@ import { FilterTwoInputsComponent } from './forms/filters/filter-two-inputs/filt
     FilterThreeInputsComponent,
     FilterSelectComponent,
     FilterTwoInputsComponent,
+    FilterTwoInputsCheckboxComponent,
   ],
   imports: [
     CommonModule,
@@ -69,6 +71,7 @@ import { FilterTwoInputsComponent } from './forms/filters/filter-two-inputs/filt
     FilterThreeInputsComponent,
     FilterSelectComponent,
     FilterTwoInputsComponent,
+    FilterTwoInputsCheckboxComponent,
   ],
   providers: [],
 })

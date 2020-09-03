@@ -4,6 +4,7 @@ import {
   InputCheckboxInterface,
   ThreeInputsInterface,
   TwoInputsInterface,
+  TwoInputsCheckboxInterface,
 } from 'app/core/constants/filters';
 
 export interface FilterItemInterface {
@@ -17,5 +18,11 @@ export interface FilterItemInterface {
     | RangeValueInterface
     | InputCheckboxInterface
     | ThreeInputsInterface
-    | TwoInputsInterface;
+    | TwoInputsInterface
+    | TwoInputsCheckboxInterface;
+}
+
+export interface OptionServerInterface {
+  value: string;
+  short_description: string;
 }

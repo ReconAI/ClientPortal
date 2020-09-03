@@ -8,7 +8,9 @@
       mat-raised-button
       color="accent"
       (click)="openDialog()"
-      [disabled]="!(selectedIndex || selectedIndex === 0)"
+      [disabled]="
+        !(selectedIndex || selectedIndex === 0) || !devices[selectedIndex]
+      "
     >
       SET GPS
     </button>
@@ -16,13 +18,9 @@
       DOWNLOAD
     </button>
     <mat-menu #menu="matMenu" xPosition="before" class="recon-menu">
-      <button mat-menu-item>
-        .xml
-      </button>
+      <button mat-menu-item>.xml</button>
       <mat-divider></mat-divider>
-      <button mat-menu-item>
-        .csv
-      </button>
+      <button mat-menu-item>.csv</button>
     </mat-menu>
   </ng-container>
   <ng-template #onlineStreaming>
@@ -39,7 +37,9 @@
   </ng-template>
 </div>
 <div>
-  <recon-reporting-filter-container></recon-reporting-filter-container>
+  <recon-reporting-filter-container
+    [isDevice]="isDevice"
+  ></recon-reporting-filter-container>
 </div>
 <div *ngIf="columns?.length">
   <recon-crud-table
@@ -82,10 +82,15 @@
 </ng-template>
 
 <ng-template #cadTagTemplate let-element="element">
+  
   <span
     class="table-link"
     (click)="$event.stopPropagation(); goToUrl(element.fileTag)"
+    *ngIf="element.fileTag; else noFileTag"
   >
     Link to cad file
   </span>
+  <ng-template #noFileTag>
+    No data
+  </ng-template>
 </ng-template>

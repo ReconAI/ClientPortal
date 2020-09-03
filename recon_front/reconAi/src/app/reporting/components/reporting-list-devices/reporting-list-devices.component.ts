@@ -129,12 +129,12 @@ export class ReportingListDevicesComponent implements OnInit, AfterViewInit {
         width: '150px',
       },
       {
-        header: 'Latitude',
+        header: 'Sensor GPS Latitude',
         id: 'lat',
         width: '100px',
       },
       {
-        header: 'Longitude',
+        header: 'Sensor GPS Longitude',
         id: 'lng',
         width: '100px',
       },
@@ -206,7 +206,7 @@ export class ReportingListDevicesComponent implements OnInit, AfterViewInit {
         width: '100px',
       },
       {
-        header: 'Road weather condition surveillance',
+        header: 'Road weather',
         id: 'roadWeather',
         width: '100px',
       },
@@ -217,13 +217,8 @@ export class ReportingListDevicesComponent implements OnInit, AfterViewInit {
         cellTemplate: this.taggedDataTemplate,
       },
       {
-        header: 'License plate',
+        header: 'License plate location',
         id: 'plate',
-        width: '100px',
-      },
-      {
-        header: 'Face',
-        id: 'face',
         width: '100px',
       },
       {

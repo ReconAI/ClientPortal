@@ -9,7 +9,18 @@
       [disabled]="disabled"
       (input)="changeValue($event.target.value)"
       (blur)="blurValue()"
+      [matAutocomplete]="auto"
     />
+    <mat-autocomplete #auto="matAutocomplete">
+      <mat-option
+        *ngFor="let option of autocompleteOptions"
+        [value]="option"
+        class="autocomplete-option"
+        (click)="changeValue(option); blurValue()"
+      >
+        {{ option }}
+      </mat-option>
+    </mat-autocomplete>
     <div class="icon-container" *ngIf="isWithSearchIcon">
       <mat-icon>search</mat-icon>
     </div>
