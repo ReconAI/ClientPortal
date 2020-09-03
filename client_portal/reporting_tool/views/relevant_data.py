@@ -5,6 +5,7 @@ from django_filters import rest_framework as filters
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from recon_db_manager.models import RelevantData
 from reporting_tool.filters import RelevantDataFilter, RelevantDataSensorFilter
@@ -93,3 +94,12 @@ class RelevantDataSetGPSView(RelevantDataHandler, UpdateAPIView):
     serializer_class = RelevantDataSetGPSSerializer
 
     update_success_message = _('GPS is updated successfully')
+
+
+class ExportRelevantData(ListAPIView):
+    def list(self, request, *args, **kwargs):
+        from reporting_tool.tasks import ExportRelevantDataTask
+
+        ExportRelevantDataTask().delay(4, 6)
+
+        return Response(status=200)
