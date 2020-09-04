@@ -77,7 +77,14 @@ class DateTimeRangeField(RangeField):
 
 class FloatRangeField(RangeField):
     def _prepare(self, item: str) -> Any:
-        return float(item)
+        try:
+            return float(item)
+        except ValueError:
+            raise ValidationError('Value must be numeric')
+
+
+class GPSRangeField(FloatRangeField):
+    CHUNKS_NUMBER = 4
 
 
 class DateTimeFromToRangeFilter(FilterMixin, filters.DateTimeFromToRangeFilter):
@@ -86,6 +93,31 @@ class DateTimeFromToRangeFilter(FilterMixin, filters.DateTimeFromToRangeFilter):
 
 class NumericRangeFilter(FilterMixin, filters.NumericRangeFilter):
     field_class = FloatRangeField
+
+
+class GPSFilter(FilterMixin, filters.NumberFilter):
+    field_class = GPSRangeField
+
+    def __init__(self, lat_field_name: str, long_field_name:str, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.__lat_field_name = lat_field_name
+        self.__long_field_name = long_field_name
+
+    def filter(self, qs, value):
+        if value not in EMPTY_VALUES:
+            return Q(**dict(zip(self.filter_expr, value)))
+
+        return None
+
+    @property
+    def filter_expr(self) -> list:
+        return [
+            '{}__{}'.format(self.__lat_field_name, 'lte'),
+            '{}__{}'.format(self.__long_field_name, 'gte'),
+            '{}__{}'.format(self.__lat_field_name, 'gte'),
+            '{}__{}'.format(self.__long_field_name, 'lte')
+        ]
 
 
 class RelevantDataFiltersForm(Form):
@@ -205,6 +237,9 @@ class RelevantDataSensorFilter(FilterSet):
     road_weather_condition = CharFilter(
         field_name='road_weather_condition', lookup_expr='exact'
     )
+    gps = GPSFilter(
+        lat_field_name='sensor_GPS_lat', long_field_name='sensor_GPS_long'
+    )
 
     class Meta:
         model = RelevantData
@@ -235,3 +270,12 @@ class ProjectFilter(filters.FilterSet):
     class Meta:
         model = RelevantData
         fields = ('name', )
+
+
+class ExportRelevantDataFilterBackend(filters.DjangoFilterBackend):
+    def get_filterset_kwargs(self, request, queryset, view):
+        return {
+            'data': getattr(view, 'query_params', {}),
+            'queryset': queryset,
+            'request': request,
+        }

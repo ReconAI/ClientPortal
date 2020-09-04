@@ -151,8 +151,6 @@ class ManufacturerListView(PlainListModelMixin, ManufacturerOperator,
             )
         )
 
-
-
 @method_decorator(name='get', decorator=swagger_auto_schema(
     responses=default_get_responses_with_custom_success(
         ReadManufacturerSerializer

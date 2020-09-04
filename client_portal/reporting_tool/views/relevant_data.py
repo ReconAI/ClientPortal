@@ -4,9 +4,11 @@ from django.utils.translation import gettext_lazy as _
 from django_filters import rest_framework as filters
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
+from rest_framework.exceptions import NotFound
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.request import Request
 
 from recon_db_manager.models import RelevantData, TypeCode
 from reporting_tool.filters import RelevantDataFilter, \
@@ -29,7 +31,7 @@ class RelevantDataHandler:
     ).prefetch_related(
         'event', 'object_class', 'tagged_data', 'license_plate',
         'face', 'cad_file_tag', 'ambient_weather_condition',
-        'road_weather_condition'
+        'road_weather_condition', 'vehicle_classification'
     ).order_by('-id').all()
 
     def filter_queryset(self, queryset: QuerySet) -> QuerySet:
@@ -212,10 +214,40 @@ class RelevantDataProjectsView(PlainListModelMixin, ListAPIView):
             'data': queryset.values_list('project__name', flat=True)[:5]
         })
 
-class ExportRelevantData(ListAPIView):
-    def list(self, request, *args, **kwargs):
+
+class ExportRelevantDataView(RelevantDataHandler, ListAPIView):
+    filter_backends = (filters.DjangoFilterBackend,)
+
+    filterset_class = RelevantDataSensorFilter
+
+    def list(self, request: Request, *args, **kwargs):
         from reporting_tool.tasks import ExportRelevantDataTask
 
-        ExportRelevantDataTask().delay(4, 6)
+        export_format = self.kwargs.get('export_format')
 
-        return Response(status=200)
+        if not self.__is_format_allowed(export_format):
+            raise NotFound('Export format {} is not allowed'.format(export_format))
+
+        if self.filter_queryset(self.get_queryset()).count():
+            ExportRelevantDataTask().delay(
+                request.user.id,
+                export_format,
+                request.query_params
+            )
+
+            return Response(data={
+                'message': 'You will get the file asap'
+            }, status=200)
+
+        return Response(data={
+            'message': 'Nothing to export'
+        }, status=200)
+
+    @staticmethod
+    def __is_format_allowed(export_format: str) -> bool:
+        from reporting_tool.tasks import RelevantDataFileGenerator
+
+        return export_format in [
+            RelevantDataFileGenerator.FORMAT_XML,
+            RelevantDataFileGenerator.FORMAT_CSV
+        ]

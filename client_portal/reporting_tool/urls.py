@@ -32,8 +32,8 @@ from .views.payment_methods import CardListView, DefaultPaymentMethodView
 from .views.relevant_data import RelevantDataView, RelevantDataSetGPSView, \
     RelevantDataSensorView, RelevantDataVehiclesView, \
     RelevantDataEventsVehiclesView, \
-    RelevantDataProjectsView, RelevantDataRoadConditionsView
-    RelevantDataSensorView, ExportRelevantData
+    RelevantDataProjectsView, RelevantDataRoadConditionsView, \
+    ExportRelevantDataView
 from .views.user_management import UserList, UserItem, InvitationView
 
 urlpatterns = [
@@ -67,7 +67,7 @@ urlpatterns = [
     path('relevant-data/event-objects', RelevantDataEventsVehiclesView.as_view(), name='relevant_data.event-objects'),
     path('relevant-data/road-weather-conditions', RelevantDataRoadConditionsView.as_view(), name='relevant_data.roadn-weather-conditions'),
     path('relevant-data/projects', RelevantDataProjectsView.as_view(), name='relevant_data.projects'),
-    path('relevant-data/export', ExportRelevantData.as_view(), name='relevant_data.export'),
+    path('relevant-data/export/<str:export_format>', ExportRelevantDataView.as_view(), name='relevant_data.export'),
 
     path('admin/', admin.site.urls)
 ]
