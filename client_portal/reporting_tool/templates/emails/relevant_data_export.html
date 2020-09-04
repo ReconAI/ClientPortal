@@ -1,0 +1,11 @@
+{% load i18n %}{% autoescape off %}
+{% trans "Hi " %}{{ firstname }}!
+{% blocktrans %}
+Requested data by you is ready for downloading on your device via link below:
+{% endblocktrans %}
+{{ link }}
+
+{% trans "Thanks for using our site!" %}
+{% blocktrans %}The {{ app_name }} portal team{% endblocktrans %}
+
+{% endautoescape %}
