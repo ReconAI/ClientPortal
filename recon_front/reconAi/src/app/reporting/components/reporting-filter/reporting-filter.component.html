@@ -1,16 +1,17 @@
 <div class="filter-container" [formGroup]="filtersForm">
   <div class="filters" formArrayName="filters">
     <div
-      class="filter and-or"
-      [ngClass]="{ 'shown-filter': isSelectedAtIndex(0) }"
+      class="filter and-or active"
       [formGroupName]="0"
     >
       <recon-form-slider
         formControlName="value"
         label="Or / And"
-        *ngIf="isSelectedAtIndex(0)"
         (changeVal)="changeValue()"
       ></recon-form-slider>
+    </div>
+    <div class="filter active">
+      <recon-reporting-filter-gps></recon-reporting-filter-gps>
     </div>
     <div
       class="filter input-filter"

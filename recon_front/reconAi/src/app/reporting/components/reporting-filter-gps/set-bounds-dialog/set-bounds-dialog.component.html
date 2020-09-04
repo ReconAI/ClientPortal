@@ -1,0 +1,81 @@
+<div class="recon-modal-title">
+  <h3>Filter GPS</h3>
+  <mat-icon [mat-dialog-close]="true">close</mat-icon>
+</div>
+
+<div class="form-container">
+  <form [formGroup]="rectangleForm">
+    <div class="block-container" formGroupName="topLeft">
+      <span class="block-title">TOP LEFT:</span>
+      <div class="inputs-container">
+        <label>LAT</label>
+        <input
+          (blur)="addToLayersFromForm()"
+          formControlName="lat"
+          [ngClass]="{
+            'input-invalid': !isValidStatus('topLeft.lat')
+          }"
+        />
+        <label>LNG</label>
+        <input
+          (blur)="addToLayersFromForm()"
+          formControlName="lng"
+          [ngClass]="{
+            'input-invalid': !isValidStatus('topLeft.lng')
+          }"
+        />
+      </div>
+    </div>
+    <div class="block-container">
+      <span class="block-title">BOTTOM RIGHT:</span>
+      <div class="inputs-container" formGroupName="bottomRight">
+        <label>LAT</label>
+        <input
+          (blur)="addToLayersFromForm()"
+          formControlName="lat"
+          [ngClass]="{
+            'input-invalid': !isValidStatus('bottomRight.lat')
+          }"
+        />
+        <label>LNG</label>
+        <input
+          (blur)="addToLayersFromForm()"
+          formControlName="lng"
+          [ngClass]="{
+            'input-invalid': !isValidStatus('bottomRight.lng')
+          }"
+        />
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="bottom-container">
+  <div *ngIf="options?.center" class="map-container">
+    <div
+      class="filter-map"
+      id="filter-map"
+      leaflet
+      #secondMap
+      [leafletOptions]="options"
+      leafletDraw
+      [(leafletCenter)]="center"
+      [leafletFitBounds]="fitBounds"
+      [leafletDrawOptions]="drawOptions"
+      (leafletDrawCreated)="onDrawCreated($event)"
+      (leafletDrawEdited)="onDrawEdited($event)"
+    >
+      <div [leafletLayer]="editableLayers"></div>
+    </div>
+  </div>
+
+  <button
+    mat-raised-button
+    color="primary"
+    [disabled]="!rectangleForm.valid"
+    (click)="onSave()"
+    [mat-dialog-close]="true"
+  >
+    SAVE
+  </button>
+</div>

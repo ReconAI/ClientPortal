@@ -14,8 +14,11 @@ import { SharedModule } from 'app/shared/shared.module';
 import { SetGpsDialogComponent } from './components/set-gps-dialog/set-gps-dialog.component';
 import { SetGpsDialogContainer } from './components/set-gps-dialog/set-gps-dialog.container';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
+import { LeafletDrawModule } from '@asymmetrik/ngx-leaflet-draw';
 import { OnlineStreamingComponent } from './components/reporting-list-devices/online-streaming/online-streaming.component';
 import { ReportingFilterContainer } from './components/reporting-filter/reporting-filter.container';
+import { ReportingFilterGpsComponent } from './components/reporting-filter-gps/reporting-filter-gps.component';
+import { SetBoundsDialogComponent } from './components/reporting-filter-gps/set-bounds-dialog/set-bounds-dialog.component';
 @NgModule({
   declarations: [
     ReportingListDevicesComponent,
@@ -26,6 +29,8 @@ import { ReportingFilterContainer } from './components/reporting-filter/reportin
     SetGpsDialogContainer,
     ReportingDeviceContainer,
     OnlineStreamingComponent,
+    ReportingFilterGpsComponent,
+    SetBoundsDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -35,6 +40,7 @@ import { ReportingFilterContainer } from './components/reporting-filter/reportin
     MaterialModule,
     SharedModule,
     LeafletModule,
+    LeafletDrawModule,
     CoreModule,
   ],
 })
