@@ -336,9 +336,6 @@ class CreateDeviceSerializer(ModelSerializer):
     """
     Create device serializer
     """
-
-    MAX_IMAGES = 5
-
     manufacturer = serializers.PrimaryKeyRelatedField(
         queryset=Manufacturer.objects.all()
     )
@@ -356,10 +353,7 @@ class CreateDeviceSerializer(ModelSerializer):
                     allowed_extensions=['jpeg', 'jpg', 'png']
                 )
             ]
-        ),
-        validators=[
-            MaxLengthValidator(MAX_IMAGES)
-        ]
+        )
     )
 
     class Meta:
