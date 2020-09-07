@@ -9,7 +9,7 @@ from typing import List, Union, Optional
 
 from django.conf import settings
 from django.utils.timezone import now
-from stripe.error import CardError
+from stripe.error import CardError, InvalidRequestError
 
 
 class PriceInterface(ABC):
@@ -245,7 +245,7 @@ class OrganizationCharger:
                 confirm=True
             )
             return payment.id
-        except (IndexError, AttributeError, CardError):
+        except (IndexError, AttributeError, CardError, InvalidRequestError):
             return None
 
     @property

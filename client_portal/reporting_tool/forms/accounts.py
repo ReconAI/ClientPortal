@@ -249,7 +249,7 @@ class PasswordResetForm(PasswordResetFormBase):
     On reset password user gets the link to password reset form
     """
 
-    def clean_email(self) -> dict:
+    def clean_email(self) -> str:
         """
         Performs incoming data validation
 

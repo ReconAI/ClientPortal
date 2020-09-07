@@ -25,7 +25,7 @@ from rest_framework import permissions
 
 from .views.accounts import SignupView, ActivateView, CurrentUserProfileView, \
     ObtainAuthToken, LogoutView, ResetPassword, PasswordResetConfirmView, \
-    PreSignupValidationView, CheckResetPasswordTokenView
+    PreSignupValidationView, CheckResetPasswordTokenView, ChangePassword
 from .views.new_features import NewFeatureView
 from .views.orders import OrdersListView, OrderItemView
 from .views.payment_methods import CardListView, DefaultPaymentMethodView
@@ -49,6 +49,7 @@ urlpatterns = [
     path('orders/<str:payment_id>', OrderItemView.as_view(), name='orders.item'),
 
     path('reset-password', ResetPassword.as_view(), name='password_reset'),
+    path('change-password', ChangePassword.as_view(), name='password_change'),
     path('reset', PasswordResetConfirmView.as_view(),
          name='password_reset_confirm'),
     path('check-reset-password-token', CheckResetPasswordTokenView.as_view(),
