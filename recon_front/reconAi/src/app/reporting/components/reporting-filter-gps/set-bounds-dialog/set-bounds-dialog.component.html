@@ -5,6 +5,12 @@
 
 <div class="form-container">
   <form [formGroup]="rectangleForm">
+    <mat-error *ngIf="rectangleForm?.errors?.lat">
+      Top left latitude should be more than bottom right one
+    </mat-error>
+    <mat-error *ngIf="rectangleForm?.errors?.lng">
+      Bottom right longitude should be more than top left one
+    </mat-error>
     <div class="block-container" formGroupName="topLeft">
       <span class="block-title">TOP LEFT:</span>
       <div class="inputs-container">

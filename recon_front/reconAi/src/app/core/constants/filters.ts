@@ -28,6 +28,7 @@ export enum FilterTypes {
   TWO_INPUTS = 'two inputs',
   CHECKBOX = 'checkbox',
   TWO_INPUTS_CHECKBOX = 'two inputs checkbox',
+  MAP_RECTANGLE = 'map rectangle',
 }
 
 export interface RangeValueInterface {
@@ -56,4 +57,15 @@ export interface TwoInputsCheckboxInterface {
   left: string;
   right: string;
   checked: boolean;
+}
+
+export interface MapRectangleFilterInterface {
+  topLeft: {
+    lat: string;
+    lng: string;
+  };
+  bottomRight: {
+    lat: string;
+    lng: string;
+  };
 }

@@ -59,7 +59,7 @@ export class SetGpsDialogComponent implements OnInit {
           Validators.pattern(this.numberPattern),
         ]),
       ],
-    });
+    }, );
 
     this.center = latLng(this.lat, this.lng) || TAMPERE_COORDINATES;
 

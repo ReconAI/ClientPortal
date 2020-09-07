@@ -1,3 +1,4 @@
+import { MapRectangleFilterInterface } from './../../../core/constants/filters';
 import {
   FilterTypes,
   RangeValueInterface,
@@ -19,7 +20,8 @@ export interface FilterItemInterface {
     | InputCheckboxInterface
     | ThreeInputsInterface
     | TwoInputsInterface
-    | TwoInputsCheckboxInterface;
+    | TwoInputsCheckboxInterface
+    | MapRectangleFilterInterface;
 }
 
 export interface OptionServerInterface {

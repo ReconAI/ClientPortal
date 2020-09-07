@@ -6,6 +6,7 @@ import {
   InputCheckboxInterface,
   TwoInputsCheckboxInterface,
   TwoInputsInterface,
+  MapRectangleFilterInterface,
 } from './../../constants/filters';
 import { LocalStorageService } from './../localStorage/local-storage.service';
 import { Injectable } from '@angular/core';
@@ -98,6 +99,13 @@ export class FiltersService {
     return `${typedValue.left}|${typedValue.right}`;
   };
 
+  private transformMapRectangleFilterValue = ({
+    value,
+  }: FilterItemInterface): string => {
+    const typedValue = value as MapRectangleFilterInterface;
+    return `${typedValue.topLeft.lat}|${typedValue.topLeft.lng}|${typedValue.bottomRight.lat}|${typedValue.bottomRight.lng}`;
+  };
+
   private transformFilterField = (filter: FilterItemInterface): string => {
     let value = null;
     let field = filter.id;
@@ -130,6 +138,9 @@ export class FiltersService {
         break;
       case FilterTypes.TWO_INPUTS:
         value = this.transformTwoInputsFilterValue(filter);
+        break;
+      case FilterTypes.MAP_RECTANGLE:
+        value = this.transformMapRectangleFilterValue(filter);
         break;
     }
     return `${field}=${value}`;

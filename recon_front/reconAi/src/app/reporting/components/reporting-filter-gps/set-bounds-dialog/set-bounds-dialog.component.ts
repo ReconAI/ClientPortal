@@ -22,6 +22,10 @@ export interface GpsFormClientInterface {
   };
 }
 
+interface ReactiveFormValidationErrors {
+  [key: string]: boolean;
+}
+
 @Component({
   selector: 'recon-set-bounds-dialog',
   templateUrl: './set-bounds-dialog.component.html',
@@ -53,6 +57,37 @@ export class SetBoundsDialogComponent implements OnInit {
     },
   };
 
+  checkRectangleLatLngsValidStatus(
+    group: FormGroup
+  ): ReactiveFormValidationErrors {
+    const topLeftLat = group?.get('topLeft.lat')?.value;
+    const topLeftLatTouched = group?.get('topLeft.lat')?.touched;
+    const topLeftLng = group?.get('topLeft.lng')?.value;
+    const topLeftLngTouched = group?.get('topLeft.lng')?.touched;
+    const bottomRightLat = group?.get('bottomRight.lat')?.value;
+    const bottomRightLatTouched = group?.get('bottomRight.lat')?.touched;
+    const bottomRightLng = group?.get('bottomRight.lng')?.value;
+    const bottomRightLngTouched = group?.get('bottomRight.lng')?.touched;
+
+    if (
+      topLeftLatTouched &&
+      bottomRightLatTouched &&
+      +topLeftLat < +bottomRightLat
+    ) {
+      return { lat: true };
+    }
+
+    if (
+      bottomRightLngTouched &&
+      topLeftLngTouched &&
+      +bottomRightLng < +topLeftLng
+    ) {
+      return { lng: true };
+    }
+
+    return null;
+  }
+
   constructor(private zone: NgZone, private fb: FormBuilder) {}
 
   onDrawCreated({ layer }: DrawEvents.Created): void {
@@ -66,8 +101,8 @@ export class SetBoundsDialogComponent implements OnInit {
       const [latLngs] = layer.getLatLngs();
 
       this.rectangleForm.patchValue({
-        topLeft: latLngs[0],
-        bottomRight: latLngs[2],
+        topLeft: latLngs[1],
+        bottomRight: latLngs[3],
       });
 
       this.fitBounds = layer.getBounds();
@@ -100,13 +135,14 @@ export class SetBoundsDialogComponent implements OnInit {
 
       if (this.rectangleForm.valid) {
         const createdRectangle = rectangle(
+          // bottom-left, top-right as input
           new LatLngBounds(
             [
-              this.rectangleForm.value.topLeft.lat,
+              this.rectangleForm.value.bottomRight.lat,
               this.rectangleForm.value.topLeft.lng,
             ],
             [
-              this.rectangleForm.value.bottomRight.lat,
+              this.rectangleForm.value.topLeft.lat,
               this.rectangleForm.value.bottomRight.lng,
             ]
           )
@@ -121,40 +157,43 @@ export class SetBoundsDialogComponent implements OnInit {
   ngOnInit(): void {
     this.center = TAMPERE_COORDINATES;
     this.options = generateDefaultMap(this.center);
-    this.rectangleForm = this.fb.group({
-      topLeft: this.fb.group({
-        lat: [
-          '',
-          Validators.compose([
-            Validators.required,
-            Validators.pattern(this.numberPattern),
-          ]),
-        ],
-        lng: this.fb.control(
-          '',
-          Validators.compose([
-            Validators.required,
-            Validators.pattern(this.numberPattern),
-          ])
-        ),
-      }),
-      bottomRight: this.fb.group({
-        lat: this.fb.control(
-          '',
-          Validators.compose([
-            Validators.required,
-            Validators.pattern(this.numberPattern),
-          ])
-        ),
-        lng: this.fb.control(
-          '',
-          Validators.compose([
-            Validators.required,
-            Validators.pattern(this.numberPattern),
-          ])
-        ),
-      }),
-    });
+    this.rectangleForm = this.fb.group(
+      {
+        topLeft: this.fb.group({
+          lat: [
+            '',
+            Validators.compose([
+              Validators.required,
+              Validators.pattern(this.numberPattern),
+            ]),
+          ],
+          lng: this.fb.control(
+            '',
+            Validators.compose([
+              Validators.required,
+              Validators.pattern(this.numberPattern),
+            ])
+          ),
+        }),
+        bottomRight: this.fb.group({
+          lat: this.fb.control(
+            '',
+            Validators.compose([
+              Validators.required,
+              Validators.pattern(this.numberPattern),
+            ])
+          ),
+          lng: this.fb.control(
+            '',
+            Validators.compose([
+              Validators.required,
+              Validators.pattern(this.numberPattern),
+            ])
+          ),
+        }),
+      },
+      { validators: this.checkRectangleLatLngsValidStatus }
+    );
   }
 
   onSave(): void {

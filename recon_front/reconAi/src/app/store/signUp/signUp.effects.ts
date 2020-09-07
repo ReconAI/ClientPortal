@@ -14,6 +14,8 @@ import { Action, Store } from '@ngrx/store';
 import {
   transformPreSignUpUserForm,
   transformSignUpFormToRequest,
+  TrialEndDateServerInterface,
+  transformTrialEndDateFromServer,
 } from './signUp.server.helpers';
 import {
   SignUpActionTypes,
@@ -26,6 +28,7 @@ import {
   signUpUserSucceededAction,
   setIsSuccessSignUpOpenableStatusAction,
   resetSignUpAction,
+  setTrialEndDateAction,
 } from './signUp.actions';
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
@@ -118,7 +121,7 @@ export class SignUpEffects {
       switchMap(([user, store]) => {
         const { password1, password2, username } = store.signUp;
         return this.httpClient
-          .post(
+          .post<TrialEndDateServerInterface>(
             '/api/signup',
             transformSignUpFormToRequest({
               ...(user as UserProfileFormInterface),
@@ -129,9 +132,16 @@ export class SignUpEffects {
           )
           .pipe(
             // clean the reducer state out
-            map(() => signUpUserSucceededAction()),
+            map((trialEndDate) => {
+              this.store.dispatch(
+                setTrialEndDateAction(
+                  transformTrialEndDateFromServer(trialEndDate)
+                )
+              );
+              return signUpUserSucceededAction();
+            }),
             tap(() => {
-              this.store.dispatch(resetSignUpAction());
+              // this.store.dispatch(resetSignUpAction());
               this.store.dispatch(
                 setIsSuccessSignUpOpenableStatusAction({
                   status: true,
