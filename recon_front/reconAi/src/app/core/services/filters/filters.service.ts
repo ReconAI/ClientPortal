@@ -68,11 +68,13 @@ export class FiltersService {
   private transformTimestampFilterValue = ({
     value,
   }: FilterItemInterface): string => {
-    const formatDate = 'YY-MM-DD HH:mm:ss';
-    const start = moment((value as RangeValueInterface).start).format(
-      formatDate
-    );
-    const end = moment((value as RangeValueInterface).end).format(formatDate);
+    const formatDate = 'YYYY-MM-DD HH:mm:ss';
+    const start = moment
+      .utc((value as RangeValueInterface).start)
+      .format(formatDate);
+    const end = moment
+      .utc((value as RangeValueInterface).end)
+      .format(formatDate);
     return `${start}|${end}`;
   };
 
