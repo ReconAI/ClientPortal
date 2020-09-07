@@ -11,11 +11,13 @@ from botocore.config import Config
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
+from django.db import models
 from django.utils.module_loading import import_string
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import CharField, IntegerField, ListField, empty
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, ListSerializer, \
+    BaseSerializer
 from rest_framework.serializers import Serializer
 from rest_framework.utils.serializer_helpers import ReturnDict
 
@@ -404,8 +406,8 @@ class ProjectSerializer(ModelSerializer):
 
 
 class RelevantDataSerializer(ModelSerializer):
-    project = ProjectSerializer()
     sensor_id = serializers.IntegerField(source='edge_node_id')
+    project_name = serializers.SerializerMethodField('format_project_name')
     event_object = serializers.SerializerMethodField('format_event_object')
     object_class = serializers.SerializerMethodField('format_object_class')
     vehicle_classification = serializers.SerializerMethodField('format_vehicle_classification')
@@ -426,7 +428,7 @@ class RelevantDataSerializer(ModelSerializer):
         fields = (
             'id', 'sensor_GPS_lat', 'sensor_GPS_long', 'location_x',
             'location_y', 'location_z', 'orient_theta', 'orient_phi',
-            'timestamp', 'project', 'sensor_id', 'license_plate_number',
+            'timestamp', 'project_name', 'sensor_id', 'license_plate_number',
             'event_object', 'object_class', 'vehicle_classification',
             'traffic_flow', 'ambient_weather', 'road_weather',
             'stopped_vehicle_detection', 'pedestrian_flow', 'tagged_data',
@@ -460,9 +462,12 @@ class RelevantDataSerializer(ModelSerializer):
     @staticmethod
     def format_event_object(instance: RelevantData):
         if instance.event:
-            return instance.EVENT_TYPE
+            return str(instance.EVENT_TYPE)
 
-        return instance.OBJECT_TYPE
+        return str(instance.OBJECT_TYPE)
+
+    def format_project_name(self, instance: RelevantData):
+        return self.__related_model_attr(instance, 'project', 'name')
 
     def format_vehicle_classification(self, instance: RelevantData):
         return self.__type_code(instance, 'vehicle_classification')
@@ -488,6 +493,32 @@ class RelevantDataSerializer(ModelSerializer):
 
     def format_cad_file_tag(self, instance: RelevantData):
         return self.__file(instance, 'cad_file_tag')
+
+
+class GeneratorListSerializer(ListSerializer):
+    @property
+    def data(self):
+        data = self.instance
+
+        iterable = data.all() if isinstance(data, models.Manager) else data
+
+        for item in iterable:
+            yield self.child.to_representation(item)
+
+
+class RelevantDataGeneratorSeriralizer(RelevantDataSerializer):
+    class Meta:
+        model = RelevantData
+        fields = (
+            'id', 'sensor_GPS_lat', 'sensor_GPS_long', 'location_x',
+            'location_y', 'location_z', 'orient_theta', 'orient_phi',
+            'timestamp', 'project', 'sensor_id', 'license_plate_number',
+            'event_object', 'object_class', 'vehicle_classification',
+            'traffic_flow', 'ambient_weather', 'road_weather',
+            'stopped_vehicle_detection', 'pedestrian_flow', 'tagged_data',
+            'license_plate_location', 'face_location', 'cad_file_tag'
+        )
+        list_serializer_class = GeneratorListSerializer
 
 
 class RelevantDataSetGPSSerializer(ModelSerializer):
