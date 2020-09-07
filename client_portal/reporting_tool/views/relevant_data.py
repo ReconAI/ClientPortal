@@ -236,11 +236,11 @@ class ExportRelevantDataView(RelevantDataHandler, ListAPIView):
             )
 
             return Response(data={
-                'message': 'You will get the file asap'
+                'message': _('You will get the file asap')
             }, status=200)
 
         return Response(data={
-            'message': 'Nothing to export'
+            'message': _('Nothing to export')
         }, status=200)
 
     @staticmethod
