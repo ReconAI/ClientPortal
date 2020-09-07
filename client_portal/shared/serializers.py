@@ -198,26 +198,10 @@ class TrialSerializer(ModelSerializer):
     """
     Trial serializer definition
     """
-    days_left = serializers.SerializerMethodField(
-        method_name='trial_days_left'
-    )
-
     class Meta:
         """
-        Id and path are to be exposed
+        Trial data expiration is to be exposed
         """
         model = Organization
-        fields = ('days_left',)
+        fields = ('trial_expires_on',)
 
-    @staticmethod
-    def trial_days_left(organization: Organization) -> int:
-        """
-        Informs how many days left before trial termination
-
-        :type organization: Organization
-
-        :rtype: int
-        """
-        days_left = (organization.trial_expires_on - now()).days
-
-        return days_left if days_left > 0 else 0
