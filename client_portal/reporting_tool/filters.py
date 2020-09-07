@@ -251,6 +251,17 @@ class RelevantDataSensorFilter(FilterSet):
         form = RelevantDataFiltersForm
 
 
+class RouteFilter(FilterSet):
+    timestamp = DateTimeFromToRangeFilter(
+        field_name="timestamp", lookup_expr='range'
+    )
+
+    class Meta:
+        model = RelevantData
+        fields = ('timestamp',)
+        form = RelevantDataFiltersForm
+
+
 class RelevantDataFilter(RelevantDataSensorFilter):
     sensor_id = NumberFilter(field_name="edge_node", lookup_expr='exact')
 

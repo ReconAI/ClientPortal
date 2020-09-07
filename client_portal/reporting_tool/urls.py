@@ -33,7 +33,7 @@ from .views.relevant_data import RelevantDataView, RelevantDataSetGPSView, \
     RelevantDataSensorView, RelevantDataVehiclesView, \
     RelevantDataEventsVehiclesView, \
     RelevantDataProjectsView, RelevantDataRoadConditionsView, \
-    ExportRelevantDataView
+    ExportRelevantDataView, RouteGenerationView
 from .views.user_management import UserList, UserItem, InvitationView
 
 urlpatterns = [
@@ -68,6 +68,7 @@ urlpatterns = [
     path('relevant-data/road-weather-conditions', RelevantDataRoadConditionsView.as_view(), name='relevant_data.roadn-weather-conditions'),
     path('relevant-data/projects', RelevantDataProjectsView.as_view(), name='relevant_data.projects'),
     path('relevant-data/export/<str:export_format>', ExportRelevantDataView.as_view(), name='relevant_data.export'),
+    path('relevant-data/route/<str:license_plate_number>', RouteGenerationView.as_view(), name='relevant_data.route'),
 
     path('admin/', admin.site.urls)
 ]
