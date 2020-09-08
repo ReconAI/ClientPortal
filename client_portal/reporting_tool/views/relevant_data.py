@@ -1,4 +1,7 @@
-from django.db.models import QuerySet
+from django.contrib.postgres.fields.jsonb import KeyTextTransform
+from django.db import models
+from django.db.models import QuerySet, Sum
+from django.db.models.functions import Cast
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django_filters import rest_framework as filters
@@ -14,7 +17,7 @@ from recon_db_manager.models import RelevantData, TypeCode
 from reporting_tool.filters import RelevantDataFilter, \
     RelevantDataSensorFilter, ProjectFilter, RouteFilter
 from reporting_tool.serializers import RelevantDataSerializer, \
-    RelevantDataGPSSerializer, TypeCodeSerializer
+    RelevantDataGPSSerializer, TypeCodeSerializer, HeatMapSerializer
 from shared.permissions import IsActive, PaymentRequired
 from shared.swagger.headers import token_header
 from shared.swagger.responses import \
@@ -268,6 +271,27 @@ class RouteGenerationView(RelevantDataHandler, PlainListModelMixin,
     def filter_queryset(self, queryset: QuerySet) -> QuerySet:
         qs = queryset.filter(
             license_plate_number=self.kwargs.get('license_plate_number')
+        )
+
+        return super().filter_queryset(qs)
+
+
+class RelevantDataHeatMapView(RelevantDataHandler, PlainListModelMixin,
+                              ListAPIView):
+    queryset = RelevantData.objects.all()
+
+    serializer_class = HeatMapSerializer
+
+    def filter_queryset(self, queryset: QuerySet) -> QuerySet:
+        qs = queryset.values('sensor_GPS_lat', 'sensor_GPS_long').filter(
+            id__in=self.request.query_params.getlist('id', [])
+        ).annotate(
+            number_of_objects=Sum(
+                Cast(
+                    KeyTextTransform("NumberOfObjects", "traffic_flow"),
+                    models.IntegerField()
+                )
+            )
         )
 
         return super().filter_queryset(qs)
