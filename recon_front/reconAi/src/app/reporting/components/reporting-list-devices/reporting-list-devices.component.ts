@@ -140,9 +140,7 @@ export class ReportingListDevicesComponent implements OnInit, AfterViewInit {
       },
       {
         header: 'Project name',
-        id: 'projectName',
-        render: ({ project }: ReportingDeviceClientInterface): string =>
-          project?.name,
+        id: 'project',
         width: '100px',
       },
       {
