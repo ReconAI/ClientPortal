@@ -4,6 +4,8 @@ import {
   CredentialsRequestInterface,
 } from 'app/constants/types';
 
+import moment from 'moment';
+
 export interface PreSignUpInterface {
   login: string;
   password1: string;
@@ -55,16 +57,16 @@ export const transformSignUpFormToRequest = (
   inv_email: user.invoicing.email,
 });
 
-export interface DaysLeftServerInterface {
-  days_left: number;
+export interface TrialEndDateServerInterface {
+  trial_expires_on: string;
 }
 
-export interface DaysLeftClientInterface {
-  daysLeft: number;
+export interface TrialEndDateClientInterface {
+  trialEndDate: string;
 }
 
-export const transformDaysLeftFromServer = ({
-  days_left,
-}: DaysLeftServerInterface): DaysLeftClientInterface => ({
-  daysLeft: days_left,
+export const transformTrialEndDateFromServer = ({
+  trial_expires_on,
+}: TrialEndDateServerInterface): TrialEndDateClientInterface => ({
+  trialEndDate: moment(trial_expires_on).format('YYYY-MM-DD HH:mm'),
 });

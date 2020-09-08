@@ -84,6 +84,8 @@ class SignupView(APIView, FormMixin):
 
     permission_classes = (IsNotAuthenticated,)
 
+    response_serializer = TrialSerializer
+
     @atomic(using='default')
     @atomic(using=settings.RECON_AI_CONNECTION_NAME)
     @swagger_auto_schema(
@@ -112,6 +114,11 @@ class SignupView(APIView, FormMixin):
             success_status=status.HTTP_201_CREATED,
             request=request
         )
+
+    def response_data(self, args) -> dict:
+        user, organization = args
+
+        return self.response_serializer(organization).data
 
 
 class ActivateView(APIView, FormMixin):
@@ -364,12 +371,24 @@ class ResetPassword(APIView, FormMixin):
         )
 
 
+class ChangePassword(ResetPassword):
+    """
+    Change password view
+    """
+    permission_classes = (IsAuthenticated, IsActive)
+
+    def get_form_kwargs(self) -> dict:
+        return {
+            'data': {
+                'email': self.request.user.email
+            }
+        }
+
+
 class CheckResetPasswordTokenView(APIView, FormMixin, CheckTokenMixin):
     """
     Checks whether provided password reset token is valid
     """
-    permission_classes = (IsNotAuthenticated,)
-
     check_token_form_class = CheckResetPasswordTokenForm
 
     @swagger_auto_schema(
@@ -403,8 +422,6 @@ class PasswordResetConfirmView(APIView, FormMixin):
     """
     Password reset confirmation
     """
-    permission_classes = (IsNotAuthenticated,)
-
     form_class = SetPasswordForm
 
     @method_decorator(never_cache)

@@ -5,7 +5,7 @@ import {
 } from './../../constants/types/requests';
 import {
   PreSignUpInterface,
-  DaysLeftClientInterface,
+  TrialEndDateClientInterface,
 } from './signUp.server.helpers';
 import { SignUpState } from './signUp.reducer';
 import { createAction, props } from '@ngrx/store';
@@ -89,9 +89,9 @@ export const activationErrorAction = createAction(
 
 export const resetSignUpAction = createAction(SignUpActionTypes.RESET_SIGN_UP);
 
-export const setDaysLeftAction = createAction(
+export const setTrialEndDateAction = createAction(
   SignUpActionTypes.SET_DAYS_LEFT,
-  props<DaysLeftClientInterface>()
+  props<TrialEndDateClientInterface>()
 );
 
 export interface IsSuccessSignUpOpenableActionInterface {

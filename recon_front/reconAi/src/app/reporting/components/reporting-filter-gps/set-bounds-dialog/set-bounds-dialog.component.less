@@ -1,0 +1,62 @@
+@import "../../../../../variables.less";
+
+.filter-map#filter-map {
+    height: 300px;
+    width: 520px;
+}
+
+
+.form-container {
+    margin-bottom: 20px;
+
+    form {
+        width: 100%;
+
+        .block-container {
+            width: 100%;
+
+            &:last-child {
+                margin-top: 10px;
+            }
+
+            span.block-title {
+                font-weight: 500;
+            }
+
+            .inputs-container {
+                label {
+                    margin: 0px 5px;
+                }
+
+                input {
+                    width: 40%;
+                    padding: 0 5px;
+                    height: 30px;
+                    border: 1px solid @recon-border-input;
+
+                    &:focus {
+                        outline: 0px;
+                        border: 1px solid @recon-black;
+
+                    }
+
+                    &.input-invalid {
+                        border-color: @recon-error-input-border;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.map-container {
+    margin-bottom: 20px;
+}
+
+.bottom-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}

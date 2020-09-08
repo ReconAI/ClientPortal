@@ -26,6 +26,21 @@ export const DEFAULT_FILTER_ARRAY: FilterItemInterface[] = [
     },
   },
   {
+    label: 'Sensor GPS',
+    id: 'gps',
+    type: FilterTypes.MAP_RECTANGLE,
+    value: {
+      topLeft: {
+        lat: '',
+        lng: '',
+      },
+      bottomRight: {
+        lat: '',
+        lng: '',
+      },
+    },
+  },
+  {
     label: 'Project name',
     id: 'project_name',
     type: FilterTypes.INPUT_CHECKBOX,

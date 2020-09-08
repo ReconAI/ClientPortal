@@ -1,14 +1,9 @@
 <div class="filter-container" [formGroup]="filtersForm">
   <div class="filters" formArrayName="filters">
-    <div
-      class="filter and-or"
-      [ngClass]="{ 'shown-filter': isSelectedAtIndex(0) }"
-      [formGroupName]="0"
-    >
+    <div class="filter and-or" [formGroupName]="0">
       <recon-form-slider
         formControlName="value"
         label="Or / And"
-        *ngIf="isSelectedAtIndex(0)"
         (changeVal)="changeValue()"
       ></recon-form-slider>
     </div>
@@ -38,9 +33,20 @@
       ></recon-form-range-picker>
     </div>
     <div
-      class="filter input-checkbox-filter"
+      class="filter"
       [ngClass]="{ 'shown-filter': isSelectedAtIndex(3) }"
       [formGroupName]="3"
+    >
+      <recon-reporting-filter-gps
+        *ngIf="isSelectedAtIndex(3)"
+        formControlName="value"
+        (changeVal)="changeValue()"
+      ></recon-reporting-filter-gps>
+    </div>
+    <div
+      class="filter input-checkbox-filter"
+      [ngClass]="{ 'shown-filter': isSelectedAtIndex(4) }"
+      [formGroupName]="4"
     >
       <recon-filter-input-checkbox
         label="Project name"
@@ -48,19 +54,19 @@
         placeholder="Search..."
         [autocompleteOptions]="projectNames"
         formControlName="value"
-        *ngIf="isSelectedAtIndex(3)"
+        *ngIf="isSelectedAtIndex(4)"
         (blurVal)="changeValue()"
-        (changeVal)="changeWithAutocomplete($event.inputValue, 3)"
+        (changeVal)="changeWithAutocomplete($event.inputValue, 4)"
       ></recon-filter-input-checkbox>
     </div>
     <div
       class="filter"
       [ngClass]="{
         'shown-filter':
-          isSelectedAtIndex(4) && eventObjects && eventObjects.length
+          isSelectedAtIndex(5) && eventObjects && eventObjects.length
       }"
-      *ngIf="isSelectedAtIndex(4) && eventObjects && eventObjects.length"
-      [formGroupName]="4"
+      *ngIf="isSelectedAtIndex(5) && eventObjects && eventObjects.length"
+      [formGroupName]="5"
     >
       <recon-filter-select
         formControlName="value"
@@ -71,8 +77,8 @@
     </div>
     <div
       class="filter"
-      [ngClass]="{ 'shown-filter': isSelectedAtIndex(5) }"
-      [formGroupName]="5"
+      [ngClass]="{ 'shown-filter': isSelectedAtIndex(6) }"
+      [formGroupName]="6"
     >
       <recon-filter-three-inputs
         label="Location XYZ, mm"
@@ -81,23 +87,9 @@
         rightLabel="Z"
         checkboxLabel="Invert"
         formControlName="value"
-        *ngIf="isSelectedAtIndex(5)"
-        (blurVal)="changeValue()"
-      ></recon-filter-three-inputs>
-    </div>
-    <div
-      class="filter"
-      [ngClass]="{ 'shown-filter': isSelectedAtIndex(6) }"
-      [formGroupName]="6"
-    >
-      <recon-filter-two-inputs-checkbox
-        label="Orient theta"
-        checkboxLabel="Invert"
-        placeholder="Search..."
-        formControlName="value"
         *ngIf="isSelectedAtIndex(6)"
         (blurVal)="changeValue()"
-      ></recon-filter-two-inputs-checkbox>
+      ></recon-filter-three-inputs>
     </div>
     <div
       class="filter"
@@ -105,7 +97,7 @@
       [formGroupName]="7"
     >
       <recon-filter-two-inputs-checkbox
-        label="Orient phi"
+        label="Orient theta"
         checkboxLabel="Invert"
         placeholder="Search..."
         formControlName="value"
@@ -118,11 +110,25 @@
       [ngClass]="{ 'shown-filter': isSelectedAtIndex(8) }"
       [formGroupName]="8"
     >
+      <recon-filter-two-inputs-checkbox
+        label="Orient phi"
+        checkboxLabel="Invert"
+        placeholder="Search..."
+        formControlName="value"
+        *ngIf="isSelectedAtIndex(8)"
+        (blurVal)="changeValue()"
+      ></recon-filter-two-inputs-checkbox>
+    </div>
+    <div
+      class="filter"
+      [ngClass]="{ 'shown-filter': isSelectedAtIndex(9) }"
+      [formGroupName]="9"
+    >
       <recon-filter-select
         label="Traffic flow"
         formControlName="value"
         [options]="trafficFlowOptions"
-        *ngIf="isSelectedAtIndex(8)"
+        *ngIf="isSelectedAtIndex(9)"
         (changeVal)="changeValue()"
       ></recon-filter-select>
     </div>
@@ -130,10 +136,10 @@
       class="filter"
       [ngClass]="{
         'shown-filter':
-          isSelectedAtIndex(9) && vehicleTypes && vehicleTypes.length
+          isSelectedAtIndex(10) && vehicleTypes && vehicleTypes.length
       }"
-      *ngIf="isSelectedAtIndex(9) && vehicleTypes && vehicleTypes.length"
-      [formGroupName]="9"
+      *ngIf="isSelectedAtIndex(10) && vehicleTypes && vehicleTypes.length"
+      [formGroupName]="10"
     >
       <recon-filter-select
         label="Vehicle classification"
@@ -144,14 +150,14 @@
     </div>
     <div
       class="filter"
-      [ngClass]="{ 'shown-filter': isSelectedAtIndex(10) }"
-      [formGroupName]="10"
+      [ngClass]="{ 'shown-filter': isSelectedAtIndex(11) }"
+      [formGroupName]="11"
     >
       <recon-filter-select
         label="Pedestrian transit method classification"
         formControlName="value"
         [options]="pedestrianOptions"
-        *ngIf="isSelectedAtIndex(10)"
+        *ngIf="isSelectedAtIndex(11)"
         (changeVal)="changeValue()"
       ></recon-filter-select>
     </div>
@@ -159,16 +165,16 @@
       class="filter"
       [ngClass]="{
         'shown-filter':
-          isSelectedAtIndex(11) &&
+          isSelectedAtIndex(12) &&
           roadWeatherConditions &&
           roadWeatherConditions.length
       }"
       *ngIf="
-        isSelectedAtIndex(11) &&
+        isSelectedAtIndex(12) &&
         roadWeatherConditions &&
         roadWeatherConditions.length
       "
-      [formGroupName]="11"
+      [formGroupName]="12"
     >
       <recon-filter-select
         label="Road condition classification"
@@ -179,25 +185,11 @@
     </div>
     <div
       class="filter"
-      [ngClass]="{ 'shown-filter': isSelectedAtIndex(12) }"
-      [formGroupName]="12"
-    >
-      <recon-filter-two-inputs
-        label="Ambient temperature, C"
-        formControlName="value"
-        leftPlaceholder="From"
-        rightPlaceholder="To"
-        *ngIf="isSelectedAtIndex(12)"
-        (blurVal)="changeValue()"
-      ></recon-filter-two-inputs>
-    </div>
-    <div
-      class="filter"
       [ngClass]="{ 'shown-filter': isSelectedAtIndex(13) }"
       [formGroupName]="13"
     >
       <recon-filter-two-inputs
-        label="Road temperature, C"
+        label="Ambient temperature, C"
         formControlName="value"
         leftPlaceholder="From"
         rightPlaceholder="To"
@@ -206,14 +198,28 @@
       ></recon-filter-two-inputs>
     </div>
     <div
-      class="filter checkbox-filter"
+      class="filter"
       [ngClass]="{ 'shown-filter': isSelectedAtIndex(14) }"
       [formGroupName]="14"
+    >
+      <recon-filter-two-inputs
+        label="Road temperature, C"
+        formControlName="value"
+        leftPlaceholder="From"
+        rightPlaceholder="To"
+        *ngIf="isSelectedAtIndex(14)"
+        (blurVal)="changeValue()"
+      ></recon-filter-two-inputs>
+    </div>
+    <div
+      class="filter checkbox-filter"
+      [ngClass]="{ 'shown-filter': isSelectedAtIndex(15) }"
+      [formGroupName]="15"
     >
       <recon-form-checkbox
         label="Tagged data"
         formControlName="value"
-        *ngIf="isSelectedAtIndex(14)"
+        *ngIf="isSelectedAtIndex(15)"
         (changeVal)="changeValue()"
       ></recon-form-checkbox>
     </div>

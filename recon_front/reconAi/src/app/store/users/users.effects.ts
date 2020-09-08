@@ -1,11 +1,11 @@
 import {
-  setDaysLeftAction,
+  setTrialEndDateAction,
   setIsSuccessSignUpOpenableStatusAction,
   setSignUpTypeAction,
 } from './../signUp/signUp.actions';
 import {
-  DaysLeftServerInterface,
-  transformDaysLeftFromServer,
+  TrialEndDateServerInterface,
+  transformTrialEndDateFromServer,
 } from './../signUp/signUp.server.helpers';
 import { PaginationResponseServerInterface } from './../../constants/types/requests';
 import {
@@ -333,14 +333,14 @@ export class UsersEffects {
       withLatestFrom(this.store.pipe(select(selectInvitedActivation))),
       switchMap(([user, activation]) =>
         this.httpClient
-          .put<DaysLeftServerInterface>(
+          .put<TrialEndDateServerInterface>(
             `/api/users/invitations`,
             transformInviteSignUpUserToServer(user, activation)
           )
           .pipe(
-            map((daysLeft) => {
+            map((trialEndDate) => {
               this.store.dispatch(
-                setDaysLeftAction(transformDaysLeftFromServer(daysLeft))
+                setTrialEndDateAction(transformTrialEndDateFromServer(trialEndDate))
               );
               // to go through not auth guard
               this.store.dispatch(

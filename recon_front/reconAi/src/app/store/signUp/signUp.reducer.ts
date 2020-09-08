@@ -1,6 +1,6 @@
 import {
   PreSignUpInterface,
-  DaysLeftClientInterface,
+  TrialEndDateClientInterface,
 } from './signUp.server.helpers';
 import {
   FormServerErrorInterface,
@@ -16,10 +16,11 @@ import {
   resetSignUpAction,
   IsSuccessSignUpOpenableActionInterface,
   setIsSuccessSignUpOpenableStatusAction,
-  setDaysLeftAction,
+  setTrialEndDateAction,
   SetSignUpTypePayloadInterface,
   setSignUpTypeAction,
 } from './signUp.actions';
+import moment from 'moment';
 
 interface SignUpErrors {
   preSignUp: string;
@@ -36,7 +37,7 @@ export interface SignUpState {
   password2: string;
   isPossibleToOpenSignUp: boolean;
   errors: SignUpErrors;
-  daysLeft: number;
+  trialEndDate: string;
   type: string;
 }
 
@@ -46,7 +47,7 @@ export const initialState: SignUpState = {
   password2: null,
   isPossibleToOpenSignUp: false,
   errors: initialSignUpErrors,
-  daysLeft: 30,
+  trialEndDate: null,
   type: null,
 };
 
@@ -104,16 +105,16 @@ const setIsSuccessSignUpOpenableStatusReducer = (
 ): SignUpState => ({
   ...state,
   isPossibleToOpenSignUp: status,
-  daysLeft: status ? state.daysLeft : 30,
+  trialEndDate: status ? state.trialEndDate : null,
   type: status ? state.type : null,
 });
 
-const setDaysLeftReducer = (
+const setTrialEndDateReducer = (
   state: SignUpState,
-  { daysLeft }: Action & DaysLeftClientInterface
+  { trialEndDate }: Action & TrialEndDateClientInterface
 ): SignUpState => ({
   ...state,
-  daysLeft,
+  trialEndDate,
 });
 
 const setSignUpTypeReducer = (
@@ -138,7 +139,7 @@ const signUpReducer = createReducer(
     setIsSuccessSignUpOpenableStatusAction,
     setIsSuccessSignUpOpenableStatusReducer
   ),
-  on(setDaysLeftAction, setDaysLeftReducer),
+  on(setTrialEndDateAction, setTrialEndDateReducer),
   on(setSignUpTypeAction, setSignUpTypeReducer)
 );
 
