@@ -212,6 +212,9 @@ class FilterSet(filters.FilterSet):
 
 class RelevantDataSensorFilter(FilterSet):
     project_name = CharFilter(field_name="project__name", lookup_expr='exact')
+    license_plate_number = CharFilter(
+        field_name="license_plate_number", lookup_expr='exact'
+    )
     timestamp = DateTimeFromToRangeFilter(
         field_name="timestamp", lookup_expr='range'
     )
@@ -246,7 +249,8 @@ class RelevantDataSensorFilter(FilterSet):
         fields = (
             'project_name', 'timestamp', 'orient_theta', 'orient_phi',
             'is_tagged', 'vehicle_type', 'event_object',
-            'road_temperature', 'ambient_temperature', 'road_weather_condition'
+            'road_temperature', 'ambient_temperature',
+            'road_weather_condition', 'license_plate_number'
         )
         form = RelevantDataFiltersForm
 
