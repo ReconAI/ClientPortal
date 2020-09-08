@@ -1,6 +1,11 @@
+import { ExportRelevantDataSuccessDialogComponent } from './export-relevant-data-success-dialog/export-relevant-data-success-dialog.component';
+import { exportRelevantDataSucceededAction } from './../../../store/reporting/reporting.actions';
+import { ofType } from '@ngrx/effects';
+import { Observable, Subscription } from 'rxjs';
+import { RelevantDataExportFormat } from './../../../constants/types/relevant-data';
 import { SetGpsDialogContainer } from './../set-gps-dialog/set-gps-dialog.container';
 import { PaginationRequestInterface } from './../../../constants/types/requests';
-import { Store } from '@ngrx/store';
+import { Store, ActionsSubject, Action } from '@ngrx/store';
 import { OnlineStreamingComponent } from './../reporting-list-devices/online-streaming/online-streaming.component';
 import { TAMPERE_COORDINATES } from './../../../constants/globalVariables/globalVariables';
 import { Router } from '@angular/router';
@@ -30,6 +35,7 @@ import 'leaflet.heat/dist/leaflet-heat.js';
 
 import { LatLngInterface } from 'app/core/helpers/markers';
 import { ReportingDeviceClientInterface } from 'app/store/reporting/reporting.server.helpers';
+import { ExportRelevantDataPayloadInterface } from 'app/store/reporting';
 @Component({
   selector: 'recon-reporting-list-devices',
   templateUrl: './reporting-list-devices.component.html',
@@ -40,7 +46,8 @@ export class ReportingListDevicesComponent implements OnInit, AfterViewInit {
     private dialog: MatDialog,
     private router: Router,
     private zone: NgZone,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private actionsSubject: ActionsSubject
   ) {}
 
   @ViewChild('taggedDataTemplate') taggedDataTemplate: TemplateRef<
@@ -55,13 +62,20 @@ export class ReportingListDevicesComponent implements OnInit, AfterViewInit {
   @Input() count = 1;
   @Input() pageSize = 1;
   @Input() devices: ReportingDeviceClientInterface[] = [];
+  @Input() isExporting = false;
   @Output() loadDevices$ = new EventEmitter<number>();
+  @Output() exportRelevantData$ = new EventEmitter<RelevantDataExportFormat>();
 
   center = null;
   selectedIndex = null;
   options = null;
   layers = [];
   columns: CrudTableColumn[] = [];
+
+  openSuccessDialog$: Observable<Action> = this.actionsSubject.pipe(
+    ofType(exportRelevantDataSucceededAction)
+  );
+  openSuccessDialogSubscription$: Subscription;
 
   setSelectedDevice(device: ReportingDeviceClientInterface): void {
     this.selectedIndex = this.devices.findIndex(({ id }) => id === device?.id);
@@ -119,6 +133,14 @@ export class ReportingListDevicesComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.setSelectedDevice(this.devices[0]);
     this.options = generateDefaultMap(this.center);
+    this.openSuccessDialogSubscription$ = this.openSuccessDialog$.subscribe(
+      () => {
+        this.dialog.open(ExportRelevantDataSuccessDialogComponent, {
+          width: '460px',
+          height: '210px',
+        });
+      }
+    );
   }
 
   ngAfterViewInit() {
@@ -144,7 +166,7 @@ export class ReportingListDevicesComponent implements OnInit, AfterViewInit {
         width: '100px',
       },
       {
-        header: 'Event/Object',
+        header: 'Object Class',
         id: 'isEvent',
         width: '100px',
       },
@@ -215,7 +237,7 @@ export class ReportingListDevicesComponent implements OnInit, AfterViewInit {
         cellTemplate: this.taggedDataTemplate,
       },
       {
-        header: 'License plate location',
+        header: 'Vehicle registration plate',
         id: 'plate',
         width: '100px',
       },
@@ -259,6 +281,10 @@ export class ReportingListDevicesComponent implements OnInit, AfterViewInit {
 
   goToUrl(url: string): void {
     window.open(url, '_blank');
+  }
+
+  onClickExportType(exportType: RelevantDataExportFormat): void {
+    this.exportRelevantData$.emit(exportType);
   }
 
   onMapReady(map: Map) {

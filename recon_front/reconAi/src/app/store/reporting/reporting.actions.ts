@@ -1,3 +1,4 @@
+import { RelevantDataExportFormat } from './../../constants/types/relevant-data';
 import { ReconSelectOption } from './../../shared/types/recon-select';
 import { ObjectFormErrorInterface } from './../../constants/types/requests';
 import {
@@ -48,6 +49,10 @@ export enum ReportingActionTypes {
   VEHICLE_TYPE_LIST_REQUESTED = '[Reporting] Vehicle Type List Requested',
   VEHICLE_TYPE_LIST_SUCCEEDED = '[Reporting] Vehicle Type List Succeeded',
   VEHICLE_TYPE_LIST_ERROR = '[Reporting] Vehicle Type List List Error',
+
+  EXPORT_RELEVANT_DATA_REQUESTED = '[Reporting] Export Relevant Data Requested',
+  EXPORT_RELEVANT_DATA_SUCCEEDED = '[Reporting] Export Relevant Data Succeeded',
+  EXPORT_RELEVANT_DATA_ERROR = '[Reporting] Export Relevant Data Error',
 }
 
 export const loadReportingDeviceListRequestedAction = createAction(
@@ -160,4 +165,19 @@ export const vehicleTypeListSucceededAction = createAction(
 
 export const vehicleTypeListErrorAction = createAction(
   ReportingActionTypes.VEHICLE_TYPE_LIST_ERROR
+);
+
+export interface ExportRelevantDataPayloadInterface {
+  format: RelevantDataExportFormat;
+}
+
+export const exportRelevantDataRequestedAction = createAction(
+  ReportingActionTypes.EXPORT_RELEVANT_DATA_REQUESTED,
+  props<ExportRelevantDataPayloadInterface>()
+);
+export const exportRelevantDataSucceededAction = createAction(
+  ReportingActionTypes.EXPORT_RELEVANT_DATA_SUCCEEDED
+);
+export const exportRelevantDataErrorAction = createAction(
+  ReportingActionTypes.EXPORT_RELEVANT_DATA_ERROR
 );

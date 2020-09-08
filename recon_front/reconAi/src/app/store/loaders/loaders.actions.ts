@@ -42,6 +42,7 @@ export enum LoadersActionTypes {
   SET_REPORTING_DEVICE_LIST_LOADING_STATUS = '[Loaders | Reporting] Set Reporting Device List Loading Status',
   SET_REPORTING_DEVICE_LOADING_STATUS = '[Loaders | Reporting] Set Reporting Device Loading Status',
   SET_GPS_LOADING_STATUS = '[Loaders | Reporting] Set GPS Loading Status',
+  SET_EXPORT_RELEVANT_LOADING_STATUS = '[Loaders | Reporting] Set Export Relevant Data Loading Status',
 }
 
 export interface LoaderInterface {
@@ -253,5 +254,10 @@ export const setReportingDeviceLoadingStatusAction = createAction(
 
 export const setGpsLoadingStatusAction = createAction(
   LoadersActionTypes.SET_GPS_LOADING_STATUS,
+  props<LoaderInterface>()
+);
+
+export const setExportRelevantLoadingStatusAction = createAction(
+  LoadersActionTypes.SET_EXPORT_RELEVANT_LOADING_STATUS,
   props<LoaderInterface>()
 );

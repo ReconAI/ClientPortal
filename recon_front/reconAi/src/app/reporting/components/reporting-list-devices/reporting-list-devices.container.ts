@@ -1,4 +1,6 @@
-import { PaginationRequestInterface } from './../../../constants/types/requests';
+import { selectExportRelevantDataStatus } from './../../../store/loaders/loaders.selectors';
+import { exportRelevantDataRequestedAction } from './../../../store/reporting/reporting.actions';
+import { RelevantDataExportFormat } from './../../../constants/types/relevant-data';
 import {
   selectReportingDeviceList,
   selectReportingDeviceListMetaCurrentPage,
@@ -36,9 +38,20 @@ export class ReportingListDevicesContainer implements OnInit {
   loadingStatus$: Observable<boolean> = this.store.pipe(
     select(selectReportingDeviceListLoadingStatus)
   );
+  exportingStatus$: Observable<boolean> = this.store.pipe(
+    select(selectExportRelevantDataStatus)
+  );
 
   loadDevices(page: number): void {
     this.store.dispatch(loadReportingDeviceListRequestedAction({ page }));
+  }
+
+  exportRelevantData(exportType: RelevantDataExportFormat): void {
+    this.store.dispatch(
+      exportRelevantDataRequestedAction({
+        format: exportType,
+      })
+    );
   }
 
   ngOnInit(): void {

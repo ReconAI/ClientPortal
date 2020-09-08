@@ -19,6 +19,7 @@ import { OnlineStreamingComponent } from './components/reporting-list-devices/on
 import { ReportingFilterContainer } from './components/reporting-filter/reporting-filter.container';
 import { ReportingFilterGpsComponent } from './components/reporting-filter-gps/reporting-filter-gps.component';
 import { SetBoundsDialogComponent } from './components/reporting-filter-gps/set-bounds-dialog/set-bounds-dialog.component';
+import { ExportRelevantDataSuccessDialogComponent } from './components/reporting-list-devices/export-relevant-data-success-dialog/export-relevant-data-success-dialog.component';
 @NgModule({
   declarations: [
     ReportingListDevicesComponent,
@@ -31,6 +32,7 @@ import { SetBoundsDialogComponent } from './components/reporting-filter-gps/set-
     OnlineStreamingComponent,
     ReportingFilterGpsComponent,
     SetBoundsDialogComponent,
+    ExportRelevantDataSuccessDialogComponent,
   ],
   imports: [
     CommonModule,

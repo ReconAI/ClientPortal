@@ -26,6 +26,9 @@ import {
   roadWeatherConditionListErrorAction,
   vehicleTypeListSucceededAction,
   vehicleTypeListErrorAction,
+  ExportRelevantDataPayloadInterface,
+  exportRelevantDataSucceededAction,
+  exportRelevantDataErrorAction,
 } from './reporting.actions';
 import {
   PaginationRequestInterface,
@@ -36,7 +39,6 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AppState } from '../reducers';
-import { ServerUserInterface } from 'app/constants/types';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store, Action, select } from '@ngrx/store';
 import {
@@ -52,12 +54,11 @@ import {
   setReportingDeviceListLoadingStatusAction,
   setReportingDeviceLoadingStatusAction,
   setGpsLoadingStatusAction,
+  setExportRelevantLoadingStatusAction,
 } from '../loaders';
 import {
   ReportingDeviceServerInterface,
   transformReportingPaginatedDeviceListFromServer,
-  transformReportingDeviceFromServer,
-  transformReportingDeviceCardFromServer,
   SetGpsRequestInterface,
   transformSetGpsToServer,
   setGpsErrorFieldRelations,
@@ -341,6 +342,47 @@ export class ReportingEffects {
               )
             ),
             catchError((error) => of(vehicleTypeListErrorAction()))
+          );
+      })
+    )
+  );
+
+  exportRelevantDataFormat$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action & ExportRelevantDataPayloadInterface>(
+        ReportingActionTypes.EXPORT_RELEVANT_DATA_REQUESTED
+      ),
+      tap(() => {
+        this.store.dispatch(
+          setExportRelevantLoadingStatusAction({
+            status: true,
+          })
+        );
+      }),
+      withLatestFrom(
+        this.store.pipe(select(selectApplyFiltersStatus)),
+        this.store.pipe(select(selectCurrentUserProfileId))
+      ),
+      switchMap(([{ format }, applyFiltersStatus, userId]) => {
+        return this.httpClient
+          .get<void>(
+            transformEndpointWithApplyStatus(
+              `/api/relevant-data/export/${format}`,
+              applyFiltersStatus,
+              +userId,
+              this.filtersService
+            )
+          )
+          .pipe(
+            map(() => exportRelevantDataSucceededAction()),
+            catchError((error) => of(exportRelevantDataErrorAction())),
+            finalize(() => {
+              this.store.dispatch(
+                setExportRelevantLoadingStatusAction({
+                  status: false,
+                })
+              );
+            })
           );
       })
     )
