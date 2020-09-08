@@ -25,6 +25,7 @@ import {
   ViewChild,
   TemplateRef,
   AfterViewInit,
+  OnDestroy,
   ChangeDetectorRef,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
@@ -41,7 +42,8 @@ import { ExportRelevantDataPayloadInterface } from 'app/store/reporting';
   templateUrl: './reporting-list-devices.component.html',
   styleUrls: ['./reporting-list-devices.component.less'],
 })
-export class ReportingListDevicesComponent implements OnInit, AfterViewInit {
+export class ReportingListDevicesComponent
+  implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private dialog: MatDialog,
     private router: Router,
@@ -143,6 +145,9 @@ export class ReportingListDevicesComponent implements OnInit, AfterViewInit {
     );
   }
 
+  ngOnDestroy(): void {
+    this.openSuccessDialogSubscription$?.unsubscribe();
+  }
   ngAfterViewInit() {
     this.columns = [
       {

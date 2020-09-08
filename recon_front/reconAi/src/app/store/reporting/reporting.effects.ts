@@ -367,7 +367,7 @@ export class ReportingEffects {
         return this.httpClient
           .get<void>(
             transformEndpointWithApplyStatus(
-              `/api/relevant-data/export/${format}`,
+              `/api/relevant-data/export/${format}?`,
               applyFiltersStatus,
               +userId,
               this.filtersService

@@ -15,6 +15,8 @@ export class CurrentUserProfileComponent implements OnInit {
   readonly userRolePriorities = UserRolesPriorities;
 
   @Input() isLoading = false;
+  @Input() isChangingPassword = false;
+
   @Input() organizationName: string;
   @Input() organizationPhone: string;
   @Input() organizationEmail: string;
@@ -40,6 +42,8 @@ export class CurrentUserProfileComponent implements OnInit {
   @Input() sendLoadingStatus = false;
 
   @Output() updateUser$ = new EventEmitter<UserProfileFormInterface>();
+  @Output() changePasswordClick$ = new EventEmitter<void>();
+
   ngOnInit(): void {}
 
   // disable organization and invoicing blocks for clients
@@ -49,6 +53,10 @@ export class CurrentUserProfileComponent implements OnInit {
 
   get isDeveloperAtLeast(): boolean {
     return this.userRolePriority >= UserRolesPriorities.DEVELOPER_ROLE;
+  }
+
+  onChangePassword(): void {
+    this.changePasswordClick$.emit();
   }
 
   updateUser(user: UserProfileFormInterface): void {

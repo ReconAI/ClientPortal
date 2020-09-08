@@ -40,6 +40,7 @@ import {
   setReportingDeviceLoadingStatusAction,
   setGpsLoadingStatusAction,
   setExportRelevantLoadingStatusAction,
+  setChangePasswordLoadingStatusAction,
 } from './loaders.actions';
 import { createReducer, on, Action } from '@ngrx/store';
 
@@ -92,6 +93,8 @@ export interface LoadersState {
   reportingDevice: boolean;
   setGps: boolean;
   exportRelevantData: boolean;
+  // user -> change password
+  changePassword: boolean;
 }
 
 const initialState: LoadersState = {
@@ -142,6 +145,8 @@ const initialState: LoadersState = {
   reportingDevice: false,
   setGps: false,
   exportRelevantData: false,
+  // user -> change password
+  changePassword: false,
 };
 
 const setCurrentUserLoadingStatusReducer = (
@@ -350,6 +355,11 @@ const setExportRelevantLoadingStatusReducer = (
   { status }: Action & LoaderInterface
 ): LoadersState => ({ ...state, exportRelevantData: status });
 
+const setChangePasswordLoadingStatusReducer = (
+  state: LoadersState,
+  { status }: Action & LoaderInterface
+): LoadersState => ({ ...state, changePassword: status });
+
 const loadersReducer = createReducer(
   initialState,
   on(setCurrentUserLoadingStatusAction, setCurrentUserLoadingStatusReducer),
@@ -439,7 +449,12 @@ const loadersReducer = createReducer(
     setReportingDeviceLoadingStatusReducer
   ),
   on(setGpsLoadingStatusAction, setGpsLoadingStatusReducer),
-  on(setExportRelevantLoadingStatusAction, setExportRelevantLoadingStatusReducer)
+  on(
+    setExportRelevantLoadingStatusAction,
+    setExportRelevantLoadingStatusReducer
+  ),
+  // user -> change password
+  on(setChangePasswordLoadingStatusAction, setChangePasswordLoadingStatusReducer)
 );
 
 export function reducer(state: LoadersState | undefined, action: Action) {
