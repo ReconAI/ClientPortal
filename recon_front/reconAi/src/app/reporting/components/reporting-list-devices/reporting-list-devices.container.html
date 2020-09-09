@@ -4,7 +4,9 @@
     [currentPage]="currentPage$ | async"
     [pageSize]="pageSize$ | async"
     [devices]="reportingDeviceList$ | async"
+    [isExporting]="exportingStatus$ | async"
     (loadDevices$)="loadDevices($event)"
+    (exportRelevantData$)="exportRelevantData($event)"
   ></recon-reporting-list-devices>
 </ng-container>
 <ng-template #loading>Loading...</ng-template>

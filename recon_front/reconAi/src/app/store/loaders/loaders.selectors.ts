@@ -204,3 +204,13 @@ export const selectSetGpsLoadingStatus = createSelector(
   selectLoaders,
   (loaders: LoadersState): boolean => loaders.setGps
 );
+
+export const selectExportRelevantDataStatus = createSelector(
+  selectLoaders,
+  (loaders: LoadersState): boolean => loaders.exportRelevantData
+);
+
+export const selectChangePasswordStatus = createSelector(
+  selectLoaders,
+  (loaders: LoadersState): boolean => loaders.changePassword
+);

@@ -14,13 +14,33 @@
     >
       SET GPS
     </button>
-    <button mat-raised-button color="accent" [matMenuTriggerFor]="menu">
-      DOWNLOAD
+    <button
+      mat-raised-button
+      color="accent"
+      [matMenuTriggerFor]="menu"
+      [disabled]="isExporting"
+    >
+      <mat-icon *ngIf="isExporting; else loaded">
+        <mat-spinner color="primary" diameter="20"></mat-spinner>
+      </mat-icon>
+      <ng-template #loaded>DOWNLOAD</ng-template>
     </button>
     <mat-menu #menu="matMenu" xPosition="before" class="recon-menu">
-      <button mat-menu-item>.xml</button>
+      <button
+        mat-menu-item
+        [disabled]="isExporting"
+        (click)="onClickExportType('xml')"
+      >
+        .xml
+      </button>
       <mat-divider></mat-divider>
-      <button mat-menu-item>.csv</button>
+      <button
+        mat-menu-item
+        [disabled]="isExporting"
+        (click)="onClickExportType('csv')"
+      >
+        .csv
+      </button>
     </mat-menu>
   </ng-container>
   <ng-template #onlineStreaming>
@@ -82,7 +102,6 @@
 </ng-template>
 
 <ng-template #cadTagTemplate let-element="element">
-  
   <span
     class="table-link"
     (click)="$event.stopPropagation(); goToUrl(element.fileTag)"
@@ -90,7 +109,5 @@
   >
     Link to cad file
   </span>
-  <ng-template #noFileTag>
-    No data
-  </ng-template>
+  <ng-template #noFileTag> No data </ng-template>
 </ng-template>

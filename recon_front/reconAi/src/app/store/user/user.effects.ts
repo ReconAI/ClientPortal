@@ -26,6 +26,7 @@ import {
   setDetachCardLoadingStatusAction,
   setNewFeatureRequestLoadingStatusAction,
   setDefaultPaymentMethodLoadingStatusAction,
+  setChangePasswordLoadingStatusAction,
 } from './../loaders/loaders.actions';
 import { LocalStorageService } from './../../core/services/localStorage/local-storage.service';
 import { Action, Store, select } from '@ngrx/store';
@@ -76,6 +77,8 @@ import {
   newRequestFeatureErrorAction,
   setDefaultPaymentMethodSucceededAction,
   setDefaultPaymentMethodErrorAction,
+  changePasswordSucceededAction,
+  changePasswordErrorAction,
 } from './user.actions';
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
@@ -515,6 +518,32 @@ export class UserEffects {
               );
             })
           )
+      )
+    )
+  );
+
+  changePassword$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action>(UserActionTypes.CHANGE_PASSWORD_REQUESTED),
+      tap(() => {
+        this.store.dispatch(
+          setChangePasswordLoadingStatusAction({
+            status: true,
+          })
+        );
+      }),
+      switchMap(() =>
+        this.httpClient.get<void>('/api/change-password').pipe(
+          map(() => changePasswordSucceededAction()),
+          catchError((error) => of(changePasswordErrorAction())),
+          finalize(() => {
+            this.store.dispatch(
+              setChangePasswordLoadingStatusAction({
+                status: false,
+              })
+            );
+          })
+        )
       )
     )
   );

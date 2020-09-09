@@ -17,6 +17,7 @@ export class HttpSuccessInterceptor implements HttpInterceptor {
   readonly durationInSeconds = 3;
   readonly urlsToNotShow: UrlInterceptorInterface[] = [
     { url: '/api/users/invitations', method: 'POST' },
+    { url: '/api/relevant-data/export', method: 'GET' },
   ];
 
   createSuccessServerMessage(response: HttpResponse<any>): string {
@@ -41,7 +42,7 @@ export class HttpSuccessInterceptor implements HttpInterceptor {
           event?.body?.message &&
           !this.urlsToNotShow.find(
             (req) =>
-              req.url === request.url &&
+              request.url.startsWith(req.url) &&
               (!req.method || req.method === request.method)
           )
         ) {
