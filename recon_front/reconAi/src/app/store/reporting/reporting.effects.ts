@@ -29,6 +29,8 @@ import {
   ExportRelevantDataPayloadInterface,
   exportRelevantDataSucceededAction,
   exportRelevantDataErrorAction,
+  buildVehicleRouteSucceededAction,
+  buildVehicleRouteErrorAction,
 } from './reporting.actions';
 import {
   PaginationRequestInterface,
@@ -55,6 +57,7 @@ import {
   setReportingDeviceLoadingStatusAction,
   setGpsLoadingStatusAction,
   setExportRelevantLoadingStatusAction,
+  setBuildingRouteLoadingStatusAction,
 } from '../loaders';
 import {
   ReportingDeviceServerInterface,
@@ -65,6 +68,8 @@ import {
   transformEndpointWithApplyStatus,
   transformOptionsFromServer,
   AutocompleteNameServerInterface,
+  LatLngServerInterface,
+  transformBuildingRouteFromServer,
 } from './reporting.server.helpers';
 import { updateBreadcrumbByIdAction, setAppTitleAction } from '../app';
 import { generalTransformFormErrorToObject } from 'app/core/helpers/generalFormsErrorsTransformation';
@@ -379,6 +384,54 @@ export class ReportingEffects {
             finalize(() => {
               this.store.dispatch(
                 setExportRelevantLoadingStatusAction({
+                  status: false,
+                })
+              );
+            })
+          );
+      })
+    )
+  );
+
+  buildVehicleRoute$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action>(ReportingActionTypes.BUILD_VEHICLE_ROUTE_REQUESTED),
+      tap(() => {
+        this.store.dispatch(
+          setBuildingRouteLoadingStatusAction({
+            status: true,
+          })
+        );
+      }),
+      withLatestFrom(
+        this.store.pipe(select(selectApplyFiltersStatus)),
+        this.store.pipe(select(selectCurrentUserProfileId))
+      ),
+      switchMap(([_, status, userId]) => {
+        const plateNumber = this.filtersService.getUserFilter(
+          'license_plate_number',
+          +userId
+        ).value as string;
+
+        return this.httpClient
+          .get<LatLngServerInterface[]>(
+            transformEndpointWithApplyStatus(
+              `/api/relevant-data/route/${plateNumber}?`,
+              status,
+              +userId,
+              this.filtersService
+            )
+          )
+          .pipe(
+            map((points) =>
+              buildVehicleRouteSucceededAction(
+                transformBuildingRouteFromServer(points)
+              )
+            ),
+            catchError((error) => of(buildVehicleRouteErrorAction())),
+            finalize(() => {
+              this.store.dispatch(
+                setBuildingRouteLoadingStatusAction({
                   status: false,
                 })
               );

@@ -1,3 +1,4 @@
+import { LatLngInterface } from 'app/core/helpers/markers';
 import { ReconSelectOption } from 'app/shared/types';
 import { OptionServerInterface } from './../../reporting/constants/types/filters';
 import { FiltersService } from './../../core/services/filters/filters.service';
@@ -119,14 +120,14 @@ export interface SetGpsRequestInterface {
   };
 }
 
-export interface SetGpsRequestServerInterface {
+export interface LatLngServerInterface {
   lat: number;
   long: number;
 }
 
 export const transformSetGpsToServer = ({
   gps,
-}: SetGpsRequestInterface): SetGpsRequestServerInterface => ({
+}: SetGpsRequestInterface): LatLngServerInterface => ({
   lat: gps?.lat,
   long: gps?.lng,
 });
@@ -173,3 +174,13 @@ export interface AutocompleteNameServerInterface {
 export interface AutocompleteNameClientInterface {
   names: string[];
 }
+
+export interface BuildRouteClientInterface {
+  points: LatLngInterface[];
+}
+
+export const transformBuildingRouteFromServer = (
+  points: LatLngServerInterface[]
+): BuildRouteClientInterface => ({
+  points: points.map(({ lat, long }) => ({ lat, lng: long })),
+});

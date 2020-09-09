@@ -4,7 +4,11 @@
     [currentPage]="currentPage$ | async"
     [pageSize]="pageSize$ | async"
     [devices]="reportingDeviceList$ | async"
+    [routePoints]="routePoints$ | async"
+    [isPlatNumberApplied]="isPlatNumberApplied$ | async"
+    [buildingLoading]="buildingLoading$ | async"
     [isExporting]="exportingStatus$ | async"
+    (buildRoute$)="buildRoute()"
     (loadDevices$)="loadDevices($event)"
     (exportRelevantData$)="exportRelevantData($event)"
   ></recon-reporting-list-devices>

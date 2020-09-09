@@ -1,10 +1,17 @@
+import { FiltersService } from './../../../../core/services/filters/filters.service';
+import { buildVehicleRouteRequestedAction } from './../../../../store/reporting/reporting.actions';
+import { LatLngInterface } from 'app/core/helpers/markers';
 import {
   selectReportingSelectedDeviceList,
   selectReportingSelectedDeviceListMetaCurrentPage,
   selectReportingSelectedDeviceListMetaCount,
   selectReportingSelectedDeviceListMetaPageSize,
+  selectVehicleRoutePoints,
 } from './../../../../store/reporting/reporting.selectors';
-import { selectReportingDeviceLoadingStatus } from './../../../../store/loaders/loaders.selectors';
+import {
+  selectReportingDeviceLoadingStatus,
+  selectBuildingRouteStatus,
+} from './../../../../store/loaders/loaders.selectors';
 import { ReportingDeviceClientInterface } from './../../../../store/reporting/reporting.server.helpers';
 import { Store, select } from '@ngrx/store';
 import { ActivatedRoute } from '@angular/router';
@@ -23,7 +30,8 @@ export class ReportingDeviceContainer implements OnInit, OnDestroy {
 
   constructor(
     private activateRoute: ActivatedRoute,
-    private store: Store<AppState>
+    private store: Store<AppState>,
+    private filtersService: FiltersService
   ) {}
 
   loadingStatus$: Observable<boolean> = this.store.pipe(
@@ -34,6 +42,18 @@ export class ReportingDeviceContainer implements OnInit, OnDestroy {
     ReportingDeviceClientInterface[]
   > = this.store.pipe(select(selectReportingSelectedDeviceList));
   selectedDeviceListSubscription$: Subscription;
+
+  buildingLoading$: Observable<boolean> = this.store.pipe(
+    select(selectBuildingRouteStatus)
+  );
+
+  routePoints$: Observable<LatLngInterface[]> = this.store.pipe(
+    select(selectVehicleRoutePoints)
+  );
+
+  isPlatNumberApplied$: Observable<
+    boolean
+  > = this.filtersService.isFilterAppliedForCurrentUser('license_plate_number');
 
   currentPage$: Observable<number> = this.store.pipe(
     select(selectReportingSelectedDeviceListMetaCurrentPage)
@@ -63,5 +83,9 @@ export class ReportingDeviceContainer implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.selectedDeviceListSubscription$.unsubscribe();
+  }
+
+  buildRoute(): void {
+    this.store.dispatch(buildVehicleRouteRequestedAction());
   }
 }

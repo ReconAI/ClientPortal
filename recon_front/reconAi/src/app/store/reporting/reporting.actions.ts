@@ -1,10 +1,7 @@
 import { RelevantDataExportFormat } from './../../constants/types/relevant-data';
 import { ReconSelectOption } from './../../shared/types/recon-select';
 import { ObjectFormErrorInterface } from './../../constants/types/requests';
-import {
-  FilterItemInterface,
-  OptionServerInterface,
-} from './../../reporting/constants/types/filters';
+
 import {
   PaginationRequestInterface,
   PaginationResponseClientInterface,
@@ -16,6 +13,7 @@ import {
   OptionsPayloadInterface,
   AutocompleteNameServerInterface,
   AutocompleteNameClientInterface,
+  BuildRouteClientInterface,
 } from './reporting.server.helpers';
 
 export enum ReportingActionTypes {
@@ -53,6 +51,10 @@ export enum ReportingActionTypes {
   EXPORT_RELEVANT_DATA_REQUESTED = '[Reporting] Export Relevant Data Requested',
   EXPORT_RELEVANT_DATA_SUCCEEDED = '[Reporting] Export Relevant Data Succeeded',
   EXPORT_RELEVANT_DATA_ERROR = '[Reporting] Export Relevant Data Error',
+
+  BUILD_VEHICLE_ROUTE_REQUESTED = '[Reporting] Build Vehicle Route Requested',
+  BUILD_VEHICLE_ROUTE_SUCCEEDED = '[Reporting] Build Vehicle Route Succeeded',
+  BUILD_VEHICLE_ROUTE_ERROR = '[Reporting] Build Vehicle Route Error',
 }
 
 export const loadReportingDeviceListRequestedAction = createAction(
@@ -175,9 +177,24 @@ export const exportRelevantDataRequestedAction = createAction(
   ReportingActionTypes.EXPORT_RELEVANT_DATA_REQUESTED,
   props<ExportRelevantDataPayloadInterface>()
 );
+
 export const exportRelevantDataSucceededAction = createAction(
   ReportingActionTypes.EXPORT_RELEVANT_DATA_SUCCEEDED
 );
+
 export const exportRelevantDataErrorAction = createAction(
   ReportingActionTypes.EXPORT_RELEVANT_DATA_ERROR
+);
+
+export const buildVehicleRouteRequestedAction = createAction(
+  ReportingActionTypes.BUILD_VEHICLE_ROUTE_REQUESTED
+);
+
+export const buildVehicleRouteSucceededAction = createAction(
+  ReportingActionTypes.BUILD_VEHICLE_ROUTE_SUCCEEDED,
+  props<BuildRouteClientInterface>()
+);
+
+export const buildVehicleRouteErrorAction = createAction(
+  ReportingActionTypes.BUILD_VEHICLE_ROUTE_ERROR
 );

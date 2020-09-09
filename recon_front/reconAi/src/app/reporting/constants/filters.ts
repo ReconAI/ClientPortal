@@ -111,6 +111,12 @@ export const DEFAULT_FILTER_ARRAY: FilterItemInterface[] = [
     value: '',
   },
   {
+    label: 'License plate number',
+    id: 'license_plate_number',
+    type: FilterTypes.INPUT,
+    value: '',
+  },
+  {
     label: 'Ambient temperature, C',
     id: 'ambient_temperature',
     type: FilterTypes.TWO_INPUTS,

@@ -27,12 +27,15 @@ import {
   AfterViewInit,
   OnDestroy,
   ChangeDetectorRef,
+  SimpleChanges,
+  OnChanges,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { latLng, Map } from 'leaflet';
 
 import * as L from 'leaflet';
 import 'leaflet.heat/dist/leaflet-heat.js';
+import 'leaflet-routing-machine';
 
 import { LatLngInterface } from 'app/core/helpers/markers';
 import { ReportingDeviceClientInterface } from 'app/store/reporting/reporting.server.helpers';
@@ -43,7 +46,7 @@ import { ExportRelevantDataPayloadInterface } from 'app/store/reporting';
   styleUrls: ['./reporting-list-devices.component.less'],
 })
 export class ReportingListDevicesComponent
-  implements OnInit, AfterViewInit, OnDestroy {
+  implements OnInit, AfterViewInit, OnDestroy, OnChanges {
   constructor(
     private dialog: MatDialog,
     private router: Router,
@@ -64,15 +67,27 @@ export class ReportingListDevicesComponent
   @Input() count = 1;
   @Input() pageSize = 1;
   @Input() devices: ReportingDeviceClientInterface[] = [];
+
+  @Input() routePoints: LatLngInterface[] = [];
+
   @Input() isExporting = false;
+  @Input() isPlatNumberApplied = false;
+  @Input() buildingLoading = false;
+
   @Output() loadDevices$ = new EventEmitter<number>();
   @Output() exportRelevantData$ = new EventEmitter<RelevantDataExportFormat>();
+  @Output() buildRoute$ = new EventEmitter<void>();
 
   center = null;
   selectedIndex = null;
   options = null;
   layers = [];
+  map: Map;
+  routingControl: L.Routing.Control;
   columns: CrudTableColumn[] = [];
+
+  readonly tooltipForDisabledBuildButton =
+    'To use this feature, please apply License plate filter';
 
   openSuccessDialog$: Observable<Action> = this.actionsSubject.pipe(
     ofType(exportRelevantDataSucceededAction)
@@ -144,10 +159,16 @@ export class ReportingListDevicesComponent
       }
     );
   }
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.routePoints) {
+      this.formWayPoints();
+    }
+  }
 
   ngOnDestroy(): void {
     this.openSuccessDialogSubscription$?.unsubscribe();
   }
+
   ngAfterViewInit() {
     this.columns = [
       {
@@ -206,7 +227,7 @@ export class ReportingListDevicesComponent
         width: '100px',
       },
       {
-        header: 'License plat number',
+        header: 'License plate number',
         id: 'plateNumber',
         width: '100px',
       },
@@ -268,6 +289,12 @@ export class ReportingListDevicesComponent
     this.cdr.detectChanges();
   }
 
+  formWayPoints(): void {
+    this.routingControl?.setWaypoints(
+      this.routePoints?.map((point) => latLng(point.lat, point.lng))
+    );
+  }
+
   openDialog(): void {
     const selectedDevice = this.devices[this.selectedIndex];
     this.dialog.open(SetGpsDialogContainer, {
@@ -292,7 +319,28 @@ export class ReportingListDevicesComponent
     this.exportRelevantData$.emit(exportType);
   }
 
+  buildRoute(): void {
+    this.buildRoute$.emit();
+  }
+
   onMapReady(map: Map) {
+    this.map = map;
+
+    this.routingControl = (L as any).Routing.control({
+      addWaypoints: false,
+      routeWhileDragging: false,
+      draggableWaypoints: false,
+      createMarker: () => null,
+    }).addTo(this.map);
+
+    this.formWayPoints();
+
+    // (L as any).Routing.control({
+    //   addWaypoints: false,
+    //   routeWhileDragging: false,
+    //   draggableWaypoints: false,
+    //   waypoints: [L.latLng(57.74, 11.94), L.latLng(57.6792, 11.949)],
+    // }).addTo(map);
     // // workaround
     //   L.heatLayer(
     //     [

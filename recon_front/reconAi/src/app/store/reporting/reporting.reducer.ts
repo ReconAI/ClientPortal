@@ -1,3 +1,4 @@
+import { LatLngInterface } from 'app/core/helpers/markers';
 import { ReconSelectOption } from 'app/shared/types';
 import {
   FormServerErrorInterface,
@@ -13,6 +14,7 @@ import {
   ReportingDeviceClientInterface,
   OptionsPayloadInterface,
   AutocompleteNameClientInterface,
+  BuildRouteClientInterface,
 } from './reporting.server.helpers';
 import {
   loadReportingDeviceListSucceededAction,
@@ -27,6 +29,7 @@ import {
   roadWeatherConditionListSucceededAction,
   vehicleTypeListRequestedAction,
   vehicleTypeListSucceededAction,
+  buildVehicleRouteSucceededAction,
 } from './reporting.actions';
 
 export interface ReportingErrorsInterface {
@@ -50,6 +53,7 @@ export interface ReportingState {
   vehicleTypes: ReconSelectOption[];
   roadWeatherConditions: ReconSelectOption[];
   projectNames: string[];
+  routePoints: LatLngInterface[];
 }
 
 export const initialState: ReportingState = {
@@ -65,6 +69,7 @@ export const initialState: ReportingState = {
   vehicleTypes: [],
   roadWeatherConditions: [],
   projectNames: [],
+  routePoints: [],
 };
 
 const loadReportingDeviceListSucceededReducer = (
@@ -149,6 +154,14 @@ const projectNameListSucceededReducer = (
   projectNames: names,
 });
 
+const buildVehicleRouteSucceededReducer = (
+  state: ReportingState,
+  { points }: BuildRouteClientInterface
+): ReportingState => ({
+  ...state,
+  routePoints: points,
+});
+
 const reportingReducer = createReducer(
   initialState,
   on(
@@ -165,7 +178,8 @@ const reportingReducer = createReducer(
     roadWeatherConditionListSucceededAction,
     roadWeatherConditionListSucceededReducer
   ),
-  on(vehicleTypeListSucceededAction, vehicleTypeListSucceededReducer)
+  on(vehicleTypeListSucceededAction, vehicleTypeListSucceededReducer),
+  on(buildVehicleRouteSucceededAction, buildVehicleRouteSucceededReducer)
 );
 
 export function reducer(state: ReportingState | undefined, action: Action) {

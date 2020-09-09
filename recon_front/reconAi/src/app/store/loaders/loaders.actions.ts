@@ -44,6 +44,7 @@ export enum LoadersActionTypes {
   SET_GPS_LOADING_STATUS = '[Loaders | Reporting] Set GPS Loading Status',
   SET_EXPORT_RELEVANT_LOADING_STATUS = '[Loaders | Reporting] Set Export Relevant Data Loading Status',
   SET_CHANGE_PASSWORD_LOADING_STATUS = '[Loaders | User] Set Change Password Loading Status',
+  SET_BUILDING_ROUTE_LOADING_STATUS = '[Loaders | Reporting] Set Building Route Loading Status',
 }
 
 export interface LoaderInterface {
@@ -260,6 +261,11 @@ export const setGpsLoadingStatusAction = createAction(
 
 export const setExportRelevantLoadingStatusAction = createAction(
   LoadersActionTypes.SET_EXPORT_RELEVANT_LOADING_STATUS,
+  props<LoaderInterface>()
+);
+
+export const setBuildingRouteLoadingStatusAction = createAction(
+  LoadersActionTypes.SET_BUILDING_ROUTE_LOADING_STATUS,
   props<LoaderInterface>()
 );
 

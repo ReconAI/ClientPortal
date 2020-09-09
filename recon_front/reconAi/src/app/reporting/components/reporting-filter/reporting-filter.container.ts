@@ -9,6 +9,7 @@ import {
   vehicleTypeListRequestedAction,
   roadWeatherConditionListRequestedAction,
   loadReportingDeviceRequestedAction,
+  buildVehicleRouteSucceededAction,
 } from './../../../store/reporting/reporting.actions';
 import { FiltersService } from './../../../core/services/filters/filters.service';
 import { FilterItemInterface } from 'app/reporting/constants/types/filters';
@@ -111,6 +112,7 @@ export class ReportingFilterContainer implements OnInit, OnDestroy {
 
     this.loadData();
     this.store.dispatch(projectNameListSucceededAction({ names: [] }));
+    this.store.dispatch(buildVehicleRouteSucceededAction({ points: [] }));
   }
 
   ngOnDestroy() {

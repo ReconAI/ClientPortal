@@ -1,3 +1,4 @@
+import { LatLngInterface } from 'app/core/helpers/markers';
 import { ReconSelectOption } from './../../shared/types/recon-select';
 import { FormServerErrorInterface } from 'app/constants/types/requests';
 import { FilterItemInterface } from 'app/reporting/constants/types/filters';
@@ -95,4 +96,9 @@ export const selectVehicleTypeList = createSelector(
   selectReporting,
   (reporting: ReportingState): ReconSelectOption[] =>
     reporting?.vehicleTypes || []
+);
+
+export const selectVehicleRoutePoints = createSelector(
+  selectReporting,
+  (reporting: ReportingState): LatLngInterface[] => reporting?.routePoints || []
 );

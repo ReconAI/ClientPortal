@@ -214,3 +214,8 @@ export const selectChangePasswordStatus = createSelector(
   selectLoaders,
   (loaders: LoadersState): boolean => loaders.changePassword
 );
+
+export const selectBuildingRouteStatus = createSelector(
+  selectLoaders,
+  (loaders: LoadersState): boolean => loaders.buildingRoute
+);

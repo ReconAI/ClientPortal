@@ -8,6 +8,10 @@
       [currentPage]="currentPage$ | async"
       [pageSize]="pageSize$ | async"
       [devices]="selectedDeviceList"
+      [routePoints]="routePoints$ | async"
+      [isPlatNumberApplied]="isPlatNumberApplied$ | async"
+      [buildingLoading]="buildingLoading$ | async"
+      (buildRoute$)="buildRoute()"
       (loadDevices$)="loadDevices($event)"
     ></recon-reporting-list-devices>
   </ng-container>
