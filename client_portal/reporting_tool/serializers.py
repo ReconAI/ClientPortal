@@ -521,7 +521,7 @@ class RelevantDataGeneratorSeriralizer(RelevantDataSerializer):
         list_serializer_class = GeneratorListSerializer
 
 
-class RelevantDataSetGPSSerializer(ModelSerializer):
+class RelevantDataGPSSerializer(ModelSerializer):
     lat = serializers.FloatField(
         required=True, allow_null=False,max_value=90,
         min_value=-90, source='sensor_GPS_lat'
@@ -540,3 +540,9 @@ class TypeCodeSerializer(ModelSerializer):
     class Meta:
         model = TypeCode
         fields = ('value', 'short_description')
+
+
+class HeatMapSerializer(ReadOnlySerializerMixin, Serializer):
+    sensor_GPS_lat = serializers.FloatField(required=True)
+    sensor_GPS_long = serializers.FloatField(required=True)
+    number_of_objects = serializers.IntegerField(required=True)
