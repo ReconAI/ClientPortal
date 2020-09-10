@@ -8,11 +8,6 @@ import {
 
 import moment from 'moment';
 
-export interface ReportingDeviceProjectInterface {
-  id: number;
-  name: string;
-}
-
 export interface ReportingDeviceServerInterface {
   sensor_id: number;
   id: number;
@@ -24,7 +19,7 @@ export interface ReportingDeviceServerInterface {
   orient_theta: string;
   orient_phi: string;
   timestamp: string;
-  project: ReportingDeviceProjectInterface;
+  project_name: string;
   ecosystem_name: string;
   event_object: string;
   object_class: string;
@@ -51,7 +46,7 @@ export interface ReportingDeviceClientInterface {
   theta: string;
   phi: string;
   timestamp: string;
-  project: ReportingDeviceProjectInterface;
+  project: string;
   ecosystemName: string;
   isEvent: string;
   objectClass: string;
@@ -82,7 +77,7 @@ export const transformReportingDeviceFromServer = (
   theta: device.orient_theta,
   phi: device.orient_phi,
   timestamp: moment(device.timestamp).format('YYYY-MM-DD, HH:mm'),
-  project: device.project,
+  project: device.project_name,
   ecosystemName: device.ecosystem_name,
   isEvent: device.event_object,
   objectClass: device.object_class,

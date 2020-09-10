@@ -75,6 +75,16 @@ export class ReportingFilterGpsComponent
   openDialog(): void {
     const dialogRef = this.dialog.open(SetBoundsDialogComponent, {
       width: '600px',
+      data: {
+        topLeft: {
+          lat: this.topLeftLat,
+          lng: this.topLeftLng,
+        },
+        bottomRight: {
+          lat: this.bottomRightLat,
+          lng: this.bottomRightLng,
+        },
+      },
     });
 
     const sendGpsSubscription = dialogRef.componentInstance.sendGps.subscribe(

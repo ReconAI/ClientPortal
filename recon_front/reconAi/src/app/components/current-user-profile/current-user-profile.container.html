@@ -19,5 +19,7 @@
   [userRolePriority]="userRolePriority$ | async"
   [errors]="error$ | async"
   [sendLoadingStatus]="isLoading$ | async"
+  [isChangingPassword]="changingPassword$ | async"
+  (changePasswordClick$)="changePassword()"
   (updateUser$)="updateUser($event)"
 ></recon-current-user-profile>

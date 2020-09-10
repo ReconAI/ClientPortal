@@ -1,5 +1,6 @@
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Component, OnInit, NgZone, EventEmitter } from '@angular/core';
+import { Component, OnInit, NgZone, EventEmitter, Inject } from '@angular/core';
 import {
   rectangle,
   LatLngBounds,
@@ -88,7 +89,12 @@ export class SetBoundsDialogComponent implements OnInit {
     return null;
   }
 
-  constructor(private zone: NgZone, private fb: FormBuilder) {}
+  constructor(
+    private zone: NgZone,
+    private fb: FormBuilder,
+    @Inject(MAT_DIALOG_DATA)
+    public data: GpsFormClientInterface
+  ) {}
 
   onDrawCreated({ layer }: DrawEvents.Created): void {
     this.addLayerToForm(layer);
@@ -161,14 +167,14 @@ export class SetBoundsDialogComponent implements OnInit {
       {
         topLeft: this.fb.group({
           lat: [
-            '',
+            this.data?.topLeft.lat,
             Validators.compose([
               Validators.required,
               Validators.pattern(this.numberPattern),
             ]),
           ],
           lng: this.fb.control(
-            '',
+            this.data?.topLeft.lng,
             Validators.compose([
               Validators.required,
               Validators.pattern(this.numberPattern),
@@ -177,14 +183,14 @@ export class SetBoundsDialogComponent implements OnInit {
         }),
         bottomRight: this.fb.group({
           lat: this.fb.control(
-            '',
+            this.data?.bottomRight.lat,
             Validators.compose([
               Validators.required,
               Validators.pattern(this.numberPattern),
             ])
           ),
           lng: this.fb.control(
-            '',
+            this.data?.bottomRight.lng,
             Validators.compose([
               Validators.required,
               Validators.pattern(this.numberPattern),
@@ -194,6 +200,8 @@ export class SetBoundsDialogComponent implements OnInit {
       },
       { validators: this.checkRectangleLatLngsValidStatus }
     );
+
+    this.addToLayersFromForm();
   }
 
   onSave(): void {

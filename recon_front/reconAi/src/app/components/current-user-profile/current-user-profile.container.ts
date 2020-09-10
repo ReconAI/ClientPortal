@@ -1,4 +1,8 @@
-import { selectUpdateCurrentUserLoadingStatus } from './../../store/loaders/loaders.selectors';
+import { changePasswordRequestedAction } from './../../store/user/user.actions';
+import {
+  selectUpdateCurrentUserLoadingStatus,
+  selectChangePasswordStatus,
+} from './../../store/loaders/loaders.selectors';
 import {
   selectCurrentUserProfileOrganizationName,
   selectCurrentUserProfileOrganizationPhone,
@@ -43,6 +47,10 @@ export class CurrentUserProfileContainer implements OnInit, OnDestroy {
 
   isLoading$: Observable<boolean> = this.store.pipe(
     select(selectUpdateCurrentUserLoadingStatus)
+  );
+
+  changingPassword$: Observable<boolean> = this.store.pipe(
+    select(selectChangePasswordStatus)
   );
 
   error$: Observable<FormServerErrorInterface> = this.store.pipe(
@@ -114,6 +122,10 @@ export class CurrentUserProfileContainer implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.store.dispatch(resetUpdateCurrentUserErrorAction());
+  }
+
+  changePassword(): void {
+    this.store.dispatch(changePasswordRequestedAction());
   }
 
   updateUser(user: UserProfileFormInterface): void {

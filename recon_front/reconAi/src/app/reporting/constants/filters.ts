@@ -50,7 +50,7 @@ export const DEFAULT_FILTER_ARRAY: FilterItemInterface[] = [
     },
   },
   {
-    label: 'Event/Object',
+    label: 'Object Class',
     id: 'event_object',
     type: FilterTypes.SELECT,
     value: '',

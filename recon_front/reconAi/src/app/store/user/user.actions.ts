@@ -80,6 +80,10 @@ export enum UserActionTypes {
   SET_DEFAULT_PAYMENT_METHOD_ERROR = '[User] Set Default Payment Method Error',
 
   SET_AUTH_STATUS = '[User] Set Auth Status',
+
+  CHANGE_PASSWORD_REQUESTED = '[User] Set Change Password Requested',
+  CHANGE_PASSWORD_SUCCEEDED = '[User] Set Change Password Succeeded',
+  CHANGE_PASSWORD_ERROR = '[User] Set Change Password Error',
 }
 
 export const loadCurrentUserRequestedAction = createAction(
@@ -278,4 +282,16 @@ export interface SetAuthActionPayloadInterface {
 export const setAuthStatusAction = createAction(
   UserActionTypes.SET_AUTH_STATUS,
   props<SetAuthActionPayloadInterface>()
+);
+
+export const changePasswordRequestedAction = createAction(
+  UserActionTypes.CHANGE_PASSWORD_REQUESTED
+);
+
+export const changePasswordSucceededAction = createAction(
+  UserActionTypes.CHANGE_PASSWORD_SUCCEEDED
+);
+
+export const changePasswordErrorAction = createAction(
+  UserActionTypes.CHANGE_PASSWORD_ERROR
 );

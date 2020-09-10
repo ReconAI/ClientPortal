@@ -29,13 +29,29 @@
     </recon-user-profile>
   </div>
   <div class="cards-container" *ngIf="isDeveloperAtLeast">
-    <p class="payment-label">
-      PAYMENT METHODS
-    </p>
+    <button
+      mat-raised-button
+      color="accent"
+      class="change-password-button"
+      (click)="onChangePassword()"
+      [disabled]="isChangingPassword"
+    >
+      <mat-icon *ngIf="isChangingPassword; else loaded">
+        <mat-spinner color="primary" diameter="20"></mat-spinner>
+      </mat-icon>
+      <ng-template #loaded>
+        <img
+          src="assets/icons/padlock.svg"
+          height="20"
+          width="20"
+          class="padlock-icon"
+        />
+        Change password</ng-template
+      >
+    </button>
+    <p class="payment-label">PAYMENT METHODS</p>
     <recon-payment-methods-container></recon-payment-methods-container>
-    <p class="payment-label">
-      CARDS
-    </p>
+    <p class="payment-label">CARDS</p>
     <recon-create-card></recon-create-card>
     <div class="card-views-container">
       <recon-card-views-container></recon-card-views-container>
