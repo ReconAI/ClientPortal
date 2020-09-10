@@ -7,6 +7,8 @@ import {
   selectEventObjectList,
   selectRoadWeatherConditionList,
   selectVehicleTypeList,
+  selectReportingDeviceList,
+  selectReportingSelectedDeviceList,
 } from './reporting.selectors';
 import {
   ReportingActionTypes,
@@ -31,6 +33,9 @@ import {
   exportRelevantDataErrorAction,
   buildVehicleRouteSucceededAction,
   buildVehicleRouteErrorAction,
+  heatMapDataSucceededAction,
+  heatMapDataErrorAction,
+  HeatMapDataRequestedActionInterface,
 } from './reporting.actions';
 import {
   PaginationRequestInterface,
@@ -38,7 +43,6 @@ import {
 } from 'app/constants/types/requests';
 import { Observable, of } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AppState } from '../reducers';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
@@ -52,13 +56,16 @@ import {
   withLatestFrom,
   debounceTime,
 } from 'rxjs/operators';
+
 import {
   setReportingDeviceListLoadingStatusAction,
   setReportingDeviceLoadingStatusAction,
   setGpsLoadingStatusAction,
   setExportRelevantLoadingStatusAction,
   setBuildingRouteLoadingStatusAction,
+  setHeatMapDataLoadingStatusAction,
 } from '../loaders';
+
 import {
   ReportingDeviceServerInterface,
   transformReportingPaginatedDeviceListFromServer,
@@ -70,7 +77,11 @@ import {
   AutocompleteNameServerInterface,
   LatLngServerInterface,
   transformBuildingRouteFromServer,
+  transformUrlWithDevicesToLoadHeatMapData,
+  transformHeatMapDataFromServer,
+  HeatMapPointServerInterface,
 } from './reporting.server.helpers';
+
 import { updateBreadcrumbByIdAction, setAppTitleAction } from '../app';
 import { generalTransformFormErrorToObject } from 'app/core/helpers/generalFormsErrorsTransformation';
 import { selectCurrentUserProfileId } from '../user/user.selectors';
@@ -411,7 +422,7 @@ export class ReportingEffects {
         const plateNumber = this.filtersService.getUserFilter(
           'license_plate_number',
           +userId
-        ).value as string;
+        )?.value as string;
 
         return this.httpClient
           .get<LatLngServerInterface[]>(
@@ -432,6 +443,47 @@ export class ReportingEffects {
             finalize(() => {
               this.store.dispatch(
                 setBuildingRouteLoadingStatusAction({
+                  status: false,
+                })
+              );
+            })
+          );
+      })
+    )
+  );
+
+  loadHeatMapData$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action & HeatMapDataRequestedActionInterface>(
+        ReportingActionTypes.HEAT_MAP_DATA_REQUESTED
+      ),
+      tap(() => {
+        this.store.dispatch(
+          setHeatMapDataLoadingStatusAction({
+            status: true,
+          })
+        );
+      }),
+      withLatestFrom(
+        this.store.pipe(select(selectReportingDeviceList)),
+        this.store.pipe(select(selectReportingSelectedDeviceList))
+      ),
+      switchMap(([{ isForDevice }, devices, selectedDeviceSensors]) => {
+        return this.httpClient
+          .get<HeatMapPointServerInterface[]>(
+            transformUrlWithDevicesToLoadHeatMapData(
+              `/api/relevant-data/heat-map?`,
+              (isForDevice ? selectedDeviceSensors : devices) || []
+            )
+          )
+          .pipe(
+            map((points) =>
+              heatMapDataSucceededAction(transformHeatMapDataFromServer(points))
+            ),
+            catchError((error) => of(heatMapDataErrorAction())),
+            finalize(() => {
+              this.store.dispatch(
+                setHeatMapDataLoadingStatusAction({
                   status: false,
                 })
               );

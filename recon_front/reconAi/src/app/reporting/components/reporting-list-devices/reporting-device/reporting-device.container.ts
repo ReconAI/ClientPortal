@@ -1,5 +1,8 @@
 import { FiltersService } from './../../../../core/services/filters/filters.service';
-import { buildVehicleRouteRequestedAction } from './../../../../store/reporting/reporting.actions';
+import {
+  buildVehicleRouteRequestedAction,
+  heatMapDataRequestedAction,
+} from './../../../../store/reporting/reporting.actions';
 import { LatLngInterface } from 'app/core/helpers/markers';
 import {
   selectReportingSelectedDeviceList,
@@ -7,12 +10,17 @@ import {
   selectReportingSelectedDeviceListMetaCount,
   selectReportingSelectedDeviceListMetaPageSize,
   selectVehicleRoutePoints,
+  selectHeatMapData,
 } from './../../../../store/reporting/reporting.selectors';
 import {
   selectReportingDeviceLoadingStatus,
   selectBuildingRouteStatus,
+  selectHeatMapLoadingStatus,
 } from './../../../../store/loaders/loaders.selectors';
-import { ReportingDeviceClientInterface } from './../../../../store/reporting/reporting.server.helpers';
+import {
+  ReportingDeviceClientInterface,
+  HeatMapPointClientInterface,
+} from './../../../../store/reporting/reporting.server.helpers';
 import { Store, select } from '@ngrx/store';
 import { ActivatedRoute } from '@angular/router';
 import { Component, OnInit, OnDestroy } from '@angular/core';
@@ -51,6 +59,10 @@ export class ReportingDeviceContainer implements OnInit, OnDestroy {
     select(selectVehicleRoutePoints)
   );
 
+  heatMapData$: Observable<HeatMapPointClientInterface[]> = this.store.pipe(
+    select(selectHeatMapData)
+  );
+
   isPlatNumberApplied$: Observable<
     boolean
   > = this.filtersService.isFilterAppliedForCurrentUser('license_plate_number');
@@ -63,6 +75,9 @@ export class ReportingDeviceContainer implements OnInit, OnDestroy {
   );
   pageSize$: Observable<number> = this.store.pipe(
     select(selectReportingSelectedDeviceListMetaPageSize)
+  );
+  heatMapLoading$: Observable<boolean> = this.store.pipe(
+    select(selectHeatMapLoadingStatus)
   );
 
   loadDevices(page: number = 1): void {
@@ -87,5 +102,9 @@ export class ReportingDeviceContainer implements OnInit, OnDestroy {
 
   buildRoute(): void {
     this.store.dispatch(buildVehicleRouteRequestedAction());
+  }
+
+  loadHeatMapData(): void {
+    this.store.dispatch(heatMapDataRequestedAction({ isForDevice: true }));
   }
 }

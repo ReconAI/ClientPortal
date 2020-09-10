@@ -38,7 +38,10 @@ import 'leaflet.heat/dist/leaflet-heat.js';
 import 'leaflet-routing-machine';
 
 import { LatLngInterface } from 'app/core/helpers/markers';
-import { ReportingDeviceClientInterface } from 'app/store/reporting/reporting.server.helpers';
+import {
+  ReportingDeviceClientInterface,
+  HeatMapPointClientInterface,
+} from 'app/store/reporting/reporting.server.helpers';
 import { ExportRelevantDataPayloadInterface } from 'app/store/reporting';
 @Component({
   selector: 'recon-reporting-list-devices',
@@ -67,24 +70,31 @@ export class ReportingListDevicesComponent
   @Input() count = 1;
   @Input() pageSize = 1;
   @Input() devices: ReportingDeviceClientInterface[] = [];
+  @Input() heatMapData: HeatMapPointClientInterface[] = [];
 
   @Input() routePoints: LatLngInterface[] = [];
 
   @Input() isExporting = false;
+  @Input() heatMapLoading = false;
   @Input() isPlatNumberApplied = false;
   @Input() buildingLoading = false;
 
   @Output() loadDevices$ = new EventEmitter<number>();
   @Output() exportRelevantData$ = new EventEmitter<RelevantDataExportFormat>();
   @Output() buildRoute$ = new EventEmitter<void>();
+  @Output() loadHeatMapData$ = new EventEmitter<void>();
 
   center = null;
   selectedIndex = null;
   options = null;
   layers = [];
+
+  columns: CrudTableColumn[] = [];
+  isHeatMap = false;
+
   map: Map;
   routingControl: L.Routing.Control;
-  columns: CrudTableColumn[] = [];
+  heatLayer: any;
 
   readonly tooltipForDisabledBuildButton =
     'To use this feature, please apply License plate filter';
@@ -159,9 +169,14 @@ export class ReportingListDevicesComponent
       }
     );
   }
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.routePoints) {
       this.formWayPoints();
+    }
+
+    if (changes.heatMapData) {
+      this.formHeatMapData();
     }
   }
 
@@ -295,6 +310,16 @@ export class ReportingListDevicesComponent
     );
   }
 
+  formHeatMapData(): void {
+    const points = [];
+    this.heatMapData.forEach((point) => {
+      for (let i = 0; i < point.amount; i++) {
+        points.push([+point.lat + 0.0001 * i, +point.lng + 0.0001 * i, 1]);
+      }
+    });
+    this.heatLayer?.setLatLngs(points);
+  }
+
   openDialog(): void {
     const selectedDevice = this.devices[this.selectedIndex];
     this.dialog.open(SetGpsDialogContainer, {
@@ -335,83 +360,19 @@ export class ReportingListDevicesComponent
 
     this.formWayPoints();
 
-    // (L as any).Routing.control({
-    //   addWaypoints: false,
-    //   routeWhileDragging: false,
-    //   draggableWaypoints: false,
-    //   waypoints: [L.latLng(57.74, 11.94), L.latLng(57.6792, 11.949)],
-    // }).addTo(map);
-    // // workaround
-    //   L.heatLayer(
-    //     [
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [34, 34, 1],
-    //       [56, 57, 0.6],
-    //       [56, 58, 1],
-    //     ],
-    //     {
-    //     }
-    //   ).addTo(map);
+    this.heatLayer = (L as any)
+      .heatLayer([], {
+        blur: 15,
+        minOpacity: 0.4,
+        radius: 30,
+        gradient: { 0.3: 'blue', 0.65: 'lime', 0.9: 'red' },
+      })
+      .addTo(this.map);
+  }
+
+  loadHeatMapData(): void {
+    if (this.isHeatMap) {
+      this.loadHeatMapData$.emit();
+    }
   }
 }

@@ -184,3 +184,39 @@ export const transformBuildingRouteFromServer = (
 ): BuildRouteClientInterface => ({
   points: points.map(({ lat, long }) => ({ lat, lng: long })),
 });
+
+export interface HeatMapPointServerInterface {
+  sensor_GPS_lat: number;
+  sensor_GPS_long: number;
+  number_of_objects: number;
+}
+
+export interface HeatMapPointClientInterface {
+  lat: number;
+  lng: number;
+  amount: number;
+}
+
+export interface HeatMapDataClientInterface {
+  points: HeatMapPointClientInterface[];
+}
+
+export const transformHeatMapPointFromServer = (
+  point: HeatMapPointServerInterface
+): HeatMapPointClientInterface => ({
+  lat: point.sensor_GPS_lat,
+  lng: point.sensor_GPS_long,
+  amount: point.number_of_objects,
+});
+
+export const transformHeatMapDataFromServer = (
+  points: HeatMapPointServerInterface[]
+): HeatMapDataClientInterface => ({
+  points: points.map((point) => transformHeatMapPointFromServer(point)),
+});
+
+export const transformUrlWithDevicesToLoadHeatMapData = (
+  url: string,
+  devices: ReportingDeviceClientInterface[]
+): string =>
+  devices?.reduce((res, current) => `${res}&id=${current.id}`, url) || url;

@@ -22,13 +22,18 @@ const defaultParams: MarkerParamsInterface = {
 
 export const generateDefaultMap = (center) => ({
   layers: [
-    tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 18,
-      minZoom: 3,
-      id: 'main-map',
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    }),
+    // tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    tileLayer(
+      // 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+      {
+        maxZoom: 18,
+        minZoom: 3,
+        id: 'main-map',
+        attribution:
+          'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012',
+      }
+    ),
   ],
   zoom: 10,
   center: center || TAMPERE_COORDINATES,

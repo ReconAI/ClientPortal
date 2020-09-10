@@ -45,6 +45,7 @@ export enum LoadersActionTypes {
   SET_EXPORT_RELEVANT_LOADING_STATUS = '[Loaders | Reporting] Set Export Relevant Data Loading Status',
   SET_CHANGE_PASSWORD_LOADING_STATUS = '[Loaders | User] Set Change Password Loading Status',
   SET_BUILDING_ROUTE_LOADING_STATUS = '[Loaders | Reporting] Set Building Route Loading Status',
+  SET_HEAT_MAP_DATA_LOADING_STATUS = '[Loaders | Reporting] Set Heat Map Data Loading Status',
 }
 
 export interface LoaderInterface {
@@ -266,6 +267,11 @@ export const setExportRelevantLoadingStatusAction = createAction(
 
 export const setBuildingRouteLoadingStatusAction = createAction(
   LoadersActionTypes.SET_BUILDING_ROUTE_LOADING_STATUS,
+  props<LoaderInterface>()
+);
+
+export const setHeatMapDataLoadingStatusAction = createAction(
+  LoadersActionTypes.SET_HEAT_MAP_DATA_LOADING_STATUS,
   props<LoaderInterface>()
 );
 

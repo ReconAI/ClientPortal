@@ -219,3 +219,8 @@ export const selectBuildingRouteStatus = createSelector(
   selectLoaders,
   (loaders: LoadersState): boolean => loaders.buildingRoute
 );
+
+export const selectHeatMapLoadingStatus = createSelector(
+  selectLoaders,
+  (loaders: LoadersState): boolean => loaders.heatMapData
+);

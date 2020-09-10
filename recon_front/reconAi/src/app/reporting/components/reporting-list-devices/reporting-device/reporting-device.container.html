@@ -9,10 +9,13 @@
       [pageSize]="pageSize$ | async"
       [devices]="selectedDeviceList"
       [routePoints]="routePoints$ | async"
+      [heatMapData]="heatMapData$ | async"
       [isPlatNumberApplied]="isPlatNumberApplied$ | async"
       [buildingLoading]="buildingLoading$ | async"
+      [heatMapLoading]="heatMapLoading$ | async"
       (buildRoute$)="buildRoute()"
       (loadDevices$)="loadDevices($event)"
+      (loadHeatMapData$)="loadHeatMapData()"
     ></recon-reporting-list-devices>
   </ng-container>
   <ng-template #notFound>Not found.</ng-template>

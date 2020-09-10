@@ -5,10 +5,12 @@ import { FiltersService } from './../../../core/services/filters/filters.service
 import {
   selectExportRelevantDataStatus,
   selectBuildingRouteStatus,
+  selectHeatMapLoadingStatus,
 } from './../../../store/loaders/loaders.selectors';
 import {
   exportRelevantDataRequestedAction,
   buildVehicleRouteRequestedAction,
+  heatMapDataRequestedAction,
 } from './../../../store/reporting/reporting.actions';
 import { RelevantDataExportFormat } from './../../../constants/types/relevant-data';
 import {
@@ -17,8 +19,12 @@ import {
   selectReportingDeviceListMetaCount,
   selectReportingDeviceListMetaPageSize,
   selectVehicleRoutePoints,
+  selectHeatMapData,
 } from './../../../store/reporting/reporting.selectors';
-import { ReportingDeviceClientInterface } from './../../../store/reporting/reporting.server.helpers';
+import {
+  ReportingDeviceClientInterface,
+  HeatMapPointClientInterface,
+} from './../../../store/reporting/reporting.server.helpers';
 import { Component, OnInit } from '@angular/core';
 import { Store, select } from '@ngrx/store';
 import { AppState } from 'app/store/reducers';
@@ -64,9 +70,16 @@ export class ReportingListDevicesContainer implements OnInit {
   exportingStatus$: Observable<boolean> = this.store.pipe(
     select(selectExportRelevantDataStatus)
   );
+  heatMapLoading$: Observable<boolean> = this.store.pipe(
+    select(selectHeatMapLoadingStatus)
+  );
 
   routePoints$: Observable<LatLngInterface[]> = this.store.pipe(
     select(selectVehicleRoutePoints)
+  );
+
+  heatMapData$: Observable<HeatMapPointClientInterface[]> = this.store.pipe(
+    select(selectHeatMapData)
   );
 
   loadDevices(page: number): void {
@@ -83,6 +96,10 @@ export class ReportingListDevicesContainer implements OnInit {
 
   buildRoute(): void {
     this.store.dispatch(buildVehicleRouteRequestedAction());
+  }
+
+  loadHeatMapData(): void {
+    this.store.dispatch(heatMapDataRequestedAction({ isForDevice: false }));
   }
 
   ngOnInit(): void {

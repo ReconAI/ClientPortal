@@ -1,7 +1,8 @@
 <div class="registration-container">
   <h2>Registration completed successfully!</h2>
   <span
-    >Your trial period stops on <b>{{ (trialEndDate$ | async) }} </b>!</span
+    >Trial end date of your organization:
+    <b>{{ trialEndDate$ | async }} </b>!</span
   >
   <recon-registration-human-success></recon-registration-human-success>
   <span *ngIf="INVITATION_TYPE !== (type$ | async)"

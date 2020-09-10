@@ -14,6 +14,7 @@ import {
   AutocompleteNameServerInterface,
   AutocompleteNameClientInterface,
   BuildRouteClientInterface,
+  HeatMapDataClientInterface,
 } from './reporting.server.helpers';
 
 export enum ReportingActionTypes {
@@ -55,6 +56,10 @@ export enum ReportingActionTypes {
   BUILD_VEHICLE_ROUTE_REQUESTED = '[Reporting] Build Vehicle Route Requested',
   BUILD_VEHICLE_ROUTE_SUCCEEDED = '[Reporting] Build Vehicle Route Succeeded',
   BUILD_VEHICLE_ROUTE_ERROR = '[Reporting] Build Vehicle Route Error',
+
+  HEAT_MAP_DATA_REQUESTED = '[Reporting] Heat Map Data Requested',
+  HEAT_MAP_DATA_SUCCEEDED = '[Reporting] Heat Map Data Succeeded',
+  HEAT_MAP_DATA_ERROR = '[Reporting] Heat Map Data Error',
 }
 
 export const loadReportingDeviceListRequestedAction = createAction(
@@ -197,4 +202,22 @@ export const buildVehicleRouteSucceededAction = createAction(
 
 export const buildVehicleRouteErrorAction = createAction(
   ReportingActionTypes.BUILD_VEHICLE_ROUTE_ERROR
+);
+
+export interface HeatMapDataRequestedActionInterface {
+  isForDevice: boolean;
+}
+
+export const heatMapDataRequestedAction = createAction(
+  ReportingActionTypes.HEAT_MAP_DATA_REQUESTED,
+  props<HeatMapDataRequestedActionInterface>()
+);
+
+export const heatMapDataSucceededAction = createAction(
+  ReportingActionTypes.HEAT_MAP_DATA_SUCCEEDED,
+  props<HeatMapDataClientInterface>()
+);
+
+export const heatMapDataErrorAction = createAction(
+  ReportingActionTypes.HEAT_MAP_DATA_ERROR
 );

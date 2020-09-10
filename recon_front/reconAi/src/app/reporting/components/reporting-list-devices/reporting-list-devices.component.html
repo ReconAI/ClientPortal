@@ -97,6 +97,16 @@
   >
   </recon-crud-table>
 </div>
+'
+
+<div class="slider-container">
+  <span>Heat map</span>
+  <recon-form-slider
+    [disabled]="heatMapLoading"
+    [(ngModel)]="isHeatMap"
+    (changeVal)="loadHeatMapData()"
+  ></recon-form-slider>
+</div>
 <div
   *ngIf="center && options"
   class="map"

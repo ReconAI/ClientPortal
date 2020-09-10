@@ -15,6 +15,8 @@ import {
   OptionsPayloadInterface,
   AutocompleteNameClientInterface,
   BuildRouteClientInterface,
+  HeatMapPointClientInterface,
+  HeatMapDataClientInterface,
 } from './reporting.server.helpers';
 import {
   loadReportingDeviceListSucceededAction,
@@ -30,6 +32,7 @@ import {
   vehicleTypeListRequestedAction,
   vehicleTypeListSucceededAction,
   buildVehicleRouteSucceededAction,
+  heatMapDataSucceededAction,
 } from './reporting.actions';
 
 export interface ReportingErrorsInterface {
@@ -54,6 +57,7 @@ export interface ReportingState {
   roadWeatherConditions: ReconSelectOption[];
   projectNames: string[];
   routePoints: LatLngInterface[];
+  heatMapData: HeatMapPointClientInterface[];
 }
 
 export const initialState: ReportingState = {
@@ -70,6 +74,7 @@ export const initialState: ReportingState = {
   roadWeatherConditions: [],
   projectNames: [],
   routePoints: [],
+  heatMapData: [],
 };
 
 const loadReportingDeviceListSucceededReducer = (
@@ -162,6 +167,14 @@ const buildVehicleRouteSucceededReducer = (
   routePoints: points,
 });
 
+const heatMapDataSucceededReducer = (
+  state: ReportingState,
+  { points }: HeatMapDataClientInterface
+): ReportingState => ({
+  ...state,
+  heatMapData: points,
+});
+
 const reportingReducer = createReducer(
   initialState,
   on(
@@ -179,7 +192,8 @@ const reportingReducer = createReducer(
     roadWeatherConditionListSucceededReducer
   ),
   on(vehicleTypeListSucceededAction, vehicleTypeListSucceededReducer),
-  on(buildVehicleRouteSucceededAction, buildVehicleRouteSucceededReducer)
+  on(buildVehicleRouteSucceededAction, buildVehicleRouteSucceededReducer),
+  on(heatMapDataSucceededAction, heatMapDataSucceededReducer)
 );
 
 export function reducer(state: ReportingState | undefined, action: Action) {

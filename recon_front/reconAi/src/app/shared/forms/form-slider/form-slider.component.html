@@ -1,12 +1,11 @@
-<div class="switch-container">
-  <span label="label-switch">{{label}}</span>
+<div class="switch-container" [ngClass]="{ 'disabled-slider': disabled }">
+  <span label="label-switch">{{ label }}</span>
   <label class="switch">
     <input
       type="checkbox"
       [checked]="checked"
-      (blur)="onTouched()"
       [disabled]="disabled"
-      (click)="changeValue($event.target.checked)"
+      (click)="changeValue($event.target.checked); onTouched()"
     />
     <span class="slider round"></span>
   </label>
