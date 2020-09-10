@@ -446,6 +446,10 @@ class DeviceInstance(models.Model):
     device_class = models.ForeignKey(DeviceClass, models.DO_NOTHING, null=True,
                                      blank=True, db_column="deviceClassId")
     serial = models.IntegerField(null=True, blank=True)
+    gps_lat = models.DecimalField(null=True, blank=True, max_digits=10,
+                                  decimal_places=7, db_column='gpsLat')
+    gps_long = models.DecimalField(null=True, blank=True, max_digits=10,
+                                   decimal_places=7, db_column='gpsLong')
     parameters = JSONField(null=True, blank=True, db_column='parametersJSON')
     edge_nodes = models.ManyToManyField(EdgeNode, through='EdgeNodeDevice')
 
@@ -1318,6 +1322,7 @@ class TypeCode(models.Model):
     ALGORITHM_CLASS_TYPE = 'EnumAlgorithmClasses'
     ALGORITHM_STATUS_TYPE = 'EnumAlgorithmStatuses'
     DEVICE_TYPE = 'EnumDeviceTypes'
+    PEDESTRIAN_TRANSIT_TYPE = 'EnumPedestrianTransitMethod'
 
 
 class FileStorage(models.Model):

@@ -211,9 +211,11 @@ class FilterSet(filters.FilterSet):
 
 
 class RelevantDataSensorFilter(FilterSet):
-    project_name = CharFilter(field_name="project__name", lookup_expr='exact')
+    project_name = CharFilter(
+        field_name="project__name", lookup_expr='exact', strip=False
+    )
     license_plate_number = CharFilter(
-        field_name="license_plate_number", lookup_expr='exact'
+        field_name="license_plate_number", lookup_expr='exact', strip=False
     )
     timestamp = DateTimeFromToRangeFilter(
         field_name="timestamp", lookup_expr='range'
@@ -232,16 +234,20 @@ class RelevantDataSensorFilter(FilterSet):
     )
     is_tagged = BooleanFilter(field_name='is_tagged_data', lookup_expr='exact')
     vehicle_type = CharFilter(
-        field_name='vehicle_classification', lookup_expr='exact'
+        field_name='vehicle_classification', lookup_expr='exact', strip=False
     )
     event_object = CharFilter(
-        field_name='object_class', lookup_expr='exact'
+        field_name='object_class', lookup_expr='exact', strip=False
     )
     road_weather_condition = CharFilter(
-        field_name='road_weather_condition', lookup_expr='exact'
+        field_name='road_weather_condition', lookup_expr='exact', strip=False
     )
     gps = GPSFilter(
         lat_field_name='sensor_GPS_lat', long_field_name='sensor_GPS_long'
+    )
+    pedestrian_transit_method = CharFilter(
+        field_name='pedestrian_flow__TransitMethod', lookup_expr='exact',
+        strip=False
     )
 
     class Meta:
@@ -250,30 +256,22 @@ class RelevantDataSensorFilter(FilterSet):
             'project_name', 'timestamp', 'orient_theta', 'orient_phi',
             'is_tagged', 'vehicle_type', 'event_object',
             'road_temperature', 'ambient_temperature',
-            'road_weather_condition', 'license_plate_number'
+            'road_weather_condition', 'license_plate_number', 'gps',
+            'pedestrian_transit_method'
         )
         form = RelevantDataFiltersForm
 
 
-class RouteFilter(FilterSet):
-    timestamp = DateTimeFromToRangeFilter(
-        field_name="timestamp", lookup_expr='range'
-    )
-
-    class Meta:
-        model = RelevantData
-        fields = ('timestamp',)
-        form = RelevantDataFiltersForm
-
-
 class RelevantDataFilter(RelevantDataSensorFilter):
-    sensor_id = NumberFilter(field_name="edge_node", lookup_expr='exact')
+    sensor_id = NumberFilter(field_name="device_instance", lookup_expr='exact')
 
     class Meta:
         model = RelevantData
         fields = (
             'sensor_id', 'project_name', 'timestamp', 'orient_theta',
-            'orient_phi', 'is_tagged'
+            'orient_phi', 'is_tagged', 'vehicle_type', 'event_object',
+            'road_temperature', 'ambient_temperature',
+            'road_weather_condition', 'license_plate_number'
         )
         form = RelevantDataFiltersForm
 
@@ -285,6 +283,15 @@ class ProjectFilter(filters.FilterSet):
     class Meta:
         model = RelevantData
         fields = ('name', )
+
+
+class LicensePlateFilter(filters.FilterSet):
+    license_plate = filters.CharFilter(field_name='license_plate_number',
+                                       lookup_expr='istartswith')
+
+    class Meta:
+        model = RelevantData
+        fields = ('license_plate',)
 
 
 class ExportRelevantDataFilterBackend(filters.DjangoFilterBackend):

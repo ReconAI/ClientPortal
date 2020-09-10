@@ -371,11 +371,31 @@ class ResetPassword(APIView, FormMixin):
         )
 
 
-class ChangePassword(ResetPassword):
+class ChangePassword(APIView, FormMixin):
     """
     Change password view
     """
     permission_classes = (IsAuthenticated, IsActive)
+
+    form_class = PasswordResetForm
+
+    def get(self, request: Request, *args, **kwargs) -> JsonResponse:
+        """
+        Password change request
+
+        :type request: Request
+        :type args: tuple
+        :type kwargs: dict
+
+        :rtype: JsonResponse
+        """
+        return self.save_or_error(
+            _('Instructions for changing your password '
+              'have been sent to your email'),
+            request=request,
+            email_template_name='emails/password_reset.html',
+            token_generator=PasswordResetTokenGenerator()
+        )
 
     def get_form_kwargs(self) -> dict:
         return {

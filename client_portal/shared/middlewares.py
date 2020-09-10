@@ -59,7 +59,7 @@ class HTTPLogMiddleware(MiddlewareMixin):
             request.path_info,
             request.content_type,
             response.status_code,
-            request.META.get("REMOTE_ADDR")
+            request.META.get('X-Real-IP', request.META.get('REMOTE_ADDR', ''))
         )
 
     @staticmethod
