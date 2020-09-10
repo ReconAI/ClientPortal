@@ -9,6 +9,7 @@ import {
   selectVehicleTypeList,
   selectReportingDeviceList,
   selectReportingSelectedDeviceList,
+  selectPedestrianFlowList,
 } from './reporting.selectors';
 import {
   ReportingActionTypes,
@@ -36,6 +37,10 @@ import {
   heatMapDataSucceededAction,
   heatMapDataErrorAction,
   HeatMapDataRequestedActionInterface,
+  plateNumberListSucceededAction,
+  plateNumberListErrorAction,
+  pedestrianFlowListSucceededAction,
+  pedestrianFlowListErrorAction,
 } from './reporting.actions';
 import {
   PaginationRequestInterface,
@@ -488,6 +493,57 @@ export class ReportingEffects {
                 })
               );
             })
+          );
+      })
+    )
+  );
+
+  loadPlateNumberList$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action & AutocompleteNameServerInterface>(
+        ReportingActionTypes.PLATE_NUMBER_LIST_REQUESTED
+      ),
+      debounceTime(150),
+      switchMap(({ name }) => {
+        return this.httpClient
+          .get<string[]>(
+            `/api/relevant-data/license-plates?license_plate=${name}`
+          )
+          .pipe(
+            map((response) =>
+              plateNumberListSucceededAction({
+                names: response,
+              })
+            ),
+            catchError((error) => of(plateNumberListErrorAction()))
+          );
+      })
+    )
+  );
+
+  pedestrianFlowList$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action>(ReportingActionTypes.PEDESTRIAN_FLOW_LIST_REQUESTED),
+      withLatestFrom(this.store.pipe(select(selectPedestrianFlowList))),
+      switchMap(([_, pedestrianFlowList]) => {
+        // cache data
+        if (pedestrianFlowList?.length) {
+          return of(
+            pedestrianFlowListSucceededAction({ options: pedestrianFlowList })
+          );
+        }
+
+        return this.httpClient
+          .get<OptionServerInterface[]>(
+            `/api/relevant-data/pedestrian-transit-methods`
+          )
+          .pipe(
+            map((response) =>
+              pedestrianFlowListSucceededAction(
+                transformOptionsFromServer(response)
+              )
+            ),
+            catchError((error) => of(pedestrianFlowListErrorAction()))
           );
       })
     )

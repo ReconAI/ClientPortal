@@ -3,7 +3,10 @@ import { ReconSelectOption } from './../../shared/types/recon-select';
 import { FormServerErrorInterface } from 'app/constants/types/requests';
 import { FilterItemInterface } from 'app/reporting/constants/types/filters';
 import { MetaClientInterface } from './../../constants/types/requests';
-import { ReportingDeviceClientInterface, HeatMapPointClientInterface } from './reporting.server.helpers';
+import {
+  ReportingDeviceClientInterface,
+  HeatMapPointClientInterface,
+} from './reporting.server.helpers';
 import { createSelector } from '@ngrx/store';
 import { AppState } from '../reducers';
 import { ReportingState } from './reporting.reducer';
@@ -105,5 +108,17 @@ export const selectVehicleRoutePoints = createSelector(
 
 export const selectHeatMapData = createSelector(
   selectReporting,
-  (reporting: ReportingState): HeatMapPointClientInterface[] => reporting?.heatMapData || []
+  (reporting: ReportingState): HeatMapPointClientInterface[] =>
+    reporting?.heatMapData || []
+);
+
+export const selectPlateNumberList = createSelector(
+  selectReporting,
+  (reporting: ReportingState): string[] => reporting?.plateNumbers || []
+);
+
+export const selectPedestrianFlowList = createSelector(
+  selectReporting,
+  (reporting: ReportingState): ReconSelectOption[] =>
+    reporting?.pedestrianFlowList || []
 );

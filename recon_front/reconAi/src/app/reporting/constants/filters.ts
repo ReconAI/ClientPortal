@@ -100,7 +100,7 @@ export const DEFAULT_FILTER_ARRAY: FilterItemInterface[] = [
   },
   {
     label: 'Pedestrian transit method classification',
-    id: 'pedestrian',
+    id: 'pedestrian_transit_method',
     type: FilterTypes.SELECT,
     value: '',
   },

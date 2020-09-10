@@ -60,6 +60,14 @@ export enum ReportingActionTypes {
   HEAT_MAP_DATA_REQUESTED = '[Reporting] Heat Map Data Requested',
   HEAT_MAP_DATA_SUCCEEDED = '[Reporting] Heat Map Data Succeeded',
   HEAT_MAP_DATA_ERROR = '[Reporting] Heat Map Data Error',
+
+  PLATE_NUMBER_LIST_REQUESTED = '[Reporting] Plate Number List Requested',
+  PLATE_NUMBER_LIST_SUCCEEDED = '[Reporting] Plate Number List Succeeded',
+  PLATE_NUMBER_LIST_ERROR = '[Reporting] Plate Number List Error',
+
+  PEDESTRIAN_FLOW_LIST_REQUESTED = '[Reporting] Pedestrian Flow List Requested',
+  PEDESTRIAN_FLOW_LIST_SUCCEEDED = '[Reporting] Pedestrian Flow List Succeeded',
+  PEDESTRIAN_FLOW_LIST_ERROR = '[Reporting] Pedestrian Flow List Error',
 }
 
 export const loadReportingDeviceListRequestedAction = createAction(
@@ -220,4 +228,31 @@ export const heatMapDataSucceededAction = createAction(
 
 export const heatMapDataErrorAction = createAction(
   ReportingActionTypes.HEAT_MAP_DATA_ERROR
+);
+
+export const plateNumberListRequestedAction = createAction(
+  ReportingActionTypes.PLATE_NUMBER_LIST_REQUESTED,
+  props<AutocompleteNameServerInterface>()
+);
+
+export const plateNumberListSucceededAction = createAction(
+  ReportingActionTypes.PLATE_NUMBER_LIST_SUCCEEDED,
+  props<AutocompleteNameClientInterface>()
+);
+
+export const plateNumberListErrorAction = createAction(
+  ReportingActionTypes.PLATE_NUMBER_LIST_SUCCEEDED
+);
+
+export const pedestrianFlowListRequestedAction = createAction(
+  ReportingActionTypes.PEDESTRIAN_FLOW_LIST_REQUESTED
+);
+
+export const pedestrianFlowListSucceededAction = createAction(
+  ReportingActionTypes.PEDESTRIAN_FLOW_LIST_SUCCEEDED,
+  props<OptionsPayloadInterface>()
+);
+
+export const pedestrianFlowListErrorAction = createAction(
+  ReportingActionTypes.PEDESTRIAN_FLOW_LIST_ERROR
 );

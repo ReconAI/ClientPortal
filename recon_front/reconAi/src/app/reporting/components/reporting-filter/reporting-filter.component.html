@@ -150,14 +150,17 @@
     </div>
     <div
       class="filter"
-      [ngClass]="{ 'shown-filter': isSelectedAtIndex(11) }"
+      [ngClass]="{
+        'shown-filter':
+          isSelectedAtIndex(11) && pedestrianFlow && pedestrianFlow.length
+      }"
+      *ngIf="isSelectedAtIndex(11) && pedestrianFlow && pedestrianFlow.length"
       [formGroupName]="11"
     >
       <recon-filter-select
         label="Pedestrian transit method classification"
         formControlName="value"
-        [options]="pedestrianOptions"
-        *ngIf="isSelectedAtIndex(11)"
+        [options]="pedestrianFlow"
         (changeVal)="changeValue()"
       ></recon-filter-select>
     </div>
@@ -194,7 +197,9 @@
       <recon-filter-input
         label="License plate number"
         formControlName="value"
-        (changeVal)="changeValue()"
+        [autocompleteOptions]="plateNumbers"
+        (changeVal)="changeWithAutocomplete($event, 13)"
+        (blurVal)="changeValue()"
       ></recon-filter-input>
     </div>
     <div

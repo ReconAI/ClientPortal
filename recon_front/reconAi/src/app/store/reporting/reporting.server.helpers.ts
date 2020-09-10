@@ -9,6 +9,22 @@ import {
 
 import moment from 'moment';
 
+export interface TrafficFlowServerInterface {
+  DirectionsStatistics: string;
+  NumberOfDirections: string;
+  NumberOfObjects: string;
+  ObservationEndDT: string;
+  ObservationStartDT: string;
+}
+
+export interface TrafficFlowClientInterface {
+  directionsStatistics: string;
+  numberOfDirections: string;
+  numberOfObjects: string;
+  observationEndDT: string;
+  observationStartDT: string;
+}
+
 export interface ReportingDeviceServerInterface {
   sensor_id: number;
   id: number;
@@ -25,7 +41,7 @@ export interface ReportingDeviceServerInterface {
   event_object: string;
   object_class: string;
   license_plate_number: string;
-  traffic_flow: string;
+  traffic_flow: TrafficFlowServerInterface;
   ambient_weather: string;
   road_weather: string;
   stopped_vehicles_detection: string;
@@ -34,6 +50,9 @@ export interface ReportingDeviceServerInterface {
   license_plate_location: string;
   face_location: string;
   cad_file_tag: string;
+  pedestrian_flow_number_of_objects: string;
+  pedestrian_flow_transit_method: string;
+  road_temperature: number;
 }
 
 export interface ReportingDeviceClientInterface {
@@ -52,7 +71,6 @@ export interface ReportingDeviceClientInterface {
   isEvent: string;
   objectClass: string;
   plateNumber: string;
-  trafficFlow: string;
   ambientWeather: string;
   roadWeather: string;
   vehicle: string;
@@ -60,6 +78,14 @@ export interface ReportingDeviceClientInterface {
   plate: string;
   face: string;
   fileTag: string;
+  directionsStatistics: string;
+  numberOfDirections: string;
+  numberOfObjects: string;
+  observationStartDT: string;
+  observationEndDT: string;
+  pedestrianFlowNumberOfObjects: string;
+  pedestrianFlowTransitMethod: string;
+  roadTemperature: number;
 }
 
 export interface SetSelectedReportingDeviceClientInterface {
@@ -83,7 +109,6 @@ export const transformReportingDeviceFromServer = (
   isEvent: device.event_object,
   objectClass: device.object_class,
   plateNumber: device.license_plate_number,
-  trafficFlow: device.traffic_flow,
   ambientWeather: device.ambient_weather,
   roadWeather: device.road_weather,
   vehicle: device.vehicle_classification,
@@ -91,6 +116,18 @@ export const transformReportingDeviceFromServer = (
   plate: device.license_plate_location,
   face: device.face_location,
   fileTag: device.cad_file_tag,
+  directionsStatistics: device?.traffic_flow?.DirectionsStatistics,
+  numberOfDirections: device?.traffic_flow?.NumberOfDirections,
+  numberOfObjects: device?.traffic_flow?.NumberOfObjects,
+  observationStartDT: moment(device?.traffic_flow?.ObservationStartDT).format(
+    'YYYY-MM-DD, HH:mm'
+  ),
+  observationEndDT: moment(device?.traffic_flow?.ObservationEndDT).format(
+    'YYYY-MM-DD, HH:mm'
+  ),
+  pedestrianFlowNumberOfObjects: device?.pedestrian_flow_number_of_objects,
+  pedestrianFlowTransitMethod: device?.pedestrian_flow_transit_method,
+  roadTemperature: device?.road_temperature,
 });
 
 export const transformReportingDeviceCardFromServer = (

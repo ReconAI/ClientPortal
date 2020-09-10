@@ -247,18 +247,48 @@ export class ReportingListDevicesComponent
         width: '100px',
       },
       {
-        header: 'Traffic flow',
-        id: 'trafficFlow',
-        width: '700px',
+        header: 'Directions statistics',
+        id: 'directionsStatistics',
+        width: '100px',
+      },
+      {
+        header: 'Number of directions',
+        id: 'numberOfDirections',
+        width: '100px',
+      },
+      {
+        header: 'Number of objects',
+        id: 'numberOfObjects',
+        width: '100px',
+      },
+      {
+        header: 'Observation start',
+        id: 'observationStartDT',
+        width: '150px',
+      },
+      {
+        header: 'Observation end',
+        id: 'observationEndDT',
+        width: '150px',
+      },
+      {
+        header: 'Pedestrian Flow Number Of Objects',
+        id: 'pedestrianFlowNumberOfObjects',
+        width: '100px',
+      },
+      {
+        header: 'Pedestrian Flow Transit Method',
+        id: 'pedestrianFlowTransitMethod',
+        width: '100px',
+      },
+      {
+        header: 'Road temperature',
+        id: 'roadTemperature',
+        width: '100px',
       },
       {
         header: 'Vehicle classification',
         id: 'vehicle',
-        width: '100px',
-      },
-      {
-        header: 'Pedestrian flow',
-        id: 'pedestrianFlow',
         width: '100px',
       },
       {

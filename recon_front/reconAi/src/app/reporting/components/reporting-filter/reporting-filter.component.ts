@@ -20,8 +20,10 @@ export class ReportingFilterComponent implements OnInit {
   @Input() initializedFilters: FilterItemInterface[] = [];
   @Input() eventObjects: ReconSelectOption[] = [];
   @Input() vehicleTypes: ReconSelectOption[] = [];
+  @Input() pedestrianFlow: ReconSelectOption[] = [];
   @Input() roadWeatherConditions: ReconSelectOption[] = [];
   @Input() projectNames: string[] = [];
+  @Input() plateNumbers: string[] = [];
   @Input() isDevice = false;
 
   @Output() changeFilters = new EventEmitter<FilterItemInterface[]>();
@@ -36,21 +38,6 @@ export class ReportingFilterComponent implements OnInit {
     JSON.stringify(DEFAULT_FILTER_ARRAY)
   );
   trafficFlowOptions: ReconSelectOption[] = [
-    {
-      label: 'First',
-      value: 1,
-    },
-    {
-      label: 'Second',
-      value: 2,
-    },
-    {
-      label: 'Third',
-      value: 3,
-    },
-  ];
-
-  pedestrianOptions: ReconSelectOption[] = [
     {
       label: 'First',
       value: 1,

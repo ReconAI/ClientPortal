@@ -1,5 +1,9 @@
 import { ActivatedRoute } from '@angular/router';
-import { selectRoadWeatherConditionList } from './../../../store/reporting/reporting.selectors';
+import {
+  selectRoadWeatherConditionList,
+  selectPlateNumberList,
+  selectPedestrianFlowList,
+} from './../../../store/reporting/reporting.selectors';
 import { loadReportingDeviceListRequestedAction } from 'app/store/reporting';
 import {
   setApplyFiltersStatusAction,
@@ -10,6 +14,9 @@ import {
   roadWeatherConditionListRequestedAction,
   loadReportingDeviceRequestedAction,
   buildVehicleRouteSucceededAction,
+  plateNumberListRequestedAction,
+  pedestrianFlowListRequestedAction,
+  plateNumberListSucceededAction,
 } from './../../../store/reporting/reporting.actions';
 import { FiltersService } from './../../../core/services/filters/filters.service';
 import { FilterItemInterface } from 'app/reporting/constants/types/filters';
@@ -55,8 +62,14 @@ export class ReportingFilterContainer implements OnInit, OnDestroy {
   roadWeatherConditions$: Observable<ReconSelectOption[]> = this.store.pipe(
     select(selectRoadWeatherConditionList)
   );
+  pedestrianFlow$: Observable<ReconSelectOption[]> = this.store.pipe(
+    select(selectPedestrianFlowList)
+  );
   projectNames$: Observable<string[]> = this.store.pipe(
     select(selectProjectNameList)
+  );
+  plateNumbers$: Observable<string[]> = this.store.pipe(
+    select(selectPlateNumberList)
   );
 
   changeFilters(filters: FilterItemInterface[]): void {
@@ -82,6 +95,7 @@ export class ReportingFilterContainer implements OnInit, OnDestroy {
     this.store.dispatch(eventObjectListRequestedAction());
     this.store.dispatch(roadWeatherConditionListRequestedAction());
     this.store.dispatch(vehicleTypeListRequestedAction());
+    this.store.dispatch(pedestrianFlowListRequestedAction());
   }
 
   loadData(): void {
@@ -112,6 +126,7 @@ export class ReportingFilterContainer implements OnInit, OnDestroy {
 
     this.loadData();
     this.store.dispatch(projectNameListSucceededAction({ names: [] }));
+    this.store.dispatch(plateNumberListSucceededAction({ names: [] }));
     this.store.dispatch(buildVehicleRouteSucceededAction({ points: [] }));
   }
 
@@ -120,9 +135,17 @@ export class ReportingFilterContainer implements OnInit, OnDestroy {
   }
 
   changeWithAutocomplete({ value, index }: AutocompleteChangesInterface): void {
-    if (index === 3) {
+    if (index === 4) {
       this.store.dispatch(
         projectNameListRequestedAction({
+          name: value,
+        })
+      );
+    }
+
+    if (index === 13) {
+      this.store.dispatch(
+        plateNumberListRequestedAction({
           name: value,
         })
       );

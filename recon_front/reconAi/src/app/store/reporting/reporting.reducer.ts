@@ -33,6 +33,8 @@ import {
   vehicleTypeListSucceededAction,
   buildVehicleRouteSucceededAction,
   heatMapDataSucceededAction,
+  plateNumberListSucceededAction,
+  pedestrianFlowListSucceededAction,
 } from './reporting.actions';
 
 export interface ReportingErrorsInterface {
@@ -58,6 +60,8 @@ export interface ReportingState {
   projectNames: string[];
   routePoints: LatLngInterface[];
   heatMapData: HeatMapPointClientInterface[];
+  plateNumbers: string[];
+  pedestrianFlowList: ReconSelectOption[];
 }
 
 export const initialState: ReportingState = {
@@ -75,6 +79,8 @@ export const initialState: ReportingState = {
   projectNames: [],
   routePoints: [],
   heatMapData: [],
+  plateNumbers: [],
+  pedestrianFlowList: [],
 };
 
 const loadReportingDeviceListSucceededReducer = (
@@ -159,6 +165,14 @@ const projectNameListSucceededReducer = (
   projectNames: names,
 });
 
+const plateNumberListSucceededReducer = (
+  state: ReportingState,
+  { names }: AutocompleteNameClientInterface
+): ReportingState => ({
+  ...state,
+  plateNumbers: names,
+});
+
 const buildVehicleRouteSucceededReducer = (
   state: ReportingState,
   { points }: BuildRouteClientInterface
@@ -173,6 +187,14 @@ const heatMapDataSucceededReducer = (
 ): ReportingState => ({
   ...state,
   heatMapData: points,
+});
+
+const pedestrianFlowListSucceededReducer = (
+  state: ReportingState,
+  { options }: OptionsPayloadInterface
+): ReportingState => ({
+  ...state,
+  pedestrianFlowList: options,
 });
 
 const reportingReducer = createReducer(
@@ -193,7 +215,9 @@ const reportingReducer = createReducer(
   ),
   on(vehicleTypeListSucceededAction, vehicleTypeListSucceededReducer),
   on(buildVehicleRouteSucceededAction, buildVehicleRouteSucceededReducer),
-  on(heatMapDataSucceededAction, heatMapDataSucceededReducer)
+  on(heatMapDataSucceededAction, heatMapDataSucceededReducer),
+  on(plateNumberListSucceededAction, plateNumberListSucceededReducer),
+  on(pedestrianFlowListSucceededAction, pedestrianFlowListSucceededReducer)
 );
 
 export function reducer(state: ReportingState | undefined, action: Action) {
