@@ -2,7 +2,6 @@
 Reporting tool serializers range
 """
 import functools
-import json
 from typing import List
 
 import boto3
@@ -16,13 +15,12 @@ from django.utils.module_loading import import_string
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import CharField, IntegerField, ListField, empty
-from rest_framework.serializers import ModelSerializer, ListSerializer, \
-    BaseSerializer
+from rest_framework.serializers import ModelSerializer, ListSerializer
 from rest_framework.serializers import Serializer
 from rest_framework.utils.serializer_helpers import ReturnDict
 
 from recon_db_manager.models import Organization, DevicePurchase, RelevantData, \
-    Project, TypeCode
+    Project, TypeCode, DeviceInstance
 from reporting_tool.forms.utils import SendEmailMixin
 from shared.fields import FileField
 from shared.models import User
@@ -407,21 +405,41 @@ class ProjectSerializer(ModelSerializer):
 
 class RelevantDataSerializer(ModelSerializer):
     sensor_id = serializers.IntegerField(source='edge_node_id')
-    project_name = serializers.SerializerMethodField('format_project_name')
+    project_name = serializers.CharField(source='project.name')
     event_object = serializers.SerializerMethodField('format_event_object')
-    object_class = serializers.SerializerMethodField('format_object_class')
-    vehicle_classification = serializers.SerializerMethodField('format_vehicle_classification')
-
-    ambient_weather = serializers.SerializerMethodField('format_ambient_weather')
-    road_weather = serializers.SerializerMethodField('format_road_weather')
-
-    tagged_data = serializers.SerializerMethodField('format_tagged_data')
-    license_plate_location = serializers.SerializerMethodField(
-        'format_license_plate_location'
+    object_class = serializers.CharField(
+        source='object_class.value', default=None
     )
-    face_location = serializers.SerializerMethodField('format_face_location')
-    cad_file_tag = serializers.SerializerMethodField('format_cad_file_tag')
-    traffic_flow = serializers.SerializerMethodField('format_traffic_flow')
+    vehicle_classification = serializers.CharField(
+        source='vehicle_classification.value', default=None
+    )
+    ambient_weather = serializers.CharField(
+        source='ambient_weather_condition.value', default=None
+    )
+    road_weather = serializers.CharField(
+        source='road_weather_condition.value', default=None
+    )
+
+    tagged_data = serializers.CharField(
+        source='tagged_data.name', default=None
+    )
+    license_plate_location = serializers.CharField(
+        source='license_plate.link', default=None
+    )
+    face_location = serializers.CharField(source='face.link', default=None)
+    cad_file_tag = serializers.CharField(
+        source='cad_file_tag.link', default=None
+    )
+    road_temperature = serializers.FloatField()
+    ambient_temperature = serializers.FloatField()
+    pedestrian_flow_transit_method = serializers.SerializerMethodField(
+        'format_pedestrian_flow_transit_method'
+    )
+    pedestrian_flow_number_of_objects = serializers.IntegerField(
+        source='pedestrian_flow.NumberOfObjects', default=None
+    )
+
+    __pedestrian_transit_methods = None
 
     class Meta:
         model = RelevantData
@@ -430,34 +448,12 @@ class RelevantDataSerializer(ModelSerializer):
             'location_y', 'location_z', 'orient_theta', 'orient_phi',
             'timestamp', 'project_name', 'sensor_id', 'license_plate_number',
             'event_object', 'object_class', 'vehicle_classification',
-            'traffic_flow', 'ambient_weather', 'road_weather',
-            'stopped_vehicle_detection', 'pedestrian_flow', 'tagged_data',
-            'license_plate_location', 'face_location', 'cad_file_tag'
+            'ambient_weather', 'road_weather', 'stopped_vehicle_detection',
+            'tagged_data', 'license_plate_location', 'face_location',
+            'cad_file_tag', 'road_temperature', 'ambient_temperature',
+            'traffic_flow', 'pedestrian_flow_number_of_objects',
+            'pedestrian_flow_transit_method'
         )
-
-    @staticmethod
-    def __related_model_attr(instance: RelevantData, related: str,
-                             attr_name: str):
-        attr = getattr(instance, related, None)
-
-        if attr:
-            return getattr(attr, attr_name)
-
-        return None
-
-    def __type_code(self, instance: RelevantData, related: str):
-        return self.__related_model_attr(instance, related,
-                                         'short_description')
-
-    def __file(self, instance: RelevantData, related: str):
-        return self.__related_model_attr(instance, related, 'link')
-
-    @staticmethod
-    def __json(instance: RelevantData, attr_name: str):
-        return json.dumps(getattr(instance, attr_name))
-
-    def format_traffic_flow(self, instance: RelevantData):
-        return self.__json(instance, 'traffic_flow')
 
     @staticmethod
     def format_event_object(instance: RelevantData):
@@ -466,33 +462,22 @@ class RelevantDataSerializer(ModelSerializer):
 
         return str(instance.OBJECT_TYPE)
 
-    def format_project_name(self, instance: RelevantData):
-        return self.__related_model_attr(instance, 'project', 'name')
+    @property
+    def _pedestrian_transit_methods(self) -> dict:
+        if self.__pedestrian_transit_methods is None:
+            self.__pedestrian_transit_methods = dict(TypeCode.objects.filter(
+                type_name=TypeCode.PEDESTRIAN_TRANSIT_TYPE
+            ).values_list('value', 'short_description'))
 
-    def format_vehicle_classification(self, instance: RelevantData):
-        return self.__type_code(instance, 'vehicle_classification')
+        return self.__pedestrian_transit_methods
 
-    def format_object_class(self, instance: RelevantData):
-        return self.__type_code(instance, 'object_class')
+    def pedestrian_method_by_code(self, code: str) -> str:
+        return self._pedestrian_transit_methods.get(code, '')
 
-    def format_ambient_weather(self, instance: RelevantData):
-        return self.__type_code(instance, 'ambient_weather_condition')
-
-    def format_road_weather(self, instance: RelevantData):
-        return self.__type_code(instance, 'road_weather_condition')
-
-    @staticmethod
-    def format_tagged_data(instance: RelevantData) -> str:
-        return instance.tagged_data.name
-
-    def format_license_plate_location(self, instance: RelevantData):
-        return self.__file(instance, 'license_plate')
-
-    def format_face_location(self, instance: RelevantData):
-        return self.__file(instance, 'face')
-
-    def format_cad_file_tag(self, instance: RelevantData):
-        return self.__file(instance, 'cad_file_tag')
+    def format_pedestrian_flow_transit_method(self, instance: RelevantData):
+        return self.pedestrian_method_by_code(
+            instance.pedestrian_flow.get('TransitMethod')
+        )
 
 
 class GeneratorListSerializer(ListSerializer):
@@ -507,36 +492,80 @@ class GeneratorListSerializer(ListSerializer):
 
 
 class RelevantDataGeneratorSeriralizer(RelevantDataSerializer):
+    traffic_flow_number_of_objects = serializers.IntegerField(
+        source='traffic_flow.NumberOfObjects', default=None
+    )
+    traffic_flow_observation_start_dt = serializers.DateTimeField(
+        source='traffic_flow.ObservationStartDT', default=None
+    )
+    traffic_flow_observation_end_dt = serializers.DateTimeField(
+        source='traffic_flow.ObservationEndDT', default=None
+    )
+    traffic_flow_number_of_directions = serializers.IntegerField(
+        source='traffic_flow.NumberOfDirections', default=None
+    )
+    traffic_flow_directions_statistics = serializers.IntegerField(
+        source='traffic_flow.DirectionsStatistics', default=None
+    )
+
     class Meta:
         model = RelevantData
         fields = (
             'id', 'sensor_GPS_lat', 'sensor_GPS_long', 'location_x',
             'location_y', 'location_z', 'orient_theta', 'orient_phi',
-            'timestamp', 'project', 'sensor_id', 'license_plate_number',
+            'timestamp', 'project_name', 'sensor_id', 'license_plate_number',
             'event_object', 'object_class', 'vehicle_classification',
-            'traffic_flow', 'ambient_weather', 'road_weather',
-            'stopped_vehicle_detection', 'pedestrian_flow', 'tagged_data',
-            'license_plate_location', 'face_location', 'cad_file_tag'
+            'ambient_weather', 'road_weather', 'stopped_vehicle_detection',
+            'tagged_data', 'license_plate_location', 'face_location',
+            'cad_file_tag', 'road_temperature', 'ambient_temperature',
+            'pedestrian_flow_transit_method',
+            'pedestrian_flow_number_of_objects',
+            'traffic_flow_number_of_objects',
+            'traffic_flow_observation_end_dt',
+            'traffic_flow_observation_start_dt',
+            'traffic_flow_number_of_directions',
+            'traffic_flow_directions_statistics'
         )
         list_serializer_class = GeneratorListSerializer
-
-
-class RelevantDataGPSSerializer(ModelSerializer):
-    lat = serializers.FloatField(
-        required=True, allow_null=False,max_value=90,
-        min_value=-90, source='sensor_GPS_lat'
-    )
-    long = serializers.FloatField(
-        required=True, allow_null=False, max_value=180,
-        min_value=-180, source='sensor_GPS_long'
-    )
-
-    class Meta:
-        model = RelevantData
-        fields = ('lat', 'long')
 
 
 class TypeCodeSerializer(ModelSerializer):
     class Meta:
         model = TypeCode
         fields = ('value', 'short_description')
+
+
+class HeatMapSerializer(ReadOnlySerializerMixin, Serializer):
+    sensor_GPS_lat = serializers.FloatField(required=True)
+    sensor_GPS_long = serializers.FloatField(required=True)
+    number_of_objects = serializers.IntegerField(required=True)
+
+
+class SensorGPSSerializer(ModelSerializer):
+    lat = serializers.FloatField(
+        required=True, allow_null=False,max_value=90,
+        min_value=-90, source='gps_lat'
+    )
+    long = serializers.FloatField(
+        required=True, allow_null=False, max_value=180,
+        min_value=-180, source='gps_long'
+    )
+
+    class Meta:
+        model = DeviceInstance
+        fields = ('lat', 'long')
+
+
+class SensorSerializer(SensorGPSSerializer):
+    class Meta:
+        model = DeviceInstance
+        fields = ('id', 'serial', 'gps_lat', 'gps_long')
+
+
+class RelevantDataGPSSerializer(ModelSerializer):
+    lat = serializers.FloatField(source='sensor_GPS_lat')
+    long = serializers.FloatField(source='sensor_GPS_long')
+
+    class Meta:
+        model = RelevantData
+        fields = ('lat', 'long')

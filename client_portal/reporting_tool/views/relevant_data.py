@@ -1,4 +1,7 @@
-from django.db.models import QuerySet
+from django.contrib.postgres.fields.jsonb import KeyTextTransform
+from django.db import models
+from django.db.models import QuerySet, Sum
+from django.db.models.functions import Cast
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django_filters import rest_framework as filters
@@ -7,20 +10,20 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework.exceptions import NotFound
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
 from rest_framework.request import Request
+from rest_framework.response import Response
 
 from recon_db_manager.models import RelevantData, TypeCode
 from reporting_tool.filters import RelevantDataFilter, \
-    RelevantDataSensorFilter, ProjectFilter, RouteFilter
+    RelevantDataSensorFilter, ProjectFilter, LicensePlateFilter
 from reporting_tool.serializers import RelevantDataSerializer, \
-    RelevantDataGPSSerializer, TypeCodeSerializer
+    TypeCodeSerializer, HeatMapSerializer, RelevantDataGPSSerializer
 from shared.permissions import IsActive, PaymentRequired
 from shared.swagger.headers import token_header
 from shared.swagger.responses import \
     default_get_responses_with_custom_success, data_serializer, \
-    DEFAULT_UNSAFE_REQUEST_RESPONSES, data_serializer_many
-from shared.views.utils import UpdateAPIView, PlainListModelMixin
+    data_serializer_many
+from shared.views.utils import PlainListModelMixin
 
 
 class RelevantDataHandler:
@@ -59,45 +62,6 @@ class RelevantDataView(RelevantDataHandler, ListAPIView):
     filterset_class = RelevantDataFilter
 
     serializer_class = RelevantDataSerializer
-
-
-@method_decorator(name='get', decorator=swagger_auto_schema(
-    responses=default_get_responses_with_custom_success(
-        data_serializer(RelevantDataSerializer)
-    ),
-    tags=['Relevant data'],
-    operation_summary='Sensor\'s relevant data',
-    operation_description='Displays source\'s relevant data',
-    manual_parameters=[
-        token_header(),
-    ]
-))
-class RelevantDataSensorView(RelevantDataHandler, ListAPIView):
-    serializer_class = RelevantDataSerializer
-
-    filter_backends = (filters.DjangoFilterBackend,)
-
-    filterset_class = RelevantDataSensorFilter
-
-    def filter_queryset(self, queryset: QuerySet) -> QuerySet:
-        qs = queryset.filter(edge_node_id=self.kwargs.get(self.lookup_field))
-
-        return super().filter_queryset(qs)
-
-
-@method_decorator(name='put', decorator=swagger_auto_schema(
-    responses=DEFAULT_UNSAFE_REQUEST_RESPONSES,
-    tags=['Relevant data'],
-    operation_summary='Relevant data set GPS',
-    operation_description='Sets GPS for an entry of relevant data',
-    manual_parameters=[
-        token_header(),
-    ]
-))
-class RelevantDataSetGPSView(RelevantDataHandler, UpdateAPIView):
-    serializer_class = RelevantDataGPSSerializer
-
-    update_success_message = _('GPS is updated successfully')
 
 
 class RelevantDataTypeCodeList:
@@ -152,8 +116,8 @@ class RelevantDataVehiclesView(RelevantDataTypeCodeList, PlainListModelMixin,
         token_header(),
     ]
 ))
-class RelevantDataEventsVehiclesView(RelevantDataTypeCodeList, PlainListModelMixin,
-                                     ListAPIView):
+class RelevantDataEventsVehiclesView(RelevantDataTypeCodeList,
+                                     PlainListModelMixin, ListAPIView):
     TYPE_CODES = [TypeCode.OBJECT_TYPE, TypeCode.ROAD_EVENT_TYPE]
 
     EXISTENT_VALUES_COLUMN = 'object_class'
@@ -175,6 +139,27 @@ class RelevantDataRoadConditionsView(RelevantDataTypeCodeList,
     TYPE_CODES = [TypeCode.ROAD_CONDITIONS_TYPE]
 
     EXISTENT_VALUES_COLUMN = 'road_weather_condition'
+
+
+@method_decorator(name='get', decorator=swagger_auto_schema(
+    responses=default_get_responses_with_custom_success(
+        data_serializer_many(TypeCodeSerializer)
+    ),
+    tags=['Relevant data'],
+    operation_summary='Road conditions list',
+    operation_description='Available road conditions list',
+    manual_parameters=[
+        token_header(),
+    ]
+))
+class RelevantDataPedestrianTransitTypeView(PlainListModelMixin, ListAPIView):
+    serializer_class = TypeCodeSerializer
+
+    permission_classes = (IsAuthenticated, IsActive, PaymentRequired)
+
+    queryset = TypeCode.objects.all().filter(
+        type_name=TypeCode.PEDESTRIAN_TRANSIT_TYPE
+    ).order_by('short_description')
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
@@ -226,7 +211,9 @@ class ExportRelevantDataView(RelevantDataHandler, ListAPIView):
         export_format = self.kwargs.get('export_format')
 
         if not self.__is_format_allowed(export_format):
-            raise NotFound('Export format {} is not allowed'.format(export_format))
+            raise NotFound(
+                'Export format {} is not allowed'.format(export_format)
+            )
 
         if self.filter_queryset(self.get_queryset()).count():
             ExportRelevantDataTask().delay(
@@ -263,7 +250,7 @@ class RouteGenerationView(RelevantDataHandler, PlainListModelMixin,
 
     filter_backends = (filters.DjangoFilterBackend,)
 
-    filterset_class = RouteFilter
+    filterset_class = RelevantDataFilter
 
     def filter_queryset(self, queryset: QuerySet) -> QuerySet:
         qs = queryset.filter(
@@ -271,3 +258,64 @@ class RouteGenerationView(RelevantDataHandler, PlainListModelMixin,
         )
 
         return super().filter_queryset(qs)
+
+
+class RelevantDataHeatMapView(RelevantDataHandler, PlainListModelMixin,
+                              ListAPIView):
+    queryset = RelevantData.objects.all()
+
+    serializer_class = HeatMapSerializer
+
+    def filter_queryset(self, queryset: QuerySet) -> QuerySet:
+        qs = queryset.values('sensor_GPS_lat', 'sensor_GPS_long').filter(
+            id__in=self.request.query_params.getlist('id', [])
+        ).annotate(
+            number_of_objects=Sum(
+                Cast(
+                    KeyTextTransform("NumberOfObjects", "traffic_flow"),
+                    models.IntegerField()
+                )
+            )
+        )
+
+        return super().filter_queryset(qs)
+
+
+@method_decorator(name='get', decorator=swagger_auto_schema(
+    responses=default_get_responses_with_custom_success(
+        openapi.Schema(
+            type=openapi.TYPE_ARRAY,
+            items=openapi.Schema(type=openapi.TYPE_STRING)
+        )
+    ),
+    tags=['Relevant data'],
+    operation_summary='License plates list',
+    operation_description='Returns project names list filtered by prefix',
+    manual_parameters=[
+        token_header(),
+    ]
+))
+class RelevantDataLicensePlatesView(PlainListModelMixin, ListAPIView):
+    permission_classes = (IsAuthenticated, IsActive, PaymentRequired)
+
+    queryset = RelevantData.objects.distinct().exclude(
+        license_plate_number=''
+    ).order_by('license_plate_number').all()
+
+    filter_backends = (filters.DjangoFilterBackend,)
+
+    filterset_class = LicensePlateFilter
+
+    def filter_queryset(self, queryset: queryset) -> QuerySet:
+        qs = queryset.filter(
+            project__organization_id=self.request.user.organization.id
+        )
+
+        return super().filter_queryset(qs)
+
+    def list(self, *args, **kwargs) -> Response:
+        queryset = self.filter_queryset(self.get_queryset())
+
+        return Response({
+            'data': queryset.values_list('license_plate_number', flat=True)[:5]
+        })
