@@ -29,11 +29,14 @@ from .views.accounts import SignupView, ActivateView, CurrentUserProfileView, \
 from .views.new_features import NewFeatureView
 from .views.orders import OrdersListView, OrderItemView
 from .views.payment_methods import CardListView, DefaultPaymentMethodView
-from .views.relevant_data import RelevantDataView, RelevantDataSetGPSView, \
-    RelevantDataSensorView, RelevantDataVehiclesView, \
+from .views.relevant_data import RelevantDataView, \
+    RelevantDataVehiclesView, \
     RelevantDataEventsVehiclesView, \
     RelevantDataProjectsView, RelevantDataRoadConditionsView, \
-    ExportRelevantDataView, RouteGenerationView, RelevantDataHeatMapView
+    ExportRelevantDataView, RouteGenerationView, RelevantDataHeatMapView, \
+    RelevantDataLicensePlatesView, RelevantDataPedestrianTransitTypeView
+from .views.sensors import SensorSetGPSView, RelevantDataSensorView, \
+    SensorsListView
 from .views.user_management import UserList, UserItem, InvitationView
 
 urlpatterns = [
@@ -62,15 +65,19 @@ urlpatterns = [
     path('new-features', NewFeatureView.as_view(), name='new_feature.request'),
 
     path('relevant-data', RelevantDataView.as_view(), name='relevant_data.list'),
-    path('sensors/<int:pk>/relevant-data', RelevantDataSensorView.as_view(), name='relevant_data.item'),
-    path('relevant-data/<int:pk>/gps', RelevantDataSetGPSView.as_view(), name='relevant_data.set_gps'),
     path('relevant-data/vehicle-types', RelevantDataVehiclesView.as_view(), name='relevant_data.vehicle-types'),
     path('relevant-data/event-objects', RelevantDataEventsVehiclesView.as_view(), name='relevant_data.event-objects'),
     path('relevant-data/road-weather-conditions', RelevantDataRoadConditionsView.as_view(), name='relevant_data.roadn-weather-conditions'),
+    path('relevant-data/pedestrian-transit-methods', RelevantDataPedestrianTransitTypeView.as_view(), name='relevant_data.pedestrian-transit-methods'),
     path('relevant-data/projects', RelevantDataProjectsView.as_view(), name='relevant_data.projects'),
+    path('relevant-data/license-plates', RelevantDataLicensePlatesView.as_view(), name='relevant_data.license-plates'),
     path('relevant-data/export/<str:export_format>', ExportRelevantDataView.as_view(), name='relevant_data.export'),
     path('relevant-data/route/<str:license_plate_number>', RouteGenerationView.as_view(), name='relevant_data.route'),
     path('relevant-data/heat-map', RelevantDataHeatMapView.as_view(), name='relevant_data.heat_map'),
+
+    path('sensors', SensorsListView.as_view(), name='sensrors.relevant-data'),
+    path('sensors/<int:pk>/relevant-data', RelevantDataSensorView.as_view(), name='sensrors.relevant-data'),
+    path('sensors/<int:pk>/set-gps', SensorSetGPSView.as_view(), name='sensors.set_gps'),
 
     path('admin/', admin.site.urls)
 ]
