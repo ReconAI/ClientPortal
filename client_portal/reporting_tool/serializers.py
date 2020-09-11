@@ -408,16 +408,16 @@ class RelevantDataSerializer(ModelSerializer):
     project_name = serializers.CharField(source='project.name')
     event_object = serializers.SerializerMethodField('format_event_object')
     object_class = serializers.CharField(
-        source='object_class.value', default=None
+        source='object_class.short_description', default=None
     )
     vehicle_classification = serializers.CharField(
-        source='vehicle_classification.value', default=None
+        source='vehicle_classification.short_description', default=None
     )
     ambient_weather = serializers.CharField(
-        source='ambient_weather_condition.value', default=None
+        source='ambient_weather_condition.short_description', default=None
     )
     road_weather = serializers.CharField(
-        source='road_weather_condition.value', default=None
+        source='road_weather_condition.short_description', default=None
     )
 
     tagged_data = serializers.CharField(
