@@ -19,9 +19,10 @@ from rest_framework.serializers import ModelSerializer, ListSerializer
 from rest_framework.serializers import Serializer
 from rest_framework.utils.serializer_helpers import ReturnDict
 
-from recon_db_manager.models import Organization, DevicePurchase, RelevantData, \
-    Project, TypeCode, DeviceInstance
+from recon_db_manager.models import Organization, DevicePurchase,\
+    RelevantData, Project, TypeCode, DeviceInstance
 from reporting_tool.forms.utils import SendEmailMixin
+from reporting_tool.utils import FeatureRequestUploader
 from shared.fields import FileField
 from shared.models import User
 from shared.serializers import ReadOnlySerializerMixin, DeviceImageSerializer
@@ -102,8 +103,6 @@ class FeatureRequestSerializer(ReadOnlySerializerMixin,
         max_length=20
     )
 
-    __s3 = None
-
     def validate_files(self, files: List[ContentFile]) -> List[ContentFile]:
         """
         :type files: List[ContentFile]
@@ -125,56 +124,17 @@ class FeatureRequestSerializer(ReadOnlySerializerMixin,
         file_public_links = []
 
         for file in files:
-            file_public_links.append(self.__upload_file(file))
-
-        return file_public_links
-
-    def __upload_file(self, file: ContentFile) -> str:
-        """
-        Uploads file and returns its link
-
-        :type file: ContentFile
-
-        :rtype: str
-        """
-        destination = self.__destination(file)
-
-        self.s3_client.put_object(
-            Body=file,
-            Bucket=settings.AWS_CLIENT_PORTAL_BUCKET,
-            Key=destination,
-            Tagging="recon_owner=56"
-        )
-
-        return self.s3_client.generate_presigned_url(
-            'get_object',
-            Params={
-                'Bucket': settings.AWS_CLIENT_PORTAL_BUCKET,
-                'Key': destination
-            }
-        )
-
-    def __destination(self, file: ContentFile) -> str:
-        return '{}/organization_{}/{}'.format(
-            self.FILES_UPLOAD_KEY,
-            self.context.get('organization').id,
-            file.name
-        )
-
-    @property
-    def s3_client(self) -> BaseClient:
-        """
-        :rtype: BaseClient
-        """
-        if self.__s3 is None:
-            self.__s3 = boto3.client(
-                's3',
-                aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-                aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-                config=Config(signature_version='s3v4')
+            file_uploader = FeatureRequestUploader(
+                file.open('r').file.getvalue(),
+                self.FILES_UPLOAD_KEY,
+                self.context.get('organization').id
             )
 
-        return self.__s3
+            file_public_links.append(
+                file_uploader.upload_and_get_link()
+            )
+
+        return file_public_links
 
     def save(self, **kwargs):
         return self.send_mail(
@@ -396,7 +356,13 @@ class DefaultPaymentMethodSerializer(ReadOnlySerializerMixin, Serializer):
 
 
 class ProjectSerializer(ModelSerializer):
+    """
+    Project serializer
+    """
     class Meta:
+        """
+        Project serializer meta class
+        """
         model = Project
         fields = (
             'id', 'name'
@@ -404,6 +370,9 @@ class ProjectSerializer(ModelSerializer):
 
 
 class RelevantDataSerializer(ModelSerializer):
+    """
+    Reevant data serializer
+    """
     sensor_id = serializers.IntegerField(source='edge_node_id')
     project_name = serializers.CharField(source='project.name')
     event_object = serializers.SerializerMethodField('format_event_object')
@@ -442,6 +411,9 @@ class RelevantDataSerializer(ModelSerializer):
     __pedestrian_transit_methods = None
 
     class Meta:
+        """
+        Reevant data serializer settings
+        """
         model = RelevantData
         fields = (
             'id', 'sensor_GPS_lat', 'sensor_GPS_long', 'location_x',
@@ -456,7 +428,12 @@ class RelevantDataSerializer(ModelSerializer):
         )
 
     @staticmethod
-    def format_event_object(instance: RelevantData):
+    def format_event_object(instance: RelevantData) -> str:
+        """
+        :type instance: RelevantData
+
+        :rtype: str
+        """
         if instance.event:
             return str(instance.EVENT_TYPE)
 
@@ -464,6 +441,11 @@ class RelevantDataSerializer(ModelSerializer):
 
     @property
     def _pedestrian_transit_methods(self) -> dict:
+        """
+        Lazy pedestrian transit methods load
+
+        :rtype: dict
+        """
         if self.__pedestrian_transit_methods is None:
             self.__pedestrian_transit_methods = dict(TypeCode.objects.filter(
                 type_name=TypeCode.PEDESTRIAN_TRANSIT_TYPE
@@ -472,15 +454,29 @@ class RelevantDataSerializer(ModelSerializer):
         return self.__pedestrian_transit_methods
 
     def pedestrian_method_by_code(self, code: str) -> str:
+        """
+        :type code: str
+
+        :rtype: str
+        """
         return self._pedestrian_transit_methods.get(code, '')
 
-    def format_pedestrian_flow_transit_method(self, instance: RelevantData):
+    def format_pedestrian_flow_transit_method(self,
+                                              instance: RelevantData) -> str:
+        """
+        :type instance: RelevantData
+
+        :rtype: str
+        """
         return self.pedestrian_method_by_code(
             instance.pedestrian_flow.get('TransitMethod')
         )
 
 
 class GeneratorListSerializer(ListSerializer):
+    """
+    The serializer's data will be returned as generator
+    """
     @property
     def data(self):
         data = self.instance
@@ -490,8 +486,15 @@ class GeneratorListSerializer(ListSerializer):
         for item in iterable:
             yield self.child.to_representation(item)
 
+    def update(self, instance, validated_data):
+        pass
+
 
 class RelevantDataGeneratorSeriralizer(RelevantDataSerializer):
+    """
+    Relevant data serializer with plain level fields.
+    Data will be returned as generator
+    """
     traffic_flow_number_of_objects = serializers.IntegerField(
         source='traffic_flow.NumberOfObjects', default=None
     )
@@ -509,6 +512,9 @@ class RelevantDataGeneratorSeriralizer(RelevantDataSerializer):
     )
 
     class Meta:
+        """
+        Relevant data serializer settings
+        """
         model = RelevantData
         fields = (
             'id', 'sensor_GPS_lat', 'sensor_GPS_long', 'location_x',
@@ -530,20 +536,33 @@ class RelevantDataGeneratorSeriralizer(RelevantDataSerializer):
 
 
 class TypeCodeSerializer(ModelSerializer):
+    """
+    Type code serializer
+    """
     class Meta:
+        """
+        Type code serializer specification
+        """
         model = TypeCode
         fields = ('value', 'short_description')
 
 
 class HeatMapSerializer(ReadOnlySerializerMixin, Serializer):
+    """
+    Heat map serializer
+    """
+
     sensor_GPS_lat = serializers.FloatField(required=True)
     sensor_GPS_long = serializers.FloatField(required=True)
     number_of_objects = serializers.IntegerField(required=True)
 
 
 class SensorGPSSerializer(ModelSerializer):
+    """
+    Sensor set GPS serializer
+    """
     lat = serializers.FloatField(
-        required=True, allow_null=False,max_value=90,
+        required=True, allow_null=False, max_value=90,
         min_value=-90, source='gps_lat'
     )
     long = serializers.FloatField(
@@ -552,20 +571,35 @@ class SensorGPSSerializer(ModelSerializer):
     )
 
     class Meta:
+        """
+        Sensor set GPS serializer specification
+        """
         model = DeviceInstance
         fields = ('lat', 'long')
 
 
 class SensorSerializer(SensorGPSSerializer):
+    """
+    Sensor serializer
+    """
     class Meta:
+        """
+        Sensor specification
+        """
         model = DeviceInstance
         fields = ('id', 'serial', 'gps_lat', 'gps_long')
 
 
 class RelevantDataGPSSerializer(ModelSerializer):
+    """
+    Relevant data GPS serializer
+    """
     lat = serializers.FloatField(source='sensor_GPS_lat')
     long = serializers.FloatField(source='sensor_GPS_long')
 
     class Meta:
+        """
+        Relevant serializer specification
+        """
         model = RelevantData
         fields = ('lat', 'long')

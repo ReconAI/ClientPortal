@@ -15,10 +15,12 @@ from reporting_tool.filters import RelevantDataSensorFilter, \
     ExportRelevantDataFilterBackend
 from reporting_tool.forms.utils import SendEmailMixin
 from reporting_tool.serializers import RelevantDataGeneratorSeriralizer
-from reporting_tool.utils import S3FileUploader, RelevantDataFileGenerator
+from reporting_tool.utils import S3FileUploader, RelevantDataFileGenerator, \
+    RelvantDataExportUploader
+from reporting_tool.views.relevant_data import RelevantDataHandler
 
 
-class ExportRelevantDataTask(Task, GenericAPIView, SendEmailMixin):
+class ExportRelevantDataTask(Task, GenericAPIView, RelevantDataHandler, SendEmailMixin):
     """
     Exports relevant data to file uploading it to s3
     """
@@ -34,15 +36,17 @@ class ExportRelevantDataTask(Task, GenericAPIView, SendEmailMixin):
 
     serializer_class = RelevantDataGeneratorSeriralizer
 
-    uploader_class = S3FileUploader
+    uploader_class = RelvantDataExportUploader
 
-    queryset = RelevantData.objects.select_related(
-        'project'
-    ).prefetch_related(
-        'event', 'object_class', 'tagged_data', 'license_plate',
-        'face', 'cad_file_tag', 'ambient_weather_condition',
-        'road_weather_condition', 'vehicle_classification'
-    ).order_by('-id').all()
+    CHUNK_SIZE = 3
+
+    # queryset = RelevantData.objects.select_related(
+    #     'project'
+    # ).prefetch_related(
+    #     'event', 'object_class', 'tagged_data', 'license_plate',
+    #     'face', 'cad_file_tag', 'ambient_weather_condition',
+    #     'road_weather_condition', 'vehicle_classification'
+    # ).order_by('-id').all()
 
     def __init__(self):
         super().__init__()
@@ -60,9 +64,13 @@ class ExportRelevantDataTask(Task, GenericAPIView, SendEmailMixin):
         self.user = get_user_model().objects.get(pk=user_id)
         self.query_params = query_params
 
+        serializer = self.serializer_class(
+            self.queryset_iterator(self.CHUNK_SIZE), many=True
+        )
+
         file_generator = RelevantDataFileGenerator.instantiate(
             export_format,
-            self.serializer_class(self.queryset_iterator(3), many=True)
+            serializer
         )
 
         file_uploader = self.uploader_class(file_generator, self.user)

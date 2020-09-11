@@ -1,3 +1,7 @@
+"""
+Reporting tool filters set
+"""
+
 from django_filters import rest_framework as filters
 
 from recon_db_manager.models import RelevantData
@@ -7,6 +11,9 @@ from shared.forms import NegativeFiltersForm
 
 
 class RelevantDataSensorFilter(FilterSet):
+    """
+    Full set of filters for the relevant data page apart from sensor id
+    """
     project_name = CharFilter(
         field_name="project__name", lookup_expr='exact', strip=False
     )
@@ -47,6 +54,9 @@ class RelevantDataSensorFilter(FilterSet):
     )
 
     class Meta:
+        """
+        RelevantDataSensorFilter specification
+        """
         model = RelevantData
         fields = (
             'project_name', 'timestamp', 'orient_theta', 'orient_phi',
@@ -59,9 +69,15 @@ class RelevantDataSensorFilter(FilterSet):
 
 
 class RelevantDataFilter(RelevantDataSensorFilter):
+    """
+    Full set of filters for the relevant data page
+    """
     sensor_id = NumberFilter(field_name="device_instance", lookup_expr='exact')
 
     class Meta:
+        """
+        RelevantDataFilter specification
+        """
         model = RelevantData
         fields = (
             'sensor_id', 'project_name', 'timestamp', 'orient_theta',
@@ -73,24 +89,41 @@ class RelevantDataFilter(RelevantDataSensorFilter):
 
 
 class ProjectFilter(filters.FilterSet):
+    """
+    Filtering data by project name
+    """
     name = filters.CharFilter(field_name='project__name',
                               lookup_expr='istartswith')
 
     class Meta:
+        """
+        Project name is sole filter
+        """
         model = RelevantData
         fields = ('name', )
 
 
 class LicensePlateFilter(filters.FilterSet):
+    """
+    Relevant data filtering by license plates
+    """
     license_plate = filters.CharFilter(field_name='license_plate_number',
                                        lookup_expr='istartswith')
 
     class Meta:
+        """
+        Filters by license plate
+        """
         model = RelevantData
         fields = ('license_plate',)
 
 
 class ExportRelevantDataFilterBackend(filters.DjangoFilterBackend):
+    """
+    Query backend retrieving query params from view object
+    rather than request object
+    """
+
     def get_filterset_kwargs(self, request, queryset, view):
         return {
             'data': getattr(view, 'query_params', {}),

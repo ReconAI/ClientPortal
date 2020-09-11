@@ -7,7 +7,6 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.db.models import Model
 from django.forms import Form, BaseForm
-from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from drf_braces.serializers.form_serializer import FormSerializer
 from rest_framework import serializers
@@ -204,4 +203,3 @@ class TrialSerializer(ModelSerializer):
         """
         model = Organization
         fields = ('trial_expires_on',)
-

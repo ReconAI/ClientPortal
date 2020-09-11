@@ -8,7 +8,6 @@ from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.utils.translation import gettext_lazy as _
 from rest_framework import exceptions
-from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import set_rollback
 from stripe.error import InvalidRequestError, CardError

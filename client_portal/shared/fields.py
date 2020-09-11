@@ -95,8 +95,8 @@ class DateTimeRangeField(RangeField):
     def _prepare(self, item: str) -> Any:
         try:
             return parse(item)
-        except ParserError as e:
-            raise ValidationError(e, code='format_error')
+        except ParserError as exc:
+            raise ValidationError(exc, code='format_error')
 
 
 class FloatRangeField(RangeField):

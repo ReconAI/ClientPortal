@@ -1,3 +1,7 @@
+"""
+Shared utils module
+"""
+
 from typing import List, Optional, Any
 
 from django.db.models import Q, QuerySet
@@ -12,9 +16,9 @@ class FilterMixin:
     Filter mixin return Q object rather than query sets with filters applied
     """
 
-    def filter(self, qs: QuerySet, value: Any) -> Optional[Q]:
+    def filter(self, queryset: QuerySet, value: Any) -> Optional[Q]:
         """
-        :type qs: QuerySet
+        :type queryset: QuerySet
         :type value: Any
 
         :rtype: Optional[Q]
@@ -28,29 +32,48 @@ class FilterMixin:
 
 
 class NumberFilter(FilterMixin, filters.NumberFilter):
-    pass
+    """
+    Number filter
+    """
 
 
 class CharFilter(FilterMixin, filters.CharFilter):
-    pass
+    """
+    Char filter
+    """
 
 
 class BooleanFilter(FilterMixin, filters.BooleanFilter):
-    pass
+    """
+    Boolean filter
+    """
 
 
-class DateTimeFromToRangeFilter(FilterMixin, filters.DateTimeFromToRangeFilter):
+class DateTimeFromToRangeFilter(FilterMixin,
+                                filters.DateTimeFromToRangeFilter):
+    """
+    Date time range filter
+    """
+
     field_class = DateTimeRangeField
 
 
 class NumericRangeFilter(FilterMixin, filters.NumericRangeFilter):
+    """
+    Numeric range filter
+    """
     field_class = FloatRangeField
 
 
 class GPSFilter(FilterMixin, filters.NumberFilter):
+    """
+    GPS filter
+    """
+
     field_class = GPSRangeField
 
-    def __init__(self, lat_field_name: str, long_field_name:str, *args, **kwargs):
+    def __init__(self, lat_field_name: str, long_field_name: str,
+                 *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.__lat_field_name = lat_field_name
@@ -64,6 +87,11 @@ class GPSFilter(FilterMixin, filters.NumberFilter):
 
     @property
     def filter_expr(self) -> list:
+        """
+        GPS filter arguments backbone
+
+        :rtype: list
+        """
         return [
             '{}__{}'.format(self.__lat_field_name, 'lte'),
             '{}__{}'.format(self.__long_field_name, 'gte'),
@@ -73,6 +101,10 @@ class GPSFilter(FilterMixin, filters.NumberFilter):
 
 
 class FilterSet(filters.FilterSet):
+    """
+    Custem filter set wit possibility to switch over or/and for all
+    filters applied
+    """
     logical_and = filters.BooleanFilter()
 
     LOGICAL_AND = True
