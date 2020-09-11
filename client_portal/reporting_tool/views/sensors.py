@@ -16,7 +16,7 @@ from shared.swagger.headers import token_header
 from shared.swagger.responses import DEFAULT_UNSAFE_REQUEST_RESPONSES
 from shared.swagger.responses import \
     default_get_responses_with_custom_success, data_serializer
-from shared.views.utils import UpdateAPIView
+from shared.views.utils import UpdateAPIView, RetrieveAPIView
 
 
 class SensorHandler:
@@ -59,6 +59,12 @@ class RelevantDataSensorView(RelevantDataHandler, ListAPIView):
 
 
 class SensorsListView(SensorHandler, ListAPIView):
+    serializer_class = SensorSerializer
+
+    queryset = DeviceInstance.objects.all().distinct('id')
+
+
+class SensorsItemView(SensorHandler, RetrieveAPIView):
     serializer_class = SensorSerializer
 
     queryset = DeviceInstance.objects.all().distinct('id')

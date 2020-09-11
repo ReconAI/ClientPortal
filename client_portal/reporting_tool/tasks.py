@@ -1,3 +1,7 @@
+"""
+Module containing tasks for reporting tool worker
+"""
+
 import gc
 
 from celery import Task
@@ -15,6 +19,10 @@ from reporting_tool.utils import S3FileUploader, RelevantDataFileGenerator
 
 
 class ExportRelevantDataTask(Task, GenericAPIView, SendEmailMixin):
+    """
+    Exports relevant data to file uploading it to s3
+    """
+
     name = 'export-relevant-data'
 
     FORMAT_XML = 'xml'
@@ -43,7 +51,12 @@ class ExportRelevantDataTask(Task, GenericAPIView, SendEmailMixin):
         self.user = None
         self.export_format = None
 
-    def run(self,  user_id: int, export_format: str, query_params: dict):
+    def run(self, user_id: int, export_format: str, query_params: dict):
+        """
+        :type user_id: int
+        :type export_format: str
+        :type query_params: dict
+        """
         self.user = get_user_model().objects.get(pk=user_id)
         self.query_params = query_params
 
@@ -68,6 +81,9 @@ class ExportRelevantDataTask(Task, GenericAPIView, SendEmailMixin):
 
     @property
     def query(self) -> QuerySet:
+        """
+        :rtype: QuerySet
+        """
         return self.filter_queryset(self.queryset)
 
     def filter_queryset(self, queryset):
@@ -88,7 +104,12 @@ class ExportRelevantDataTask(Task, GenericAPIView, SendEmailMixin):
 
         return super().filter_queryset(queryset)
 
-    def queryset_iterator(self, chunksize=500) -> RelevantData:
+    def queryset_iterator(self, chunksize: int = 500):
+        """
+        Lazy load iterator loading data by chunks
+
+        :type chunksize: int
+        """
         counter = 0
         count = chunksize
         while count == chunksize:
