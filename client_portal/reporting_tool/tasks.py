@@ -1,3 +1,7 @@
+"""
+Module containing tasks for reporting tool worker
+"""
+
 import gc
 
 from celery import Task
@@ -11,10 +15,16 @@ from reporting_tool.filters import RelevantDataSensorFilter, \
     ExportRelevantDataFilterBackend
 from reporting_tool.forms.utils import SendEmailMixin
 from reporting_tool.serializers import RelevantDataGeneratorSeriralizer
-from reporting_tool.utils import S3FileUploader, RelevantDataFileGenerator
+from reporting_tool.utils import S3FileUploader, RelevantDataFileGenerator, \
+    RelvantDataExportUploader
+from reporting_tool.views.relevant_data import RelevantDataHandler
 
 
-class ExportRelevantDataTask(Task, GenericAPIView, SendEmailMixin):
+class ExportRelevantDataTask(Task, GenericAPIView, RelevantDataHandler, SendEmailMixin):
+    """
+    Exports relevant data to file uploading it to s3
+    """
+
     name = 'export-relevant-data'
 
     FORMAT_XML = 'xml'
@@ -26,15 +36,17 @@ class ExportRelevantDataTask(Task, GenericAPIView, SendEmailMixin):
 
     serializer_class = RelevantDataGeneratorSeriralizer
 
-    uploader_class = S3FileUploader
+    uploader_class = RelvantDataExportUploader
 
-    queryset = RelevantData.objects.select_related(
-        'project'
-    ).prefetch_related(
-        'event', 'object_class', 'tagged_data', 'license_plate',
-        'face', 'cad_file_tag', 'ambient_weather_condition',
-        'road_weather_condition', 'vehicle_classification'
-    ).order_by('-id').all()
+    CHUNK_SIZE = 3
+
+    # queryset = RelevantData.objects.select_related(
+    #     'project'
+    # ).prefetch_related(
+    #     'event', 'object_class', 'tagged_data', 'license_plate',
+    #     'face', 'cad_file_tag', 'ambient_weather_condition',
+    #     'road_weather_condition', 'vehicle_classification'
+    # ).order_by('-id').all()
 
     def __init__(self):
         super().__init__()
@@ -43,13 +55,22 @@ class ExportRelevantDataTask(Task, GenericAPIView, SendEmailMixin):
         self.user = None
         self.export_format = None
 
-    def run(self,  user_id: int, export_format: str, query_params: dict):
+    def run(self, user_id: int, export_format: str, query_params: dict):
+        """
+        :type user_id: int
+        :type export_format: str
+        :type query_params: dict
+        """
         self.user = get_user_model().objects.get(pk=user_id)
         self.query_params = query_params
 
+        serializer = self.serializer_class(
+            self.queryset_iterator(self.CHUNK_SIZE), many=True
+        )
+
         file_generator = RelevantDataFileGenerator.instantiate(
             export_format,
-            self.serializer_class(self.queryset_iterator(3), many=True)
+            serializer
         )
 
         file_uploader = self.uploader_class(file_generator, self.user)
@@ -68,6 +89,9 @@ class ExportRelevantDataTask(Task, GenericAPIView, SendEmailMixin):
 
     @property
     def query(self) -> QuerySet:
+        """
+        :rtype: QuerySet
+        """
         return self.filter_queryset(self.queryset)
 
     def filter_queryset(self, queryset):
@@ -88,7 +112,12 @@ class ExportRelevantDataTask(Task, GenericAPIView, SendEmailMixin):
 
         return super().filter_queryset(queryset)
 
-    def queryset_iterator(self, chunksize=500) -> RelevantData:
+    def queryset_iterator(self, chunksize: int = 500):
+        """
+        Lazy load iterator loading data by chunks
+
+        :type chunksize: int
+        """
         counter = 0
         count = chunksize
         while count == chunksize:

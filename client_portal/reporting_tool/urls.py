@@ -36,7 +36,7 @@ from .views.relevant_data import RelevantDataView, \
     ExportRelevantDataView, RouteGenerationView, RelevantDataHeatMapView, \
     RelevantDataLicensePlatesView, RelevantDataPedestrianTransitTypeView
 from .views.sensors import SensorSetGPSView, RelevantDataSensorView, \
-    SensorsListView
+    SensorsListView, SensorsItemView
 from .views.user_management import UserList, UserItem, InvitationView
 
 urlpatterns = [
@@ -75,7 +75,8 @@ urlpatterns = [
     path('relevant-data/route/<str:license_plate_number>', RouteGenerationView.as_view(), name='relevant_data.route'),
     path('relevant-data/heat-map', RelevantDataHeatMapView.as_view(), name='relevant_data.heat_map'),
 
-    path('sensors', SensorsListView.as_view(), name='sensrors.relevant-data'),
+    path('sensors', SensorsListView.as_view(), name='sensror.list'),
+    path('sensors/<int:pk>', SensorsItemView.as_view(), name='sensrors.item'),
     path('sensors/<int:pk>/relevant-data', RelevantDataSensorView.as_view(), name='sensrors.relevant-data'),
     path('sensors/<int:pk>/set-gps', SensorSetGPSView.as_view(), name='sensors.set_gps'),
 

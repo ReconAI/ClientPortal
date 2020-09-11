@@ -1,3 +1,7 @@
+"""
+Celery framework instantiation
+"""
+
 import os
 
 import django
@@ -21,4 +25,3 @@ app.config_from_object('django.conf:settings', namespace='CELERY', force=True)
 # Load task modules from all registered Django app configs.
 app.autodiscover_tasks()
 app.tasks.register(ExportRelevantDataTask())
-
