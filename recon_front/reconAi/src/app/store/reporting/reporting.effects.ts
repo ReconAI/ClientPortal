@@ -7,6 +7,9 @@ import {
   selectEventObjectList,
   selectRoadWeatherConditionList,
   selectVehicleTypeList,
+  selectReportingDeviceList,
+  selectReportingSelectedDeviceList,
+  selectPedestrianFlowList,
 } from './reporting.selectors';
 import {
   ReportingActionTypes,
@@ -29,6 +32,15 @@ import {
   ExportRelevantDataPayloadInterface,
   exportRelevantDataSucceededAction,
   exportRelevantDataErrorAction,
+  buildVehicleRouteSucceededAction,
+  buildVehicleRouteErrorAction,
+  heatMapDataSucceededAction,
+  heatMapDataErrorAction,
+  HeatMapDataRequestedActionInterface,
+  plateNumberListSucceededAction,
+  plateNumberListErrorAction,
+  pedestrianFlowListSucceededAction,
+  pedestrianFlowListErrorAction,
 } from './reporting.actions';
 import {
   PaginationRequestInterface,
@@ -36,7 +48,6 @@ import {
 } from 'app/constants/types/requests';
 import { Observable, of } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AppState } from '../reducers';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
@@ -50,12 +61,16 @@ import {
   withLatestFrom,
   debounceTime,
 } from 'rxjs/operators';
+
 import {
   setReportingDeviceListLoadingStatusAction,
   setReportingDeviceLoadingStatusAction,
   setGpsLoadingStatusAction,
   setExportRelevantLoadingStatusAction,
+  setBuildingRouteLoadingStatusAction,
+  setHeatMapDataLoadingStatusAction,
 } from '../loaders';
+
 import {
   ReportingDeviceServerInterface,
   transformReportingPaginatedDeviceListFromServer,
@@ -65,7 +80,13 @@ import {
   transformEndpointWithApplyStatus,
   transformOptionsFromServer,
   AutocompleteNameServerInterface,
+  LatLngServerInterface,
+  transformBuildingRouteFromServer,
+  transformUrlWithDevicesToLoadHeatMapData,
+  transformHeatMapDataFromServer,
+  HeatMapPointServerInterface,
 } from './reporting.server.helpers';
+
 import { updateBreadcrumbByIdAction, setAppTitleAction } from '../app';
 import { generalTransformFormErrorToObject } from 'app/core/helpers/generalFormsErrorsTransformation';
 import { selectCurrentUserProfileId } from '../user/user.selectors';
@@ -383,6 +404,146 @@ export class ReportingEffects {
                 })
               );
             })
+          );
+      })
+    )
+  );
+
+  buildVehicleRoute$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action>(ReportingActionTypes.BUILD_VEHICLE_ROUTE_REQUESTED),
+      tap(() => {
+        this.store.dispatch(
+          setBuildingRouteLoadingStatusAction({
+            status: true,
+          })
+        );
+      }),
+      withLatestFrom(
+        this.store.pipe(select(selectApplyFiltersStatus)),
+        this.store.pipe(select(selectCurrentUserProfileId))
+      ),
+      switchMap(([_, status, userId]) => {
+        const plateNumber = this.filtersService.getUserFilter(
+          'license_plate_number',
+          +userId
+        )?.value as string;
+
+        return this.httpClient
+          .get<LatLngServerInterface[]>(
+            transformEndpointWithApplyStatus(
+              `/api/relevant-data/route/${plateNumber}?`,
+              status,
+              +userId,
+              this.filtersService
+            )
+          )
+          .pipe(
+            map((points) =>
+              buildVehicleRouteSucceededAction(
+                transformBuildingRouteFromServer(points)
+              )
+            ),
+            catchError((error) => of(buildVehicleRouteErrorAction())),
+            finalize(() => {
+              this.store.dispatch(
+                setBuildingRouteLoadingStatusAction({
+                  status: false,
+                })
+              );
+            })
+          );
+      })
+    )
+  );
+
+  loadHeatMapData$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action & HeatMapDataRequestedActionInterface>(
+        ReportingActionTypes.HEAT_MAP_DATA_REQUESTED
+      ),
+      tap(() => {
+        this.store.dispatch(
+          setHeatMapDataLoadingStatusAction({
+            status: true,
+          })
+        );
+      }),
+      withLatestFrom(
+        this.store.pipe(select(selectReportingDeviceList)),
+        this.store.pipe(select(selectReportingSelectedDeviceList))
+      ),
+      switchMap(([{ isForDevice }, devices, selectedDeviceSensors]) => {
+        return this.httpClient
+          .get<HeatMapPointServerInterface[]>(
+            transformUrlWithDevicesToLoadHeatMapData(
+              `/api/relevant-data/heat-map?`,
+              (isForDevice ? selectedDeviceSensors : devices) || []
+            )
+          )
+          .pipe(
+            map((points) =>
+              heatMapDataSucceededAction(transformHeatMapDataFromServer(points))
+            ),
+            catchError((error) => of(heatMapDataErrorAction())),
+            finalize(() => {
+              this.store.dispatch(
+                setHeatMapDataLoadingStatusAction({
+                  status: false,
+                })
+              );
+            })
+          );
+      })
+    )
+  );
+
+  loadPlateNumberList$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action & AutocompleteNameServerInterface>(
+        ReportingActionTypes.PLATE_NUMBER_LIST_REQUESTED
+      ),
+      debounceTime(150),
+      switchMap(({ name }) => {
+        return this.httpClient
+          .get<string[]>(
+            `/api/relevant-data/license-plates?license_plate=${name}`
+          )
+          .pipe(
+            map((response) =>
+              plateNumberListSucceededAction({
+                names: response,
+              })
+            ),
+            catchError((error) => of(plateNumberListErrorAction()))
+          );
+      })
+    )
+  );
+
+  pedestrianFlowList$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action>(ReportingActionTypes.PEDESTRIAN_FLOW_LIST_REQUESTED),
+      withLatestFrom(this.store.pipe(select(selectPedestrianFlowList))),
+      switchMap(([_, pedestrianFlowList]) => {
+        // cache data
+        if (pedestrianFlowList?.length) {
+          return of(
+            pedestrianFlowListSucceededAction({ options: pedestrianFlowList })
+          );
+        }
+
+        return this.httpClient
+          .get<OptionServerInterface[]>(
+            `/api/relevant-data/pedestrian-transit-methods`
+          )
+          .pipe(
+            map((response) =>
+              pedestrianFlowListSucceededAction(
+                transformOptionsFromServer(response)
+              )
+            ),
+            catchError((error) => of(pedestrianFlowListErrorAction()))
           );
       })
     )

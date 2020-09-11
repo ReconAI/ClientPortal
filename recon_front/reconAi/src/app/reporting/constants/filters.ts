@@ -100,7 +100,7 @@ export const DEFAULT_FILTER_ARRAY: FilterItemInterface[] = [
   },
   {
     label: 'Pedestrian transit method classification',
-    id: 'pedestrian',
+    id: 'pedestrian_transit_method',
     type: FilterTypes.SELECT,
     value: '',
   },
@@ -108,6 +108,12 @@ export const DEFAULT_FILTER_ARRAY: FilterItemInterface[] = [
     label: 'Road condition classification',
     id: 'road_weather_condition',
     type: FilterTypes.SELECT,
+    value: '',
+  },
+  {
+    label: 'License plate number',
+    id: 'license_plate_number',
+    type: FilterTypes.INPUT,
     value: '',
   },
   {

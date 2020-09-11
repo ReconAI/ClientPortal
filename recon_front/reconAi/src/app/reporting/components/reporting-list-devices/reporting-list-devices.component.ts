@@ -27,15 +27,21 @@ import {
   AfterViewInit,
   OnDestroy,
   ChangeDetectorRef,
+  SimpleChanges,
+  OnChanges,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { latLng, Map } from 'leaflet';
 
 import * as L from 'leaflet';
 import 'leaflet.heat/dist/leaflet-heat.js';
+import 'leaflet-routing-machine';
 
 import { LatLngInterface } from 'app/core/helpers/markers';
-import { ReportingDeviceClientInterface } from 'app/store/reporting/reporting.server.helpers';
+import {
+  ReportingDeviceClientInterface,
+  HeatMapPointClientInterface,
+} from 'app/store/reporting/reporting.server.helpers';
 import { ExportRelevantDataPayloadInterface } from 'app/store/reporting';
 @Component({
   selector: 'recon-reporting-list-devices',
@@ -43,7 +49,7 @@ import { ExportRelevantDataPayloadInterface } from 'app/store/reporting';
   styleUrls: ['./reporting-list-devices.component.less'],
 })
 export class ReportingListDevicesComponent
-  implements OnInit, AfterViewInit, OnDestroy {
+  implements OnInit, AfterViewInit, OnDestroy, OnChanges {
   constructor(
     private dialog: MatDialog,
     private router: Router,
@@ -64,15 +70,34 @@ export class ReportingListDevicesComponent
   @Input() count = 1;
   @Input() pageSize = 1;
   @Input() devices: ReportingDeviceClientInterface[] = [];
+  @Input() heatMapData: HeatMapPointClientInterface[] = [];
+
+  @Input() routePoints: LatLngInterface[] = [];
+
   @Input() isExporting = false;
+  @Input() heatMapLoading = false;
+  @Input() isPlatNumberApplied = false;
+  @Input() buildingLoading = false;
+
   @Output() loadDevices$ = new EventEmitter<number>();
   @Output() exportRelevantData$ = new EventEmitter<RelevantDataExportFormat>();
+  @Output() buildRoute$ = new EventEmitter<void>();
+  @Output() loadHeatMapData$ = new EventEmitter<void>();
 
   center = null;
   selectedIndex = null;
   options = null;
   layers = [];
+
   columns: CrudTableColumn[] = [];
+  isHeatMap = false;
+
+  map: Map;
+  routingControl: L.Routing.Control;
+  heatLayer: any;
+
+  readonly tooltipForDisabledBuildButton =
+    'To use this feature, please apply License plate filter';
 
   openSuccessDialog$: Observable<Action> = this.actionsSubject.pipe(
     ofType(exportRelevantDataSucceededAction)
@@ -145,9 +170,20 @@ export class ReportingListDevicesComponent
     );
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.routePoints) {
+      this.formWayPoints();
+    }
+
+    if (changes.heatMapData) {
+      this.formHeatMapData();
+    }
+  }
+
   ngOnDestroy(): void {
     this.openSuccessDialogSubscription$?.unsubscribe();
   }
+
   ngAfterViewInit() {
     this.columns = [
       {
@@ -206,23 +242,53 @@ export class ReportingListDevicesComponent
         width: '100px',
       },
       {
-        header: 'License plat number',
+        header: 'License plate number',
         id: 'plateNumber',
         width: '100px',
       },
       {
-        header: 'Traffic flow',
-        id: 'trafficFlow',
-        width: '700px',
+        header: 'Directions statistics',
+        id: 'directionsStatistics',
+        width: '100px',
+      },
+      {
+        header: 'Number of directions',
+        id: 'numberOfDirections',
+        width: '100px',
+      },
+      {
+        header: 'Number of objects',
+        id: 'numberOfObjects',
+        width: '100px',
+      },
+      {
+        header: 'Observation start',
+        id: 'observationStartDT',
+        width: '150px',
+      },
+      {
+        header: 'Observation end',
+        id: 'observationEndDT',
+        width: '150px',
+      },
+      {
+        header: 'Pedestrian Flow Number Of Objects',
+        id: 'pedestrianFlowNumberOfObjects',
+        width: '100px',
+      },
+      {
+        header: 'Pedestrian Flow Transit Method',
+        id: 'pedestrianFlowTransitMethod',
+        width: '100px',
+      },
+      {
+        header: 'Road temperature',
+        id: 'roadTemperature',
+        width: '100px',
       },
       {
         header: 'Vehicle classification',
         id: 'vehicle',
-        width: '100px',
-      },
-      {
-        header: 'Pedestrian flow',
-        id: 'pedestrianFlow',
         width: '100px',
       },
       {
@@ -268,6 +334,22 @@ export class ReportingListDevicesComponent
     this.cdr.detectChanges();
   }
 
+  formWayPoints(): void {
+    this.routingControl?.setWaypoints(
+      this.routePoints?.map((point) => latLng(point.lat, point.lng))
+    );
+  }
+
+  formHeatMapData(): void {
+    const points = [];
+    this.heatMapData.forEach((point) => {
+      for (let i = 0; i < point.amount; i++) {
+        points.push([+point.lat + 0.0001 * i, +point.lng + 0.0001 * i, 1]);
+      }
+    });
+    this.heatLayer?.setLatLngs(points);
+  }
+
   openDialog(): void {
     const selectedDevice = this.devices[this.selectedIndex];
     this.dialog.open(SetGpsDialogContainer, {
@@ -292,78 +374,35 @@ export class ReportingListDevicesComponent
     this.exportRelevantData$.emit(exportType);
   }
 
+  buildRoute(): void {
+    this.buildRoute$.emit();
+  }
+
   onMapReady(map: Map) {
-    // // workaround
-    //   L.heatLayer(
-    //     [
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [58, 56, 0.2],
-    //       [57, 57, 0.8],
-    //       [34, 34, 1],
-    //       [56, 57, 0.6],
-    //       [56, 58, 1],
-    //     ],
-    //     {
-    //     }
-    //   ).addTo(map);
+    this.map = map;
+
+    this.routingControl = (L as any).Routing.control({
+      addWaypoints: false,
+      routeWhileDragging: false,
+      draggableWaypoints: false,
+      createMarker: () => null,
+    }).addTo(this.map);
+
+    this.formWayPoints();
+
+    this.heatLayer = (L as any)
+      .heatLayer([], {
+        blur: 15,
+        minOpacity: 0.4,
+        radius: 30,
+        gradient: { 0.3: 'blue', 0.65: 'lime', 0.9: 'red' },
+      })
+      .addTo(this.map);
+  }
+
+  loadHeatMapData(): void {
+    if (this.isHeatMap) {
+      this.loadHeatMapData$.emit();
+    }
   }
 }

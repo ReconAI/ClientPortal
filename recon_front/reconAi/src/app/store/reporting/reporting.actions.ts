@@ -1,10 +1,7 @@
 import { RelevantDataExportFormat } from './../../constants/types/relevant-data';
 import { ReconSelectOption } from './../../shared/types/recon-select';
 import { ObjectFormErrorInterface } from './../../constants/types/requests';
-import {
-  FilterItemInterface,
-  OptionServerInterface,
-} from './../../reporting/constants/types/filters';
+
 import {
   PaginationRequestInterface,
   PaginationResponseClientInterface,
@@ -16,6 +13,8 @@ import {
   OptionsPayloadInterface,
   AutocompleteNameServerInterface,
   AutocompleteNameClientInterface,
+  BuildRouteClientInterface,
+  HeatMapDataClientInterface,
 } from './reporting.server.helpers';
 
 export enum ReportingActionTypes {
@@ -53,6 +52,22 @@ export enum ReportingActionTypes {
   EXPORT_RELEVANT_DATA_REQUESTED = '[Reporting] Export Relevant Data Requested',
   EXPORT_RELEVANT_DATA_SUCCEEDED = '[Reporting] Export Relevant Data Succeeded',
   EXPORT_RELEVANT_DATA_ERROR = '[Reporting] Export Relevant Data Error',
+
+  BUILD_VEHICLE_ROUTE_REQUESTED = '[Reporting] Build Vehicle Route Requested',
+  BUILD_VEHICLE_ROUTE_SUCCEEDED = '[Reporting] Build Vehicle Route Succeeded',
+  BUILD_VEHICLE_ROUTE_ERROR = '[Reporting] Build Vehicle Route Error',
+
+  HEAT_MAP_DATA_REQUESTED = '[Reporting] Heat Map Data Requested',
+  HEAT_MAP_DATA_SUCCEEDED = '[Reporting] Heat Map Data Succeeded',
+  HEAT_MAP_DATA_ERROR = '[Reporting] Heat Map Data Error',
+
+  PLATE_NUMBER_LIST_REQUESTED = '[Reporting] Plate Number List Requested',
+  PLATE_NUMBER_LIST_SUCCEEDED = '[Reporting] Plate Number List Succeeded',
+  PLATE_NUMBER_LIST_ERROR = '[Reporting] Plate Number List Error',
+
+  PEDESTRIAN_FLOW_LIST_REQUESTED = '[Reporting] Pedestrian Flow List Requested',
+  PEDESTRIAN_FLOW_LIST_SUCCEEDED = '[Reporting] Pedestrian Flow List Succeeded',
+  PEDESTRIAN_FLOW_LIST_ERROR = '[Reporting] Pedestrian Flow List Error',
 }
 
 export const loadReportingDeviceListRequestedAction = createAction(
@@ -175,9 +190,69 @@ export const exportRelevantDataRequestedAction = createAction(
   ReportingActionTypes.EXPORT_RELEVANT_DATA_REQUESTED,
   props<ExportRelevantDataPayloadInterface>()
 );
+
 export const exportRelevantDataSucceededAction = createAction(
   ReportingActionTypes.EXPORT_RELEVANT_DATA_SUCCEEDED
 );
+
 export const exportRelevantDataErrorAction = createAction(
   ReportingActionTypes.EXPORT_RELEVANT_DATA_ERROR
+);
+
+export const buildVehicleRouteRequestedAction = createAction(
+  ReportingActionTypes.BUILD_VEHICLE_ROUTE_REQUESTED
+);
+
+export const buildVehicleRouteSucceededAction = createAction(
+  ReportingActionTypes.BUILD_VEHICLE_ROUTE_SUCCEEDED,
+  props<BuildRouteClientInterface>()
+);
+
+export const buildVehicleRouteErrorAction = createAction(
+  ReportingActionTypes.BUILD_VEHICLE_ROUTE_ERROR
+);
+
+export interface HeatMapDataRequestedActionInterface {
+  isForDevice: boolean;
+}
+
+export const heatMapDataRequestedAction = createAction(
+  ReportingActionTypes.HEAT_MAP_DATA_REQUESTED,
+  props<HeatMapDataRequestedActionInterface>()
+);
+
+export const heatMapDataSucceededAction = createAction(
+  ReportingActionTypes.HEAT_MAP_DATA_SUCCEEDED,
+  props<HeatMapDataClientInterface>()
+);
+
+export const heatMapDataErrorAction = createAction(
+  ReportingActionTypes.HEAT_MAP_DATA_ERROR
+);
+
+export const plateNumberListRequestedAction = createAction(
+  ReportingActionTypes.PLATE_NUMBER_LIST_REQUESTED,
+  props<AutocompleteNameServerInterface>()
+);
+
+export const plateNumberListSucceededAction = createAction(
+  ReportingActionTypes.PLATE_NUMBER_LIST_SUCCEEDED,
+  props<AutocompleteNameClientInterface>()
+);
+
+export const plateNumberListErrorAction = createAction(
+  ReportingActionTypes.PLATE_NUMBER_LIST_SUCCEEDED
+);
+
+export const pedestrianFlowListRequestedAction = createAction(
+  ReportingActionTypes.PEDESTRIAN_FLOW_LIST_REQUESTED
+);
+
+export const pedestrianFlowListSucceededAction = createAction(
+  ReportingActionTypes.PEDESTRIAN_FLOW_LIST_SUCCEEDED,
+  props<OptionsPayloadInterface>()
+);
+
+export const pedestrianFlowListErrorAction = createAction(
+  ReportingActionTypes.PEDESTRIAN_FLOW_LIST_ERROR
 );

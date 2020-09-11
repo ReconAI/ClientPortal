@@ -3,6 +3,24 @@
     <mat-tab label="Reporting"><div class="fake"></div></mat-tab>
     <mat-tab label="Filtering"><div class="fake"></div></mat-tab>
   </mat-tab-group>
+  <div
+    [matTooltip]="
+      (!isPlatNumberApplied && tooltipForDisabledBuildButton) || null
+    "
+  >
+    <button
+      mat-raised-button
+      color="accent"
+      [disabled]="buildingLoading || !isPlatNumberApplied"
+      class="build-button"
+      (click)="buildRoute()"
+    >
+      <mat-icon *ngIf="buildingLoading; else loaded">
+        <mat-spinner color="primary" diameter="20"></mat-spinner>
+      </mat-icon>
+      <ng-template #loaded>BUILD A ROUTE</ng-template>
+    </button>
+  </div>
   <ng-container *ngIf="!isDevice; else onlineStreaming">
     <button
       mat-raised-button
@@ -79,6 +97,16 @@
   >
   </recon-crud-table>
 </div>
+'
+
+<div class="slider-container">
+  <span>Heat map</span>
+  <recon-form-slider
+    [disabled]="heatMapLoading"
+    [(ngModel)]="isHeatMap"
+    (changeVal)="loadHeatMapData()"
+  ></recon-form-slider>
+</div>
 <div
   *ngIf="center && options"
   class="map"
@@ -88,9 +116,7 @@
   [leafletLayers]="layers"
   [(leafletCenter)]="center"
   (leafletMapReady)="onMapReady($event)"
->
-  >
-</div>
+></div>
 
 <ng-template #taggedDataTemplate let-element="element">
   <span
