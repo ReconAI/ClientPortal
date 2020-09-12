@@ -2,6 +2,7 @@
 @import "./variables.less";
 @import '../node_modules/leaflet/dist/leaflet.css';
 @import '../node_modules/leaflet-draw/dist/leaflet.draw.css';
+@import "../node_modules/leaflet-routing-machine/dist/leaflet-routing-machine.css";
 
 body {
   font-family: Roboto, Arial, sans-serif;
@@ -191,4 +192,8 @@ div.recon-modal-title {
 
 iframe.purechat-launcher-frame.purechat-launcher-frame-bottom-right {
   bottom: 80px !important;
+}
+
+.leaflet-routing-container.leaflet-bar.leaflet-control {
+  display: none;
 }

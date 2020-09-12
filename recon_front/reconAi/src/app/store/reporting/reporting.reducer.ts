@@ -1,3 +1,4 @@
+import { LatLngInterface } from 'app/core/helpers/markers';
 import { ReconSelectOption } from 'app/shared/types';
 import {
   FormServerErrorInterface,
@@ -13,6 +14,9 @@ import {
   ReportingDeviceClientInterface,
   OptionsPayloadInterface,
   AutocompleteNameClientInterface,
+  BuildRouteClientInterface,
+  HeatMapPointClientInterface,
+  HeatMapDataClientInterface,
 } from './reporting.server.helpers';
 import {
   loadReportingDeviceListSucceededAction,
@@ -27,6 +31,10 @@ import {
   roadWeatherConditionListSucceededAction,
   vehicleTypeListRequestedAction,
   vehicleTypeListSucceededAction,
+  buildVehicleRouteSucceededAction,
+  heatMapDataSucceededAction,
+  plateNumberListSucceededAction,
+  pedestrianFlowListSucceededAction,
 } from './reporting.actions';
 
 export interface ReportingErrorsInterface {
@@ -50,6 +58,10 @@ export interface ReportingState {
   vehicleTypes: ReconSelectOption[];
   roadWeatherConditions: ReconSelectOption[];
   projectNames: string[];
+  routePoints: LatLngInterface[];
+  heatMapData: HeatMapPointClientInterface[];
+  plateNumbers: string[];
+  pedestrianFlowList: ReconSelectOption[];
 }
 
 export const initialState: ReportingState = {
@@ -65,6 +77,10 @@ export const initialState: ReportingState = {
   vehicleTypes: [],
   roadWeatherConditions: [],
   projectNames: [],
+  routePoints: [],
+  heatMapData: [],
+  plateNumbers: [],
+  pedestrianFlowList: [],
 };
 
 const loadReportingDeviceListSucceededReducer = (
@@ -149,6 +165,38 @@ const projectNameListSucceededReducer = (
   projectNames: names,
 });
 
+const plateNumberListSucceededReducer = (
+  state: ReportingState,
+  { names }: AutocompleteNameClientInterface
+): ReportingState => ({
+  ...state,
+  plateNumbers: names,
+});
+
+const buildVehicleRouteSucceededReducer = (
+  state: ReportingState,
+  { points }: BuildRouteClientInterface
+): ReportingState => ({
+  ...state,
+  routePoints: points,
+});
+
+const heatMapDataSucceededReducer = (
+  state: ReportingState,
+  { points }: HeatMapDataClientInterface
+): ReportingState => ({
+  ...state,
+  heatMapData: points,
+});
+
+const pedestrianFlowListSucceededReducer = (
+  state: ReportingState,
+  { options }: OptionsPayloadInterface
+): ReportingState => ({
+  ...state,
+  pedestrianFlowList: options,
+});
+
 const reportingReducer = createReducer(
   initialState,
   on(
@@ -165,7 +213,11 @@ const reportingReducer = createReducer(
     roadWeatherConditionListSucceededAction,
     roadWeatherConditionListSucceededReducer
   ),
-  on(vehicleTypeListSucceededAction, vehicleTypeListSucceededReducer)
+  on(vehicleTypeListSucceededAction, vehicleTypeListSucceededReducer),
+  on(buildVehicleRouteSucceededAction, buildVehicleRouteSucceededReducer),
+  on(heatMapDataSucceededAction, heatMapDataSucceededReducer),
+  on(plateNumberListSucceededAction, plateNumberListSucceededReducer),
+  on(pedestrianFlowListSucceededAction, pedestrianFlowListSucceededReducer)
 );
 
 export function reducer(state: ReportingState | undefined, action: Action) {

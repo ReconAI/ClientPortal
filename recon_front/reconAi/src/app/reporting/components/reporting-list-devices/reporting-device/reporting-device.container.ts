@@ -1,11 +1,26 @@
+import { FiltersService } from './../../../../core/services/filters/filters.service';
+import {
+  buildVehicleRouteRequestedAction,
+  heatMapDataRequestedAction,
+} from './../../../../store/reporting/reporting.actions';
+import { LatLngInterface } from 'app/core/helpers/markers';
 import {
   selectReportingSelectedDeviceList,
   selectReportingSelectedDeviceListMetaCurrentPage,
   selectReportingSelectedDeviceListMetaCount,
   selectReportingSelectedDeviceListMetaPageSize,
+  selectVehicleRoutePoints,
+  selectHeatMapData,
 } from './../../../../store/reporting/reporting.selectors';
-import { selectReportingDeviceLoadingStatus } from './../../../../store/loaders/loaders.selectors';
-import { ReportingDeviceClientInterface } from './../../../../store/reporting/reporting.server.helpers';
+import {
+  selectReportingDeviceLoadingStatus,
+  selectBuildingRouteStatus,
+  selectHeatMapLoadingStatus,
+} from './../../../../store/loaders/loaders.selectors';
+import {
+  ReportingDeviceClientInterface,
+  HeatMapPointClientInterface,
+} from './../../../../store/reporting/reporting.server.helpers';
 import { Store, select } from '@ngrx/store';
 import { ActivatedRoute } from '@angular/router';
 import { Component, OnInit, OnDestroy } from '@angular/core';
@@ -23,7 +38,8 @@ export class ReportingDeviceContainer implements OnInit, OnDestroy {
 
   constructor(
     private activateRoute: ActivatedRoute,
-    private store: Store<AppState>
+    private store: Store<AppState>,
+    private filtersService: FiltersService
   ) {}
 
   loadingStatus$: Observable<boolean> = this.store.pipe(
@@ -35,6 +51,22 @@ export class ReportingDeviceContainer implements OnInit, OnDestroy {
   > = this.store.pipe(select(selectReportingSelectedDeviceList));
   selectedDeviceListSubscription$: Subscription;
 
+  buildingLoading$: Observable<boolean> = this.store.pipe(
+    select(selectBuildingRouteStatus)
+  );
+
+  routePoints$: Observable<LatLngInterface[]> = this.store.pipe(
+    select(selectVehicleRoutePoints)
+  );
+
+  heatMapData$: Observable<HeatMapPointClientInterface[]> = this.store.pipe(
+    select(selectHeatMapData)
+  );
+
+  isPlatNumberApplied$: Observable<
+    boolean
+  > = this.filtersService.isFilterAppliedForCurrentUser('license_plate_number');
+
   currentPage$: Observable<number> = this.store.pipe(
     select(selectReportingSelectedDeviceListMetaCurrentPage)
   );
@@ -43,6 +75,9 @@ export class ReportingDeviceContainer implements OnInit, OnDestroy {
   );
   pageSize$: Observable<number> = this.store.pipe(
     select(selectReportingSelectedDeviceListMetaPageSize)
+  );
+  heatMapLoading$: Observable<boolean> = this.store.pipe(
+    select(selectHeatMapLoadingStatus)
   );
 
   loadDevices(page: number = 1): void {
@@ -63,5 +98,13 @@ export class ReportingDeviceContainer implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.selectedDeviceListSubscription$.unsubscribe();
+  }
+
+  buildRoute(): void {
+    this.store.dispatch(buildVehicleRouteRequestedAction());
+  }
+
+  loadHeatMapData(): void {
+    this.store.dispatch(heatMapDataRequestedAction({ isForDevice: true }));
   }
 }

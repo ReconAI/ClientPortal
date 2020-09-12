@@ -1,4 +1,9 @@
-import { Store } from '@ngrx/store';
+import { selectCurrentUserProfileId } from 'app/store/user/user.selectors';
+import { selectUserProfileId } from './../../../store/users/users.selectors';
+import { map, withLatestFrom } from 'rxjs/operators';
+import { selectApplyFiltersStatus } from './../../../store/reporting/reporting.selectors';
+import { Observable } from 'rxjs';
+import { Store, select } from '@ngrx/store';
 import {
   SetFiltersValueInterface,
   FilterTypes,
@@ -38,6 +43,12 @@ export class FiltersService {
   public getUserFilters(userId: number): FilterItemInterface[] {
     const filters = this.localStorageService.getFiltersValue();
     return (filters && filters[userId]) || [];
+  }
+
+  public getUserFilter(filterId: string, userId: number): FilterItemInterface {
+    const filters = this.getUserFilters(userId);
+
+    return filters && filters?.find(({ id }) => id === filterId);
   }
 
   public resetUserFilters(userId: number): void {
@@ -154,5 +165,17 @@ export class FiltersService {
       ''
     );
     return result.slice(1);
+  }
+
+  public isFilterAppliedForCurrentUser(filterId: string): Observable<boolean> {
+    return this.store.pipe(
+      // this.store.pipe(select())
+      select(selectApplyFiltersStatus),
+      withLatestFrom(this.store.pipe(select(selectCurrentUserProfileId))),
+      map(([status, userId]) => {
+        console.log(status, 'SSSSSSSSSSsssSTATUS');
+        return !!status && !!this.getUserFilter(filterId, +userId);
+      })
+    );
   }
 }
