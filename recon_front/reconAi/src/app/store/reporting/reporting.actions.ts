@@ -8,19 +8,20 @@ import {
 } from 'app/constants/types/requests';
 import { createAction, props } from '@ngrx/store';
 import {
-  ReportingDeviceClientInterface,
+  ReportingFilteringDeviceClientInterface,
   SetGpsRequestInterface,
   OptionsPayloadInterface,
   AutocompleteNameServerInterface,
   AutocompleteNameClientInterface,
   BuildRouteClientInterface,
   HeatMapDataClientInterface,
+  SensorClientInterface,
 } from './reporting.server.helpers';
 
 export enum ReportingActionTypes {
-  LOAD_REPORTING_DEVICE_LIST_REQUESTED = '[Reporting] Load Reporting Device List Requested',
-  LOAD_REPORTING_DEVICE_LIST_SUCCEEDED = '[Reporting] Load Reporting Device List Succeeded',
-  LOAD_REPORTING_DEVICE_LIST_ERROR = '[Reporting] Load Reporting Device List Error',
+  LOAD_REPORTING_FILTERING_LIST_REQUESTED = '[Reporting] Load Reporting Filtering List Requested',
+  LOAD_REPORTING_FILTERING_LIST_SUCCEEDED = '[Reporting] Load Reporting Filtering List Succeeded',
+  LOAD_REPORTING_FILTERING_LIST_ERROR = '[Reporting] Load Reporting Filtering List Error',
 
   LOAD_REPORTING_DEVICE_REQUESTED = '[Reporting] Load Reporting Device Requested',
   LOAD_REPORTING_DEVICE_SUCCEEDED = '[Reporting] Load Reporting Device Succeeded',
@@ -60,6 +61,7 @@ export enum ReportingActionTypes {
   HEAT_MAP_DATA_REQUESTED = '[Reporting] Heat Map Data Requested',
   HEAT_MAP_DATA_SUCCEEDED = '[Reporting] Heat Map Data Succeeded',
   HEAT_MAP_DATA_ERROR = '[Reporting] Heat Map Data Error',
+  RESET_HEAT_MAP_DATA = '[Reporting] Reset Heat Map Data',
 
   PLATE_NUMBER_LIST_REQUESTED = '[Reporting] Plate Number List Requested',
   PLATE_NUMBER_LIST_SUCCEEDED = '[Reporting] Plate Number List Succeeded',
@@ -68,20 +70,26 @@ export enum ReportingActionTypes {
   PEDESTRIAN_FLOW_LIST_REQUESTED = '[Reporting] Pedestrian Flow List Requested',
   PEDESTRIAN_FLOW_LIST_SUCCEEDED = '[Reporting] Pedestrian Flow List Succeeded',
   PEDESTRIAN_FLOW_LIST_ERROR = '[Reporting] Pedestrian Flow List Error',
+
+  LOAD_REPORTING_DEVICE_LIST_REQUESTED = '[Reporting] Load Reporting Device List Requested',
+  LOAD_REPORTING_DEVICE_LIST_SUCCEEDED = '[Reporting] Load Reporting Device List Succeeded',
+  LOAD_REPORTING_DEVICE_LIST_ERROR = '[Reporting] Load Reporting Device List Error',
 }
 
-export const loadReportingDeviceListRequestedAction = createAction(
-  ReportingActionTypes.LOAD_REPORTING_DEVICE_LIST_REQUESTED,
+export const loadReportingFilteringListRequestedAction = createAction(
+  ReportingActionTypes.LOAD_REPORTING_FILTERING_LIST_REQUESTED,
   props<PaginationRequestInterface>()
 );
 
-export const loadReportingDeviceListSucceededAction = createAction(
-  ReportingActionTypes.LOAD_REPORTING_DEVICE_LIST_SUCCEEDED,
-  props<PaginationResponseClientInterface<ReportingDeviceClientInterface>>()
+export const loadReportingFilteringListSucceededAction = createAction(
+  ReportingActionTypes.LOAD_REPORTING_FILTERING_LIST_SUCCEEDED,
+  props<
+    PaginationResponseClientInterface<ReportingFilteringDeviceClientInterface>
+  >()
 );
 
-export const loadReportingDeviceListErrorAction = createAction(
-  ReportingActionTypes.LOAD_REPORTING_DEVICE_LIST_ERROR
+export const loadReportingFilteringListErrorAction = createAction(
+  ReportingActionTypes.LOAD_REPORTING_FILTERING_LIST_ERROR
 );
 export interface LoadReportingDevicePayloadInterface {
   id: number;
@@ -95,7 +103,9 @@ export const loadReportingDeviceRequestedAction = createAction(
 
 export const loadReportingDeviceSucceededAction = createAction(
   ReportingActionTypes.LOAD_REPORTING_DEVICE_SUCCEEDED,
-  props<PaginationResponseClientInterface<ReportingDeviceClientInterface>>()
+  props<
+    PaginationResponseClientInterface<ReportingFilteringDeviceClientInterface>
+  >()
 );
 
 export const loadReportingDeviceErrorAction = createAction(
@@ -255,4 +265,22 @@ export const pedestrianFlowListSucceededAction = createAction(
 
 export const pedestrianFlowListErrorAction = createAction(
   ReportingActionTypes.PEDESTRIAN_FLOW_LIST_ERROR
+);
+
+export const loadReportingDeviceListRequestedAction = createAction(
+  ReportingActionTypes.LOAD_REPORTING_DEVICE_LIST_REQUESTED,
+  props<PaginationRequestInterface>()
+);
+
+export const loadReportingDeviceListSucceededAction = createAction(
+  ReportingActionTypes.LOAD_REPORTING_DEVICE_LIST_SUCCEEDED,
+  props<PaginationResponseClientInterface<SensorClientInterface>>()
+);
+
+export const loadReportingDeviceListErrorAction = createAction(
+  ReportingActionTypes.LOAD_REPORTING_DEVICE_LIST_ERROR
+);
+
+export const resetMapDataAction = createAction(
+  ReportingActionTypes.RESET_HEAT_MAP_DATA
 );

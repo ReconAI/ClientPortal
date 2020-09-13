@@ -1,139 +1,25 @@
-<div class="header-container">
-  <mat-tab-group>
-    <mat-tab label="Reporting"><div class="fake"></div></mat-tab>
-    <mat-tab label="Filtering"><div class="fake"></div></mat-tab>
-  </mat-tab-group>
-  <div
-    [matTooltip]="
-      (!isPlatNumberApplied && tooltipForDisabledBuildButton) || null
-    "
-  >
-    <button
-      mat-raised-button
-      color="accent"
-      [disabled]="buildingLoading || !isPlatNumberApplied"
-      class="build-button"
-      (click)="buildRoute()"
-    >
-      <mat-icon *ngIf="buildingLoading; else loaded">
-        <mat-spinner color="primary" diameter="20"></mat-spinner>
-      </mat-icon>
-      <ng-template #loaded>BUILD A ROUTE</ng-template>
-    </button>
-  </div>
-  <ng-container *ngIf="!isDevice; else onlineStreaming">
-    <button
-      mat-raised-button
-      color="accent"
-      (click)="openDialog()"
-      [disabled]="
-        !(selectedIndex || selectedIndex === 0) || !devices[selectedIndex]
-      "
-    >
-      SET GPS
-    </button>
-    <button
-      mat-raised-button
-      color="accent"
-      [matMenuTriggerFor]="menu"
-      [disabled]="isExporting"
-    >
-      <mat-icon *ngIf="isExporting; else loaded">
-        <mat-spinner color="primary" diameter="20"></mat-spinner>
-      </mat-icon>
-      <ng-template #loaded>DOWNLOAD</ng-template>
-    </button>
-    <mat-menu #menu="matMenu" xPosition="before" class="recon-menu">
-      <button
-        mat-menu-item
-        [disabled]="isExporting"
-        (click)="onClickExportType('xml')"
-      >
-        .xml
-      </button>
-      <mat-divider></mat-divider>
-      <button
-        mat-menu-item
-        [disabled]="isExporting"
-        (click)="onClickExportType('csv')"
-      >
-        .csv
-      </button>
-    </mat-menu>
-  </ng-container>
-  <ng-template #onlineStreaming>
-    <button
-      mat-raised-button
-      color="accent"
-      class="online-streaming"
-      (click)="openStreaming()"
-    >
-      <mat-icon aria-hidden="false" aria-label="person" class="person_icon"
-        >play_arrow</mat-icon
-      >Online streaming
-    </button>
-  </ng-template>
-</div>
 <div>
-  <recon-reporting-filter-container
-    [isDevice]="isDevice"
-  ></recon-reporting-filter-container>
-</div>
-<div *ngIf="columns?.length">
   <recon-crud-table
-    [data]="devices"
+    [data]="sensors"
     [columns]="columns"
     [pageSize]="pageSize"
     [totalCount]="count"
     [currentPage]="currentPage"
     [isWithActions]="false"
     [selectedIndex]="selectedIndex"
-    [allCellsTooltipText]="
-      !this.isDevice ? 'Double click to navigate to device page' : null
-    "
+    allCellsTooltipText="Double click to navigate to device page"
+    (changePage$)="loadDevices($event)"
     (rowClick$)="setSelectedDevice($event)"
     (rowDoubleClick$)="navigateToDevice($event)"
-    (changePage$)="loadDevices($event)"
-  >
+    >
   </recon-crud-table>
-</div>
-'
-
-<div class="slider-container">
-  <span>Heat map</span>
-  <recon-form-slider
-    [disabled]="heatMapLoading"
-    [(ngModel)]="isHeatMap"
-    (changeVal)="loadHeatMapData()"
-  ></recon-form-slider>
 </div>
 <div
   *ngIf="center && options"
   class="map"
-  id="main-map"
+  id="sensors-map"
   leaflet
   [leafletOptions]="options"
   [leafletLayers]="layers"
   [(leafletCenter)]="center"
-  (leafletMapReady)="onMapReady($event)"
 ></div>
-
-<ng-template #taggedDataTemplate let-element="element">
-  <span
-    class="table-link"
-    (click)="$event.stopPropagation(); goToUrl(element.taggedData)"
-  >
-    Link
-  </span>
-</ng-template>
-
-<ng-template #cadTagTemplate let-element="element">
-  <span
-    class="table-link"
-    (click)="$event.stopPropagation(); goToUrl(element.fileTag)"
-    *ngIf="element.fileTag; else noFileTag"
-  >
-    Link to cad file
-  </span>
-  <ng-template #noFileTag> No data </ng-template>
-</ng-template>

@@ -1,20 +1,21 @@
+import { setReportingDeviceListLoadingAction } from './../loaders/loaders.actions';
 import { OptionServerInterface } from './../../reporting/constants/types/filters';
 import { FiltersService } from './../../core/services/filters/filters.service';
-import { loadReportingDeviceListRequestedAction } from 'app/store/reporting';
+import { loadReportingFilteringListRequestedAction } from 'app/store/reporting';
 import {
-  selectReportingDeviceListMetaCurrentPage,
+  selectReportingFilteringListMetaCurrentPage,
   selectApplyFiltersStatus,
   selectEventObjectList,
   selectRoadWeatherConditionList,
   selectVehicleTypeList,
-  selectReportingDeviceList,
+  selectReportingFilteringList,
   selectReportingSelectedDeviceList,
   selectPedestrianFlowList,
 } from './reporting.selectors';
 import {
   ReportingActionTypes,
-  loadReportingDeviceListSucceededAction,
-  loadReportingDeviceListErrorAction,
+  loadReportingFilteringListSucceededAction,
+  loadReportingFilteringListErrorAction,
   LoadReportingDevicePayloadInterface,
   loadReportingDeviceErrorAction,
   loadReportingDeviceSucceededAction,
@@ -41,6 +42,8 @@ import {
   plateNumberListErrorAction,
   pedestrianFlowListSucceededAction,
   pedestrianFlowListErrorAction,
+  loadReportingDeviceListSucceededAction,
+  loadReportingDeviceListErrorAction,
 } from './reporting.actions';
 import {
   PaginationRequestInterface,
@@ -63,7 +66,7 @@ import {
 } from 'rxjs/operators';
 
 import {
-  setReportingDeviceListLoadingStatusAction,
+  setReportingFilteringListLoadingStatusAction,
   setReportingDeviceLoadingStatusAction,
   setGpsLoadingStatusAction,
   setExportRelevantLoadingStatusAction,
@@ -72,7 +75,7 @@ import {
 } from '../loaders';
 
 import {
-  ReportingDeviceServerInterface,
+  ReportingFilteringDeviceServerInterface,
   transformReportingPaginatedDeviceListFromServer,
   SetGpsRequestInterface,
   transformSetGpsToServer,
@@ -85,6 +88,8 @@ import {
   transformUrlWithDevicesToLoadHeatMapData,
   transformHeatMapDataFromServer,
   HeatMapPointServerInterface,
+  SensorServerInterface,
+  transformSensorsFromServer,
 } from './reporting.server.helpers';
 
 import { updateBreadcrumbByIdAction, setAppTitleAction } from '../app';
@@ -100,14 +105,14 @@ export class ReportingEffects {
     private filtersService: FiltersService
   ) {}
 
-  loadReportingDeviceList$: Observable<Action> = createEffect(() =>
+  loadReportingFilteringList$: Observable<Action> = createEffect(() =>
     this.actions$.pipe(
       ofType<Action & PaginationRequestInterface>(
-        ReportingActionTypes.LOAD_REPORTING_DEVICE_LIST_REQUESTED
+        ReportingActionTypes.LOAD_REPORTING_FILTERING_LIST_REQUESTED
       ),
       tap(() => {
         this.store.dispatch(
-          setReportingDeviceListLoadingStatusAction({
+          setReportingFilteringListLoadingStatusAction({
             status: true,
           })
         );
@@ -119,7 +124,9 @@ export class ReportingEffects {
       switchMap(([{ page }, applyFiltersStatus, userId]) =>
         this.httpClient
           .get<
-            PaginationResponseServerInterface<ReportingDeviceServerInterface>
+            PaginationResponseServerInterface<
+              ReportingFilteringDeviceServerInterface
+            >
           >(
             transformEndpointWithApplyStatus(
               `/api/relevant-data?page=${page}`,
@@ -130,14 +137,14 @@ export class ReportingEffects {
           )
           .pipe(
             map((devices) =>
-              loadReportingDeviceListSucceededAction(
+              loadReportingFilteringListSucceededAction(
                 transformReportingPaginatedDeviceListFromServer(devices)
               )
             ),
-            catchError((error) => of(loadReportingDeviceListErrorAction())),
+            catchError((error) => of(loadReportingFilteringListErrorAction())),
             finalize(() => {
               this.store.dispatch(
-                setReportingDeviceListLoadingStatusAction({
+                setReportingFilteringListLoadingStatusAction({
                   status: false,
                 })
               );
@@ -166,7 +173,9 @@ export class ReportingEffects {
       switchMap(([{ id, page }, applyFiltersStatus, userId]) =>
         this.httpClient
           .get<
-            PaginationResponseServerInterface<ReportingDeviceServerInterface>
+            PaginationResponseServerInterface<
+              ReportingFilteringDeviceServerInterface
+            >
           >(
             transformEndpointWithApplyStatus(
               `/api/sensors/${id}/relevant-data?page=${page}`,
@@ -225,19 +234,19 @@ export class ReportingEffects {
         );
       }),
       withLatestFrom(
-        this.store.pipe(select(selectReportingDeviceListMetaCurrentPage))
+        this.store.pipe(select(selectReportingFilteringListMetaCurrentPage))
       ),
       switchMap(([req, page]) =>
         this.httpClient
           .put<void>(
-            `/api/relevant-data/${req?.gps?.id}/gps`,
+            `/api/sensors/${req?.gps?.id}/set-gps`,
             transformSetGpsToServer(req)
           )
           .pipe(
             map(() => setGpsSucceededAction()),
             tap(() => {
               this.store.dispatch(
-                loadReportingDeviceListRequestedAction({
+                loadReportingFilteringListRequestedAction({
                   page,
                 })
               );
@@ -470,7 +479,7 @@ export class ReportingEffects {
         );
       }),
       withLatestFrom(
-        this.store.pipe(select(selectReportingDeviceList)),
+        this.store.pipe(select(selectReportingFilteringList)),
         this.store.pipe(select(selectReportingSelectedDeviceList))
       ),
       switchMap(([{ isForDevice }, devices, selectedDeviceSensors]) => {
@@ -546,6 +555,42 @@ export class ReportingEffects {
             catchError((error) => of(pedestrianFlowListErrorAction()))
           );
       })
+    )
+  );
+
+  loadReportingDeviceList$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action & PaginationRequestInterface>(
+        ReportingActionTypes.LOAD_REPORTING_DEVICE_LIST_REQUESTED
+      ),
+      tap(() => {
+        this.store.dispatch(
+          setReportingDeviceListLoadingAction({
+            status: true,
+          })
+        );
+      }),
+      switchMap(({ page }) =>
+        this.httpClient
+          .get<PaginationResponseServerInterface<SensorServerInterface>>(
+            `/api/sensors?page=${page}`
+          )
+          .pipe(
+            map((sensors) =>
+              loadReportingDeviceListSucceededAction(
+                transformSensorsFromServer(sensors)
+              )
+            ),
+            catchError((error) => of(loadReportingDeviceListErrorAction())),
+            finalize(() => {
+              this.store.dispatch(
+                setReportingDeviceListLoadingAction({
+                  status: false,
+                })
+              );
+            })
+          )
+      )
     )
   );
 }

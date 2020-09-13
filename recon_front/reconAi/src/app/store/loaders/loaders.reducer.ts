@@ -36,13 +36,14 @@ import {
   setPurchaseLoadingStatusAction,
   setNewFeatureRequestLoadingStatusAction,
   setDefaultPaymentMethodLoadingStatusAction,
-  setReportingDeviceListLoadingStatusAction,
+  setReportingFilteringListLoadingStatusAction,
   setReportingDeviceLoadingStatusAction,
   setGpsLoadingStatusAction,
   setExportRelevantLoadingStatusAction,
   setChangePasswordLoadingStatusAction,
   setBuildingRouteLoadingStatusAction,
   setHeatMapDataLoadingStatusAction,
+  setReportingDeviceListLoadingAction,
 } from './loaders.actions';
 import { createReducer, on, Action } from '@ngrx/store';
 
@@ -91,12 +92,13 @@ export interface LoadersState {
   newFeature: boolean;
   defaultPayment: boolean;
   // reporting
-  reportingDeviceList: boolean;
+  reportingFilteringList: boolean;
   reportingDevice: boolean;
   setGps: boolean;
   exportRelevantData: boolean;
   buildingRoute: boolean;
   heatMapData: boolean;
+  reportingDeviceList: boolean;
   // user -> change password
   changePassword: boolean;
 }
@@ -145,12 +147,13 @@ const initialState: LoadersState = {
   newFeature: false,
   defaultPayment: false,
   // reporting
-  reportingDeviceList: false,
+  reportingFilteringList: false,
   reportingDevice: false,
   setGps: false,
   exportRelevantData: false,
   buildingRoute: false,
   heatMapData: false,
+  reportingDeviceList: false,
   // user -> change password
   changePassword: false,
 };
@@ -341,10 +344,10 @@ const setDefaultPaymentMethodLoadingStatusReducer = (
 ): LoadersState => ({ ...state, defaultPayment: status });
 
 // reporting
-const setReportingDeviceListLoadingStatusReducer = (
+const setreportingFilteringListLoadingStatusReducer = (
   state: LoadersState,
   { status }: Action & LoaderInterface
-): LoadersState => ({ ...state, reportingDeviceList: status });
+): LoadersState => ({ ...state, reportingFilteringList: status });
 
 const setReportingDeviceLoadingStatusReducer = (
   state: LoadersState,
@@ -375,6 +378,11 @@ const setHeatMapDataLoadingStatusReducer = (
   state: LoadersState,
   { status }: Action & LoaderInterface
 ): LoadersState => ({ ...state, heatMapData: status });
+
+const setReportingDeviceListLoadingReducer = (
+  state: LoadersState,
+  { status }: Action & LoaderInterface
+): LoadersState => ({ ...state, reportingDeviceList: status });
 
 const loadersReducer = createReducer(
   initialState,
@@ -457,8 +465,8 @@ const loadersReducer = createReducer(
   ),
   // reporting
   on(
-    setReportingDeviceListLoadingStatusAction,
-    setReportingDeviceListLoadingStatusReducer
+    setReportingFilteringListLoadingStatusAction,
+    setreportingFilteringListLoadingStatusReducer
   ),
   on(
     setReportingDeviceLoadingStatusAction,
@@ -471,6 +479,7 @@ const loadersReducer = createReducer(
   ),
   on(setHeatMapDataLoadingStatusAction, setHeatMapDataLoadingStatusReducer),
   on(setBuildingRouteLoadingStatusAction, setBuildingRouteLoadingStatusReducer),
+  on(setReportingDeviceListLoadingAction, setReportingDeviceListLoadingReducer),
   // user -> change password
   on(
     setChangePasswordLoadingStatusAction,

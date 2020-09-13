@@ -39,13 +39,14 @@ export enum LoadersActionTypes {
   SET_PURCHASE_LOADING_STATUS = '[Loaders | Purchases] Set Purchase Loading Status',
   SET_NEW_FEATURE_REQUEST_LOADING_STATUS = '[Loaders | User] Set New Feature Request Loading Status',
   SET_DEFAULT_PAYMENT_METHOD_LOADING_STATUS = '[Loaders | User] Set Default Payment Method Loading Status',
-  SET_REPORTING_DEVICE_LIST_LOADING_STATUS = '[Loaders | Reporting] Set Reporting Device List Loading Status',
+  SET_REPORTING_FILTERING_LIST_LOADING_STATUS = '[Loaders | Reporting] Set Reporting Filtering List Loading Status',
   SET_REPORTING_DEVICE_LOADING_STATUS = '[Loaders | Reporting] Set Reporting Device Loading Status',
   SET_GPS_LOADING_STATUS = '[Loaders | Reporting] Set GPS Loading Status',
   SET_EXPORT_RELEVANT_LOADING_STATUS = '[Loaders | Reporting] Set Export Relevant Data Loading Status',
   SET_CHANGE_PASSWORD_LOADING_STATUS = '[Loaders | User] Set Change Password Loading Status',
   SET_BUILDING_ROUTE_LOADING_STATUS = '[Loaders | Reporting] Set Building Route Loading Status',
   SET_HEAT_MAP_DATA_LOADING_STATUS = '[Loaders | Reporting] Set Heat Map Data Loading Status',
+  SET_REPORTING_DEVICE_LIST_LOADING_STATUS = '[Loaders | Reporting] Set Reporting Device List Loading Status',
 }
 
 export interface LoaderInterface {
@@ -245,8 +246,8 @@ export const setDefaultPaymentMethodLoadingStatusAction = createAction(
 );
 
 // reporting
-export const setReportingDeviceListLoadingStatusAction = createAction(
-  LoadersActionTypes.SET_REPORTING_DEVICE_LIST_LOADING_STATUS,
+export const setReportingFilteringListLoadingStatusAction = createAction(
+  LoadersActionTypes.SET_REPORTING_FILTERING_LIST_LOADING_STATUS,
   props<LoaderInterface>()
 );
 
@@ -272,6 +273,11 @@ export const setBuildingRouteLoadingStatusAction = createAction(
 
 export const setHeatMapDataLoadingStatusAction = createAction(
   LoadersActionTypes.SET_HEAT_MAP_DATA_LOADING_STATUS,
+  props<LoaderInterface>()
+);
+
+export const setReportingDeviceListLoadingAction = createAction(
+  LoadersActionTypes.SET_REPORTING_DEVICE_LIST_LOADING_STATUS,
   props<LoaderInterface>()
 );
 
