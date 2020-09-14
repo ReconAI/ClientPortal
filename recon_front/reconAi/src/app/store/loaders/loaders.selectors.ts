@@ -225,6 +225,11 @@ export const selectReportingDeviceListLoadingStatus = createSelector(
   (loaders: LoadersState): boolean => loaders.reportingDeviceList
 );
 
+export const selectAdditionalSensorInfoLoadingStatus = createSelector(
+  selectLoaders,
+  (loaders: LoadersState): boolean => loaders.additionalSensorInfo
+);
+
 // user
 export const selectChangePasswordStatus = createSelector(
   selectLoaders,

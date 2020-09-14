@@ -19,6 +19,7 @@ import {
   HeatMapDataClientInterface,
   SensorClientInterface,
   SensorServerInterface,
+  SensorClientActionInterface,
 } from './reporting.server.helpers';
 import {
   loadReportingFilteringListSucceededAction,
@@ -39,6 +40,7 @@ import {
   pedestrianFlowListSucceededAction,
   loadReportingDeviceListSucceededAction,
   resetMapDataAction,
+  loadAdditionalSensorInfoSucceededAction,
 } from './reporting.actions';
 
 export interface ReportingErrorsInterface {
@@ -71,6 +73,7 @@ export interface ReportingState {
     list: SensorClientInterface[];
     meta: MetaClientInterface;
   };
+  sensorAdditionalInfo: SensorClientInterface;
 }
 
 export const initialState: ReportingState = {
@@ -94,6 +97,7 @@ export const initialState: ReportingState = {
     list: [],
     meta: null,
   },
+  sensorAdditionalInfo: null,
 };
 
 const loadReportingFilteringListSucceededReducer = (
@@ -226,6 +230,14 @@ const loadReportingDeviceListSucceededReducer = (
   },
 });
 
+const loadAdditionalSensorInfoSucceededReducer = (
+  state: ReportingState,
+  { sensor }: Action & SensorClientActionInterface
+): ReportingState => ({
+  ...state,
+  sensorAdditionalInfo: sensor,
+});
+
 const resetMapDataReducer = (state: ReportingState): ReportingState => ({
   ...state,
   heatMapData: [],
@@ -256,7 +268,11 @@ const reportingReducer = createReducer(
     loadReportingDeviceListSucceededAction,
     loadReportingDeviceListSucceededReducer
   ),
-  on(resetMapDataAction, resetMapDataReducer)
+  on(resetMapDataAction, resetMapDataReducer),
+  on(
+    loadAdditionalSensorInfoSucceededAction,
+    loadAdditionalSensorInfoSucceededReducer
+  )
 );
 
 export function reducer(state: ReportingState | undefined, action: Action) {

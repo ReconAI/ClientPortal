@@ -35,6 +35,10 @@ export class ReportingListDevicesComponent implements OnInit {
 
   readonly columns = [
     {
+      header: 'Device ID',
+      id: 'id',
+    },
+    {
       header: 'Device serial',
       id: 'serial',
     },

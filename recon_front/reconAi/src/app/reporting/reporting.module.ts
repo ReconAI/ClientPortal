@@ -23,6 +23,8 @@ import { ExportRelevantDataSuccessDialogComponent } from './components/reporting
 import { ReportingFilteringListComponent } from './components/reporting-filtering-list/reporting-filtering-list.component';
 import { ReportingFilteringListContainer } from './components/reporting-filtering-list/reporting-filtering-list.container';
 import { ReportPortalMainComponent } from './components/report-portal-main/report-portal-main.component';
+import { SensorAdditionalInfoComponent } from './components/reporting-filtering-list/sensor-additional-info/sensor-additional-info.component';
+import { SensorAdditionalInfoContainer } from './components/reporting-filtering-list/sensor-additional-info/sensor-additional-info.container';
 @NgModule({
   declarations: [
     ReportingListDevicesComponent,
@@ -39,6 +41,8 @@ import { ReportPortalMainComponent } from './components/report-portal-main/repor
     ReportingFilteringListComponent,
     ReportingFilteringListContainer,
     ReportPortalMainComponent,
+    SensorAdditionalInfoComponent,
+    SensorAdditionalInfoContainer,
   ],
   imports: [
     CommonModule,

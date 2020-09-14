@@ -7,7 +7,7 @@ import { PaginationRequestInterface } from './../../../constants/types/requests'
 import { Store, ActionsSubject, Action } from '@ngrx/store';
 import { OnlineStreamingComponent } from './../reporting-list-devices/online-streaming/online-streaming.component';
 import { TAMPERE_COORDINATES } from './../../../constants/globalVariables/globalVariables';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import {
   generateMapMarker,
   generateDefaultMap,
@@ -55,7 +55,8 @@ export class ReportingFilteringListComponent
     private router: Router,
     private zone: NgZone,
     private cdr: ChangeDetectorRef,
-    private actionsSubject: ActionsSubject
+    private actionsSubject: ActionsSubject,
+    private activatedRoute: ActivatedRoute
   ) {}
 
   @ViewChild('taggedDataTemplate') taggedDataTemplate: TemplateRef<
@@ -79,6 +80,9 @@ export class ReportingFilteringListComponent
   @Input() isPlatNumberApplied = false;
   @Input() buildingLoading = false;
 
+  @Input() currentDeviceLat = 0;
+  @Input() currentDeviceLng = 0;
+
   @Output() loadDevices$ = new EventEmitter<number>();
   @Output() exportRelevantData$ = new EventEmitter<RelevantDataExportFormat>();
   @Output() buildRoute$ = new EventEmitter<void>();
@@ -96,6 +100,8 @@ export class ReportingFilteringListComponent
   map: Map;
   routingControl: L.Routing.Control;
   heatLayer: any;
+
+  deviceId: number;
 
   readonly tooltipForDisabledBuildButton =
     'To use this feature, please apply License plate filter';
@@ -169,6 +175,10 @@ export class ReportingFilteringListComponent
         });
       }
     );
+
+    if (this.isDevice) {
+      this.deviceId = +this.activatedRoute.snapshot.paramMap.get('id');
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -208,7 +218,7 @@ export class ReportingFilteringListComponent
         width: '100px',
       },
       {
-        header: 'Object Class',
+        header: 'Object Type',
         id: 'isEvent',
         width: '100px',
       },
@@ -315,11 +325,6 @@ export class ReportingFilteringListComponent
         cellTemplate: this.taggedDataTemplate,
       },
       {
-        header: 'Vehicle registration plate',
-        id: 'plate',
-        width: '100px',
-      },
-      {
         header: 'CAD file tag',
         id: 'fileTag',
         width: '100px',
@@ -358,13 +363,12 @@ export class ReportingFilteringListComponent
   }
 
   openDialog(): void {
-    const selectedDevice = this.devices[this.selectedIndex];
     this.dialog.open(SetGpsDialogContainer, {
       width: '600px',
       data: {
-        lat: selectedDevice.lat,
-        lng: selectedDevice.lng,
-        id: selectedDevice.id,
+        lat: this.currentDeviceLat,
+        lng: this.currentDeviceLng,
+        id: this.deviceId,
       },
     });
   }

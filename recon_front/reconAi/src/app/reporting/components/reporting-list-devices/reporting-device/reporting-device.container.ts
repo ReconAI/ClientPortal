@@ -2,6 +2,7 @@ import { FiltersService } from './../../../../core/services/filters/filters.serv
 import {
   buildVehicleRouteRequestedAction,
   heatMapDataRequestedAction,
+  resetMapDataAction,
 } from './../../../../store/reporting/reporting.actions';
 import { LatLngInterface } from 'app/core/helpers/markers';
 import {
@@ -11,6 +12,8 @@ import {
   selectReportingSelectedDeviceListMetaPageSize,
   selectVehicleRoutePoints,
   selectHeatMapData,
+  selectReportingSensorAdditionalInfoLat,
+  selectReportingSensorAdditionalInfoLng,
 } from './../../../../store/reporting/reporting.selectors';
 import {
   selectReportingDeviceLoadingStatus,
@@ -80,6 +83,14 @@ export class ReportingDeviceContainer implements OnInit, OnDestroy {
     select(selectHeatMapLoadingStatus)
   );
 
+  currentDeviceLat$: Observable<number> = this.store.pipe(
+    select(selectReportingSensorAdditionalInfoLat)
+  );
+
+  currentDeviceLng$: Observable<number> = this.store.pipe(
+    select(selectReportingSensorAdditionalInfoLng)
+  );
+
   loadDevices(page: number = 1): void {
     this.store.dispatch(
       loadReportingDeviceRequestedAction({ id: this.id, page })
@@ -106,5 +117,9 @@ export class ReportingDeviceContainer implements OnInit, OnDestroy {
 
   loadHeatMapData(): void {
     this.store.dispatch(heatMapDataRequestedAction({ isForDevice: true }));
+  }
+
+  resetMapData(): void {
+    this.store.dispatch(resetMapDataAction());
   }
 }
