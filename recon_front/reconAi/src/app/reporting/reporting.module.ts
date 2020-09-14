@@ -20,6 +20,9 @@ import { ReportingFilterContainer } from './components/reporting-filter/reportin
 import { ReportingFilterGpsComponent } from './components/reporting-filter-gps/reporting-filter-gps.component';
 import { SetBoundsDialogComponent } from './components/reporting-filter-gps/set-bounds-dialog/set-bounds-dialog.component';
 import { ExportRelevantDataSuccessDialogComponent } from './components/reporting-list-devices/export-relevant-data-success-dialog/export-relevant-data-success-dialog.component';
+import { ReportingFilteringListComponent } from './components/reporting-filtering-list/reporting-filtering-list.component';
+import { ReportingFilteringListContainer } from './components/reporting-filtering-list/reporting-filtering-list.container';
+import { ReportPortalMainComponent } from './components/report-portal-main/report-portal-main.component';
 @NgModule({
   declarations: [
     ReportingListDevicesComponent,
@@ -33,6 +36,9 @@ import { ExportRelevantDataSuccessDialogComponent } from './components/reporting
     ReportingFilterGpsComponent,
     SetBoundsDialogComponent,
     ExportRelevantDataSuccessDialogComponent,
+    ReportingFilteringListComponent,
+    ReportingFilteringListContainer,
+    ReportPortalMainComponent,
   ],
   imports: [
     CommonModule,

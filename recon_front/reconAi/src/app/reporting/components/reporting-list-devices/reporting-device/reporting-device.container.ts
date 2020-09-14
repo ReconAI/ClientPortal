@@ -18,7 +18,7 @@ import {
   selectHeatMapLoadingStatus,
 } from './../../../../store/loaders/loaders.selectors';
 import {
-  ReportingDeviceClientInterface,
+  ReportingFilteringDeviceClientInterface,
   HeatMapPointClientInterface,
 } from './../../../../store/reporting/reporting.server.helpers';
 import { Store, select } from '@ngrx/store';
@@ -34,7 +34,7 @@ import { loadReportingDeviceRequestedAction } from 'app/store/reporting';
 })
 export class ReportingDeviceContainer implements OnInit, OnDestroy {
   id: number;
-  selectedDeviceList: ReportingDeviceClientInterface[] = [];
+  selectedDeviceList: ReportingFilteringDeviceClientInterface[] = [];
 
   constructor(
     private activateRoute: ActivatedRoute,
@@ -47,7 +47,7 @@ export class ReportingDeviceContainer implements OnInit, OnDestroy {
   );
 
   selectedDeviceList$: Observable<
-    ReportingDeviceClientInterface[]
+    ReportingFilteringDeviceClientInterface[]
   > = this.store.pipe(select(selectReportingSelectedDeviceList));
   selectedDeviceListSubscription$: Subscription;
 

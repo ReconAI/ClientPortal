@@ -190,9 +190,9 @@ export const selectNewRequestFeatureLoadingStatus = createSelector(
 );
 
 // reporting
-export const selectReportingDeviceListLoadingStatus = createSelector(
+export const selectReportingFilteringListLoadingStatus = createSelector(
   selectLoaders,
-  (loaders: LoadersState): boolean => loaders.reportingDeviceList
+  (loaders: LoadersState): boolean => loaders.reportingFilteringList
 );
 
 export const selectReportingDeviceLoadingStatus = createSelector(
@@ -210,11 +210,6 @@ export const selectExportRelevantDataStatus = createSelector(
   (loaders: LoadersState): boolean => loaders.exportRelevantData
 );
 
-export const selectChangePasswordStatus = createSelector(
-  selectLoaders,
-  (loaders: LoadersState): boolean => loaders.changePassword
-);
-
 export const selectBuildingRouteStatus = createSelector(
   selectLoaders,
   (loaders: LoadersState): boolean => loaders.buildingRoute
@@ -223,4 +218,15 @@ export const selectBuildingRouteStatus = createSelector(
 export const selectHeatMapLoadingStatus = createSelector(
   selectLoaders,
   (loaders: LoadersState): boolean => loaders.heatMapData
+);
+
+export const selectReportingDeviceListLoadingStatus = createSelector(
+  selectLoaders,
+  (loaders: LoadersState): boolean => loaders.reportingDeviceList
+);
+
+// user
+export const selectChangePasswordStatus = createSelector(
+  selectLoaders,
+  (loaders: LoadersState): boolean => loaders.changePassword
 );

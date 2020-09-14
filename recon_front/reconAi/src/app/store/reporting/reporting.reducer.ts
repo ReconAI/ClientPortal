@@ -11,15 +11,17 @@ import {
 } from './../../constants/types/requests';
 import { createReducer, Action, on } from '@ngrx/store';
 import {
-  ReportingDeviceClientInterface,
+  ReportingFilteringDeviceClientInterface,
   OptionsPayloadInterface,
   AutocompleteNameClientInterface,
   BuildRouteClientInterface,
   HeatMapPointClientInterface,
   HeatMapDataClientInterface,
+  SensorClientInterface,
+  SensorServerInterface,
 } from './reporting.server.helpers';
 import {
-  loadReportingDeviceListSucceededAction,
+  loadReportingFilteringListSucceededAction,
   loadReportingDeviceSucceededAction,
   setGpsErrorAction,
   resetSetGpsErrorAction,
@@ -35,6 +37,8 @@ import {
   heatMapDataSucceededAction,
   plateNumberListSucceededAction,
   pedestrianFlowListSucceededAction,
+  loadReportingDeviceListSucceededAction,
+  resetMapDataAction,
 } from './reporting.actions';
 
 export interface ReportingErrorsInterface {
@@ -46,10 +50,11 @@ const reportingErrorsInitialization: ReportingErrorsInterface = {
 };
 
 export interface ReportingState {
-  list: ReportingDeviceClientInterface[];
+  // TO DO: Throw to object
+  list: ReportingFilteringDeviceClientInterface[];
   meta: MetaClientInterface;
   selectedDevice: {
-    list: ReportingDeviceClientInterface[];
+    list: ReportingFilteringDeviceClientInterface[];
     meta: MetaClientInterface;
   };
   errors: ReportingErrorsInterface;
@@ -62,6 +67,10 @@ export interface ReportingState {
   heatMapData: HeatMapPointClientInterface[];
   plateNumbers: string[];
   pedestrianFlowList: ReconSelectOption[];
+  sensors: {
+    list: SensorClientInterface[];
+    meta: MetaClientInterface;
+  };
 }
 
 export const initialState: ReportingState = {
@@ -81,14 +90,19 @@ export const initialState: ReportingState = {
   heatMapData: [],
   plateNumbers: [],
   pedestrianFlowList: [],
+  sensors: {
+    list: [],
+    meta: null,
+  },
 };
 
-const loadReportingDeviceListSucceededReducer = (
+const loadReportingFilteringListSucceededReducer = (
   state: ReportingState,
   {
     type,
     ...payload
-  }: Action & PaginationResponseClientInterface<ReportingDeviceClientInterface>
+  }: Action &
+    PaginationResponseClientInterface<ReportingFilteringDeviceClientInterface>
 ): ReportingState => ({ ...state, list: payload.list, meta: payload.meta });
 
 const loadReportingDeviceSucceededReducer = (
@@ -97,7 +111,8 @@ const loadReportingDeviceSucceededReducer = (
     type,
     list,
     meta,
-  }: Action & PaginationResponseClientInterface<ReportingDeviceClientInterface>
+  }: Action &
+    PaginationResponseClientInterface<ReportingFilteringDeviceClientInterface>
 ): ReportingState => ({
   ...state,
   selectedDevice: {
@@ -197,11 +212,30 @@ const pedestrianFlowListSucceededReducer = (
   pedestrianFlowList: options,
 });
 
+const loadReportingDeviceListSucceededReducer = (
+  state: ReportingState,
+  {
+    list,
+    meta,
+  }: Action & PaginationResponseClientInterface<SensorClientInterface>
+): ReportingState => ({
+  ...state,
+  sensors: {
+    list,
+    meta,
+  },
+});
+
+const resetMapDataReducer = (state: ReportingState): ReportingState => ({
+  ...state,
+  heatMapData: [],
+});
+
 const reportingReducer = createReducer(
   initialState,
   on(
-    loadReportingDeviceListSucceededAction,
-    loadReportingDeviceListSucceededReducer
+    loadReportingFilteringListSucceededAction,
+    loadReportingFilteringListSucceededReducer
   ),
   on(loadReportingDeviceSucceededAction, loadReportingDeviceSucceededReducer),
   on(setGpsErrorAction, setGpsErrorReducer),
@@ -217,7 +251,12 @@ const reportingReducer = createReducer(
   on(buildVehicleRouteSucceededAction, buildVehicleRouteSucceededReducer),
   on(heatMapDataSucceededAction, heatMapDataSucceededReducer),
   on(plateNumberListSucceededAction, plateNumberListSucceededReducer),
-  on(pedestrianFlowListSucceededAction, pedestrianFlowListSucceededReducer)
+  on(pedestrianFlowListSucceededAction, pedestrianFlowListSucceededReducer),
+  on(
+    loadReportingDeviceListSucceededAction,
+    loadReportingDeviceListSucceededReducer
+  ),
+  on(resetMapDataAction, resetMapDataReducer)
 );
 
 export function reducer(state: ReportingState | undefined, action: Action) {

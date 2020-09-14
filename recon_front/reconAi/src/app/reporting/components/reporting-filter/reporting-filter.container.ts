@@ -4,7 +4,7 @@ import {
   selectPlateNumberList,
   selectPedestrianFlowList,
 } from './../../../store/reporting/reporting.selectors';
-import { loadReportingDeviceListRequestedAction } from 'app/store/reporting';
+import { loadReportingFilteringListRequestedAction } from 'app/store/reporting';
 import {
   setApplyFiltersStatusAction,
   eventObjectListRequestedAction,
@@ -104,7 +104,7 @@ export class ReportingFilterContainer implements OnInit, OnDestroy {
         loadReportingDeviceRequestedAction({ page: 1, id: this.deviceId })
       );
     } else {
-      this.store.dispatch(loadReportingDeviceListRequestedAction({ page: 1 }));
+      this.store.dispatch(loadReportingFilteringListRequestedAction({ page: 1 }));
     }
   }
 

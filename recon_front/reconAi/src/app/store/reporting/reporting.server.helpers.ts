@@ -25,7 +25,7 @@ export interface TrafficFlowClientInterface {
   observationStartDT: string;
 }
 
-export interface ReportingDeviceServerInterface {
+export interface ReportingFilteringDeviceServerInterface {
   sensor_id: number;
   id: number;
   sensor_GPS_lat: string;
@@ -53,9 +53,10 @@ export interface ReportingDeviceServerInterface {
   pedestrian_flow_number_of_objects: string;
   pedestrian_flow_transit_method: string;
   road_temperature: number;
+  ambient_temperature: number;
 }
 
-export interface ReportingDeviceClientInterface {
+export interface ReportingFilteringDeviceClientInterface {
   id: number;
   sensorId: number;
   lat: string;
@@ -86,14 +87,15 @@ export interface ReportingDeviceClientInterface {
   pedestrianFlowNumberOfObjects: string;
   pedestrianFlowTransitMethod: string;
   roadTemperature: number;
+  ambientTemperature: number;
 }
 
-export interface SetSelectedReportingDeviceClientInterface {
-  device: ReportingDeviceClientInterface;
+export interface SetSelectedReportingFilteringDeviceClientInterface {
+  device: ReportingFilteringDeviceClientInterface;
 }
 export const transformReportingDeviceFromServer = (
-  device: ReportingDeviceServerInterface
-): ReportingDeviceClientInterface => ({
+  device: ReportingFilteringDeviceServerInterface
+): ReportingFilteringDeviceClientInterface => ({
   id: device.id,
   sensorId: device.sensor_id,
   lat: device.sensor_GPS_lat,
@@ -128,17 +130,22 @@ export const transformReportingDeviceFromServer = (
   pedestrianFlowNumberOfObjects: device?.pedestrian_flow_number_of_objects,
   pedestrianFlowTransitMethod: device?.pedestrian_flow_transit_method,
   roadTemperature: device?.road_temperature,
+  ambientTemperature: device?.ambient_temperature,
 });
 
 export const transformReportingDeviceCardFromServer = (
-  device: ReportingDeviceServerInterface
-): SetSelectedReportingDeviceClientInterface => ({
+  device: ReportingFilteringDeviceServerInterface
+): SetSelectedReportingFilteringDeviceClientInterface => ({
   device: transformReportingDeviceFromServer(device),
 });
 
 export const transformReportingPaginatedDeviceListFromServer = (
-  response: PaginationResponseServerInterface<ReportingDeviceServerInterface>
-): PaginationResponseClientInterface<ReportingDeviceClientInterface> => ({
+  response: PaginationResponseServerInterface<
+    ReportingFilteringDeviceServerInterface
+  >
+): PaginationResponseClientInterface<
+  ReportingFilteringDeviceClientInterface
+> => ({
   meta: {
     count: response.count,
     currentPage: response.current,
@@ -254,6 +261,44 @@ export const transformHeatMapDataFromServer = (
 
 export const transformUrlWithDevicesToLoadHeatMapData = (
   url: string,
-  devices: ReportingDeviceClientInterface[]
+  devices: ReportingFilteringDeviceClientInterface[]
 ): string =>
   devices?.reduce((res, current) => `${res}&id=${current.id}`, url) || url;
+
+export interface SensorClientInterface {
+  id: number;
+  serial: number;
+  lat: string;
+  lng: string;
+}
+
+export interface SensorServerInterface {
+  id: number;
+  serial: number;
+  gps_lat: string;
+  gps_long: string;
+}
+
+export const transformSensorFromServer = (
+  sensor: SensorServerInterface
+): SensorClientInterface => ({
+  id: sensor.id,
+  serial: sensor.serial,
+  lat: sensor.gps_lat,
+  lng: sensor.gps_long,
+});
+
+export interface SensorsClientInterface {
+  sensors: SensorClientInterface[];
+}
+
+export const transformSensorsFromServer = (
+  response: PaginationResponseServerInterface<SensorServerInterface>
+): PaginationResponseClientInterface<SensorClientInterface> => ({
+  meta: {
+    count: response.count,
+    currentPage: response.current,
+    pageSize: response.page_size,
+  },
+  list: response.results.map((sensor) => transformSensorFromServer(sensor)),
+});

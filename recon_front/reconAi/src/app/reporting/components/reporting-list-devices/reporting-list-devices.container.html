@@ -1,19 +1,10 @@
 <ng-container *ngIf="!(loadingStatus$ | async); else loading">
   <recon-reporting-list-devices
-    [count]="count$ | async"
+    [sensors]="sensorsList$ | async"
     [currentPage]="currentPage$ | async"
+    [count]="count$ | async"
     [pageSize]="pageSize$ | async"
-    [devices]="reportingDeviceList$ | async"
-    [routePoints]="routePoints$ | async"
-    [heatMapData]="heatMapData$ | async"
-    [isPlatNumberApplied]="isPlatNumberApplied$ | async"
-    [buildingLoading]="buildingLoading$ | async"
-    [isExporting]="exportingStatus$ | async"
-    [heatMapLoading]="heatMapLoading$ | async"
-    (buildRoute$)="buildRoute()"
-    (loadDevices$)="loadDevices($event)"
-    (exportRelevantData$)="exportRelevantData($event)"
-    (loadHeatMapData$)="loadHeatMapData()"
+    (loadSensors$)="loadDevices($event)"
   ></recon-reporting-list-devices>
 </ng-container>
 <ng-template #loading>Loading...</ng-template>

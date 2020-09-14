@@ -4,8 +4,9 @@ import { FormServerErrorInterface } from 'app/constants/types/requests';
 import { FilterItemInterface } from 'app/reporting/constants/types/filters';
 import { MetaClientInterface } from './../../constants/types/requests';
 import {
-  ReportingDeviceClientInterface,
+  ReportingFilteringDeviceClientInterface,
   HeatMapPointClientInterface,
+  SensorClientInterface,
 } from './reporting.server.helpers';
 import { createSelector } from '@ngrx/store';
 import { AppState } from '../reducers';
@@ -14,35 +15,35 @@ import { ReportingState } from './reporting.reducer';
 export const selectReporting = (state: AppState): ReportingState =>
   state.reporting;
 
-export const selectReportingDeviceList = createSelector(
+export const selectReportingFilteringList = createSelector(
   selectReporting,
-  (reporting: ReportingState): ReportingDeviceClientInterface[] =>
+  (reporting: ReportingState): ReportingFilteringDeviceClientInterface[] =>
     reporting.list
 );
 
-export const selectReportingDeviceListMeta = createSelector(
+export const selectReportingFilteringListMeta = createSelector(
   selectReporting,
   (reporting: ReportingState): MetaClientInterface => reporting?.meta
 );
 
-export const selectReportingDeviceListMetaCurrentPage = createSelector(
-  selectReportingDeviceListMeta,
+export const selectReportingFilteringListMetaCurrentPage = createSelector(
+  selectReportingFilteringListMeta,
   (meta: MetaClientInterface): number => meta?.currentPage
 );
 
-export const selectReportingDeviceListMetaCount = createSelector(
-  selectReportingDeviceListMeta,
+export const selectReportingFilteringListMetaCount = createSelector(
+  selectReportingFilteringListMeta,
   (meta: MetaClientInterface): number => meta?.count
 );
 
-export const selectReportingDeviceListMetaPageSize = createSelector(
-  selectReportingDeviceListMeta,
+export const selectReportingFilteringListMetaPageSize = createSelector(
+  selectReportingFilteringListMeta,
   (meta: MetaClientInterface): number => meta?.pageSize
 );
 
 export const selectReportingSelectedDeviceList = createSelector(
   selectReporting,
-  (reporting: ReportingState): ReportingDeviceClientInterface[] =>
+  (reporting: ReportingState): ReportingFilteringDeviceClientInterface[] =>
     reporting?.selectedDevice?.list || []
 );
 
@@ -121,4 +122,30 @@ export const selectPedestrianFlowList = createSelector(
   selectReporting,
   (reporting: ReportingState): ReconSelectOption[] =>
     reporting?.pedestrianFlowList || []
+);
+
+export const selectReportingSensorList = createSelector(
+  selectReporting,
+  (reporting: ReportingState): SensorClientInterface[] =>
+    reporting?.sensors?.list || []
+);
+
+export const selectReportingSensorListMeta = createSelector(
+  selectReporting,
+  (reporting: ReportingState): MetaClientInterface => reporting.sensors?.meta
+);
+
+export const selectReportingSensorListMetaCurrentPage = createSelector(
+  selectReportingSensorListMeta,
+  (meta: MetaClientInterface): number => meta?.currentPage
+);
+
+export const selectReportingSensorListMetaCount = createSelector(
+  selectReportingSensorListMeta,
+  (meta: MetaClientInterface): number => meta?.count
+);
+
+export const selectReportingSensorListMetaPageSize = createSelector(
+  selectReportingSensorListMeta,
+  (meta: MetaClientInterface): number => meta?.pageSize
 );
