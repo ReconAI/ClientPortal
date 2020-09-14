@@ -4,7 +4,7 @@
     (selectedIndexChange)="selectedTab = $event"
   >
     <mat-tab label="Devices"><div class="fake"></div></mat-tab>
-    <mat-tab label="Filtering"><div class="fake"></div></mat-tab>
+    <mat-tab label="Relevant data"><div class="fake"></div></mat-tab>
   </mat-tab-group>
 </div>
 <ng-container *ngIf="selectedTab === 0; else filtering">

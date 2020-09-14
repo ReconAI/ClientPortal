@@ -65,6 +65,10 @@ export class ReportingFilteringListComponent
   @ViewChild('cadTagTemplate') cadTagTemplate: TemplateRef<
     ReportingFilteringDeviceClientInterface
   >;
+  @ViewChild('firstColumnActionsTemplate')
+  firstColumnActionsTemplate: TemplateRef<
+    ReportingFilteringDeviceClientInterface
+  >;
 
   @Input() isDevice = false;
   @Input() currentPage = 1;
@@ -153,12 +157,6 @@ export class ReportingFilteringListComponent
         {
           isHighlighted: index === this.selectedIndex,
           zIndex: index === this.selectedIndex ? 1000 : 500,
-          clickHandler: !this.isDevice
-            ? () => {
-                this.zone.run(() => this.navigateToDevice(device));
-              }
-            : () => {},
-          popupText: !this.isDevice ? 'Click to navigate to device page' : '',
         }
       )
     );
@@ -334,6 +332,11 @@ export class ReportingFilteringListComponent
 
     if (!this.isDevice) {
       this.columns = [
+        {
+          header: '',
+          id: 'actions',
+          cellTemplate: this.firstColumnActionsTemplate,
+        },
         {
           header: 'Sensor ID',
           id: 'sensorId',
