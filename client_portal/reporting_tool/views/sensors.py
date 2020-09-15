@@ -115,10 +115,12 @@ class SensorsItemView(SensorHandler, RetrieveAPIView):
         token_header(),
     ]
 ))
-class SensorSetGPSView(UpdateAPIView):
+class SensorSetGPSView(SensorHandler, UpdateAPIView):
     """
     Updates sensor gps
     """
     serializer_class = SensorGPSSerializer
 
     update_success_message = _('GPS is updated successfully')
+
+    queryset = DeviceInstance.objects.all().distinct('id')
