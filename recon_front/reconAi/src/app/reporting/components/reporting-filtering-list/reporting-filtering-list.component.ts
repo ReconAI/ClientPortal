@@ -62,10 +62,8 @@ export class ReportingFilteringListComponent
   @ViewChild('cadTagTemplate') cadTagTemplate: TemplateRef<
     ReportingFilteringDeviceClientInterface
   >;
-  @ViewChild('firstColumnActionsTemplate')
-  firstColumnActionsTemplate: TemplateRef<
-    ReportingFilteringDeviceClientInterface
-  >;
+  @ViewChild('sensorIdColumnTemplate')
+  sensorIdColumnTemplate: TemplateRef<ReportingFilteringDeviceClientInterface>;
 
   @Input() isDevice = false;
   @Input() currentPage = 1;
@@ -192,6 +190,11 @@ export class ReportingFilteringListComponent
 
   ngAfterViewInit() {
     this.columns = [
+      {
+        header: 'ID',
+        id: 'id',
+        width: '65px',
+      },
       {
         header: 'Time stamp',
         id: 'timestamp',
@@ -328,17 +331,13 @@ export class ReportingFilteringListComponent
     ];
 
     if (!this.isDevice) {
+      this.columns.splice(3, 0, {
+        header: 'Sensor ID',
+        width: '55px',
+        id: 'sensorId',
+        cellTemplate: this.sensorIdColumnTemplate,
+      });
       this.columns = [
-        {
-          header: '',
-          id: 'actions',
-          cellTemplate: this.firstColumnActionsTemplate,
-        },
-        {
-          header: 'Sensor ID',
-          id: 'sensorId',
-          width: '100px',
-        },
         ...this.columns,
       ];
     }

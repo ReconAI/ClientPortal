@@ -137,22 +137,13 @@
   <ng-template #noFileTag></ng-template>
 </ng-template>
 
-<ng-template #firstColumnActionsTemplate let-element="element">
-  <div class="actions-container">
-    <button
-      mat-icon-button
-      aria-label="Actions"
-      [matMenuTriggerFor]="menu"
-      (click)="$event?.stopPropagation()"
+<ng-template #sensorIdColumnTemplate let-element="element">
+  <div class="sensor-id-wrapper">
+    <span
+      matTooltip="Click to navigate to device"
+      (click)="$event.stopPropagation(); navigateToDevice(element)"
+      class="table-link"
+      >{{ element.sensorId }}</span
     >
-      <mat-icon>more_vert</mat-icon>
-    </button>
-    <mat-menu #menu="matMenu" xPosition="after" class="recon-menu">
-      <button mat-menu-item disabled>Device settings</button>
-      <mat-divider></mat-divider>
-      <button mat-menu-item (click)="navigateToDevice(element)">
-        Relevant data
-      </button>
-    </mat-menu>
   </div>
 </ng-template>
