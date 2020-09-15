@@ -72,7 +72,7 @@ REST_FRAMEWORK = {
     ],
     'EXCEPTION_HANDLER': 'shared.exception_handlers.exception_handler',
     'DEFAULT_PAGINATION_CLASS': 'shared.pagination.PageNumberPagination',
-    'PAGE_SIZE': 3
+    'PAGE_SIZE': 15
 }
 
 SWAGGER_SETTINGS = {
