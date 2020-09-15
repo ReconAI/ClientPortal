@@ -10,12 +10,11 @@ from django.contrib.auth import get_user_model
 from django.db.models import QuerySet
 from rest_framework.generics import GenericAPIView
 
-from recon_db_manager.models import RelevantData
 from reporting_tool.filters import RelevantDataSensorFilter, \
     ExportRelevantDataFilterBackend
 from reporting_tool.forms.utils import SendEmailMixin
 from reporting_tool.serializers import RelevantDataGeneratorSeriralizer
-from reporting_tool.utils import S3FileUploader, RelevantDataFileGenerator, \
+from reporting_tool.utils import RelevantDataFileGenerator, \
     RelvantDataExportUploader
 from reporting_tool.views.relevant_data import RelevantDataHandler
 
@@ -38,15 +37,7 @@ class ExportRelevantDataTask(Task, GenericAPIView, RelevantDataHandler, SendEmai
 
     uploader_class = RelvantDataExportUploader
 
-    CHUNK_SIZE = 3
-
-    # queryset = RelevantData.objects.select_related(
-    #     'project'
-    # ).prefetch_related(
-    #     'event', 'object_class', 'tagged_data', 'license_plate',
-    #     'face', 'cad_file_tag', 'ambient_weather_condition',
-    #     'road_weather_condition', 'vehicle_classification'
-    # ).order_by('-id').all()
+    CHUNK_SIZE = 500
 
     def __init__(self):
         super().__init__()

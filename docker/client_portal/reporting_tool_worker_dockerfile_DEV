@@ -2,7 +2,9 @@ FROM python:3.8-alpine3.11
 
 RUN apk update \
 	&& apk add bash \
-	&& apk add postgresql-dev gcc python3-dev musl-dev jpeg-dev zlib-dev
+	&& apk add postgresql-dev gcc python3-dev \
+	&& apk add musl-dev jpeg-dev zlib-dev openssl-dev libffi-dev \
+	&& apk add cairo-dev cairo cairo-tools pango-dev
 
 CMD mkdir /client_portal
 WORKDIR /client_portal

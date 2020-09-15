@@ -437,32 +437,6 @@ class UpdateDeviceSerializer(CreateDeviceSerializer):
 
         return device
 
-    def validate_delete_images(self, images: List[int]) -> List[int]:
-        """
-        After images deletion and new ones upload user can not have
-        more than `MAX_IMAGES`
-
-        :type images: List[int]
-
-        :rtype: List[int]
-
-        :raise: ValidationError
-        """
-        final_imgs_count = (
-            len(self.initial_data.get('images', []))
-            + len(self.instance.images.all())
-            - len(images)
-        )
-
-        if final_imgs_count > self.MAX_IMAGES:
-            error_msg = _('You can not load mor than {} image(s)').format(
-                self.MAX_IMAGES
-            )
-
-            raise ValidationError(error_msg)
-
-        return images
-
 
 class FullViewDeviceSerializer(ModelSerializer):
     """
