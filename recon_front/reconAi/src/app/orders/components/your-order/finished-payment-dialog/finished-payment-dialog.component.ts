@@ -2,7 +2,6 @@ import { loadBasketOverviewRequestedAction } from './../../../../store/orders/or
 import { Router } from '@angular/router';
 import { Component, OnInit, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { BasketPaymentSucceededInterface } from 'app/store/orders/orders.server.helpers';
 import { Store } from '@ngrx/store';
 import { AppState } from 'app/store/reducers';
 
