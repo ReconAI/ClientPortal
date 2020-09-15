@@ -220,9 +220,9 @@ export const selectHeatMapLoadingStatus = createSelector(
   (loaders: LoadersState): boolean => loaders.heatMapData
 );
 
-export const selectReportingDeviceListLoadingStatus = createSelector(
+export const selectSensorListLoadingStatus = createSelector(
   selectLoaders,
-  (loaders: LoadersState): boolean => loaders.reportingDeviceList
+  (loaders: LoadersState): boolean => loaders.sensorList
 );
 
 export const selectAdditionalSensorInfoLoadingStatus = createSelector(

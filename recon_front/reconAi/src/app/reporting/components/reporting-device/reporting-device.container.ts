@@ -1,9 +1,9 @@
-import { FiltersService } from './../../../../core/services/filters/filters.service';
+import { FiltersService } from './../../../core/services/filters/filters.service';
 import {
   buildVehicleRouteRequestedAction,
   heatMapDataRequestedAction,
   resetMapDataAction,
-} from './../../../../store/reporting/reporting.actions';
+} from './../../../store/reporting/reporting.actions';
 import { LatLngInterface } from 'app/core/helpers/markers';
 import {
   selectReportingSelectedDeviceList,
@@ -14,16 +14,16 @@ import {
   selectHeatMapData,
   selectReportingSensorAdditionalInfoLat,
   selectReportingSensorAdditionalInfoLng,
-} from './../../../../store/reporting/reporting.selectors';
+} from './../../../store/reporting/reporting.selectors';
 import {
   selectReportingDeviceLoadingStatus,
   selectBuildingRouteStatus,
   selectHeatMapLoadingStatus,
-} from './../../../../store/loaders/loaders.selectors';
+} from './../../../store/loaders/loaders.selectors';
 import {
   ReportingFilteringDeviceClientInterface,
   HeatMapPointClientInterface,
-} from './../../../../store/reporting/reporting.server.helpers';
+} from './../../../store/reporting/reporting.server.helpers';
 import { Store, select } from '@ngrx/store';
 import { ActivatedRoute } from '@angular/router';
 import { Component, OnInit, OnDestroy } from '@angular/core';

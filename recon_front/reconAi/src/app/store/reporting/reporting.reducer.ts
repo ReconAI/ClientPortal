@@ -1,3 +1,4 @@
+import { SensorClientInterface } from './../../constants/types/sensors';
 import { LatLngInterface } from 'app/core/helpers/markers';
 import { ReconSelectOption } from 'app/shared/types';
 import {
@@ -17,8 +18,6 @@ import {
   BuildRouteClientInterface,
   HeatMapPointClientInterface,
   HeatMapDataClientInterface,
-  SensorClientInterface,
-  SensorServerInterface,
   SensorClientActionInterface,
 } from './reporting.server.helpers';
 import {
@@ -38,7 +37,6 @@ import {
   heatMapDataSucceededAction,
   plateNumberListSucceededAction,
   pedestrianFlowListSucceededAction,
-  loadReportingDeviceListSucceededAction,
   resetMapDataAction,
   loadAdditionalSensorInfoSucceededAction,
 } from './reporting.actions';
@@ -216,20 +214,6 @@ const pedestrianFlowListSucceededReducer = (
   pedestrianFlowList: options,
 });
 
-const loadReportingDeviceListSucceededReducer = (
-  state: ReportingState,
-  {
-    list,
-    meta,
-  }: Action & PaginationResponseClientInterface<SensorClientInterface>
-): ReportingState => ({
-  ...state,
-  sensors: {
-    list,
-    meta,
-  },
-});
-
 const loadAdditionalSensorInfoSucceededReducer = (
   state: ReportingState,
   { sensor }: Action & SensorClientActionInterface
@@ -264,10 +248,6 @@ const reportingReducer = createReducer(
   on(heatMapDataSucceededAction, heatMapDataSucceededReducer),
   on(plateNumberListSucceededAction, plateNumberListSucceededReducer),
   on(pedestrianFlowListSucceededAction, pedestrianFlowListSucceededReducer),
-  on(
-    loadReportingDeviceListSucceededAction,
-    loadReportingDeviceListSucceededReducer
-  ),
   on(resetMapDataAction, resetMapDataReducer),
   on(
     loadAdditionalSensorInfoSucceededAction,

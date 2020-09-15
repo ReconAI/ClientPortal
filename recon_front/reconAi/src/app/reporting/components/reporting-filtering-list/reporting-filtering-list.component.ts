@@ -5,7 +5,7 @@ import { RelevantDataExportFormat } from './../../../constants/types/relevant-da
 import { SetGpsDialogContainer } from './../set-gps-dialog/set-gps-dialog.container';
 import { PaginationRequestInterface } from './../../../constants/types/requests';
 import { Store, ActionsSubject, Action } from '@ngrx/store';
-import { OnlineStreamingComponent } from './../reporting-list-devices/online-streaming/online-streaming.component';
+import { OnlineStreamingComponent } from './../online-streaming/online-streaming.component';
 import { TAMPERE_COORDINATES } from './../../../constants/globalVariables/globalVariables';
 import { Router, ActivatedRoute } from '@angular/router';
 import {
@@ -13,7 +13,6 @@ import {
   generateDefaultMap,
 } from './../../../core/helpers/markers';
 import { CrudTableColumn } from 'app/shared/types';
-import { SetGpsDialogComponent } from './../set-gps-dialog/set-gps-dialog.component';
 import {
   Component,
   OnInit,
@@ -41,8 +40,7 @@ import {
   ReportingFilteringDeviceClientInterface,
   HeatMapPointClientInterface,
 } from 'app/store/reporting/reporting.server.helpers';
-import { ExportRelevantDataPayloadInterface } from 'app/store/reporting';
-import { ExportRelevantDataSuccessDialogComponent } from '../reporting-list-devices/export-relevant-data-success-dialog/export-relevant-data-success-dialog.component';
+import { ExportRelevantDataSuccessDialogComponent } from '../export-relevant-data-success-dialog/export-relevant-data-success-dialog.component';
 @Component({
   selector: 'recon-reporting-filtering-list',
   templateUrl: './reporting-filtering-list.component.html',
@@ -53,7 +51,6 @@ export class ReportingFilteringListComponent
   constructor(
     private dialog: MatDialog,
     private router: Router,
-    private zone: NgZone,
     private cdr: ChangeDetectorRef,
     private actionsSubject: ActionsSubject,
     private activatedRoute: ActivatedRoute

@@ -1,12 +1,11 @@
+import { SensorClientInterface } from './../../constants/types/sensors';
 import { LatLngInterface } from 'app/core/helpers/markers';
 import { ReconSelectOption } from './../../shared/types/recon-select';
 import { FormServerErrorInterface } from 'app/constants/types/requests';
-import { FilterItemInterface } from 'app/reporting/constants/types/filters';
 import { MetaClientInterface } from './../../constants/types/requests';
 import {
   ReportingFilteringDeviceClientInterface,
   HeatMapPointClientInterface,
-  SensorClientInterface,
 } from './reporting.server.helpers';
 import { createSelector } from '@ngrx/store';
 import { AppState } from '../reducers';
@@ -122,32 +121,6 @@ export const selectPedestrianFlowList = createSelector(
   selectReporting,
   (reporting: ReportingState): ReconSelectOption[] =>
     reporting?.pedestrianFlowList || []
-);
-
-export const selectReportingSensorList = createSelector(
-  selectReporting,
-  (reporting: ReportingState): SensorClientInterface[] =>
-    reporting?.sensors?.list || []
-);
-
-export const selectReportingSensorListMeta = createSelector(
-  selectReporting,
-  (reporting: ReportingState): MetaClientInterface => reporting.sensors?.meta
-);
-
-export const selectReportingSensorListMetaCurrentPage = createSelector(
-  selectReportingSensorListMeta,
-  (meta: MetaClientInterface): number => meta?.currentPage
-);
-
-export const selectReportingSensorListMetaCount = createSelector(
-  selectReportingSensorListMeta,
-  (meta: MetaClientInterface): number => meta?.count
-);
-
-export const selectReportingSensorListMetaPageSize = createSelector(
-  selectReportingSensorListMeta,
-  (meta: MetaClientInterface): number => meta?.pageSize
 );
 
 export const selectReportingSensorAdditionalInfo = createSelector(

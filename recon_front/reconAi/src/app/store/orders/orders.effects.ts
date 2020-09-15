@@ -637,7 +637,6 @@ export class OrdersEffects {
             map(({ id }) => payBasketSucceededAction({ id })),
             tap(() => {
               this.basketService.deleteDevicesOfUser(+userProfileId);
-              this.store.dispatch(loadBasketOverviewRequestedAction());
             }),
             catchError((error) => {
               return of(
