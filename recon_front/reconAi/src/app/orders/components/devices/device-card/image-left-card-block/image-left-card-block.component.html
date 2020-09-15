@@ -17,11 +17,11 @@
     />
     <div
       class="preview"
-      *ngFor="let img of images; let i = index"
+      *ngFor="let i of shownIndexes"
       [ngClass]="{ active: i === activePictureIndex }"
       (click)="changeActiveIndex(i)"
     >
-      <img [src]="img?.path" alt="Image" />
+      <img [src]="images[i]?.path" alt="Image" />
     </div>
     <img
       src="assets/icons/arrow-right.svg"
