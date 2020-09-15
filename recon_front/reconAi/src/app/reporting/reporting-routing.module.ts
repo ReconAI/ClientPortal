@@ -1,9 +1,8 @@
-import { ReportPortalMainComponent } from './components/report-portal-main/report-portal-main.component';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 import { ReportingDeviceContainer } from './components/reporting-list-devices/reporting-device/reporting-device.container';
-import { ReportingListDevicesContainer } from './components/reporting-list-devices/reporting-list-devices.container';
+import { ReportingFilteringListContainer } from './components/reporting-filtering-list/reporting-filtering-list.container';
 
 const routes: Routes = [
   {
@@ -12,7 +11,7 @@ const routes: Routes = [
       title: ' ',
       backgroundWithoutUnion: true,
     },
-    component: ReportPortalMainComponent,
+    component: ReportingFilteringListContainer,
   },
   {
     path: ':id',

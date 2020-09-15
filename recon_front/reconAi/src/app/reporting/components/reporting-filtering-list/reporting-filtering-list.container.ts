@@ -1,6 +1,4 @@
 import { LatLngInterface } from './../../../core/helpers/markers';
-import { map, withLatestFrom } from 'rxjs/operators';
-import { selectUserProfileId } from './../../../store/users/users.selectors';
 import { FiltersService } from './../../../core/services/filters/filters.service';
 import {
   selectExportRelevantDataStatus,
@@ -30,7 +28,7 @@ import { Component, OnInit } from '@angular/core';
 import { Store, select } from '@ngrx/store';
 import { AppState } from 'app/store/reducers';
 import { loadReportingFilteringListRequestedAction } from 'app/store/reporting';
-import { Observable, Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
 import { selectReportingFilteringListLoadingStatus } from 'app/store/loaders/loaders.selectors';
 
 @Component({

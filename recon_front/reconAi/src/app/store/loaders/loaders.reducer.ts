@@ -44,6 +44,7 @@ import {
   setBuildingRouteLoadingStatusAction,
   setHeatMapDataLoadingStatusAction,
   setReportingDeviceListLoadingAction,
+  setAdditionalSensorInfoLoadingStatusAction
 } from './loaders.actions';
 import { createReducer, on, Action } from '@ngrx/store';
 
@@ -99,6 +100,7 @@ export interface LoadersState {
   buildingRoute: boolean;
   heatMapData: boolean;
   reportingDeviceList: boolean;
+  additionalSensorInfo: boolean;
   // user -> change password
   changePassword: boolean;
 }
@@ -154,6 +156,7 @@ const initialState: LoadersState = {
   buildingRoute: false,
   heatMapData: false,
   reportingDeviceList: false,
+  additionalSensorInfo: false,
   // user -> change password
   changePassword: false,
 };
@@ -384,6 +387,11 @@ const setReportingDeviceListLoadingReducer = (
   { status }: Action & LoaderInterface
 ): LoadersState => ({ ...state, reportingDeviceList: status });
 
+const setAdditionalSensorInfoLoadingStatusReducer = (
+  state: LoadersState,
+  { status }: Action & LoaderInterface
+): LoadersState => ({ ...state, additionalSensorInfo: status });
+
 const loadersReducer = createReducer(
   initialState,
   on(setCurrentUserLoadingStatusAction, setCurrentUserLoadingStatusReducer),
@@ -480,6 +488,7 @@ const loadersReducer = createReducer(
   on(setHeatMapDataLoadingStatusAction, setHeatMapDataLoadingStatusReducer),
   on(setBuildingRouteLoadingStatusAction, setBuildingRouteLoadingStatusReducer),
   on(setReportingDeviceListLoadingAction, setReportingDeviceListLoadingReducer),
+  on(setAdditionalSensorInfoLoadingStatusAction, setAdditionalSensorInfoLoadingStatusReducer),
   // user -> change password
   on(
     setChangePasswordLoadingStatusAction,

@@ -7,8 +7,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { ReportingRoutingModule } from './reporting-routing.module';
-import { ReportingListDevicesComponent } from './components/reporting-list-devices/reporting-list-devices.component';
-import { ReportingListDevicesContainer } from './components/reporting-list-devices/reporting-list-devices.container';
 import { ReportingFilterComponent } from './components/reporting-filter/reporting-filter.component';
 import { SharedModule } from 'app/shared/shared.module';
 import { SetGpsDialogComponent } from './components/set-gps-dialog/set-gps-dialog.component';
@@ -22,11 +20,11 @@ import { SetBoundsDialogComponent } from './components/reporting-filter-gps/set-
 import { ExportRelevantDataSuccessDialogComponent } from './components/reporting-list-devices/export-relevant-data-success-dialog/export-relevant-data-success-dialog.component';
 import { ReportingFilteringListComponent } from './components/reporting-filtering-list/reporting-filtering-list.component';
 import { ReportingFilteringListContainer } from './components/reporting-filtering-list/reporting-filtering-list.container';
-import { ReportPortalMainComponent } from './components/report-portal-main/report-portal-main.component';
+
+import { SensorAdditionalInfoComponent } from './components/reporting-filtering-list/sensor-additional-info/sensor-additional-info.component';
+import { SensorAdditionalInfoContainer } from './components/reporting-filtering-list/sensor-additional-info/sensor-additional-info.container';
 @NgModule({
   declarations: [
-    ReportingListDevicesComponent,
-    ReportingListDevicesContainer,
     ReportingFilterComponent,
     ReportingFilterContainer,
     SetGpsDialogComponent,
@@ -38,7 +36,8 @@ import { ReportPortalMainComponent } from './components/report-portal-main/repor
     ExportRelevantDataSuccessDialogComponent,
     ReportingFilteringListComponent,
     ReportingFilteringListContainer,
-    ReportPortalMainComponent,
+    SensorAdditionalInfoComponent,
+    SensorAdditionalInfoContainer,
   ],
   imports: [
     CommonModule,

@@ -302,3 +302,16 @@ export const transformSensorsFromServer = (
   },
   list: response.results.map((sensor) => transformSensorFromServer(sensor)),
 });
+
+export interface SensorClientRequestedActionInterface {
+  id: number;
+}
+export interface SensorClientActionInterface {
+  sensor: SensorClientInterface;
+}
+
+export const transformSensorClientFromServer = (
+  sensor: SensorServerInterface
+): SensorClientActionInterface => ({
+  sensor: transformSensorFromServer(sensor),
+});

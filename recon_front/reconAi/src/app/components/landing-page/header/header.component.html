@@ -1,8 +1,10 @@
 <mat-toolbar>
   <div class="menu-container">
-    <img src="assets/logo.svg" alt="logo" (click)="navigateTo('/')"/>
+    <img src="assets/logo.svg" alt="logo" (click)="navigateTo('/')" />
     <nav>
-      <a routerLink="/reporting" routerLinkActive="active-link">Report portal</a>
+      <a routerLink="/reporting" routerLinkActive="active-link"
+        >Report portal</a
+      >
       <!-- <a>Streaming</a>
       <a>Filtering</a> -->
       <a routerLink="/orders" routerLinkActive="active-link">Order portal</a>
@@ -15,6 +17,7 @@
       <a routerLink="/new-feature" routerLinkActive="active-link"
         >New Feature
       </a>
+      <a routerLink="/devices" routerLinkActive="active-link">Devices</a>
     </nav>
   </div>
   <div class="right-part-container">

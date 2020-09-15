@@ -1,0 +1,18 @@
+<div class="additional-info-container">
+  <ng-container *ngIf="loading; else loaded">Loading...</ng-container>
+
+  <ng-template #loaded>
+    <div class="field">
+      <span>SERIAL:</span>
+      <span>{{ serial }}</span>
+    </div>
+    <div class="field">
+      <span>LAT:</span>
+      <span>{{ lat | number: ".5-5" }}</span>
+    </div>
+    <div class="field">
+      <span>LNG:</span>
+      <span>{{ lng | number: ".5-5" }}</span>
+    </div>
+  </ng-template>
+</div>

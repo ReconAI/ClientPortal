@@ -1,4 +1,4 @@
-<div class="header-container">
+<div class="header-container" [ngClass]="{ 'device-only': isDevice }">
   <div
     [matTooltip]="
       (!isPlatNumberApplied && tooltipForDisabledBuildButton) || null
@@ -17,7 +17,7 @@
       <ng-template #loaded>BUILD A ROUTE</ng-template>
     </button>
   </div>
-  <ng-container *ngIf="!isDevice; else onlineStreaming">
+  <ng-container *ngIf="!isDevice; else onlyDeviceBlock">
     <button
       mat-raised-button
       color="accent"
@@ -47,17 +47,18 @@
       </button>
     </mat-menu>
   </ng-container>
-  <ng-template #onlineStreaming>
-    <!-- <button
+  <ng-template #onlyDeviceBlock>
+    <button
       mat-raised-button
       color="accent"
       (click)="openDialog()"
       [disabled]="
-        !(selectedIndex || selectedIndex === 0) || !devices[selectedIndex]
+        (!currentDeviceLat && currentDeviceLat !== 0) ||
+        (!currentDeviceLng && currentDeviceLng !== 0)
       "
     >
       SET GPS
-    </button> -->
+    </button>
     <button
       mat-raised-button
       color="accent"
@@ -70,11 +71,19 @@
     </button>
   </ng-template>
 </div>
+
+<div *ngIf="isDevice" class="additional-info">
+  <recon-sensor-additional-info-container
+    [id]="deviceId"
+  ></recon-sensor-additional-info-container>
+</div>
+
 <div>
   <recon-reporting-filter-container
     [isDevice]="isDevice"
   ></recon-reporting-filter-container>
 </div>
+
 <div *ngIf="columns?.length">
   <recon-crud-table
     [data]="devices"
@@ -84,11 +93,7 @@
     [currentPage]="currentPage"
     [isWithActions]="false"
     [selectedIndex]="selectedIndex"
-    [allCellsTooltipText]="
-      !this.isDevice ? 'Double click to navigate to device page' : null
-    "
     (rowClick$)="setSelectedDevice($event)"
-    (rowDoubleClick$)="navigateToDevice($event)"
     (changePage$)="loadDevices($event)"
   >
   </recon-crud-table>
@@ -129,5 +134,25 @@
   >
     Link to cad file
   </span>
-  <ng-template #noFileTag> No data </ng-template>
+  <ng-template #noFileTag></ng-template>
+</ng-template>
+
+<ng-template #firstColumnActionsTemplate let-element="element">
+  <div class="actions-container">
+    <button
+      mat-icon-button
+      aria-label="Actions"
+      [matMenuTriggerFor]="menu"
+      (click)="$event?.stopPropagation()"
+    >
+      <mat-icon>more_vert</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu" xPosition="after" class="recon-menu">
+      <button mat-menu-item disabled>Disabled</button>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="navigateToDevice(element)">
+        Relevant data
+      </button>
+    </mat-menu>
+  </div>
 </ng-template>
