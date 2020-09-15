@@ -1,16 +1,16 @@
-import { loadReportingDeviceListRequestedAction } from './../../../store/reporting/reporting.actions';
+import { SensorClientInterface } from './../../../constants/types/sensors';
+import {
+  selectSensorListMetaCurrentPage,
+  selectSensorListMetaCount,
+  selectSensorListMetaPageSize,
+  selectSensorList,
+} from './../../../store/devices/devices.selectors';
 import { Observable } from 'rxjs';
-import { SensorClientInterface } from './../../../store/reporting/reporting.server.helpers';
 import { AppState } from './../../../store/reducers/index';
 import { Component, OnInit } from '@angular/core';
 import { Store, select } from '@ngrx/store';
-import {
-  selectReportingSensorList,
-  selectReportingSensorListMetaCount,
-  selectReportingSensorListMetaCurrentPage,
-  selectReportingSensorListMetaPageSize,
-} from 'app/store/reporting/reporting.selectors';
-import { selectReportingDeviceListLoadingStatus } from 'app/store/loaders/loaders.selectors';
+import { selectSensorListLoadingStatus } from 'app/store/loaders/loaders.selectors';
+import { loadSensorsListRequestedAction } from 'app/store/devices';
 
 @Component({
   selector: 'recon-sensors-list-container',
@@ -20,33 +20,29 @@ export class SensorsListContainer implements OnInit {
   constructor(private store: Store<AppState>) {}
 
   sensorsList$: Observable<SensorClientInterface[]> = this.store.pipe(
-    select(selectReportingSensorList)
+    select(selectSensorList)
   );
 
   currentPage$: Observable<number> = this.store.pipe(
-    select(selectReportingSensorListMetaCurrentPage)
+    select(selectSensorListMetaCurrentPage)
   );
 
   count$: Observable<number> = this.store.pipe(
-    select(selectReportingSensorListMetaCount)
+    select(selectSensorListMetaCount)
   );
   pageSize$: Observable<number> = this.store.pipe(
-    select(selectReportingSensorListMetaPageSize)
+    select(selectSensorListMetaPageSize)
   );
 
   loadingStatus$: Observable<boolean> = this.store.pipe(
-    select(selectReportingDeviceListLoadingStatus)
+    select(selectSensorListLoadingStatus)
   );
 
   loadDevices(page: number): void {
-    this.store.dispatch(loadReportingDeviceListRequestedAction({ page }));
+    this.store.dispatch(loadSensorsListRequestedAction({ page }));
   }
 
   ngOnInit(): void {
-    this.store.dispatch(
-      loadReportingDeviceListRequestedAction({
-        page: 1,
-      })
-    );
+    this.loadDevices(1);
   }
 }

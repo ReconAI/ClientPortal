@@ -1,3 +1,4 @@
+import { DevicesEffects } from './store/devices/devices.effects';
 import { ReportingEffects } from './store/reporting/reporting.effects';
 import { PurchasesListContainer } from './components/purchases/purchases-list/purchases-list.container';
 import { CreateCardDialogContainer } from './components/card/create-card/create-card-dialog/create-card-dialog.container';
@@ -136,6 +137,7 @@ import { LeafletModule } from '@asymmetrik/ngx-leaflet';
       OrdersEffects,
       PurchasesEffects,
       ReportingEffects,
+      DevicesEffects,
     ]),
     LeafletModule,
   ],

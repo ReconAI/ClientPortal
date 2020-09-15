@@ -1,3 +1,8 @@
+import {
+  SensorClientInterface,
+  SensorServerInterface,
+  transformSensorFromServer,
+} from './../../constants/types/sensors';
 import { LatLngInterface } from 'app/core/helpers/markers';
 import { ReconSelectOption } from 'app/shared/types';
 import { OptionServerInterface } from './../../reporting/constants/types/filters';
@@ -264,45 +269,9 @@ export const transformUrlWithDevicesToLoadHeatMapData = (
   devices: ReportingFilteringDeviceClientInterface[]
 ): string =>
   devices?.reduce((res, current) => `${res}&id=${current.id}`, url) || url;
-
-export interface SensorClientInterface {
-  id: number;
-  serial: number;
-  lat: string;
-  lng: string;
-}
-
-export interface SensorServerInterface {
-  id: number;
-  serial: number;
-  gps_lat: string;
-  gps_long: string;
-}
-
-export const transformSensorFromServer = (
-  sensor: SensorServerInterface
-): SensorClientInterface => ({
-  id: sensor.id,
-  serial: sensor.serial,
-  lat: sensor.gps_lat,
-  lng: sensor.gps_long,
-});
-
 export interface SensorsClientInterface {
   sensors: SensorClientInterface[];
 }
-
-export const transformSensorsFromServer = (
-  response: PaginationResponseServerInterface<SensorServerInterface>
-): PaginationResponseClientInterface<SensorClientInterface> => ({
-  meta: {
-    count: response.count,
-    currentPage: response.current,
-    pageSize: response.page_size,
-  },
-  list: response.results.map((sensor) => transformSensorFromServer(sensor)),
-});
-
 export interface SensorClientRequestedActionInterface {
   id: number;
 }

@@ -1,3 +1,4 @@
+import { SensorClientInterface } from './../../constants/types/sensors';
 import { RelevantDataExportFormat } from './../../constants/types/relevant-data';
 import { ReconSelectOption } from './../../shared/types/recon-select';
 import { ObjectFormErrorInterface } from './../../constants/types/requests';
@@ -15,7 +16,6 @@ import {
   AutocompleteNameClientInterface,
   BuildRouteClientInterface,
   HeatMapDataClientInterface,
-  SensorClientInterface,
   SensorClientActionInterface,
   SensorClientRequestedActionInterface,
 } from './reporting.server.helpers';
@@ -72,10 +72,6 @@ export enum ReportingActionTypes {
   PEDESTRIAN_FLOW_LIST_REQUESTED = '[Reporting] Pedestrian Flow List Requested',
   PEDESTRIAN_FLOW_LIST_SUCCEEDED = '[Reporting] Pedestrian Flow List Succeeded',
   PEDESTRIAN_FLOW_LIST_ERROR = '[Reporting] Pedestrian Flow List Error',
-
-  LOAD_REPORTING_DEVICE_LIST_REQUESTED = '[Reporting] Load Reporting Device List Requested',
-  LOAD_REPORTING_DEVICE_LIST_SUCCEEDED = '[Reporting] Load Reporting Device List Succeeded',
-  LOAD_REPORTING_DEVICE_LIST_ERROR = '[Reporting] Load Reporting Device List Error',
 
   LOAD_ADDITIONAL_SENSOR_INFO_REQUESTED = '[Reporting] Load Additional Sensor Info Requested',
   LOAD_ADDITIONAL_SENSOR_INFO_SUCCEEDED = '[Reporting] Load Additional Sensor Info Succeeded',
@@ -271,20 +267,6 @@ export const pedestrianFlowListSucceededAction = createAction(
 
 export const pedestrianFlowListErrorAction = createAction(
   ReportingActionTypes.PEDESTRIAN_FLOW_LIST_ERROR
-);
-
-export const loadReportingDeviceListRequestedAction = createAction(
-  ReportingActionTypes.LOAD_REPORTING_DEVICE_LIST_REQUESTED,
-  props<PaginationRequestInterface>()
-);
-
-export const loadReportingDeviceListSucceededAction = createAction(
-  ReportingActionTypes.LOAD_REPORTING_DEVICE_LIST_SUCCEEDED,
-  props<PaginationResponseClientInterface<SensorClientInterface>>()
-);
-
-export const loadReportingDeviceListErrorAction = createAction(
-  ReportingActionTypes.LOAD_REPORTING_DEVICE_LIST_ERROR
 );
 
 export const resetMapDataAction = createAction(

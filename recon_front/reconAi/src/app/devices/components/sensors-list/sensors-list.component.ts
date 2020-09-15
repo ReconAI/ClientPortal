@@ -1,3 +1,4 @@
+import { SensorClientInterface } from './../../../constants/types/sensors';
 import { generateMapMarker } from 'app/core/helpers/markers';
 import { TAMPERE_COORDINATES } from './../../../constants/globalVariables/globalVariables';
 import { latLng } from 'leaflet';
@@ -6,7 +7,6 @@ import {
   LatLngInterface,
 } from './../../../core/helpers/markers';
 import { Router } from '@angular/router';
-import { SensorClientInterface } from './../../../store/reporting/reporting.server.helpers';
 import {
   Component,
   Input,

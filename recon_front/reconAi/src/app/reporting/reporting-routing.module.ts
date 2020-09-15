@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { ReportingDeviceContainer } from './components/reporting-list-devices/reporting-device/reporting-device.container';
+import { ReportingDeviceContainer } from './components/reporting-device/reporting-device.container';
 import { ReportingFilteringListContainer } from './components/reporting-filtering-list/reporting-filtering-list.container';
 
 const routes: Routes = [
