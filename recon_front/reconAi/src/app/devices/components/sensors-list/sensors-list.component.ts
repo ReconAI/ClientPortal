@@ -1,3 +1,4 @@
+import { CrudTableColumn } from './../../../shared/types/crud-table';
 import { SensorClientInterface } from './../../../constants/types/sensors';
 import { generateMapMarker } from 'app/core/helpers/markers';
 import { TAMPERE_COORDINATES } from './../../../constants/globalVariables/globalVariables';
@@ -14,6 +15,9 @@ import {
   EventEmitter,
   Output,
   NgZone,
+  AfterViewInit,
+  TemplateRef,
+  ViewChild,
 } from '@angular/core';
 
 @Component({
@@ -21,7 +25,7 @@ import {
   templateUrl: './sensors-list.component.html',
   styleUrls: ['./sensors-list.component.less'],
 })
-export class SensorsListComponent implements OnInit {
+export class SensorsListComponent implements OnInit, AfterViewInit {
   @Input() currentPage = 1;
   @Input() count = 1;
   @Input() pageSize = 1;
@@ -29,29 +33,15 @@ export class SensorsListComponent implements OnInit {
 
   @Output() loadSensors$ = new EventEmitter<number>();
 
+  @ViewChild('firstColumnActionsTemplate')
+  firstColumnActionsTemplate: TemplateRef<SensorClientInterface>;
+
   center = null;
   selectedIndex = null;
   options = null;
   layers = [];
 
-  readonly columns = [
-    {
-      header: 'Device ID',
-      id: 'id',
-    },
-    {
-      header: 'Device serial',
-      id: 'serial',
-    },
-    {
-      header: 'Device GPS Latitude',
-      id: 'lat',
-    },
-    {
-      header: 'Device GPS Longitude',
-      id: 'lng',
-    },
-  ];
+  columns: CrudTableColumn[] = [];
 
   constructor(private zone: NgZone, private router: Router) {}
 
@@ -102,6 +92,44 @@ export class SensorsListComponent implements OnInit {
         }
       )
     );
+  }
+
+  ngAfterViewInit(): void {
+    this.columns = [
+      {
+        header: '',
+        id: 'actions',
+        cellTemplate: this.firstColumnActionsTemplate,
+      },
+      {
+        header: 'Device ID',
+        id: 'id',
+      },
+      {
+        header: 'Device serial',
+        id: 'serial',
+      },
+      {
+        header: 'Device name',
+        id: 'name',
+      },
+      {
+        header: 'Project name',
+        id: 'projectName',
+      },
+      {
+        header: 'Edge node ID',
+        id: 'edgeNodeId',
+      },
+      {
+        header: 'Device GPS Latitude',
+        id: 'lat',
+      },
+      {
+        header: 'Device GPS Longitude',
+        id: 'lng',
+      },
+    ];
   }
 
   navigateToDevice(device: SensorClientInterface): void {
