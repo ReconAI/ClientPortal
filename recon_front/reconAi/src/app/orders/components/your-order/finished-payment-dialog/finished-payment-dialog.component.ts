@@ -1,7 +1,10 @@
+import { loadBasketOverviewRequestedAction } from './../../../../store/orders/orders.actions';
 import { Router } from '@angular/router';
 import { Component, OnInit, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BasketPaymentSucceededInterface } from 'app/store/orders/orders.server.helpers';
+import { Store } from '@ngrx/store';
+import { AppState } from 'app/store/reducers';
 
 export interface FinishedPaymentDialogDataInterface {
   id?: string;
@@ -18,7 +21,8 @@ export class FinishedPaymentDialogComponent implements OnInit {
   constructor(
     @Inject(MAT_DIALOG_DATA)
     public data: FinishedPaymentDialogDataInterface,
-    private router: Router
+    private router: Router,
+    private store: Store<AppState>
   ) {}
 
   ngOnInit(): void {}
@@ -26,6 +30,7 @@ export class FinishedPaymentDialogComponent implements OnInit {
   navigateToOrderPortal(): void {
     if (this.data.succeeded) {
       this.router.navigate(['orders']);
+      this.store.dispatch(loadBasketOverviewRequestedAction());
     }
   }
 }
