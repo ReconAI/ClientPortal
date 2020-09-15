@@ -1,22 +1,22 @@
-import { selectReportingDeviceListLoadingStatus } from './../../../store/loaders/loaders.selectors';
 import { loadReportingDeviceListRequestedAction } from './../../../store/reporting/reporting.actions';
-import {
-  selectReportingSensorList,
-  selectReportingSensorListMetaCurrentPage,
-  selectReportingSensorListMetaCount,
-  selectReportingSensorListMetaPageSize,
-} from './../../../store/reporting/reporting.selectors';
+import { Observable } from 'rxjs';
 import { SensorClientInterface } from './../../../store/reporting/reporting.server.helpers';
+import { AppState } from './../../../store/reducers/index';
 import { Component, OnInit } from '@angular/core';
 import { Store, select } from '@ngrx/store';
-import { AppState } from 'app/store/reducers';
-import { Observable } from 'rxjs';
+import {
+  selectReportingSensorList,
+  selectReportingSensorListMetaCount,
+  selectReportingSensorListMetaCurrentPage,
+  selectReportingSensorListMetaPageSize,
+} from 'app/store/reporting/reporting.selectors';
+import { selectReportingDeviceListLoadingStatus } from 'app/store/loaders/loaders.selectors';
 
 @Component({
-  selector: 'recon-reporting-list-devices-container',
-  templateUrl: './reporting-list-devices.container.html',
+  selector: 'recon-sensors-list-container',
+  templateUrl: './sensors-list.container.html',
 })
-export class ReportingListDevicesContainer implements OnInit {
+export class SensorsListContainer implements OnInit {
   constructor(private store: Store<AppState>) {}
 
   sensorsList$: Observable<SensorClientInterface[]> = this.store.pipe(

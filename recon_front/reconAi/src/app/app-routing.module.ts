@@ -132,6 +132,11 @@ const routes: Routes = [
       import('./orders/orders.module').then((m) => m.OrdersModule),
   },
   {
+    path: 'devices',
+    loadChildren: () =>
+      import('./devices/devices.module').then((m) => m.DevicesModule),
+  },
+  {
     path: '**',
     component: PageNotFoundComponent,
     data: {

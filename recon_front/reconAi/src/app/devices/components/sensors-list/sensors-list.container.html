@@ -1,10 +1,10 @@
 <ng-container *ngIf="!(loadingStatus$ | async); else loading">
-  <recon-reporting-list-devices
+  <recon-sensors-list
     [sensors]="sensorsList$ | async"
     [currentPage]="currentPage$ | async"
     [count]="count$ | async"
     [pageSize]="pageSize$ | async"
     (loadSensors$)="loadDevices($event)"
-  ></recon-reporting-list-devices>
+  ></recon-sensors-list>
 </ng-container>
 <ng-template #loading>Loading...</ng-template>
