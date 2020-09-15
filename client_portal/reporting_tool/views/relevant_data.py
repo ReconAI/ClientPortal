@@ -42,7 +42,7 @@ class RelevantDataHandler:
         'event', 'object_class', 'tagged_data', 'license_plate',
         'face', 'cad_file_tag', 'ambient_weather_condition',
         'road_weather_condition', 'vehicle_classification'
-    ).order_by('-id').all()
+    ).order_by('-timestamp', '-id').all()
 
     def filter_queryset(self, queryset: QuerySet) -> QuerySet:
         """
@@ -318,7 +318,7 @@ class RouteGenerationView(RelevantDataHandler, PlainListModelMixin,
     """
     permission_classes = (IsAuthenticated, IsActive, PaymentRequired)
 
-    queryset = RelevantData.objects.all()
+    queryset = RelevantData.objects.order_by('-timestamp', '-id').all()
 
     serializer_class = RelevantDataGPSSerializer
 
