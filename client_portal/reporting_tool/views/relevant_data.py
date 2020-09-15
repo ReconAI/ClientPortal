@@ -318,7 +318,7 @@ class RouteGenerationView(RelevantDataHandler, PlainListModelMixin,
     """
     permission_classes = (IsAuthenticated, IsActive, PaymentRequired)
 
-    queryset = RelevantData.objects.order_by('-timestamp', '-id').all()
+    queryset = RelevantData.objects.order_by('timestamp', 'id').all()
 
     serializer_class = RelevantDataGPSSerializer
 
