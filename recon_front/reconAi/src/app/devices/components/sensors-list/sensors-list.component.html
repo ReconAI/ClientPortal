@@ -1,4 +1,4 @@
-<div>
+<div *ngIf="columns && columns.length">
   <recon-crud-table
     [data]="sensors"
     [columns]="columns"
@@ -14,7 +14,7 @@
   >
   </recon-crud-table>
 </div>
-<div    
+<div
   *ngIf="center && options"
   class="map"
   id="sensors-map"
@@ -23,3 +23,23 @@
   [leafletLayers]="layers"
   [(leafletCenter)]="center"
 ></div>
+
+<ng-template #firstColumnActionsTemplate let-element="element">
+  <div class="actions-container">
+    <button
+      mat-icon-button
+      aria-label="Actions"
+      [matMenuTriggerFor]="menu"
+      (click)="$event?.stopPropagation()"
+    >
+      <mat-icon>more_vert</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu" xPosition="after" class="recon-menu">
+      <button mat-menu-item disabled>Device settings</button>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="navigateToDevice(element)">
+        Relevant data
+      </button>
+    </mat-menu>
+  </div>
+</ng-template>
