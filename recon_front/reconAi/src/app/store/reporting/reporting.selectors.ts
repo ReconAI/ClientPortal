@@ -149,3 +149,24 @@ export const selectReportingSensorListMetaPageSize = createSelector(
   selectReportingSensorListMeta,
   (meta: MetaClientInterface): number => meta?.pageSize
 );
+
+export const selectReportingSensorAdditionalInfo = createSelector(
+  selectReporting,
+  (reporting: ReportingState): SensorClientInterface =>
+    reporting?.sensorAdditionalInfo || null
+);
+
+export const selectReportingSensorAdditionalInfoLat = createSelector(
+  selectReportingSensorAdditionalInfo,
+  (sensor: SensorClientInterface): number => +sensor?.lat || 0
+);
+
+export const selectReportingSensorAdditionalInfoLng = createSelector(
+  selectReportingSensorAdditionalInfo,
+  (sensor: SensorClientInterface): number => +sensor?.lng || 0
+);
+
+export const selectReportingSensorAdditionalInfoSerial = createSelector(
+  selectReportingSensorAdditionalInfo,
+  (sensor: SensorClientInterface): number => sensor?.serial || null
+);

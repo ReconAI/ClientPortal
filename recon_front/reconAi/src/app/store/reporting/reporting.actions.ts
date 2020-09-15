@@ -16,6 +16,8 @@ import {
   BuildRouteClientInterface,
   HeatMapDataClientInterface,
   SensorClientInterface,
+  SensorClientActionInterface,
+  SensorClientRequestedActionInterface,
 } from './reporting.server.helpers';
 
 export enum ReportingActionTypes {
@@ -74,6 +76,10 @@ export enum ReportingActionTypes {
   LOAD_REPORTING_DEVICE_LIST_REQUESTED = '[Reporting] Load Reporting Device List Requested',
   LOAD_REPORTING_DEVICE_LIST_SUCCEEDED = '[Reporting] Load Reporting Device List Succeeded',
   LOAD_REPORTING_DEVICE_LIST_ERROR = '[Reporting] Load Reporting Device List Error',
+
+  LOAD_ADDITIONAL_SENSOR_INFO_REQUESTED = '[Reporting] Load Additional Sensor Info Requested',
+  LOAD_ADDITIONAL_SENSOR_INFO_SUCCEEDED = '[Reporting] Load Additional Sensor Info Succeeded',
+  LOAD_ADDITIONAL_SENSOR_INFO_ERROR = '[Reporting] Load Additional Sensor Info Error',
 }
 
 export const loadReportingFilteringListRequestedAction = createAction(
@@ -283,4 +289,18 @@ export const loadReportingDeviceListErrorAction = createAction(
 
 export const resetMapDataAction = createAction(
   ReportingActionTypes.RESET_HEAT_MAP_DATA
+);
+
+export const loadAdditionalSensorInfoRequestedAction = createAction(
+  ReportingActionTypes.LOAD_ADDITIONAL_SENSOR_INFO_REQUESTED,
+  props<SensorClientRequestedActionInterface>()
+);
+
+export const loadAdditionalSensorInfoSucceededAction = createAction(
+  ReportingActionTypes.LOAD_ADDITIONAL_SENSOR_INFO_SUCCEEDED,
+  props<SensorClientActionInterface>()
+);
+
+export const loadAdditionalSensorInfoErrorAction = createAction(
+  ReportingActionTypes.LOAD_ADDITIONAL_SENSOR_INFO_ERROR
 );

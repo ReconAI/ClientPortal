@@ -1,23 +1,21 @@
 <ng-container *ngIf="!(loadingStatus$ | async); else loading">
-  <ng-container
-    *ngIf="selectedDeviceList && selectedDeviceList.length; else notFound"
-  >
-    <recon-reporting-filtering-list
-      [isDevice]="true"
-      [count]="count$ | async"
-      [currentPage]="currentPage$ | async"
-      [pageSize]="pageSize$ | async"
-      [devices]="selectedDeviceList"
-      [routePoints]="routePoints$ | async"
-      [heatMapData]="heatMapData$ | async"
-      [isPlatNumberApplied]="isPlatNumberApplied$ | async"
-      [buildingLoading]="buildingLoading$ | async"
-      [heatMapLoading]="heatMapLoading$ | async"
-      (buildRoute$)="buildRoute()"
-      (loadDevices$)="loadDevices($event)"
-      (loadHeatMapData$)="loadHeatMapData()"
-    ></recon-reporting-filtering-list>
-  </ng-container>
-  <ng-template #notFound>Not found.</ng-template>
+  <recon-reporting-filtering-list
+    [isDevice]="true"
+    [count]="count$ | async"
+    [currentPage]="currentPage$ | async"
+    [pageSize]="pageSize$ | async"
+    [devices]="selectedDeviceList"
+    [routePoints]="routePoints$ | async"
+    [heatMapData]="heatMapData$ | async"
+    [isPlatNumberApplied]="isPlatNumberApplied$ | async"
+    [buildingLoading]="buildingLoading$ | async"
+    [heatMapLoading]="heatMapLoading$ | async"
+    [currentDeviceLat]="currentDeviceLat$ | async"
+    [currentDeviceLng]="currentDeviceLng$ | async"
+    (buildRoute$)="buildRoute()"
+    (loadDevices$)="loadDevices($event)"
+    (loadHeatMapData$)="loadHeatMapData()"
+    (resetMapData$)="resetMapData()"
+  ></recon-reporting-filtering-list>
 </ng-container>
 <ng-template #loading>Loading...</ng-template>

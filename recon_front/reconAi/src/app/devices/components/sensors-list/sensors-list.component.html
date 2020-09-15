@@ -11,10 +11,10 @@
     (changePage$)="loadDevices($event)"
     (rowClick$)="setSelectedDevice($event)"
     (rowDoubleClick$)="navigateToDevice($event)"
-    >
+  >
   </recon-crud-table>
 </div>
-<div
+<div    
   *ngIf="center && options"
   class="map"
   id="sensors-map"

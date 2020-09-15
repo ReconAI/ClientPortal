@@ -1,7 +1,10 @@
 .header-container {
     display: flex;
     justify-content: flex-end;
-    margin-top: -46px;
+
+    &.device-only {
+        margin-top: -46px;
+    }
 
     button {
         margin-left: 10px;
@@ -41,6 +44,10 @@
     }
 }
 
+.additional-info {
+    margin-top: -20px;
+}
+
 div.slider-container {
     display: flex;
     justify-content: flex-end;
@@ -49,5 +56,11 @@ div.slider-container {
 
     span:first-child {
         margin-right: 5px;
+    }
+}
+
+div.actions-container {
+    .mat-icon {
+        color: rgba(0, 0, 0, 0.54);
     }
 }

@@ -1,31 +1,32 @@
-import { Router } from '@angular/router';
-import { generateMapMarker } from './../../../core/helpers/markers';
-import { TAMPERE_COORDINATES } from 'app/constants/globalVariables/globalVariables';
-import { LatLngInterface, generateDefaultMap } from 'app/core/helpers/markers';
+import { generateMapMarker } from 'app/core/helpers/markers';
+import { TAMPERE_COORDINATES } from './../../../constants/globalVariables/globalVariables';
 import { latLng } from 'leaflet';
 import {
+  generateDefaultMap,
+  LatLngInterface,
+} from './../../../core/helpers/markers';
+import { Router } from '@angular/router';
+import { SensorClientInterface } from './../../../store/reporting/reporting.server.helpers';
+import {
   Component,
-  OnInit,
   Input,
+  OnInit,
   EventEmitter,
   Output,
   NgZone,
 } from '@angular/core';
-import {
-  SensorClientInterface,
-  ReportingFilteringDeviceClientInterface,
-} from 'app/store/reporting/reporting.server.helpers';
 
 @Component({
-  selector: 'recon-reporting-list-devices',
-  templateUrl: './reporting-list-devices.component.html',
-  styleUrls: ['./reporting-list-devices.component.less'],
+  selector: 'recon-sensors-list',
+  templateUrl: './sensors-list.component.html',
+  styleUrls: ['./sensors-list.component.less'],
 })
-export class ReportingListDevicesComponent implements OnInit {
+export class SensorsListComponent implements OnInit {
   @Input() currentPage = 1;
   @Input() count = 1;
   @Input() pageSize = 1;
   @Input() sensors: SensorClientInterface[] = [];
+
   @Output() loadSensors$ = new EventEmitter<number>();
 
   center = null;
@@ -34,6 +35,10 @@ export class ReportingListDevicesComponent implements OnInit {
   layers = [];
 
   readonly columns = [
+    {
+      header: 'Device ID',
+      id: 'id',
+    },
     {
       header: 'Device serial',
       id: 'serial',

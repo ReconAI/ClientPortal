@@ -1,4 +1,7 @@
-import { setReportingDeviceListLoadingAction } from './../loaders/loaders.actions';
+import {
+  setReportingDeviceListLoadingAction,
+  setAdditionalSensorInfoLoadingStatusAction,
+} from './../loaders/loaders.actions';
 import { OptionServerInterface } from './../../reporting/constants/types/filters';
 import { FiltersService } from './../../core/services/filters/filters.service';
 import { loadReportingFilteringListRequestedAction } from 'app/store/reporting';
@@ -44,6 +47,9 @@ import {
   pedestrianFlowListErrorAction,
   loadReportingDeviceListSucceededAction,
   loadReportingDeviceListErrorAction,
+  loadAdditionalSensorInfoSucceededAction,
+  loadAdditionalSensorInfoErrorAction,
+  loadAdditionalSensorInfoRequestedAction,
 } from './reporting.actions';
 import {
   PaginationRequestInterface,
@@ -90,6 +96,8 @@ import {
   HeatMapPointServerInterface,
   SensorServerInterface,
   transformSensorsFromServer,
+  SensorClientRequestedActionInterface,
+  transformSensorClientFromServer,
 } from './reporting.server.helpers';
 
 import { updateBreadcrumbByIdAction, setAppTitleAction } from '../app';
@@ -233,10 +241,7 @@ export class ReportingEffects {
           })
         );
       }),
-      withLatestFrom(
-        this.store.pipe(select(selectReportingFilteringListMetaCurrentPage))
-      ),
-      switchMap(([req, page]) =>
+      switchMap((req) =>
         this.httpClient
           .put<void>(
             `/api/sensors/${req?.gps?.id}/set-gps`,
@@ -246,9 +251,7 @@ export class ReportingEffects {
             map(() => setGpsSucceededAction()),
             tap(() => {
               this.store.dispatch(
-                loadReportingFilteringListRequestedAction({
-                  page,
-                })
+                loadAdditionalSensorInfoRequestedAction({ id: req?.gps?.id })
               );
             }),
             catchError((error) =>
@@ -590,6 +593,38 @@ export class ReportingEffects {
               );
             })
           )
+      )
+    )
+  );
+
+  loadAdditionalSensorInfo$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<Action & SensorClientRequestedActionInterface>(
+        ReportingActionTypes.LOAD_ADDITIONAL_SENSOR_INFO_REQUESTED
+      ),
+      tap(() => {
+        this.store.dispatch(
+          setAdditionalSensorInfoLoadingStatusAction({
+            status: true,
+          })
+        );
+      }),
+      switchMap(({ id }) =>
+        this.httpClient.get<SensorServerInterface>(`/api/sensors/${id}`).pipe(
+          map((sensor) =>
+            loadAdditionalSensorInfoSucceededAction(
+              transformSensorClientFromServer(sensor)
+            )
+          ),
+          catchError((error) => of(loadAdditionalSensorInfoErrorAction())),
+          finalize(() => {
+            this.store.dispatch(
+              setAdditionalSensorInfoLoadingStatusAction({
+                status: false,
+              })
+            );
+          })
+        )
       )
     )
   );
