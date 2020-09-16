@@ -331,7 +331,7 @@ export class ReportingFilteringListComponent
     ];
 
     if (!this.isDevice) {
-      this.columns.splice(3, 0, {
+      this.columns.splice(4, 0, {
         header: 'Sensor ID',
         width: '55px',
         id: 'sensorId',
