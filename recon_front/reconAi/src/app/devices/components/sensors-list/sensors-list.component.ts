@@ -18,6 +18,7 @@ import {
   AfterViewInit,
   TemplateRef,
   ViewChild,
+  ChangeDetectorRef,
 } from '@angular/core';
 
 @Component({
@@ -43,7 +44,11 @@ export class SensorsListComponent implements OnInit, AfterViewInit {
 
   columns: CrudTableColumn[] = [];
 
-  constructor(private zone: NgZone, private router: Router) {}
+  constructor(
+    private zone: NgZone,
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   loadDevices(page: number): void {
     this.loadSensors$.emit(page);
@@ -130,6 +135,8 @@ export class SensorsListComponent implements OnInit, AfterViewInit {
         id: 'lng',
       },
     ];
+
+    this.cdr.detectChanges();
   }
 
   navigateToDevice(device: SensorClientInterface): void {
