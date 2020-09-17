@@ -4,9 +4,6 @@ Reporting tool serializers range
 import functools
 from typing import List
 
-import boto3
-from botocore.client import BaseClient
-from botocore.config import Config
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
@@ -19,7 +16,7 @@ from rest_framework.serializers import ModelSerializer, ListSerializer
 from rest_framework.serializers import Serializer
 from rest_framework.utils.serializer_helpers import ReturnDict
 
-from recon_db_manager.models import Organization, DevicePurchase,\
+from recon_db_manager.models import Organization, DevicePurchase, \
     RelevantData, Project, TypeCode, DeviceInstance
 from reporting_tool.forms.utils import SendEmailMixin
 from reporting_tool.utils import FeatureRequestUploader
@@ -526,11 +523,6 @@ class RelevantDataGeneratorSeriralizer(RelevantDataSerializer):
             'cad_file_tag', 'road_temperature', 'ambient_temperature',
             'pedestrian_flow_transit_method',
             'pedestrian_flow_number_of_objects',
-            'traffic_flow_number_of_objects',
-            'traffic_flow_observation_end_dt',
-            'traffic_flow_observation_start_dt',
-            'traffic_flow_number_of_directions',
-            'traffic_flow_directions_statistics'
         )
         list_serializer_class = GeneratorListSerializer
 
