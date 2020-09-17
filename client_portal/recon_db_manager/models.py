@@ -119,6 +119,7 @@ class CommonUser(models.Model):
     phone = models.CharField(null=True, max_length=255)
     email = models.EmailField(max_length=255, unique=True)
     created_dt = models.DateTimeField(null=True, auto_now_add=True)
+    deleted_dt = models.DateTimeField(null=True)
     username = models.CharField(max_length=255, unique=True)
     password = models.CharField(null=True, blank=True, max_length=255)
     user_level = models.CharField(null=True, blank=True, max_length=3)

@@ -4,6 +4,7 @@ Custom authentication mechanisms
 from typing import Tuple
 
 from django.contrib.auth.models import AnonymousUser
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.authentication import \
     TokenAuthentication as TokenAuthenticationBase
 
@@ -21,7 +22,7 @@ class TokenAuthentication(TokenAuthenticationBase):
         try:
             token = model.objects.get(key=key)
             user = token.user
-        except (model.DoesNotExist, TypeError):
+        except (ObjectDoesNotExist, model.DoesNotExist, TypeError):
             token = None
             user = AnonymousUser()
 

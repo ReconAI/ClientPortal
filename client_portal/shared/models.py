@@ -10,11 +10,11 @@ from django.conf import settings
 from django.contrib.auth.hashers import make_password, check_password, \
     is_password_usable
 from django.contrib.auth.models import Group
-from django.db import models, router
-from django.db.models.deletion import Collector
+from django.db import models
 from django.db.transaction import atomic
 from django.utils.crypto import salted_hmac
 from django.utils.module_loading import import_string
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
 from recon_db_manager.models import CommonUser, Organization
@@ -56,6 +56,7 @@ class User(CommonUser, PermissionsMixin):
         """
         managed = False
         db_table = 'Users'
+        base_manager_name = 'objects'
 
     objects = UserManager()
 
@@ -197,17 +198,9 @@ class User(CommonUser, PermissionsMixin):
 
         :rtype: Tuple[int, dict]
         """
-        using = using or router.db_for_write(self.__class__, instance=self)
-        assert self.pk is not None, (
-            "%s object can't be deleted because its %s(pk) is set to None." %
-            (self._meta.object_name, self._meta.pk.attname)
-        )
+        self.deleted_dt = now()
 
-        collector = Collector(using=using)
-        collector.collect([self], collect_related=False,
-                          keep_parents=keep_parents)
-
-        return collector.delete()
+        return self.save(using=using)
 
     def unique_error_message(self, model_class: Type['User'],
                              unique_check: tuple) -> str:
