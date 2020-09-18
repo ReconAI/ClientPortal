@@ -55,17 +55,17 @@ export const DEFAULT_FILTER_ARRAY: FilterItemInterface[] = [
     type: FilterTypes.SELECT,
     value: '',
   },
-  {
-    label: 'Location XYZ, mm',
-    id: 'location',
-    type: FilterTypes.THREE_INPUTS,
-    value: {
-      left: '',
-      middle: '',
-      right: '',
-      checked: false,
-    },
-  },
+  // {
+  //   label: 'Location XYZ, mm',
+  //   id: 'location',
+  //   type: FilterTypes.THREE_INPUTS,
+  //   value: {
+  //     left: '',
+  //     middle: '',
+  //     right: '',
+  //     checked: false,
+  //   },
+  // },
   {
     label: 'Orient theta',
     id: 'orient_theta',
@@ -86,12 +86,12 @@ export const DEFAULT_FILTER_ARRAY: FilterItemInterface[] = [
       checked: false,
     },
   },
-  {
-    label: 'Traffic flow',
-    id: 'traffic_flow',
-    type: FilterTypes.SELECT,
-    value: '',
-  },
+  // {
+  //   label: 'Traffic flow',
+  //   id: 'traffic_flow',
+  //   type: FilterTypes.SELECT,
+  //   value: '',
+  // },
   {
     label: 'Vehicle classification',
     id: 'vehicle_type',
@@ -105,13 +105,13 @@ export const DEFAULT_FILTER_ARRAY: FilterItemInterface[] = [
     value: '',
   },
   {
-    label: 'Road condition classification',
+    label: 'Road weather condition',
     id: 'road_weather_condition',
     type: FilterTypes.SELECT,
     value: '',
   },
   {
-    label: 'License plate number',
+    label: 'Vehicle registration plate',
     id: 'license_plate_number',
     type: FilterTypes.INPUT,
     value: '',

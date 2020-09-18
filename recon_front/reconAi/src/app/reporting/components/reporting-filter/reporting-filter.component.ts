@@ -37,20 +37,6 @@ export class ReportingFilterComponent implements OnInit {
   filtersList: FilterItemInterface[] = JSON.parse(
     JSON.stringify(DEFAULT_FILTER_ARRAY)
   );
-  trafficFlowOptions: ReconSelectOption[] = [
-    {
-      label: 'First',
-      value: 1,
-    },
-    {
-      label: 'Second',
-      value: 2,
-    },
-    {
-      label: 'Third',
-      value: 3,
-    },
-  ];
 
   constructor(private fb: FormBuilder) {}
 
@@ -89,8 +75,8 @@ export class ReportingFilterComponent implements OnInit {
     return control.value;
   }
 
-  isDisabledSensorId(i: number): boolean {
-    return i === 1 && this.isDevice;
+  isDisabledFilter(i: number): boolean {
+    return (i === 1 || i === 3) && this.isDevice;
   }
 
   toggleSelectValueWithIndex(i: number): void {
