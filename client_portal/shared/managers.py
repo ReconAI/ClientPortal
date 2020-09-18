@@ -9,6 +9,7 @@ import boto3
 import stripe
 from django.conf import settings
 from django.contrib.auth.models import UserManager as UserManagerBase, Group
+from django.db.models import QuerySet
 from django.utils.module_loading import import_string
 from stripe.error import InvalidRequestError
 
@@ -17,6 +18,10 @@ class UserManager(UserManagerBase):
     """
     User's manager
     """
+
+    use_for_related_fields = True
+
+    DELETED_AT_COLUMN_NAME = 'deleted_dt'
 
     def __create(self, organization: 'Organization',
                  role: str, **extra_fields):
@@ -86,6 +91,14 @@ class UserManager(UserManagerBase):
 
         return self.__create(Organization.root(), Role.SUPER_ADMIN,
                              **extra_fields)
+
+    def get_queryset(self) -> QuerySet:
+        """
+        :rtype: QuerySet
+        """
+        return super().get_queryset().filter(**{
+            '{}__isnull'.format(self.DELETED_AT_COLUMN_NAME): True
+        })
 
 
 class AbstractIaMUserManager:
