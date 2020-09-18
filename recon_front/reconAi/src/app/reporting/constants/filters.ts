@@ -51,7 +51,7 @@ export const DEFAULT_FILTER_ARRAY: FilterItemInterface[] = [
   },
   {
     label: 'Object Class',
-    id: 'event_object',
+    id: 'object_class',
     type: FilterTypes.SELECT,
     value: '',
   },
