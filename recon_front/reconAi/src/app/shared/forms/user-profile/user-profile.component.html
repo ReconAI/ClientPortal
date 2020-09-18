@@ -203,7 +203,12 @@
         </mat-icon>
         <ng-template #loaded>SAVE</ng-template>
       </button>
-      <span *ngIf="showTerms">*I approve terms of services and GDPR</span>
+      <span
+        (click)="openTermsDialog()"
+        matTooltip="Click to read them"
+        *ngIf="showTerms"
+        >*I approve terms of services and GDPR</span
+      >
     </div>
   </div>
 </form>

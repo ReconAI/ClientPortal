@@ -1,3 +1,5 @@
+import { TermsDialogComponent } from './../../terms-dialog/terms-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 import { generalTransformationObjectErrorsForComponent } from './../../../core/helpers/generalFormsErrorsTransformation';
 import { PASSWORD_RULES_TOOLTIP } from './../../../constants/labels/password';
 import { LOGIN_RULES_TOOLTIP } from './../../../constants/labels/login';
@@ -63,7 +65,7 @@ export class UserProfileComponent implements OnInit {
     return generalTransformationObjectErrorsForComponent(this.errors);
   }
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder, private dialog: MatDialog) {}
 
   createGroup(): FormGroup {
     const userGroup = this.fb.group({
@@ -203,6 +205,12 @@ export class UserProfileComponent implements OnInit {
     return (
       isUserValid && isInvoicingValid && isOrganizationValid && isProfileValid
     );
+  }
+
+  openTermsDialog(): void {
+    this.dialog.open(TermsDialogComponent, {
+      width: '600px',
+    });
   }
 
   ngOnInit(): void {
