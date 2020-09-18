@@ -140,4 +140,10 @@ export const DEFAULT_FILTER_ARRAY: FilterItemInterface[] = [
     type: FilterTypes.CHECKBOX,
     value: false,
   },
+  {
+    label: 'Object Type',
+    id: 'event_object',
+    type: FilterTypes.SELECT,
+    value: '',
+  },
 ];

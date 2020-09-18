@@ -37,7 +37,16 @@ export class ReportingFilterComponent implements OnInit {
   filtersList: FilterItemInterface[] = JSON.parse(
     JSON.stringify(DEFAULT_FILTER_ARRAY)
   );
-
+  objectTypeList: ReconSelectOption[] = [
+    {
+      label: 'Event',
+      value: 'event',
+    },
+    {
+      label: 'Object',
+      value: 'object',
+    },
+  ];
   constructor(private fb: FormBuilder) {}
 
   initFiltersFromLocalStorage(): void {

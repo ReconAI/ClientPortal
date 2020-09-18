@@ -234,13 +234,29 @@
       class="filter checkbox-filter"
       [ngClass]="{ 'shown-filter': isSelectedAtIndex(14) }"
       [formGroupName]="14"
+      *ngIf="isSelectedAtIndex(14)"
     >
       <recon-form-checkbox
         label="Tagged data"
         formControlName="value"
-        *ngIf="isSelectedAtIndex(14)"
         (changeVal)="changeValue()"
       ></recon-form-checkbox>
+    </div>
+    <div
+      class="filter"
+      [ngClass]="{
+        'shown-filter':
+          isSelectedAtIndex(15) && objectTypeList && objectTypeList.length
+      }"
+      *ngIf="isSelectedAtIndex(15) && objectTypeList && objectTypeList.length"
+      [formGroupName]="15"
+    >
+      <recon-filter-select
+        label="Object type"
+        formControlName="value"
+        [options]="objectTypeList"
+        (changeVal)="changeValue()"
+      ></recon-filter-select>
     </div>
   </div>
   <div class="button-container">
