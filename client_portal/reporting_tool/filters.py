@@ -1,13 +1,26 @@
 """
 Reporting tool filters set
 """
+from typing import Any, Optional
 
+from django.db.models import QuerySet, Q
 from django_filters import rest_framework as filters
 
 from recon_db_manager.models import RelevantData
 from shared.filters import FilterSet, CharFilter, DateTimeFromToRangeFilter, \
-    NumericRangeFilter, BooleanFilter, GPSFilter, NumberFilter
+    NumericRangeFilter, BooleanFilter, GPSFilter, NumberFilter, FilterMixin
 from shared.forms import NegativeFiltersForm
+
+
+class EventObjectFilter(FilterMixin, filters.ChoiceFilter):
+    EVENT_TYPE = 'event'
+    OBJECT_TYPE = 'object'
+
+    def filter(self, queryset: QuerySet, value: Any) -> Optional[Q]:
+        return super().filter(
+            queryset,
+            value != self.EVENT_TYPE
+        )
 
 
 class RelevantDataSensorFilter(FilterSet):
@@ -39,7 +52,7 @@ class RelevantDataSensorFilter(FilterSet):
     vehicle_type = CharFilter(
         field_name='vehicle_classification', lookup_expr='exact', strip=False
     )
-    event_object = CharFilter(
+    object_class = CharFilter(
         field_name='object_class', lookup_expr='exact', strip=False
     )
     road_weather_condition = CharFilter(
@@ -52,6 +65,13 @@ class RelevantDataSensorFilter(FilterSet):
         field_name='pedestrian_flow__TransitMethod', lookup_expr='exact',
         strip=False
     )
+    event_object = EventObjectFilter(
+        field_name='event', lookup_expr='isnull',
+        choices=(
+            (EventObjectFilter.EVENT_TYPE, EventObjectFilter.EVENT_TYPE),
+            (EventObjectFilter.OBJECT_TYPE, EventObjectFilter.OBJECT_TYPE)
+        )
+    )
 
     class Meta:
         """
@@ -60,7 +80,7 @@ class RelevantDataSensorFilter(FilterSet):
         model = RelevantData
         fields = (
             'project_name', 'timestamp', 'orient_theta', 'orient_phi',
-            'is_tagged', 'vehicle_type', 'event_object',
+            'is_tagged', 'vehicle_type', 'event_object', 'object_class',
             'road_temperature', 'ambient_temperature',
             'road_weather_condition', 'license_plate_number', 'gps',
             'pedestrian_transit_method'

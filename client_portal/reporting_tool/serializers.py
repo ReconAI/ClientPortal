@@ -523,6 +523,11 @@ class RelevantDataGeneratorSeriralizer(RelevantDataSerializer):
             'cad_file_tag', 'road_temperature', 'ambient_temperature',
             'pedestrian_flow_transit_method',
             'pedestrian_flow_number_of_objects',
+            'traffic_flow_number_of_objects',
+            'traffic_flow_observation_start_dt',
+            'traffic_flow_observation_end_dt',
+            'traffic_flow_number_of_directions',
+            'traffic_flow_directions_statistics'
         )
         list_serializer_class = GeneratorListSerializer
 

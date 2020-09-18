@@ -19,7 +19,8 @@ from reporting_tool.utils import RelevantDataFileGenerator, \
 from reporting_tool.views.relevant_data import RelevantDataHandler
 
 
-class ExportRelevantDataTask(Task, GenericAPIView, RelevantDataHandler, SendEmailMixin):
+class ExportRelevantDataTask(Task, GenericAPIView,
+                             RelevantDataHandler, SendEmailMixin):
     """
     Exports relevant data to file uploading it to s3
     """
@@ -38,6 +39,8 @@ class ExportRelevantDataTask(Task, GenericAPIView, RelevantDataHandler, SendEmai
     uploader_class = RelvantDataExportUploader
 
     CHUNK_SIZE = 500
+
+    queryset = RelevantDataHandler.queryset
 
     def __init__(self):
         super().__init__()
