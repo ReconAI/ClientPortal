@@ -67,8 +67,8 @@ export class ReportingFilteringListComponent
   @Input() count = 1;
   @Input() pageSize = 1;
   @Input() devices: ReportingFilteringDeviceClientInterface[] = [];
-  @Input() heatMapData: HeatMapPointClientInterface[] = [];
 
+  @Input() heatMapData: HeatMapPointClientInterface[] = [];
   @Input() routePoints: LatLngInterface[] = [];
 
   @Input() isExporting = false;
@@ -110,18 +110,20 @@ export class ReportingFilteringListComponent
   setSelectedDevice(device: ReportingFilteringDeviceClientInterface): void {
     this.selectedIndex = this.devices.findIndex(({ id }) => id === device?.id);
 
-    if (this.selectedIndex > -1) {
-      this.generateLayersFromDevices();
+    if (!this.isDevice) {
+      if (this.selectedIndex > -1) {
+        this.generateLayersFromDevices();
 
-      this.setCenter({
-        lat: +device.lat,
-        lng: +device.lng,
-      });
-    } else {
-      this.setCenter({
-        lat: TAMPERE_COORDINATES.lat,
-        lng: TAMPERE_COORDINATES.lng,
-      });
+        this.setCenter({
+          lat: +device.lat,
+          lng: +device.lng,
+        });
+      } else {
+        this.setCenter({
+          lat: TAMPERE_COORDINATES.lat,
+          lng: TAMPERE_COORDINATES.lng,
+        });
+      }
     }
   }
 
@@ -140,18 +142,37 @@ export class ReportingFilteringListComponent
   }
 
   generateLayersFromDevices(): void {
-    this.layers = this.devices.map((device, index) =>
-      generateMapMarker(
-        {
-          lat: +device.lat,
-          lng: +device.lng,
-        },
-        {
-          isHighlighted: index === this.selectedIndex,
-          zIndex: index === this.selectedIndex ? 1000 : 500,
-        }
-      )
-    );
+    if (!this.isDevice) {
+      this.layers = this.devices.map((device, index) =>
+        generateMapMarker(
+          {
+            lat: +device.lat,
+            lng: +device.lng,
+          },
+          {
+            isHighlighted: index === this.selectedIndex,
+            zIndex: index === this.selectedIndex ? 1000 : 500,
+          }
+        )
+      );
+    } else {
+      if (
+        (this.currentDeviceLng || this.currentDeviceLng === 0) &&
+        (this.currentDeviceLat || this.currentDeviceLat === 0)
+      ) {
+        this.layers = [
+          generateMapMarker(
+            {
+              lat: this.currentDeviceLat,
+              lng: this.currentDeviceLng,
+            },
+            {
+              isHighlighted: true,
+            }
+          ),
+        ];
+      }
+    }
   }
 
   ngOnInit(): void {
@@ -178,6 +199,16 @@ export class ReportingFilteringListComponent
 
     if (changes.heatMapData) {
       this.formHeatMapData();
+    }
+
+    if (changes.currentDeviceLat || changes.currentDeviceLng) {
+      this.generateLayersFromDevices();
+      if (this.isDevice) {
+        this.center = latLng(
+          changes.currentDeviceLat.currentValue,
+          changes.currentDeviceLng.currentValue
+        );
+      }
     }
   }
 
@@ -323,12 +354,12 @@ export class ReportingFilteringListComponent
         0,
         ...[
           {
-            header: 'Sensor GPS Latitude',
+            header: 'GPS Latitude',
             id: 'lat',
             width: '100px',
           },
           {
-            header: 'Sensor GPS Longitude',
+            header: 'GPS Longitude',
             id: 'lng',
             width: '100px',
           },

@@ -1,21 +1,23 @@
-<div class="button-container">
-  <button
-    mat-raised-button
-    color="accent"
-    (click)="openAddDialog()"
-    *reconCheckUserRolePriority="userRolePriorities.ADMIN_ROLE"
-  >
-    Add user
-  </button>
+<div class="management-container">
+  <div class="button-container">
+    <button
+      mat-raised-button
+      color="accent"
+      (click)="openAddDialog()"
+      *reconCheckUserRolePriority="userRolePriorities.ADMIN_ROLE"
+    >
+      Add user
+    </button>
+  </div>
+  <recon-crud-table
+    [data]="data"
+    [columns]="columns"
+    [pageSize]="pageSize"
+    [totalCount]="totalCount"
+    [currentPage]="currentPage"
+    [shouldShowActionsForRow]="shouldShowActionsForRow.bind(this)"
+    (changePage$)="loadData($event)"
+    (rowClick$)="userClick($event)"
+    (deleteClick$)="deleteUserClick($event)"
+  ></recon-crud-table>
 </div>
-<recon-crud-table
-  [data]="data"
-  [columns]="columns"
-  [pageSize]="pageSize"
-  [totalCount]="totalCount"
-  [currentPage]="currentPage"
-  [shouldShowActionsForRow]="shouldShowActionsForRow.bind(this)"
-  (changePage$)="loadData($event)"
-  (rowClick$)="userClick($event)"
-  (deleteClick$)="deleteUserClick($event)"
-></recon-crud-table>
