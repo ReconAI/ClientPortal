@@ -94,6 +94,7 @@ export class SensorsListComponent implements OnInit, AfterViewInit {
             this.zone.run(() => this.navigateToDevice(device));
           },
           popupText: 'Click to navigate to device page',
+          markerType: 'device',
         }
       )
     );

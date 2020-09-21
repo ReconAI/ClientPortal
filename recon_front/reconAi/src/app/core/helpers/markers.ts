@@ -6,11 +6,14 @@ export interface LatLngInterface {
   lng: number;
 }
 
+export type MapMarkerTypes = 'event_object' | 'device';
+
 export interface MarkerParamsInterface {
   zIndex?: number;
   clickHandler?: (params: any) => any;
   isHighlighted?: boolean;
   popupText?: string;
+  markerType?: MapMarkerTypes;
 }
 
 const defaultParams: MarkerParamsInterface = {
@@ -18,6 +21,7 @@ const defaultParams: MarkerParamsInterface = {
   clickHandler: null,
   isHighlighted: false,
   popupText: null,
+  markerType: 'event_object',
 };
 
 export const generateDefaultMap = (center) => ({
@@ -39,17 +43,43 @@ export const generateDefaultMap = (center) => ({
   center: center || TAMPERE_COORDINATES,
 });
 
+const chooseMarkerByTypeAndHighlightStatus = (
+  isHighlighted: boolean,
+  markerType: MapMarkerTypes
+): string => {
+  if (markerType === 'event_object') {
+    return isHighlighted
+      ? 'assets/map/event_object_icon_highlighted.svg'
+      : 'assets/map/event_object_icon_black.svg';
+  }
+
+  if (markerType === 'device') {
+    return isHighlighted
+      ? 'assets/map/recon-marker-highlighted.svg'
+      : 'assets/map/recon-marker.svg';
+  }
+
+  return '';
+};
+
 export const generateMapMarker = (
   latLng: LatLngInterface,
-  { isHighlighted, zIndex, clickHandler, popupText } = defaultParams
+  {
+    isHighlighted,
+    zIndex,
+    clickHandler,
+    popupText,
+    markerType,
+  }: MarkerParamsInterface = defaultParams
 ) => {
   const finalMarker = marker([latLng.lat, latLng.lng], {
     icon: icon({
       iconSize: [40, 40],
       iconAnchor: [13, 41],
-      iconUrl: isHighlighted
-        ? 'assets/map/recon-marker-highlighted.svg'
-        : 'assets/map/recon-marker.svg',
+      iconUrl: chooseMarkerByTypeAndHighlightStatus(
+        isHighlighted,
+        markerType || 'event_object'
+      ),
     }),
   });
 
