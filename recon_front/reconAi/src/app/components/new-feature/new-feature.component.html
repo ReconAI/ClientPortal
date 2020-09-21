@@ -4,10 +4,11 @@
     <recon-form-input
       label="Please include description of the problem and current process here"
       [showRequiredSymbol]="true"
-      formControlName="description"
       [hideAmount]="false"
       [maxLen]="10000"
+      [isAutofocus]="true"
       fieldType="textarea"
+      formControlName="description"
     ></recon-form-input>
     <ng-container
       *ngFor="let link of feedLinks.controls; let i = index"
@@ -27,8 +28,8 @@
 
     <recon-form-file-with-list
       [parentForm]="newFeatureForm"
-      [maxCountOfFiles]="20"
       [maxSumSize]="maxFileSize"
+      [maxCountOfFiles]="20"
       field="files"
       label="Attach file"
       hint="*Attach CAD drawing, sensor or other files"
