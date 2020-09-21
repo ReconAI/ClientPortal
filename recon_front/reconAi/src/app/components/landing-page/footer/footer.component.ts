@@ -1,3 +1,5 @@
+import { TermsDialogComponent } from './../../../shared/terms-dialog/terms-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -6,10 +8,17 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./footer.component.less'],
 })
 export class FooterComponent implements OnInit {
-  constructor() {}
+  constructor(private dialog: MatDialog) {}
 
   goToUrl(url: string): void {
     window.open(url, '_blank');
   }
+
+  openTerms(): void {
+    this.dialog.open(TermsDialogComponent, {
+      width: '600px',
+    });
+  }
+
   ngOnInit(): void {}
 }

@@ -67,8 +67,8 @@ export class ReportingFilteringListComponent
   @Input() count = 1;
   @Input() pageSize = 1;
   @Input() devices: ReportingFilteringDeviceClientInterface[] = [];
-  @Input() heatMapData: HeatMapPointClientInterface[] = [];
 
+  @Input() heatMapData: HeatMapPointClientInterface[] = [];
   @Input() routePoints: LatLngInterface[] = [];
 
   @Input() isExporting = false;
@@ -178,6 +178,10 @@ export class ReportingFilteringListComponent
 
     if (changes.heatMapData) {
       this.formHeatMapData();
+    }
+
+    if (changes.currentDeviceLat || changes.currentDeviceLng) {
+      this.generateLayersFromDevices();
     }
   }
 
@@ -323,12 +327,12 @@ export class ReportingFilteringListComponent
         0,
         ...[
           {
-            header: 'Sensor GPS Latitude',
+            header: 'GPS Latitude',
             id: 'lat',
             width: '100px',
           },
           {
-            header: 'Sensor GPS Longitude',
+            header: 'GPS Longitude',
             id: 'lng',
             width: '100px',
           },

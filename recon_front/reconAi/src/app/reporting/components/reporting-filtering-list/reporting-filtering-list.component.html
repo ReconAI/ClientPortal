@@ -98,7 +98,7 @@
   >
   </recon-crud-table>
 </div>
-<div class="slider-container">
+<div class="slider-container" *ngIf="!isDevice">
   <span>Heat map</span>
   <recon-form-slider
     [disabled]="heatMapLoading"
