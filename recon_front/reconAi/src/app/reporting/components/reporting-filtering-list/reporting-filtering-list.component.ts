@@ -110,20 +110,18 @@ export class ReportingFilteringListComponent
   setSelectedDevice(device: ReportingFilteringDeviceClientInterface): void {
     this.selectedIndex = this.devices.findIndex(({ id }) => id === device?.id);
 
-    if (!this.isDevice) {
-      if (this.selectedIndex > -1) {
-        this.generateLayersFromDevices();
+    if (this.selectedIndex > -1) {
+      this.generateLayersFromDevices();
 
-        this.setCenter({
-          lat: +device.lat,
-          lng: +device.lng,
-        });
-      } else {
-        this.setCenter({
-          lat: TAMPERE_COORDINATES.lat,
-          lng: TAMPERE_COORDINATES.lng,
-        });
-      }
+      this.setCenter({
+        lat: +device.lat,
+        lng: +device.lng,
+      });
+    } else {
+      this.setCenter({
+        lat: TAMPERE_COORDINATES.lat,
+        lng: TAMPERE_COORDINATES.lng,
+      });
     }
   }
 
@@ -142,37 +140,18 @@ export class ReportingFilteringListComponent
   }
 
   generateLayersFromDevices(): void {
-    if (!this.isDevice) {
-      this.layers = this.devices.map((device, index) =>
-        generateMapMarker(
-          {
-            lat: +device.lat,
-            lng: +device.lng,
-          },
-          {
-            isHighlighted: index === this.selectedIndex,
-            zIndex: index === this.selectedIndex ? 1000 : 500,
-          }
-        )
-      );
-    } else {
-      if (
-        (this.currentDeviceLng || this.currentDeviceLng === 0) &&
-        (this.currentDeviceLat || this.currentDeviceLat === 0)
-      ) {
-        this.layers = [
-          generateMapMarker(
-            {
-              lat: this.currentDeviceLat,
-              lng: this.currentDeviceLng,
-            },
-            {
-              isHighlighted: true,
-            }
-          ),
-        ];
-      }
-    }
+    this.layers = this.devices.map((device, index) =>
+      generateMapMarker(
+        {
+          lat: +device.lat,
+          lng: +device.lng,
+        },
+        {
+          isHighlighted: index === this.selectedIndex,
+          zIndex: index === this.selectedIndex ? 1000 : 500,
+        }
+      )
+    );
   }
 
   ngOnInit(): void {
@@ -203,12 +182,6 @@ export class ReportingFilteringListComponent
 
     if (changes.currentDeviceLat || changes.currentDeviceLng) {
       this.generateLayersFromDevices();
-      if (this.isDevice) {
-        this.center = latLng(
-          changes.currentDeviceLat.currentValue,
-          changes.currentDeviceLng.currentValue
-        );
-      }
     }
   }
 
