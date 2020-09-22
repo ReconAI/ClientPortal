@@ -10,6 +10,7 @@ import {
   selectReportingFilteringList,
   selectReportingSelectedDeviceList,
   selectPedestrianFlowList,
+  selectFilteredSingularDeviceFilters,
 } from './reporting.selectors';
 import {
   ReportingActionTypes,
@@ -167,9 +168,10 @@ export class ReportingEffects {
       }),
       withLatestFrom(
         this.store.pipe(select(selectApplyFiltersStatus)),
-        this.store.pipe(select(selectCurrentUserProfileId))
+        this.store.pipe(select(selectCurrentUserProfileId)),
+        this.store.pipe(select(selectFilteredSingularDeviceFilters))
       ),
-      switchMap(([{ id, page }, applyFiltersStatus, userId]) =>
+      switchMap(([{ id, page }, applyFiltersStatus, userId, filteredFilters]) =>
         this.httpClient
           .get<
             PaginationResponseServerInterface<
@@ -180,7 +182,8 @@ export class ReportingEffects {
               `/api/sensors/${id}/relevant-data?page=${page}`,
               applyFiltersStatus,
               +userId,
-              this.filtersService
+              this.filtersService,
+              filteredFilters
             )
           )
           .pipe(

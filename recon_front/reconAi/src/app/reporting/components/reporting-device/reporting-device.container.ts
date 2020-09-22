@@ -1,8 +1,13 @@
 import { FiltersService } from './../../../core/services/filters/filters.service';
 import {
   buildVehicleRouteRequestedAction,
+  buildVehicleRouteSucceededAction,
   heatMapDataRequestedAction,
+  plateNumberListSucceededAction,
+  projectNameListSucceededAction,
   resetMapDataAction,
+  setApplyFiltersStatusAction,
+  setSingularDeviceFiltersAction,
 } from './../../../store/reporting/reporting.actions';
 import { LatLngInterface } from 'app/core/helpers/markers';
 import {
@@ -109,6 +114,16 @@ export class ReportingDeviceContainer implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.selectedDeviceListSubscription$.unsubscribe();
+    this.store.dispatch(setSingularDeviceFiltersAction({ filters: [] }));
+
+    this.store.dispatch(
+      setApplyFiltersStatusAction({
+        status: false,
+      })
+    );
+    this.store.dispatch(projectNameListSucceededAction({ names: [] }));
+    this.store.dispatch(plateNumberListSucceededAction({ names: [] }));
+    this.store.dispatch(buildVehicleRouteSucceededAction({ points: [] }));
   }
 
   buildRoute(): void {

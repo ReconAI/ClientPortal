@@ -1,6 +1,6 @@
 <recon-reporting-filter
   [isDevice]="isDevice"
-  [initializedFilters]="filters$ | async"
+  [initializedFilters]="(isDevice ? singularDeviceFilters$ : filters$) | async"
   [eventObjects]="eventObjects$ | async"
   [projectNames]="projectNames$ | async"
   [plateNumbers]="plateNumbers$ | async"

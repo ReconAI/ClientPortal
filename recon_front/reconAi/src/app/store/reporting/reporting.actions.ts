@@ -1,3 +1,4 @@
+import { FilterItemInterface } from 'app/reporting/constants/types/filters';
 import { SensorClientInterface } from './../../constants/types/sensors';
 import { RelevantDataExportFormat } from './../../constants/types/relevant-data';
 import { ReconSelectOption } from './../../shared/types/recon-select';
@@ -76,6 +77,8 @@ export enum ReportingActionTypes {
   LOAD_ADDITIONAL_SENSOR_INFO_REQUESTED = '[Reporting] Load Additional Sensor Info Requested',
   LOAD_ADDITIONAL_SENSOR_INFO_SUCCEEDED = '[Reporting] Load Additional Sensor Info Succeeded',
   LOAD_ADDITIONAL_SENSOR_INFO_ERROR = '[Reporting] Load Additional Sensor Info Error',
+
+  SET_SINGULAR_DEVICE_FILTERS = '[Reporting] Set Singular Device Filters',
 }
 
 export const loadReportingFilteringListRequestedAction = createAction(
@@ -285,4 +288,13 @@ export const loadAdditionalSensorInfoSucceededAction = createAction(
 
 export const loadAdditionalSensorInfoErrorAction = createAction(
   ReportingActionTypes.LOAD_ADDITIONAL_SENSOR_INFO_ERROR
+);
+
+export interface SetSingularDeviceFiltersInterface {
+  filters: FilterItemInterface[];
+}
+
+export const setSingularDeviceFiltersAction = createAction(
+  ReportingActionTypes.SET_SINGULAR_DEVICE_FILTERS,
+  props<SetSingularDeviceFiltersInterface>()
 );

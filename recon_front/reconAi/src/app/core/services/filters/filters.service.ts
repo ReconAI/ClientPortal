@@ -157,6 +157,14 @@ export class FiltersService {
     return `${field}=${value}`;
   };
 
+  public transformFiltersToString(filters: FilterItemInterface[]): string {
+    const result = filters.reduce(
+      (res, current) => `${res}&${this.transformFilterField(current)}`,
+      ''
+    );
+    return result.slice(1);
+  }
+
   public transformValuesForUserFromLocalStorage(userId: number): string {
     const userFilters = this.getUserFilters(userId);
 
