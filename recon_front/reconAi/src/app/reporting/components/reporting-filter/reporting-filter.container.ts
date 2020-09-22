@@ -122,6 +122,9 @@ export class ReportingFilterContainer implements OnInit, OnDestroy {
         status: true,
       })
     );
+    if (!this.isDevice) {
+      this.store.dispatch(buildVehicleRouteSucceededAction({ points: [] }));
+    }
     this.loadData();
   }
 

@@ -259,7 +259,7 @@ const setDefaultPaymentMethodSucceededReducer = (
   ...state,
   organization: {
     ...state.organization,
-    defaultCardId: (cardId === INVOICING_ACCOUNT && INVOICING_ACCOUNT) || null,
+    defaultCardId: cardId,
   },
 });
 

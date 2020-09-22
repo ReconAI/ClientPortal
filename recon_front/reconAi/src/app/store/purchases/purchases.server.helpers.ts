@@ -12,6 +12,9 @@ export const transformPurchaseListFromServer = (
 ): PaginationResponseClientInterface<PurchaseClientInterface> => ({
   ...data,
   list: data.list.map((purchase) => ({
+    id: purchase.id,
+    isInvoice: purchase.is_invoice,
+    success: purchase.success,
     paymentId: purchase.payment_id,
     date: moment(purchase.timestamp).format('YYYY.MM.DD'),
     total: (purchase?.total || 0).toFixed(2),
