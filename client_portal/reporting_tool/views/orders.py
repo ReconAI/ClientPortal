@@ -1,15 +1,18 @@
 """
 Views managing orders
 """
+from typing import Callable
 
-from django.db.models import QuerySet, Value, CharField
+from django.db.models import QuerySet, Value, CharField, BooleanField, Case, \
+    When, Q
 from django.http import HttpResponse
 from django.utils.decorators import method_decorator
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 
-from recon_db_manager.models import DevicePurchase, Purchase, Organization
+from recon_db_manager.models import DevicePurchase, Purchase, Organization, \
+    RecurrentCharge
 from reporting_tool.serializers import OrderListSerializer
 from shared.pdf import Order
 from shared.permissions import IsCompanyDeveloper, IsActive
@@ -38,15 +41,41 @@ class OrdersListView(ListAPIView):
 
     serializer_class = OrderListSerializer
 
-    def filter_queryset(self, queryset: QuerySet) -> QuerySet:
-        return queryset.filter(
+    def get_queryset(self):
+        return self.__unify(self.purchase_queryset).union(
+            self.__unify(self.invoice_queryset), all=True
+        ).order_by('-created_dt')
+
+    def __unify(self, queryset: QuerySet) -> QuerySet:
+        return queryset.values(
+            'id', 'total', 'type', 'payment_id',
+            'created_dt', 'is_invoice', 'success'
+        ).filter(
             organization_id=self.request.user.organization.id
         )
 
-    def get_queryset(self):
+    @property
+    def purchase_queryset(self) -> QuerySet:
         return Purchase.objects.all().annotate(
-            type=Value('purchase', output_field=CharField())
-        ).order_by('-created_dt')
+            is_invoice=Case(
+                When(payment_id__isnull=True, then=Value(True)),
+                default=Value(False),
+                output_field=BooleanField(),
+            ),
+            success=Value(True, output_field=BooleanField()),
+            type=Value('purchase', output_field=CharField()),
+        )
+
+    @property
+    def invoice_queryset(self) -> QuerySet:
+        return RecurrentCharge.objects.all().annotate(
+            success=Case(
+                When(Q(payment_id__isnull=False) | Q(is_invoice=True), then=Value(True)),
+                default=Value(False),
+                output_field=BooleanField(),
+            ),
+            type=Value('recurrent_charge', output_field=CharField())
+        )
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
@@ -69,7 +98,9 @@ class OrderItemView(PlainListModelMixin, ListAPIView):
 
     serializer_class = OrderSerializer
 
-    queryset = DevicePurchase.objects.prefetch_related('purchase', 'device__images').all()
+    queryset = DevicePurchase.objects.prefetch_related(
+        'purchase', 'device__images'
+    ).all()
 
     def filter_queryset(self, queryset: QuerySet) -> QuerySet:
         return queryset.filter(

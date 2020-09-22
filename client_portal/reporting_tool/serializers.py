@@ -159,21 +159,24 @@ class FeatureRequestSerializer(ReadOnlySerializerMixin,
         }
 
 
-class OrderListSerializer(ModelSerializer):
+class OrderListSerializer(ReadOnlySerializerMixin, Serializer):
     """
     Order list serializer
     """
+    id = serializers.IntegerField()
     type = serializers.CharField()
     timestamp = serializers.CharField(source='created_dt')
     payment_id = serializers.CharField()
     total = serializers.SerializerMethodField(method_name='process_total')
+    is_invoice = serializers.BooleanField()
+    success = serializers.BooleanField()
 
     class Meta:
         """
         Orders list fields set
         """
-        model = Purchase
-        fields = ('payment_id', 'type', 'timestamp', 'total')
+        # model = Purchase
+        fields = ('id', 'type', 'payment_id', 'timestamp', 'total', 'is_invoice', 'success')
 
     @staticmethod
     def process_total(purchase: dict) -> float:
@@ -184,7 +187,7 @@ class OrderListSerializer(ModelSerializer):
 
         :rtype: float
         """
-        return purchase.total / 100
+        return purchase.get('total', 0) / 100
 
 
 class UserInvoiceSerializer(ModelSerializer):
