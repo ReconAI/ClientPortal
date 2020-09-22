@@ -23,10 +23,11 @@ from rest_framework.exceptions import NotFound
 
 from recon_db_manager.models import Organization
 from reporting_tool.forms.organization import OrganizationForm
-from reporting_tool.forms.utils import CheckUserTokenForm, SendEmailMixin
+from reporting_tool.forms.utils import CheckUserTokenForm
 from reporting_tool.frontend.router import Router
 from reporting_tool.tokens import AccountActivationTokenGenerator
 from shared.models import User
+from shared.utils import SendEmailMixin
 
 
 class PreSignupForm(UserCreationForm):

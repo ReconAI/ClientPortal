@@ -12,11 +12,11 @@ from rest_framework.generics import GenericAPIView
 
 from reporting_tool.filters import RelevantDataSensorFilter, \
     ExportRelevantDataFilterBackend
-from reporting_tool.forms.utils import SendEmailMixin
 from reporting_tool.serializers import RelevantDataGeneratorSeriralizer
 from reporting_tool.utils import RelevantDataFileGenerator, \
     RelvantDataExportUploader
 from reporting_tool.views.relevant_data import RelevantDataHandler
+from shared.utils import SendEmailMixin
 
 
 class ExportRelevantDataTask(Task, GenericAPIView,

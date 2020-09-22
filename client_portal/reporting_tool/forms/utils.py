@@ -1,15 +1,11 @@
 """
 Forms helpers are located here
 """
-from abc import abstractmethod
 
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.mail import EmailMultiAlternatives
-from django.template import loader
-from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_decode
 from django.utils.translation import gettext_lazy as _
 from rest_framework.exceptions import ParseError, NotFound
@@ -40,42 +36,6 @@ class RoleFieldMixin:
             return Group.objects.get(name=role)
         except ObjectDoesNotExist:
             raise forms.ValidationError(_('Invalid role'))
-
-
-class SendEmailMixin:
-    """
-    Class allowing client to send an email
-    """
-    def send_mail(self, to_email: list, subject_location: str,
-                  body_location: str, attachments=None, *args, **kwargs):
-        """
-        Sends email on invocation
-
-        :type to_email: list
-        :type subject_location: str
-        :type body_location: str
-        :type attachments: Optional[List]
-        """
-        context = self.get_email_context(*args, **kwargs)
-
-        message = render_to_string(body_location, context)
-
-        subject = loader.render_to_string(subject_location, context)
-
-        EmailMultiAlternatives(
-            ''.join(subject.splitlines()),
-            message,
-            to=to_email,
-            attachments=attachments
-        ).send()
-
-    @abstractmethod
-    def get_email_context(self, *args, **kwargs) -> dict:
-        """
-        Email context for template loader
-
-        :rtype: dict
-        """
 
 
 class CheckUserTokenForm(forms.Form):

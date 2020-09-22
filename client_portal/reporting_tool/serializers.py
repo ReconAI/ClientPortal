@@ -14,16 +14,14 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.fields import CharField, IntegerField, ListField, empty
 from rest_framework.serializers import ModelSerializer, ListSerializer
 from rest_framework.serializers import Serializer
-from rest_framework.utils.serializer_helpers import ReturnDict
 
-from recon_db_manager.models import Organization, DevicePurchase, \
-    RelevantData, Project, TypeCode, DeviceInstance, Purchase
-from reporting_tool.forms.utils import SendEmailMixin
+from recon_db_manager.models import Organization, RelevantData, Project, \
+    TypeCode, DeviceInstance
 from reporting_tool.utils import FeatureRequestUploader
 from shared.fields import FileField
-from shared.helpers import Price, PriceWithTax
 from shared.models import User
-from shared.serializers import ReadOnlySerializerMixin, DeviceImageSerializer
+from shared.serializers import ReadOnlySerializerMixin
+from shared.utils import SendEmailMixin
 
 
 class AttachPaymentMethodSerializer(ModelSerializer):
