@@ -7,6 +7,7 @@ from django.db.models import QuerySet, Value, CharField, BooleanField, Case, \
     When, Q
 from django.http import HttpResponse
 from django.utils.decorators import method_decorator
+from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -70,7 +71,10 @@ class OrdersListView(ListAPIView):
     def invoice_queryset(self) -> QuerySet:
         return RecurrentCharge.objects.all().annotate(
             success=Case(
-                When(Q(payment_id__isnull=False) | Q(is_invoice=True), then=Value(True)),
+                When(
+                    Q(payment_id__isnull=False) | Q(is_invoice=True),
+                    then=Value(True)
+                ),
                 default=Value(False),
                 output_field=BooleanField(),
             ),
@@ -114,6 +118,21 @@ class OrderItemView(PlainListModelMixin, ListAPIView):
         }
 
 
+@method_decorator(name='get', decorator=swagger_auto_schema(
+    responses=default_get_responses_with_custom_success(
+        openapi.Response(
+            'File Attachment',
+            schema=openapi.Schema(type=openapi.TYPE_FILE)
+        ),
+    ),
+    tags=['Orders'],
+    operation_summary='Monthly invoice download',
+    operation_description='Downloads invoice if it\'s completed'
+                          'by invoice payment method',
+    manual_parameters=[
+        token_header(),
+    ]
+))
 class OrderItemDownload(PlainListModelMixin, RetrieveAPIView):
     permission_classes = (IsAuthenticated, IsActive, IsCompanyDeveloper)
 

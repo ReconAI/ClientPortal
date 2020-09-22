@@ -609,10 +609,7 @@ class PaymentSerializer(SendEmailMixin, BasketSerializer):
         if charger.is_invoice:
             self.__send_mail(purchase)
 
-        return {
-            'id': payment_id,
-            'amount': total
-        }
+        return purchase
 
     @property
     def __total(self) -> float:
@@ -683,15 +680,13 @@ class PaymentSerializer(SendEmailMixin, BasketSerializer):
         }
 
 
-class PaymentIntentSerializer(ReadOnlySerializerMixin, Serializer):
+class PaymentIntentSerializer(ModelSerializer):
     """
     Payment data serializer
     """
-    id = serializers.CharField(required=True)
-    amount = serializers.IntegerField(required=True)
-
     class Meta:
         """
         Completed payment should expose id and amount
         """
-        fields = ('id', 'amount')
+        model = Purchase
+        fields = ('id', 'total_with_cents')
