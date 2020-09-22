@@ -56,9 +56,6 @@ export class ReportingFilteringListComponent
     private activatedRoute: ActivatedRoute
   ) {}
 
-  @ViewChild('taggedDataTemplate') taggedDataTemplate: TemplateRef<
-    ReportingFilteringDeviceClientInterface
-  >;
   @ViewChild('cadTagTemplate') cadTagTemplate: TemplateRef<
     ReportingFilteringDeviceClientInterface
   >;
@@ -70,8 +67,8 @@ export class ReportingFilteringListComponent
   @Input() count = 1;
   @Input() pageSize = 1;
   @Input() devices: ReportingFilteringDeviceClientInterface[] = [];
-  @Input() heatMapData: HeatMapPointClientInterface[] = [];
 
+  @Input() heatMapData: HeatMapPointClientInterface[] = [];
   @Input() routePoints: LatLngInterface[] = [];
 
   @Input() isExporting = false;
@@ -182,6 +179,10 @@ export class ReportingFilteringListComponent
     if (changes.heatMapData) {
       this.formHeatMapData();
     }
+
+    if (changes.currentDeviceLat || changes.currentDeviceLng) {
+      this.generateLayersFromDevices();
+    }
   }
 
   ngOnDestroy(): void {
@@ -200,16 +201,7 @@ export class ReportingFilteringListComponent
         id: 'timestamp',
         width: '150px',
       },
-      {
-        header: 'Sensor GPS Latitude',
-        id: 'lat',
-        width: '100px',
-      },
-      {
-        header: 'Sensor GPS Longitude',
-        id: 'lng',
-        width: '100px',
-      },
+
       {
         header: 'Project name',
         id: 'project',
@@ -251,7 +243,7 @@ export class ReportingFilteringListComponent
         width: '100px',
       },
       {
-        header: 'License plate number',
+        header: 'Vehicle registration plate',
         id: 'plateNumber',
         width: '100px',
       },
@@ -311,7 +303,7 @@ export class ReportingFilteringListComponent
         width: '100px',
       },
       {
-        header: 'Road weather',
+        header: 'Road weather condition',
         id: 'roadWeather',
         width: '100px',
       },
@@ -320,7 +312,6 @@ export class ReportingFilteringListComponent
         header: 'Tagged data',
         id: 'taggedData',
         width: '100px',
-        cellTemplate: this.taggedDataTemplate,
       },
       {
         header: 'CAD file tag',
@@ -331,15 +322,29 @@ export class ReportingFilteringListComponent
     ];
 
     if (!this.isDevice) {
-      this.columns.splice(4, 0, {
-        header: 'Sensor ID',
-        width: '55px',
-        id: 'sensorId',
-        cellTemplate: this.sensorIdColumnTemplate,
-      });
-      this.columns = [
-        ...this.columns,
-      ];
+      this.columns.splice(
+        2,
+        0,
+        ...[
+          {
+            header: 'GPS Latitude',
+            id: 'lat',
+            width: '100px',
+          },
+          {
+            header: 'GPS Longitude',
+            id: 'lng',
+            width: '100px',
+          },
+          {
+            header: 'Sensor ID',
+            width: '55px',
+            id: 'sensorId',
+            cellTemplate: this.sensorIdColumnTemplate,
+          },
+        ]
+      );
+      this.columns = [...this.columns];
     }
     // to run one more round of change detection
     this.cdr.detectChanges();

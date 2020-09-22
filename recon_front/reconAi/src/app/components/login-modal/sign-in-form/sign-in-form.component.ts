@@ -14,6 +14,7 @@ import {
   OnDestroy,
   ViewChild,
   AfterViewInit,
+  ElementRef,
 } from '@angular/core';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 
@@ -22,7 +23,9 @@ import { FormBuilder, Validators, FormGroup } from '@angular/forms';
   templateUrl: './sign-in-form.component.html',
   styleUrls: ['./sign-in-form.component.less'],
 })
-export class SignInFormComponent implements OnInit, OnDestroy {
+export class SignInFormComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('inputLogin') inputLogin: ElementRef;
+
   // rename
   @Input() loadingStatus = false;
   @Input() isSignUp: boolean;
@@ -42,6 +45,12 @@ export class SignInFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {}
+
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      this.inputLogin.nativeElement.focus();
+    }, 500);
+  }
 
   buildFormGroup(): FormGroup {
     return this.fb.group({

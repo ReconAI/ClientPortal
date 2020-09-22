@@ -89,6 +89,7 @@ export class ReportingFilterContainer implements OnInit, OnDestroy {
 
     if (this.isDevice) {
       this.filtersService.removeOneFilterForUser(this.userId, 'sensor_id');
+      this.filtersService.removeOneFilterForUser(this.userId, 'gps');
     }
 
     this.filters$ = of(this.filtersService.getUserFilters(this.userId));
@@ -143,7 +144,7 @@ export class ReportingFilterContainer implements OnInit, OnDestroy {
       );
     }
 
-    if (index === 13) {
+    if (index === 11) {
       this.store.dispatch(
         plateNumberListRequestedAction({
           name: value,

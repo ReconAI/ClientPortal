@@ -8,6 +8,7 @@ import {
   Optional,
   Output,
   EventEmitter,
+  AfterViewInit,
 } from '@angular/core';
 import { v4 as uuid } from 'uuid';
 import { ControlValueAccessor, NgControl } from '@angular/forms';
@@ -18,12 +19,13 @@ import { ControlValueAccessor, NgControl } from '@angular/forms';
   styleUrls: ['./form-input.component.less'],
   providers: [],
 })
-export class FormInputComponent implements ControlValueAccessor, OnInit {
+export class FormInputComponent
+  implements ControlValueAccessor, OnInit, AfterViewInit {
   constructor(@Optional() @Self() public controlDir: NgControl) {
     controlDir.valueAccessor = this;
   }
 
-  @ViewChild('input') input: ElementRef;
+  @ViewChild('textareaValue') textareaValue: ElementRef;
 
   value: string;
   uniqueId: string;
@@ -40,6 +42,7 @@ export class FormInputComponent implements ControlValueAccessor, OnInit {
   @Input() rightIconTooltip = '';
   @Input() maxLen = 0;
   @Input() hideAmount = true;
+  @Input() isAutofocus = false;
   // add types
   @Input() fieldType: 'text' | 'textarea' | 'password' = 'text';
   @Output() changeVal = new EventEmitter<any>();
@@ -81,5 +84,11 @@ export class FormInputComponent implements ControlValueAccessor, OnInit {
 
   ngOnInit() {
     this.uniqueId = uuid();
+  }
+
+  ngAfterViewInit(): void {
+    if (this.isAutofocus) {
+      this.textareaValue.nativeElement.focus();
+    }
   }
 }
