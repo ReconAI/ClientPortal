@@ -2,27 +2,32 @@
 Order portal serializers range
 """
 import functools
-from datetime import datetime
+from decimal import Decimal
 from typing import List, Tuple, Dict
 
-import stripe
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.core.validators import FileExtensionValidator
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError, ErrorDetail
+from rest_framework.exceptions import ValidationError, ErrorDetail, ParseError
 from rest_framework.fields import CharField, IntegerField
 from rest_framework.request import Request
 from rest_framework.serializers import ListSerializer, \
     Serializer
 from rest_framework.serializers import ModelSerializer
+from stripe.error import InvalidRequestError, CardError
 
-from recon_db_manager.models import Category, Manufacturer, Device, DeviceImage
+from recon_db_manager.models import Category, Manufacturer, Device, \
+    DeviceImage, Purchase, Organization
 from recon_db_manager.models import DevicePurchase
+from reporting_tool.forms.utils import SendEmailMixin
 from shared.fields import FileField as ImgField
-from shared.helpers import StripePrice
-from shared.serializers import ReadOnlySerializerMixin, DeviceImageSerializer
+from shared.helpers import StripePrice, PurchaseCharger
+from shared.models import Role
+from shared.pdf import Order
+from shared.serializers import ReadOnlySerializerMixin,\
+    DeviceImageSerializer, OrderSerializer
 
 
 class CategorySerializer(ModelSerializer):
@@ -499,7 +504,7 @@ class BasketOverviewSerializer(DeviceListSerializer):
         """
         return self.__device_count(instance)
 
-    def format_total_without_vat(self, instance: Device) -> int:
+    def format_total_without_vat(self, instance: Device) -> float:
         """
         :type instance: Device
 
@@ -538,16 +543,13 @@ class BasketSerializer(ReadOnlySerializerMixin, Serializer):
     )
 
 
-class PaymentSerializer(BasketSerializer):
+class PaymentSerializer(SendEmailMixin, BasketSerializer):
     """
     Reads incoming data and performs payment
     """
-
-    card_id = serializers.CharField(
-        required=True,
-        allow_null=False,
-        allow_blank=False
-    )
+    is_card = serializers.BooleanField(required=True, allow_null=False)
+    card_id = serializers.CharField(required=False, allow_null=False,
+                                    allow_blank=False)
 
     queryset = Device.objects.filter(published=True)
 
@@ -574,30 +576,43 @@ class PaymentSerializer(BasketSerializer):
     def create(self, validated_data):
         total = self.__total
 
-        payment = self.__request.user.organization.customer.pay(
-            amount=total,
-            payment_method=validated_data.get('card_id'),
-            confirm=True
+        try:
+            charger = PurchaseCharger(
+                self.__request.user.organization,
+                self.validated_data.get('card_id'),
+                not self.validated_data.get('is_card'),
+            )
+
+            payment_id = charger.charge(total)
+        except (CardError, InvalidRequestError) as exc:
+            raise ParseError(exc)
+
+        purchase = Purchase.objects.create(
+            organization=self.__request.user.organization,
+            payment_id=payment_id,
+            total=self.__total,
+            vat=Decimal(settings.VAT)
         )
 
-        if payment:
-            now = datetime.now()
-            DevicePurchase.objects.bulk_create([
-                DevicePurchase(
-                    organization=self.__request.user.organization,
-                    device=device,
-                    payment_id=payment.id,
-                    device_name=device.name,
-                    device_price=device.sales_price,
-                    device_cnt=cnt,
-                    total=self.__device_total(device),
-                    created_dt=now
-                )
-                for device, cnt
-                in self.__get_devices().items()
-            ])
+        DevicePurchase.objects.bulk_create([
+            DevicePurchase(
+                device=device,
+                purchase=purchase,
+                device_name=device.name,
+                device_cnt=cnt,
+                device_price=device.sales_price
+            )
+            for device, cnt
+            in self.__get_devices().items()
+        ])
 
-        return payment
+        if charger.is_invoice:
+            self.__send_mail(purchase)
+
+        return {
+            'id': payment_id,
+            'amount': total
+        }
 
     @property
     def __total(self) -> float:
@@ -641,6 +656,32 @@ class PaymentSerializer(BasketSerializer):
     def __request(self) -> Request:
         return self.context.get('request')
 
+    def __send_mail(self, purchase: Purchase):
+        organization = self.__request.user.organization
+
+        self.send_mail(
+            Role.admins(organization).values_list('email', flat=True),
+            'emails/invoice_payment_subject.txt',
+            'emails/invoice_payment.html',
+            attachments=[[
+                'order.pdf',
+                Order(
+                    organization,
+                    Organization.root(),
+                    OrderSerializer(purchase.device_purchases, many=True),
+                    purchase
+                ).generate(),
+                'application/pdf'
+            ]],
+            purchase=purchase
+        )
+
+    def get_email_context(self, purchase: Purchase, *args, **kwargs) -> dict:
+        return {
+            'app_name': settings.APP_NAME,
+            'order_id': purchase.id
+        }
+
 
 class PaymentIntentSerializer(ReadOnlySerializerMixin, Serializer):
     """
@@ -653,5 +694,4 @@ class PaymentIntentSerializer(ReadOnlySerializerMixin, Serializer):
         """
         Completed payment should expose id and amount
         """
-        model = stripe.PaymentIntent
         fields = ('id', 'amount')

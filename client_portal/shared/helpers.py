@@ -70,26 +70,36 @@ class PriceWithTax(PriceDecorator):
     """
     Price with taxes value object
     """
-    def __init__(self, price: PriceInterface, tax: float):
+    def __init__(self, price: PriceInterface, tax: Union[Decimal, float]):
         """
         :type price: Price
         :type tax: float
         """
         super().__init__(price)
 
-        self.__tax = tax
+        self._tax = tax
 
     def as_price(self) -> float:
         """
         :rtype: float
         """
-        return self._price.as_price() * (100 + self.__tax) / 100
+        return self._price.as_price() * (100 + self._tax) / 100
 
     def total(self, items_cnt: int) -> float:
         """
         :rtype: float
         """
         return self.as_price() * items_cnt
+
+
+class PriceWithoutTax(PriceWithTax):
+    def as_price(self) -> float:
+        """
+        :rtype: float
+        """
+        return self._price.as_price() / (
+            (100 + self._tax) / 100
+        )
 
 
 class StripePrice(PriceDecorator):
@@ -215,6 +225,48 @@ class OrganizationCharger:
     Responsible for company charge logic
     """
 
+    def __init__(self, organization: 'Organization'):
+        """
+        :type organization: Organization
+        """
+        self.__organization = organization
+
+    # todo change to default one selection
+    @property
+    def _organization_payment_method(self) -> str:
+        """
+        :rtype: str
+        """
+        payment_methods = self.__organization.customer. \
+            payment_methods().cards()
+
+        return payment_methods.get('data', [])[0].id
+
+    def charge(self, amount: float) -> Optional[str]:
+        if self.is_invoice:
+            return None
+
+        return self.__organization.customer.pay(
+            amount=amount,
+            payment_method=self._organization_payment_method,
+            confirm=True
+        ).id
+
+    @property
+    def is_invoice(self) -> bool:
+        """
+        Checks whether payment should be completed by invoice
+
+        :rtype: bool
+        """
+        return self.__organization.is_invoice_payment_method
+
+
+class RecurrentCharger(OrganizationCharger):
+    """
+        Responsible for company charge logic
+        """
+
     def __init__(self, organization: 'Organization',
                  last_payment_id: Optional[str] = None,
                  last_payment_dt: Optional[datetime] = None,
@@ -226,7 +278,8 @@ class OrganizationCharger:
         :type last_payment_dt: Optional[datetime]
         :type is_invoice: bool
         """
-        self.__organization = organization
+        super().__init__(organization)
+
         self.__last_payment_id = last_payment_id
         self.__last_payment_dt = last_payment_dt
         self.__is_invoice = is_invoice
@@ -236,15 +289,7 @@ class OrganizationCharger:
         :rtype: str
         """
         try:
-            if self.__organization.is_invoice_payment_method:
-                return None
-
-            payment = self.__organization.customer.pay(
-                amount=amount,
-                payment_method=self.__organization_payment_method,
-                confirm=True
-            )
-            return payment.id
+            return super().charge(amount)
         except (IndexError, AttributeError, CardError, InvalidRequestError):
             return None
 
@@ -261,17 +306,6 @@ class OrganizationCharger:
 
         return self.__last_payment_dt is None
 
-    # todo change to default one selection
-    @property
-    def __organization_payment_method(self) -> str:
-        """
-        :rtype: str
-        """
-        payment_methods = self.__organization.customer.\
-            payment_methods().cards()
-
-        return payment_methods.get('data', [])[0].id
-
     @property
     def user_license_fee(self) -> float:
         """
@@ -286,15 +320,6 @@ class OrganizationCharger:
         """
         return self.__fee_if_first_payment(settings.DEVICE_LICENSE_FEE)
 
-    @property
-    def is_invoice(self) -> bool:
-        """
-        Checks whether payment should be completed by invoice
-
-        :rtype: bool
-        """
-        return self.__organization.is_invoice_payment_method
-
     def __fee_if_first_payment(self, dimension: float) -> float:
         """
         :rtype: float
@@ -303,3 +328,29 @@ class OrganizationCharger:
             return dimension
 
         return .0
+
+
+class PurchaseCharger(OrganizationCharger):
+    def __init__(self, organization: 'Organization',
+                 card_id: Optional[str] = None,
+                 is_invoice: bool = False
+                 ):
+        """
+        :type organization: Organization
+        :type is_invoice: bool
+        """
+        super().__init__(organization)
+
+        self.__card_id = card_id
+        self.__is_invoice = is_invoice
+
+    @property
+    def is_invoice(self) -> bool:
+        return self.__is_invoice
+
+    @property
+    def _organization_payment_method(self) -> Optional[str]:
+        """
+        :rtype: str
+        """
+        return self.__card_id

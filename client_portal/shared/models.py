@@ -4,13 +4,14 @@ Reporting tool models are located here
 import binascii
 import os
 import unicodedata
-from typing import Tuple, Optional, Iterable, Type
+from typing import Tuple, Optional, Iterable, Type, List
 
 from django.conf import settings
 from django.contrib.auth.hashers import make_password, check_password, \
     is_password_usable
 from django.contrib.auth.models import Group
 from django.db import models
+from django.db.models import QuerySet
 from django.db.transaction import atomic
 from django.utils.crypto import salted_hmac
 from django.utils.module_loading import import_string
@@ -300,3 +301,12 @@ class Role:
         DEVELOPER,
         CLIENT
     ]
+
+    @staticmethod
+    def admins(organization: Organization, among=None) -> QuerySet:
+        if among is None:
+            among = list(UserGroup.objects.filter(
+                group__name=Role.ADMIN
+            ).values_list('user_id', flat=True))
+
+        return organization.user_set.filter(pk__in=among).all()

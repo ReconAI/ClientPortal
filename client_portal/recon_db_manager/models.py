@@ -2,7 +2,8 @@
 Recon db mangaer are defined here
 """
 from datetime import datetime, timedelta
-from typing import Optional
+from decimal import Decimal
+from typing import Optional, List
 
 from django.conf import settings
 from django.contrib.postgres.fields import JSONField
@@ -12,7 +13,7 @@ from django.utils.module_loading import import_string
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
-from shared.helpers import Price, PriceWithTax
+from shared.helpers import Price, PriceWithTax, PriceWithoutTax
 
 
 class Organization(models.Model):
@@ -1639,6 +1640,43 @@ class DeviceImage(models.Model):
         db_table = 'DeviceImages'
 
 
+class Purchase(models.Model):
+    """
+    Order model
+    """
+    id = models.BigAutoField(primary_key=True)
+    organization = models.ForeignKey(
+        Organization, on_delete=models.CASCADE,
+        null=True, blank=False, db_column='organizationId'
+    )
+    payment_id = models.CharField(
+        max_length=255, null=True, blank=True, db_column='paymentId'
+    )
+    total = models.PositiveIntegerField(null=False, blank=False)
+    vat = models.DecimalField(
+        null=False, blank=False, max_digits=16,
+        decimal_places=2, db_column='VAT'
+    )
+    created_dt = models.DateTimeField(null=True, auto_now_add=True)
+
+    class Meta:
+        """
+        Order model's Meta class specification
+        """
+        db_table = 'Purchases'
+
+    @property
+    def total_with_cents(self) -> float:
+        return self.total / 100
+
+    @property
+    def total_without_vat(self) -> float:
+        return PriceWithoutTax(
+            Price(Decimal(self.total_with_cents)),
+            self.vat
+        ).as_price()
+
+
 class DevicePurchase(models.Model):
     """
     Device purchase model
@@ -1648,25 +1686,21 @@ class DevicePurchase(models.Model):
         Device, on_delete=models.SET_NULL,
         null=True, blank=False, db_column='deviceId'
     )
-    organization = models.ForeignKey(
-        Organization, on_delete=models.CASCADE,
-        null=True, blank=False, db_column='organizationId'
-    )
-    payment_id = models.CharField(
-        max_length=255, null=False, blank=False, db_column='paymentId'
+    purchase = models.ForeignKey(
+        Purchase, on_delete=models.CASCADE,
+        null=True, blank=False, db_column='orderId',
+        related_name='device_purchases'
     )
     device_name = models.CharField(
         max_length=255, null=False, blank=False, db_column='deviceName'
+    )
+    device_cnt = models.PositiveIntegerField(
+        null=False, blank=False, db_column='deviceCount'
     )
     device_price = models.DecimalField(
         null=False, blank=False, max_digits=16,
         decimal_places=2, db_column='devicePrice'
     )
-    device_cnt = models.PositiveIntegerField(
-        null=False, blank=False, db_column='deviceCount'
-    )
-    total = models.PositiveIntegerField(null=False, blank=False)
-    created_dt = models.DateTimeField(null=True, auto_now_add=True)
 
     class Meta:
         """

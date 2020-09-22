@@ -36,25 +36,15 @@ INSTALLED_APPS = [
     'shared'
 ]
 
-
-EMAIL_BACKEND = 'django.core.mail.backends.{}.EmailBackend'.format(
-    os.environ.get('EMAIL_BACKEND', 'console')  # console, dummy, firebased, locmem, smtp
-)
-EMAIL_HOST = os.environ.get('EMAIL_HOST')
-EMAIL_PORT = os.environ.get('EMAIL_PORT')
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
-EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS')
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
-
-INFO_EMAIL = os.environ.get('INFO_EMAIL')
-
 ROOT_URLCONF = 'reporting_tool.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['{}/{}'.format(BASE_DIR, 'templates')],
+        'DIRS': [
+            '{}/{}'.format(BASE_DIR, 'templates'),
+            SHARED_TEMPLATES_DIR
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -117,24 +107,3 @@ MEDIA_ROOT = '{}/{}/'.format(BASE_DIR, 'media')
 
 # Export http log aws bucket and key accordingly
 AWS_EXPORT_HTTP_LOG_KEY = os.environ.get('AWS_EXPORT_HTTP_LOG_KEY')
-
-
-# --- PAYMENTS SETTINGS --- #
-TRIAL_PERIOD_DAYS = 30
-CHARGE_EACH_N_DAYS = 30
-STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY')
-STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
-USER_LICENSE_FEE = 29.9
-DEVICE_LICENSE_FEE = 5.9
-# --- PAYMENTS SETTINGS --- #
-
-
-# --- INVOICE SETTINGS --- #
-BANK_REFERENCE_CODE = 1038
-IBAN = 'FI48 1778 3000 0065 95'
-BIC = 'NDEAFIHH'
-TERMS_OF_PAYMENT_DAYS = 14
-INTEREST_RATE = 8  # in %
-BANK_CONNECTION = ' Nordea FI48 1778 3000 0065 95 NDEAFIHH'
-DOMICILE = 'Tampere'
-# --- INVOICE SETTINGS --- #

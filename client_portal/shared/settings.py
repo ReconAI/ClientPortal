@@ -7,6 +7,9 @@ SECRET_KEY = 'jq)oglowie!vb8rz3h+zo(bc(*!_ops)7#5dbbe&88cc#^-(1-'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True') not in ['False', '0']
 
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOSTS'), '127.0.0.1']
 
 APP_NAME = 'Recon AI'
@@ -21,11 +24,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'shared.middlewares.HTTPLogMiddleware'
 ]
-
-# --- PAYMENTS SETTINGS --- #
-CURRENCY = "eur"
-VAT = 0  # vat in %
-# --- PAYMENTS SETTINGS --- #
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
@@ -65,6 +63,8 @@ DATABASES = {
 }
 
 DATABASE_ROUTERS = ['shared.db_routers.ReconDBRouter']
+
+SHARED_TEMPLATES_DIR = '{}/{}'.format(BASE_DIR, 'templates')
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -121,3 +121,40 @@ LOGGING = {
         }
     }
 }
+
+# --- PAYMENTS SETTINGS --- #
+CURRENCY = "eur"
+VAT = 0  # vat in %
+TRIAL_PERIOD_DAYS = 30
+CHARGE_EACH_N_DAYS = 30
+STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY')
+STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
+USER_LICENSE_FEE = 29.9
+DEVICE_LICENSE_FEE = 5.9
+# --- PAYMENTS SETTINGS --- #
+
+
+# --- INVOICE SETTINGS --- #
+BANK_REFERENCE_CODE = 1038
+IBAN = 'FI48 1778 3000 0065 95'
+DEVICE_UNIT = 'pcs'
+
+BIC = 'NDEAFIHH'
+TERMS_OF_PAYMENT_DAYS = 14
+INTEREST_RATE = 8  # in %
+BANK_CONNECTION = ' Nordea FI48 1778 3000 0065 95 NDEAFIHH'
+DOMICILE = 'Tampere'
+# --- INVOICE SETTINGS --- #
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.{}.EmailBackend'.format(
+    os.environ.get('EMAIL_BACKEND', 'console')  # console, dummy, firebased, locmem, smtp
+)
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
+EMAIL_PORT = os.environ.get('EMAIL_PORT')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
+
+INFO_EMAIL = os.environ.get('INFO_EMAIL')

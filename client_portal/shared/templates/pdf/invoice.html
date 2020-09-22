@@ -83,46 +83,7 @@
 		  {{ organization.inv_address }}
 	  </div>
 	  <div class="col-60">
-		  <div class="col-wrap">
-			  <div class="col-40">Date:</div>
-			  <div class="col-60">{{ now }}</div>
-		  </div>
-		  <div class="col-wrap">
-			  <div class="col-40">Company ID:</div>
-			  <div class="col-60">{{ organization.id }}</div>
-		  </div>
-		  <div class="col-wrap">
-			  <div class="col-40">Bank Reference Code:</div>
-			  <div class="col-60">{{ bank_reference_code }}</div>
-		  </div>
-		  <div class="col-wrap">
-			  <div class="col-40">IBAN account number:</div>
-			  <div class="col-60">{{ iban }}</div>
-		  </div>
-		  <div class="col-wrap">
-			  <div class="col-40">BIC:</div>
-			  <div class="col-60">{{ bic }}</div>
-		  </div>
-		  <div class="col-wrap">
-			  <div class="col-40">Terms of Payment:</div>
-			  <div class="col-60">{{ terms_of_payment_days }} days net</div>
-		  </div>
-		  <div class="col-wrap">
-			  <div class="col-40">Due Date:</div>
-			  <div class="col-60">{{ due_date }}</div>
-		  </div>
-		  <div class="col-wrap">
-			  <div class="col-40">Interest Rate:</div>
-			  <div class="col-60">{{ interest_rate }}</div>
-		  </div>
-		  <div class="col-wrap">
-			  <div class="col-40">Currency:</div>
-			  <div class="col-60 uc">{{ currency }}</div>
-		  </div>
-		  <div class="col-wrap">
-			  <div class="col-40">Contact Person:</div>
-			  <div class="col-60">{{ root_organization.inv_firstname }} {{ root_organization.inv_lastname}}</div>
-		  </div>
+		  {% include 'pdf/enclosed_company_data.html' %}
 		  {% if charge.payment_id %}
 			  <div class="col-wrap">
 				  <div class="col-40">Payment ID:</div>
@@ -225,19 +186,6 @@
   </div>
   <br><br><br>
   <hr>
-  <div class="col-wrap">
-	  <div class="col-33">
-		  {{ root_organization.name }}<br />
-		  {{ root_organization.inv_address}}
-	  </div>
-	  <div class="col-33">
-		  Company ID: {{ root_organization.id }}<br />
-		  VAT-number: {{ root_organization.vat }}<br />
-		  Domicile: {{ domicile }}
-	  </div>
-	  <div class="col-33">
-		  Bank Connection: {{ bank_connection }}
-	  </div>
-  </div>
+  {% include 'pdf/footer.html' %}
 </body>
 </html>

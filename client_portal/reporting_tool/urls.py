@@ -27,7 +27,7 @@ from .views.accounts import SignupView, ActivateView, CurrentUserProfileView, \
     ObtainAuthToken, LogoutView, ResetPassword, PasswordResetConfirmView, \
     PreSignupValidationView, CheckResetPasswordTokenView, ChangePassword
 from .views.new_features import NewFeatureView
-from .views.orders import OrdersListView, OrderItemView
+from .views.orders import OrdersListView, OrderItemView, OrderItemDownload
 from .views.payment_methods import CardListView, DefaultPaymentMethodView
 from .views.relevant_data import RelevantDataView, \
     RelevantDataVehiclesView, \
@@ -49,7 +49,8 @@ urlpatterns = [
     path('cards', CardListView.as_view(), name='cards.list'),
     path('payment-methods', DefaultPaymentMethodView.as_view(), name='payment_methods.set_default'),
     path('orders', OrdersListView.as_view(), name='orders.list'),
-    path('orders/<str:payment_id>', OrderItemView.as_view(), name='orders.item'),
+    path('orders/<int:pk>', OrderItemView.as_view(), name='orders.item'),
+    path('orders/<int:pk>/download', OrderItemDownload.as_view(), name='orders.item.download'),
 
     path('reset-password', ResetPassword.as_view(), name='password_reset'),
     path('change-password', ChangePassword.as_view(), name='password_change'),

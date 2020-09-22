@@ -40,7 +40,10 @@ ROOT_URLCONF = 'order_portal.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['{}/{}'.format(BASE_DIR, 'templates')],
+        'DIRS': [
+            '{}/{}'.format(BASE_DIR, 'templates'),
+            SHARED_TEMPLATES_DIR
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
