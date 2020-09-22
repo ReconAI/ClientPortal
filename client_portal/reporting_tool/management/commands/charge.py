@@ -17,12 +17,12 @@ from django.utils.timezone import now
 
 from recon_db_manager.models import Organization, RecurrentCharge, \
     DeviceInstance
-from reporting_tool.forms.utils import SendEmailMixin
 from reporting_tool.pdf import Invoice
 from reporting_tool.serializers import UserInvoiceSerializer
 from shared.helpers import MonthlyUsageCalculator, StripePrice, Price, \
     PriceWithTax, RecurrentCharger
 from shared.models import UserGroup, Role
+from shared.utils import SendEmailMixin
 
 
 class Command(SendEmailMixin, BaseCommand):

@@ -21,13 +21,13 @@ from stripe.error import InvalidRequestError, CardError
 from recon_db_manager.models import Category, Manufacturer, Device, \
     DeviceImage, Purchase, Organization
 from recon_db_manager.models import DevicePurchase
-from reporting_tool.forms.utils import SendEmailMixin
 from shared.fields import FileField as ImgField
 from shared.helpers import StripePrice, PurchaseCharger
 from shared.models import Role
 from shared.pdf import Order
 from shared.serializers import ReadOnlySerializerMixin,\
     DeviceImageSerializer, OrderSerializer
+from shared.utils import SendEmailMixin
 
 
 class CategorySerializer(ModelSerializer):
