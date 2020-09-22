@@ -17,10 +17,11 @@ from rest_framework.serializers import Serializer
 from rest_framework.utils.serializer_helpers import ReturnDict
 
 from recon_db_manager.models import Organization, DevicePurchase, \
-    RelevantData, Project, TypeCode, DeviceInstance
+    RelevantData, Project, TypeCode, DeviceInstance, Purchase
 from reporting_tool.forms.utils import SendEmailMixin
 from reporting_tool.utils import FeatureRequestUploader
 from shared.fields import FileField
+from shared.helpers import Price, PriceWithTax
 from shared.models import User
 from shared.serializers import ReadOnlySerializerMixin, DeviceImageSerializer
 
@@ -158,21 +159,24 @@ class FeatureRequestSerializer(ReadOnlySerializerMixin,
         }
 
 
-class OrderListSerializer(ModelSerializer):
+class OrderListSerializer(ReadOnlySerializerMixin, Serializer):
     """
     Order list serializer
     """
+    id = serializers.IntegerField()
     type = serializers.CharField()
-    timestamp = serializers.CharField()
+    timestamp = serializers.CharField(source='created_dt')
     payment_id = serializers.CharField()
     total = serializers.SerializerMethodField(method_name='process_total')
+    is_invoice = serializers.BooleanField()
+    success = serializers.BooleanField()
 
     class Meta:
         """
         Orders list fields set
         """
-        model = DevicePurchase
-        fields = ('payment_id', 'type', 'timestamp', 'total')
+        # model = Purchase
+        fields = ('id', 'type', 'payment_id', 'timestamp', 'total', 'is_invoice', 'success')
 
     @staticmethod
     def process_total(purchase: dict) -> float:
@@ -183,78 +187,7 @@ class OrderListSerializer(ModelSerializer):
 
         :rtype: float
         """
-        return purchase.get('total__sum', 0) / 100
-
-
-class OrderSerializer(ModelSerializer):
-    """
-    Order item serializer
-    """
-    price_without_vat = serializers.SerializerMethodField(
-        method_name='process_price_without_vat'
-    )
-    price_with_vat = serializers.SerializerMethodField(
-        method_name='process_price_with_vat'
-    )
-    total = serializers.SerializerMethodField(
-        method_name='process_total'
-    )
-    images = serializers.SerializerMethodField(
-        method_name='format_images'
-    )
-
-    class Meta:
-        """
-        Device purchase fields list definition
-        """
-        model = DevicePurchase
-        fields = ('payment_id', 'device_name', 'price_without_vat',
-                  'price_with_vat', 'device_cnt', 'total', 'images',
-                  'created_dt')
-
-    @staticmethod
-    def process_price_without_vat(purchase: DevicePurchase) -> float:
-        """
-        :type purchase: DevicePurchase
-
-        :rtype: float
-        """
-        return float(purchase.device_price)
-
-    def process_price_with_vat(self, purchase: DevicePurchase) -> float:
-        """
-        :type purchase: DevicePurchase
-
-        :rtype: float
-        """
-        return round(self.process_total(purchase) / purchase.device_cnt, 2)
-
-    @staticmethod
-    def process_total(purchase: DevicePurchase) -> float:
-        """
-        Returns total in number with floating point
-
-        :type purchase: DevicePurchase
-
-        :rtype: float
-        """
-        return purchase.total / 100
-
-    def format_images(self, purchase: DevicePurchase) -> ReturnDict:
-        """
-        :type purchase: DevicePurchase
-
-        :rtype: list
-        """
-        images = purchase.device.images if purchase.device else []
-
-        return DeviceImageSerializer(
-            images,
-            many=True,
-            context={
-                'request': self.context.get('request')
-            }
-        ).data
+        return purchase.get('total', 0) / 100
 
 
 class UserInvoiceSerializer(ModelSerializer):
@@ -421,7 +354,7 @@ class RelevantDataSerializer(ModelSerializer):
             'tagged_data', 'license_plate_location', 'face_location',
             'cad_file_tag', 'road_temperature', 'ambient_temperature',
             'traffic_flow', 'pedestrian_flow_number_of_objects',
-            'pedestrian_flow_transit_method'
+            'pedestrian_flow_transit_method', 'is_tagged_data'
         )
 
     @staticmethod
@@ -523,6 +456,7 @@ class RelevantDataGeneratorSeriralizer(RelevantDataSerializer):
             'cad_file_tag', 'road_temperature', 'ambient_temperature',
             'pedestrian_flow_transit_method',
             'pedestrian_flow_number_of_objects',
+            'is_tagged_data',
             'traffic_flow_number_of_objects',
             'traffic_flow_observation_start_dt',
             'traffic_flow_observation_end_dt',

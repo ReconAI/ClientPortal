@@ -13,8 +13,10 @@ from rest_framework import serializers
 from rest_framework.authtoken.serializers import \
     AuthTokenSerializer as AuthTokenSerializerBase
 from rest_framework.serializers import ModelSerializer
+from rest_framework.utils.serializer_helpers import ReturnDict
 
-from recon_db_manager.models import Organization, DeviceImage
+from recon_db_manager.models import Organization, DeviceImage, DevicePurchase
+from shared.helpers import PriceWithTax, Price
 
 
 def form_to_formserializer(form: Union[Type[BaseForm], type]) \
@@ -203,3 +205,68 @@ class TrialSerializer(ModelSerializer):
         """
         model = Organization
         fields = ('trial_expires_on',)
+
+
+class OrderSerializer(ModelSerializer):
+    """
+    Order item serializer
+    """
+    payment_id = serializers.CharField(source='purchase.payment_id')
+    price_without_vat = serializers.FloatField(source='device_price')
+    price_with_vat = serializers.SerializerMethodField(
+        method_name='process_price_with_vat'
+    )
+    total = serializers.SerializerMethodField(
+        method_name='process_total'
+    )
+    images = serializers.SerializerMethodField(
+        method_name='format_images'
+    )
+    created_dt = serializers.DateTimeField(source='purchase.created_dt')
+
+    class Meta:
+        """
+        Device purchase fields list definition
+        """
+        model = DevicePurchase
+        fields = ('device_id', 'payment_id', 'device_name', 'price_without_vat',
+                  'price_with_vat', 'device_cnt', 'total', 'images',
+                  'created_dt')
+
+    @staticmethod
+    def process_price_with_vat(purchase: DevicePurchase) -> float:
+        """
+        :type purchase: DevicePurchase
+
+        :rtype: float
+        """
+        return round(PriceWithTax(
+            Price(purchase.device_price),
+            purchase.purchase.vat
+        ).as_price(), 2)
+
+    def process_total(self, purchase: DevicePurchase) -> float:
+        """
+        Returns total in number with floating point
+
+        :type purchase: DevicePurchase
+
+        :rtype: float
+        """
+        return self.process_price_with_vat(purchase) * purchase.device_cnt
+
+    def format_images(self, purchase: DevicePurchase) -> ReturnDict:
+        """
+        :type purchase: DevicePurchase
+
+        :rtype: list
+        """
+        images = purchase.device.images if purchase.device else []
+
+        return DeviceImageSerializer(
+            images,
+            many=True,
+            context={
+                'request': self.context.get('request')
+            }
+        ).data

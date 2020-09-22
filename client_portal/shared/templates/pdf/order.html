@@ -1,0 +1,163 @@
+<html>
+<head>
+	<style>
+		@font-face {
+			font-family: Gentium;
+			src: url(http://example.com/fonts/Gentium.otf);
+		}
+
+		* {
+			font-family: Gentium;
+			font-size: 12px
+		}
+
+		.col-wrap {
+			display: flex;
+		}
+
+		.col-20 {
+			flex: 20%
+		}
+
+		.col-20 {
+			flex: 20%
+		}
+
+
+		.col-30 {
+			flex: 30%
+		}
+
+		.col-33 {
+			flex: 33%
+		}
+
+		.col-40 {
+			flex: 40%
+		}
+
+		.col-45 {
+			flex: 45%
+		}
+
+		.col-50 {
+			flex: 50%
+		}
+
+		.col-55 {
+			flex: 55%
+		}
+
+		.col-60 {
+			flex: 60%
+		}
+
+		.col-70 {
+			flex: 70%
+		}
+
+
+		.col-80 {
+			flex: 80%
+		}
+
+		.uc {
+			text-transform: uppercase
+		}
+
+		.order-table {
+			width: 100%;
+		}
+	</style>
+</head>
+<body>
+  <div class="col-wrap">
+	  <div class="col-40">
+		  <b>{{ root_organization.name }}</b>
+	  </div>
+	  <div class="col-60">
+		  <b>INVOICE {{ charge.id }}</b>
+	  </div>
+  </div>
+  <hr><br><br><br>
+  <div class="col-wrap">
+	  <div class="col-40">
+		  {{ organization.name }}
+		  <br>
+		  {{ organization.inv_address }}
+	  </div>
+	  <div class="col-60">
+		  {% include 'pdf/enclosed_company_data.html' %}
+		  <div class="col-wrap">
+			  <div class="col-40"><b>Order Reference:</b></div>
+			  <div class="col-60"><b>{{ purchase.id }}</b></div>
+		  </div>
+		  {% if purchase.payment_id %}
+			  <div class="col-wrap">
+				  <div class="col-40"><b>Payment ID:</b></div>
+				  <div class="col-60"><b>{{ purchase.payment_id }}</b></div>
+			  </div>
+		  {% endif %}
+	  </div>
+  </div>
+  <br><br><br>
+  <hr>
+  <br><br><br>
+  <table class="order-table">
+	  <thead>
+		  <tr>
+			  <th>Product</th>
+			  <th>Product Code</th>
+			  <th>Amount</th>
+			  <th>Unit</th>
+			  <th>Unit Price, {{ currency }}</th>
+			  <th>Including VAT, {{ currency }}</th>
+			  <th>VAT, %</th>
+		  </tr>
+	  </thead>
+	  <tbody>
+		  {% for device_purchase in device_purchases %}
+		        <tr>
+					<td>{{ device_purchase.device_name }}</td>
+					<td>{{ device_purchase.device_id }}</td>
+					<td>{{ device_purchase.device_cnt }}</td>
+					<td>{{ device_unit }}</td>
+					<td>{{ device_purchase.price_without_vat }}</td>
+					<td>{{ device_purchase.price_with_vat }}</td>
+					<td>{{ purchase.vat }}</td>
+		        </tr>
+		  {% endfor %}
+	  </tbody>
+  </table>
+  <br><br><br>
+  <div class="col-wrap">
+	  <div class="col-80">
+		  Order Excluding VAT, {{ currency }}:
+	  </div>
+	  <div class="col-20">
+		  <b>{{ purchase.total_without_vat|floatformat:"2" }}</b>
+	  </div>
+  </div>
+  <br>
+  <div class="col-wrap">
+	  <div class="col-80">
+		  VAT, %
+	  </div>
+	  <div class="col-20">
+		  <b>{{ purchase.vat }}</b>
+	  </div>
+  </div>
+  <br>
+  <div class="col-wrap">
+	  <div class="col-80">
+		  Order Total, {{ currency }}:
+	  </div>
+	  <div class="col-20">
+		  <b>{{ purchase.total_with_cents|floatformat:"2" }}</b>
+	  </div>
+  </div>
+  <br><br><br>
+  <hr>
+  {% include 'pdf/footer.html' %}
+</body>
+</html>
