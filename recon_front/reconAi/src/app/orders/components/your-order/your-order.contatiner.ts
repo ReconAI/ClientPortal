@@ -9,6 +9,7 @@ import {
   selectCurrentUserProfileOrganizationPhone,
   selectCurrentUserProfileOrganizationLastName,
   selectCurrentUserProfileOrganizationFirstName,
+  selectCurrentUserProfileOrganizationDefaultCardId,
 } from './../../../store/user/user.selectors';
 import { tap } from 'rxjs/operators';
 import { selectUserProfileId } from './../../../store/users/users.selectors';
@@ -83,6 +84,10 @@ export class YourOrderContainer implements OnInit, OnDestroy {
 
   payingBasketStatus$: Observable<boolean> = this.store.pipe(
     select(selectPayingBasketLoadingStatus)
+  );
+
+  selectDefaultCardId$: Observable<string> = this.store.pipe(
+    select(selectCurrentUserProfileOrganizationDefaultCardId)
   );
 
   deleteDeviceOfUser(deviceId: number): void {

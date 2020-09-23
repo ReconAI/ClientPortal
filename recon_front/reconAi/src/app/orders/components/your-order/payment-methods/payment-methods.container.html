@@ -1,9 +1,8 @@
 <ng-container *ngIf="!(loadingStatus$ | async); else loading">
   <recon-payment-methods
     [possiblePayments]="possiblePayments$ | async"
+    [defaultCardId]="selectDefaultCardId$ | async"
     (selectPayment$)="selectPayment($event)"
   ></recon-payment-methods>
 </ng-container>
-<ng-template #loading>
-  Loading...
-</ng-template>
+<ng-template #loading> Loading... </ng-template>

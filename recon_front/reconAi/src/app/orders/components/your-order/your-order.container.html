@@ -9,6 +9,7 @@
   [lastName]="lastName$ | async"
   [loadingOverviewStatus]="loadingOverviewStatus$ | async"
   [payingBasketStatus]="payingBasketStatus$ | async"
+  [defaultCardId]="selectDefaultCardId$ | async"
   (buyClick$)="buyClick($event)"
   (deleteClick$)="deleteDeviceOfUser($event)"
 ></recon-your-order>

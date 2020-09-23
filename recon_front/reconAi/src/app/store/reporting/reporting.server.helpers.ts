@@ -1,3 +1,4 @@
+import { FilterItemInterface } from 'app/reporting/constants/types/filters';
 import {
   SensorClientInterface,
   SensorServerInterface,
@@ -186,14 +187,21 @@ export const setGpsErrorFieldRelations = {
   long: 'LNG',
 };
 
+// this method transform filters from array to string
+// from either local storage by default or argument filters
 export const transformEndpointWithApplyStatus = (
   url: string,
   status: boolean,
   userId: number,
-  fs: FiltersService
+  fs: FiltersService,
+  filters?: FilterItemInterface[]
 ) => {
   if (!status) {
     return url;
+  }
+
+  if (filters) {
+    return `${url}&${fs.transformFiltersToString(filters)}`;
   }
 
   return `${url}&${fs.transformValuesForUserFromLocalStorage(userId)}`;

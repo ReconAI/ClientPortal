@@ -10,6 +10,8 @@ import { MatRadioChange } from '@angular/material/radio';
 })
 export class PaymentMethodsComponent implements OnInit {
   @Input() possiblePayments: PaymentMethodsComponentInterface[] = [];
+  @Input() defaultCardId: string = null;
+
   @Output() selectPayment$ = new EventEmitter<string>();
 
   paymentMethod = '';
@@ -19,7 +21,9 @@ export class PaymentMethodsComponent implements OnInit {
     'You have no credit cards attached. You must first add at least 1 card to your profile';
   constructor() {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.paymentMethod = this.defaultCardId;
+  }
 
   selectPayment({ value }: MatRadioChange): void {
     this.selectPayment$.emit(value);

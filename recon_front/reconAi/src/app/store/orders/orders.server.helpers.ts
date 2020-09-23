@@ -1,3 +1,4 @@
+import { INVOICING_ACCOUNT } from 'app/constants';
 import { MetaStoreDevicesInterface } from './orders.reducer';
 import {
   MetaClientInterface,
@@ -292,6 +293,7 @@ export interface BasketOverviewRequestServerInterface {
 export interface BasketPaymentRequestServerInterface
   extends BasketOverviewRequestServerInterface {
   card_id: string;
+  is_card: boolean;
 }
 
 export interface BasketOverviewRequestClientInterface {
@@ -349,6 +351,7 @@ export const transformBasketPaymentRequestToServer = ({
   cardId,
   deviceCount,
 }: BasketPaymentRequestClientInterface): BasketPaymentRequestServerInterface => ({
+  is_card: cardId !== INVOICING_ACCOUNT,
   card_id: cardId,
   device_count: Object.keys(deviceCount).reduce(
     (res, key) => ({

@@ -39,6 +39,8 @@ import {
   pedestrianFlowListSucceededAction,
   resetMapDataAction,
   loadAdditionalSensorInfoSucceededAction,
+  SetSingularDeviceFiltersInterface,
+  setSingularDeviceFiltersAction,
 } from './reporting.actions';
 
 export interface ReportingErrorsInterface {
@@ -72,6 +74,7 @@ export interface ReportingState {
     meta: MetaClientInterface;
   };
   sensorAdditionalInfo: SensorClientInterface;
+  singularDeviceFilters: FilterItemInterface[];
 }
 
 export const initialState: ReportingState = {
@@ -96,6 +99,7 @@ export const initialState: ReportingState = {
     meta: null,
   },
   sensorAdditionalInfo: null,
+  singularDeviceFilters: [],
 };
 
 const loadReportingFilteringListSucceededReducer = (
@@ -227,6 +231,14 @@ const resetMapDataReducer = (state: ReportingState): ReportingState => ({
   heatMapData: [],
 });
 
+const setSingularDeviceFiltersReducer = (
+  state: ReportingState,
+  { filters }: Action & SetSingularDeviceFiltersInterface
+): ReportingState => ({
+  ...state,
+  singularDeviceFilters: filters,
+});
+
 const reportingReducer = createReducer(
   initialState,
   on(
@@ -252,7 +264,8 @@ const reportingReducer = createReducer(
   on(
     loadAdditionalSensorInfoSucceededAction,
     loadAdditionalSensorInfoSucceededReducer
-  )
+  ),
+  on(setSingularDeviceFiltersAction, setSingularDeviceFiltersReducer)
 );
 
 export function reducer(state: ReportingState | undefined, action: Action) {

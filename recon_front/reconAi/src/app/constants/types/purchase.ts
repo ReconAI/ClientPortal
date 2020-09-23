@@ -4,6 +4,9 @@ export interface PurchaseClientInterface {
   type: string;
   date: string;
   total: string;
+  success: boolean;
+  id: number;
+  isInvoice: boolean;
 }
 
 export interface PurchaseServerInterface {
@@ -11,6 +14,9 @@ export interface PurchaseServerInterface {
   type: string;
   timestamp: string;
   total: number;
+  success: boolean;
+  id: number;
+  is_invoice: boolean;
 }
 
 export interface PurchaseCardServerInterface {

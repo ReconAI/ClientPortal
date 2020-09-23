@@ -1,3 +1,4 @@
+import { FilterItemInterface } from 'app/reporting/constants/types/filters';
 import { SensorClientInterface } from './../../constants/types/sensors';
 import { LatLngInterface } from 'app/core/helpers/markers';
 import { ReconSelectOption } from './../../shared/types/recon-select';
@@ -142,4 +143,16 @@ export const selectReportingSensorAdditionalInfoLng = createSelector(
 export const selectReportingSensorAdditionalInfoSerial = createSelector(
   selectReportingSensorAdditionalInfo,
   (sensor: SensorClientInterface): number => sensor?.serial || null
+);
+
+export const selectSingularDeviceFilters = createSelector(
+  selectReporting,
+  (reporting: ReportingState): FilterItemInterface[] =>
+    reporting?.singularDeviceFilters || []
+);
+
+export const selectFilteredSingularDeviceFilters = createSelector(
+  selectReporting,
+  (reporting: ReportingState): FilterItemInterface[] =>
+    reporting?.singularDeviceFilters?.filter(({ selected }) => selected) || []
 );
