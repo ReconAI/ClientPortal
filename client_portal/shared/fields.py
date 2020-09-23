@@ -4,7 +4,7 @@ Custom serializer fields range
 
 import base64
 from abc import abstractmethod
-from typing import Any, Union, List
+from typing import Any, Union, List, Sized
 
 from dateutil.parser import parse, ParserError
 from django import forms
@@ -50,8 +50,7 @@ class RangeField(forms.CharField):
 
     default_error_messages = {
         'format_error': _('Value should consist of '
-                          '{} argument(s) separated by '
-                          '{}'.format(CHUNKS_NUMBER, SEPARATOR))
+                          '{} argument(s)'.format(CHUNKS_NUMBER))
     }
 
     def clean(self, value: str) -> Union[str, List[Any]]:
@@ -69,12 +68,22 @@ class RangeField(forms.CharField):
             in value.split(self.SEPARATOR)
         ]
 
-        if result and len(result) != self.CHUNKS_NUMBER:
+        if self.check_chunks(result):
             raise ValidationError(
                 self.default_error_messages.get('format_error')
             )
 
         return result
+
+    def check_chunks(self, result: Sized) -> bool:
+        """
+        Performs chunks check
+
+        :type result: Sized
+
+        :rtype: bool
+        """
+        return result and len(result) != self.CHUNKS_NUMBER
 
     @abstractmethod
     def _prepare(self, item: str) -> Any:
@@ -117,3 +126,23 @@ class GPSRangeField(FloatRangeField):
     """
 
     CHUNKS_NUMBER = 4
+
+
+class CharRangeField(RangeField):
+    """
+    Checks whether whether number of range elements is not less
+    than threshold specified
+    """
+    CHUNKS_NUMBER = 1
+    SEPARATOR = '|'
+
+    default_error_messages = {
+        'format_error': _('Value should consist at least of'
+                          '{} argument(s)'.format(CHUNKS_NUMBER))
+    }
+
+    def check_chunks(self, result: Sized) -> bool:
+        return result and len(result) < self.CHUNKS_NUMBER
+
+    def _prepare(self, item: str) -> Any:
+        return str(item)

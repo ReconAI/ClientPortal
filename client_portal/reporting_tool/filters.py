@@ -7,6 +7,7 @@ from django.db.models import QuerySet, Q
 from django_filters import rest_framework as filters
 
 from recon_db_manager.models import RelevantData
+from shared.fields import CharRangeField
 from shared.filters import FilterSet, CharFilter, DateTimeFromToRangeFilter, \
     NumericRangeFilter, BooleanFilter, GPSFilter, NumberFilter, FilterMixin
 from shared.forms import NegativeFiltersForm
@@ -19,8 +20,12 @@ class EventObjectFilter(FilterMixin, filters.ChoiceFilter):
     def filter(self, queryset: QuerySet, value: Any) -> Optional[Q]:
         return super().filter(
             queryset,
-            value != self.EVENT_TYPE
+            value != self.EVENT_TYPE if value else value
         )
+
+
+class MultipleTypeCodeFilter(FilterMixin, filters.CharFilter):
+    field_class = CharRangeField
 
 
 class RelevantDataSensorFilter(FilterSet):
@@ -52,8 +57,8 @@ class RelevantDataSensorFilter(FilterSet):
     vehicle_type = CharFilter(
         field_name='vehicle_classification', lookup_expr='exact', strip=False
     )
-    object_class = CharFilter(
-        field_name='object_class', lookup_expr='exact', strip=False
+    object_class = MultipleTypeCodeFilter(
+        field_name='object_class', lookup_expr='in', strip=False
     )
     road_weather_condition = CharFilter(
         field_name='road_weather_condition', lookup_expr='exact', strip=False

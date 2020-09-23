@@ -132,15 +132,19 @@ class UserCostHandler:
         :type user_license_fee: float
         """
         self.__user = user
-        self.__cloud_cost = Decimal(0)
         self.license_fee = Decimal(user_license_fee)
+        self.__cloud_cost = Decimal(settings.INFRASTRUCTURE_USAGE_FEE)
+        self.__cloud_tax = Decimal(settings.INFRASTRUCTURE_USAGE_TAX)
 
     @property
     def cloud_cost(self) -> Union[Decimal, float]:
         """
         :rtype: Union[Decimal, float]
         """
-        return PriceWithTax(Price(self.__cloud_cost), 10).as_price()
+        return PriceWithTax(
+            Price(self.__cloud_cost),
+            self.__cloud_tax
+        ).as_price()
 
     @property
     def total(self) -> Decimal:
