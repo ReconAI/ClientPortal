@@ -396,9 +396,12 @@ class RelevantDataSerializer(ModelSerializer):
 
         :rtype: str
         """
-        return self.pedestrian_method_by_code(
-            instance.pedestrian_flow.get('TransitMethod')
-        )
+        if instance.pedestrian_flow:
+            return self.pedestrian_method_by_code(
+                instance.pedestrian_flow.get('TransitMethod')
+            )
+
+        return ''
 
 
 class GeneratorListSerializer(ListSerializer):
