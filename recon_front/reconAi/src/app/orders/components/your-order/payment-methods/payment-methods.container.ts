@@ -4,7 +4,7 @@ import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 import { PaymentMethodsComponentInterface } from 'app/constants/types/card';
 import { AppState } from 'app/store/reducers';
 import { Observable } from 'rxjs';
-import { selectUserCards } from 'app/store/user/user.selectors';
+import { selectCurrentUserProfileOrganizationDefaultCardId, selectUserCards } from 'app/store/user/user.selectors';
 import { selectUserCardsLoadingStatus } from 'app/store/loaders/loaders.selectors';
 
 @Component({
@@ -33,6 +33,10 @@ export class PaymentMethodsContainer implements OnInit {
 
   loadingStatus$: Observable<boolean> = this.store.pipe(
     select(selectUserCardsLoadingStatus)
+  );
+
+  selectDefaultCardId$: Observable<string> = this.store.pipe(
+    select(selectCurrentUserProfileOrganizationDefaultCardId)
   );
 
   selectPayment(value: string): void {

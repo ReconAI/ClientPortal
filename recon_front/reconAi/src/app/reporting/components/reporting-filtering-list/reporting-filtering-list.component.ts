@@ -100,7 +100,7 @@ export class ReportingFilteringListComponent
   deviceId: number;
 
   readonly tooltipForDisabledBuildButton =
-    'To use this feature, please apply License plate filter';
+    'To use this feature, please apply Vehicle registration plate filter';
 
   openSuccessDialog$: Observable<Action> = this.actionsSubject.pipe(
     ofType(exportRelevantDataSucceededAction)

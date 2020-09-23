@@ -39,6 +39,7 @@ export class YourOrderComponent implements OnInit, OnDestroy {
   @Input() lastName = '';
   @Input() loadingOverviewStatus = false;
   @Input() payingBasketStatus = false;
+  @Input() defaultCardId: string = null;
 
   @Output() deleteClick$ = new EventEmitter<number>();
   @Output() buyClick$ = new EventEmitter<string>();
@@ -80,6 +81,8 @@ export class YourOrderComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.paymentMethod = this.defaultCardId;
+
     this.succeededPaymentSubscription$ = this.succeededPaymentAction$.subscribe(
       ({ id }) => {
         this.openDialog({

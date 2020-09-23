@@ -3,6 +3,7 @@ import {
   selectRoadWeatherConditionList,
   selectPlateNumberList,
   selectPedestrianFlowList,
+  selectSingularDeviceFilters,
 } from './../../../store/reporting/reporting.selectors';
 import { loadReportingFilteringListRequestedAction } from 'app/store/reporting';
 import {
@@ -17,6 +18,7 @@ import {
   plateNumberListRequestedAction,
   pedestrianFlowListRequestedAction,
   plateNumberListSucceededAction,
+  setSingularDeviceFiltersAction,
 } from './../../../store/reporting/reporting.actions';
 import { FiltersService } from './../../../core/services/filters/filters.service';
 import { FilterItemInterface } from 'app/reporting/constants/types/filters';
@@ -68,15 +70,24 @@ export class ReportingFilterContainer implements OnInit, OnDestroy {
   projectNames$: Observable<string[]> = this.store.pipe(
     select(selectProjectNameList)
   );
+
   plateNumbers$: Observable<string[]> = this.store.pipe(
     select(selectPlateNumberList)
   );
 
+  singularDeviceFilters$: Observable<FilterItemInterface[]> = this.store.pipe(
+    select(selectSingularDeviceFilters)
+  );
+
   changeFilters(filters: FilterItemInterface[]): void {
-    this.filtersService.setValueToLocalStorage({
-      userId: this.userId,
-      filters,
-    });
+    if (!this.isDevice) {
+      this.filtersService.setValueToLocalStorage({
+        userId: this.userId,
+        filters,
+      });
+    } else {
+      this.store.dispatch(setSingularDeviceFiltersAction({ filters }));
+    }
   }
 
   ngOnInit(): void {
@@ -86,12 +97,6 @@ export class ReportingFilterContainer implements OnInit, OnDestroy {
       }
     );
     this.deviceId = +this.activatedRoute.snapshot.paramMap.get('id');
-
-    if (this.isDevice) {
-      this.filtersService.removeOneFilterForUser(this.userId, 'sensor_id');
-      this.filtersService.removeOneFilterForUser(this.userId, 'gps');
-    }
-
     this.filters$ = of(this.filtersService.getUserFilters(this.userId));
     this.store.dispatch(eventObjectListRequestedAction());
     this.store.dispatch(roadWeatherConditionListRequestedAction());
@@ -105,7 +110,9 @@ export class ReportingFilterContainer implements OnInit, OnDestroy {
         loadReportingDeviceRequestedAction({ page: 1, id: this.deviceId })
       );
     } else {
-      this.store.dispatch(loadReportingFilteringListRequestedAction({ page: 1 }));
+      this.store.dispatch(
+        loadReportingFilteringListRequestedAction({ page: 1 })
+      );
     }
   }
 
@@ -115,6 +122,9 @@ export class ReportingFilterContainer implements OnInit, OnDestroy {
         status: true,
       })
     );
+    if (!this.isDevice) {
+      this.store.dispatch(buildVehicleRouteSucceededAction({ points: [] }));
+    }
     this.loadData();
   }
 

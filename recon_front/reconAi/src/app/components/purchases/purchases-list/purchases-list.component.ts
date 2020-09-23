@@ -1,5 +1,15 @@
 import { Router } from '@angular/router';
-import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  EventEmitter,
+  Output,
+  AfterViewInit,
+  ElementRef,
+  ViewChild,
+  TemplateRef,
+} from '@angular/core';
 import { PurchaseClientInterface } from 'app/constants/types/purchase';
 
 @Component({
@@ -7,7 +17,11 @@ import { PurchaseClientInterface } from 'app/constants/types/purchase';
   templateUrl: './purchases-list.component.html',
   styleUrls: ['./purchases-list.component.less'],
 })
-export class PurchasesListComponent implements OnInit {
+export class PurchasesListComponent implements OnInit, AfterViewInit {
+  @ViewChild('successColumn') successColumnRef: TemplateRef<
+    PurchaseClientInterface
+  >;
+
   @Input() purchases: PurchaseClientInterface[] = [];
   @Input() currentPage = 0;
   @Input() totalCount = 0;
@@ -15,26 +29,7 @@ export class PurchasesListComponent implements OnInit {
   @Input() loadingStatus = false;
   @Output() loadData$ = new EventEmitter<number>();
 
-  readonly columns = [
-    {
-      header: 'Order ID',
-      id: 'paymentId',
-    },
-    {
-      header: 'Payment date',
-      id: 'date',
-    },
-    {
-      header: 'Type',
-      id: 'type',
-      render: (purchase: PurchaseClientInterface) =>
-        purchase.type === 'purchase' ? 'Purchase device' : 'Monthly invoice',
-    },
-    {
-      header: 'Amount, €',
-      id: 'total',
-    },
-  ];
+  columns = [];
 
   constructor(private router: Router) {}
 
@@ -43,7 +38,37 @@ export class PurchasesListComponent implements OnInit {
   }
 
   purchaseClick(purchase: PurchaseClientInterface) {
-    this.router.navigate(['invoice/', purchase.paymentId]);
+    if (purchase.type === 'purchase') {
+      this.router.navigate(['invoice/', purchase.id]);
+    }
+  }
+
+  ngAfterViewInit(): void {
+    this.columns = [
+      {
+        header: 'Order ID',
+        id: 'id',
+      },
+      {
+        header: 'Payment date',
+        id: 'date',
+      },
+      {
+        header: 'Type',
+        id: 'type',
+        render: (purchase: PurchaseClientInterface) =>
+          purchase.type === 'purchase' ? 'Purchase device' : 'Recurrent charge',
+      },
+      {
+        header: 'Amount, €',
+        id: 'total',
+      },
+      {
+        header: 'Status',
+        id: 'status',
+        cellTemplate: this.successColumnRef,
+      },
+    ];
   }
   ngOnInit(): void {}
 }

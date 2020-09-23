@@ -10,6 +10,10 @@ import {
   buildVehicleRouteRequestedAction,
   heatMapDataRequestedAction,
   resetMapDataAction,
+  setApplyFiltersStatusAction,
+  projectNameListSucceededAction,
+  plateNumberListSucceededAction,
+  buildVehicleRouteSucceededAction,
 } from './../../../store/reporting/reporting.actions';
 import { RelevantDataExportFormat } from './../../../constants/types/relevant-data';
 import {
@@ -24,7 +28,7 @@ import {
   ReportingFilteringDeviceClientInterface,
   HeatMapPointClientInterface,
 } from './../../../store/reporting/reporting.server.helpers';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Store, select } from '@ngrx/store';
 import { AppState } from 'app/store/reducers';
 import { loadReportingFilteringListRequestedAction } from 'app/store/reporting';
@@ -35,7 +39,7 @@ import { selectReportingFilteringListLoadingStatus } from 'app/store/loaders/loa
   selector: 'recon-reporting-filtering-list-container',
   templateUrl: './reporting-filtering-list.container.html',
 })
-export class ReportingFilteringListContainer implements OnInit {
+export class ReportingFilteringListContainer implements OnInit, OnDestroy {
   constructor(
     private store: Store<AppState>,
     private filtersService: FiltersService
@@ -107,6 +111,17 @@ export class ReportingFilteringListContainer implements OnInit {
         page: 1,
       })
     );
+  }
+
+  ngOnDestroy(): void {
+    this.store.dispatch(
+      setApplyFiltersStatusAction({
+        status: false,
+      })
+    );
+    this.store.dispatch(projectNameListSucceededAction({ names: [] }));
+    this.store.dispatch(plateNumberListSucceededAction({ names: [] }));
+    this.store.dispatch(buildVehicleRouteSucceededAction({ points: [] }));
   }
 
   resetMapData(): void {

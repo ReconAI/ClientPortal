@@ -1,0 +1,3 @@
+{% load i18n %}{% autoescape off %}
+{% blocktrans %}Purchase via invoice on {{ app_name }}{% endblocktrans %}
+{% endautoescape %}

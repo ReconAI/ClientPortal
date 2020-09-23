@@ -11,11 +11,11 @@ from django.utils.text import slugify
 from requests import Request
 
 from reporting_tool.forms.accounts import UserForm
-from reporting_tool.forms.utils import CheckUserTokenForm, RoleFieldMixin, \
-    SendEmailMixin
+from reporting_tool.forms.utils import CheckUserTokenForm, RoleFieldMixin
 from reporting_tool.frontend.router import Router
 from reporting_tool.tokens import InvitationTokenGenerator
 from shared.models import User, UserGroup
+from shared.utils import SendEmailMixin
 
 
 class UserEditForm(ModelForm):

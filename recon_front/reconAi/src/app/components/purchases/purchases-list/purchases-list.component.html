@@ -10,6 +10,13 @@
     [isWithActions]="false"
   ></recon-crud-table>
 </ng-container>
-<ng-template #loading>
-  Loading...
+<ng-template #loading> Loading... </ng-template>
+
+<ng-template #successColumn let-element="element">
+  <ng-container *ngIf="element.success; else failed">
+    <mat-icon>done</mat-icon>
+  </ng-container>
+  <ng-template #failed>
+    <mat-icon>clear</mat-icon>
+  </ng-template>
 </ng-template>

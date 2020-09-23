@@ -12,8 +12,8 @@ from django.db.models.query import QuerySet
 from django.utils.timezone import now
 
 from recon_db_manager.models import Organization
-from reporting_tool.forms.utils import SendEmailMixin
 from shared.models import User, Role, UserGroup
+from shared.utils import SendEmailMixin
 
 
 class Command(BaseCommand, SendEmailMixin):

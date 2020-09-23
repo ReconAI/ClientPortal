@@ -17,12 +17,12 @@ from django.utils.timezone import now
 
 from recon_db_manager.models import Organization, RecurrentCharge, \
     DeviceInstance
-from reporting_tool.forms.utils import SendEmailMixin
 from reporting_tool.pdf import Invoice
 from reporting_tool.serializers import UserInvoiceSerializer
 from shared.helpers import MonthlyUsageCalculator, StripePrice, Price, \
-    PriceWithTax, OrganizationCharger
+    PriceWithTax, RecurrentCharger
 from shared.models import UserGroup, Role
+from shared.utils import SendEmailMixin
 
 
 class Command(SendEmailMixin, BaseCommand):
@@ -68,7 +68,7 @@ class Command(SendEmailMixin, BaseCommand):
 
         :type organization: Organization
         """
-        organization_charger = OrganizationCharger(
+        organization_charger = RecurrentCharger(
             organization,
             organization.last_payment_id,
             organization.last_payment_dt,
@@ -120,7 +120,7 @@ class Command(SendEmailMixin, BaseCommand):
     @staticmethod
     def __create_charge(organization: Organization, payment_id: str,
                         amount: float,
-                        organization_charger: OrganizationCharger
+                        organization_charger: RecurrentCharger
                         ) -> RecurrentCharge:
         """
         :type organization: Organization
@@ -150,9 +150,10 @@ class Command(SendEmailMixin, BaseCommand):
         :type invoice: bytearray
         """
         self.send_mail(
-            organization.user_set.filter(
-                pk__in=self.__authorized_users_ids
-            ).all().values_list('email', flat=True),
+            Role.admins(
+                organization,
+                self.__authorized_users_ids
+            ).values_list('email', flat=True),
             'emails/recurrent_invoice_subject',
             'emails/recurrent_invoice.html',
             attachments=[[
@@ -160,7 +161,7 @@ class Command(SendEmailMixin, BaseCommand):
                 invoice,
                 'application/pdf'
             ]],
-            organization=organization
+            organization_name=organization.name
         )
 
     def get_queryset(self) -> QuerySet:
@@ -182,7 +183,7 @@ class Command(SendEmailMixin, BaseCommand):
                 settings.TRIAL_PERIOD_DAYS
             ))
         ).order_by(
-            '-id', '-created_dt'
+            '-id', '-recurrentcharge__created_dt'
         ).prefetch_related(
             'user_set', 'edgenode_set'
         ).all()
