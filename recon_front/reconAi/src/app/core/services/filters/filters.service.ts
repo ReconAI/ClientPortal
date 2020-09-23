@@ -1,3 +1,4 @@
+import { FilterItemInterface } from './../../../reporting/constants/types/filters';
 import { selectCurrentUserProfileId } from 'app/store/user/user.selectors';
 import { selectUserProfileId } from './../../../store/users/users.selectors';
 import { map, withLatestFrom } from 'rxjs/operators';
@@ -15,9 +16,9 @@ import {
 } from './../../constants/filters';
 import { LocalStorageService } from './../localStorage/local-storage.service';
 import { Injectable } from '@angular/core';
-import { FilterItemInterface } from 'app/reporting/constants/types/filters';
 import { AppState } from 'app/store/reducers';
 import moment from 'moment';
+import { isValueOfFilterValidForServer } from 'app/core/helpers/filters';
 @Injectable({
   providedIn: 'root',
 })
@@ -34,7 +35,9 @@ export class FiltersService {
     const oldFilters = this.localStorageService.getFiltersValue();
     const newFilters = {
       ...(oldFilters || {}),
-      [userId]: filters.filter(({ selected }) => selected),
+      [userId]: filters.filter((filter) =>
+        isValueOfFilterValidForServer(filter)
+      ),
     };
 
     this.localStorageService.setFiltersValue(newFilters);
@@ -181,7 +184,6 @@ export class FiltersService {
       select(selectApplyFiltersStatus),
       withLatestFrom(this.store.pipe(select(selectCurrentUserProfileId))),
       map(([status, userId]) => {
-        console.log(status, 'SSSSSSSSSSsssSTATUS');
         return !!status && !!this.getUserFilter(filterId, +userId);
       })
     );

@@ -1,3 +1,5 @@
+import { AuthorizationRedirectComponent } from './authorization-redirect/authorization-redirect.component';
+import { UnauthorizedPageComponent } from './components/unauthorized-page/unauthorized-page.component';
 import { IsPossibleToBuyGuard } from './core/guards/is-possible-to-buy/is-possible-to-buy.guard';
 import { PurchaseCardContainer } from './components/purchases/purchase-card/purchase-card.container';
 import { CurrentUserProfileContainer } from './components/current-user-profile/current-user-profile.container';
@@ -22,8 +24,8 @@ import { PurchasesListContainer } from './components/purchases/purchases-list/pu
 const routes: Routes = [
   {
     path: '',
-    redirectTo: '/reporting',
     pathMatch: 'full',
+    component: AuthorizationRedirectComponent,
   },
   {
     path: 'reporting',
@@ -80,6 +82,14 @@ const routes: Routes = [
     },
   },
   {
+    path: 'unauthorized',
+    canActivate: [NotAuthGuard],
+    data: {
+      title: 'Recon',
+    },
+    component: UnauthorizedPageComponent,
+  },
+  {
     path: 'invoice',
     canActivateChild: [IsPossibleToBuyGuard],
     data: {
@@ -108,9 +118,10 @@ const routes: Routes = [
   },
   {
     path: 'new-feature',
-    // canActivate: [AuthRoleGuard],
+    canActivate: [AuthRoleGuard],
     data: {
       title: 'Request new feature',
+      expectedRolePriority: UserRolesPriorities.DEVELOPER_ROLE,
     },
     component: NewFeatureContainer,
   },

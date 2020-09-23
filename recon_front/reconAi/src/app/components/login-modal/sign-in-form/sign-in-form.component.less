@@ -13,7 +13,7 @@ form {
     flex-direction: column;
 
     .field-container,
-    .forgot-password-container {
+    .additional-info-container {
         width: 80%;
 
         .mat-form-field {
@@ -22,12 +22,13 @@ form {
     }
 
     .mat-icon,
-    .forgot-password-container>p {
+    .additional-info-container>p {
         cursor: pointer;
     }
 
-    .forgot-password-container {
-        text-align: end;
+    .additional-info-container {
+        display: flex;
+        justify-content: space-between;
 
         p {
             text-decoration: underline;

@@ -4,6 +4,7 @@ import {
   selectPlateNumberList,
   selectPedestrianFlowList,
   selectSingularDeviceFilters,
+  selectApplyFiltersStatus,
 } from './../../../store/reporting/reporting.selectors';
 import { loadReportingFilteringListRequestedAction } from 'app/store/reporting';
 import {
@@ -77,6 +78,10 @@ export class ReportingFilterContainer implements OnInit, OnDestroy {
 
   singularDeviceFilters$: Observable<FilterItemInterface[]> = this.store.pipe(
     select(selectSingularDeviceFilters)
+  );
+
+  isFiltersApplied$: Observable<boolean> = this.store.pipe(
+    select(selectApplyFiltersStatus)
   );
 
   changeFilters(filters: FilterItemInterface[]): void {
