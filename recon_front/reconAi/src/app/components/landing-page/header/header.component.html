@@ -14,7 +14,10 @@
       <a *reconCheckUserRolePriority="userRolePriorities.CLIENT_ROLE"
         >User settings</a
       > -->
-      <a routerLink="/new-feature" routerLinkActive="active-link"
+      <a
+        routerLink="/new-feature"
+        routerLinkActive="active-link"
+        *reconCheckUserRolePriority="userRolePriorities.DEVELOPER_ROLE"
         >New Feature</a
       >
       <a routerLink="/devices" routerLinkActive="active-link">Devices</a>

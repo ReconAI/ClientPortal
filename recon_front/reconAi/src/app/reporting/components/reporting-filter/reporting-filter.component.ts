@@ -25,6 +25,7 @@ export class ReportingFilterComponent implements OnInit {
   @Input() projectNames: string[] = [];
   @Input() plateNumbers: string[] = [];
   @Input() isDevice = false;
+  @Input() isFiltersApplied = false;
 
   @Output() changeFilters = new EventEmitter<FilterItemInterface[]>();
   @Output() applyFilters = new EventEmitter();
@@ -91,6 +92,12 @@ export class ReportingFilterComponent implements OnInit {
   toggleSelectValueWithIndex(i: number): void {
     const control = this.filtersForm.get(`filters.${i}.selected`);
     control.setValue(!control.value);
+    this.changeValue();
+  }
+
+  setSelectValueWithIndex(i: number, value: boolean): void {
+    const control = this.filtersForm.get(`filters.${i}.selected`);
+    control.setValue(value);
     this.changeValue();
   }
 

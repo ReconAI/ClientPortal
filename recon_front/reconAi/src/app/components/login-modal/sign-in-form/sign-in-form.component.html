@@ -61,8 +61,10 @@
       />
     </mat-form-field>
   </div>
-  <div class="forgot-password-container" *ngIf="!isSignUp">
+  <div class="additional-info-container" *ngIf="!isSignUp">
+    <p>Pricing info</p>
     <p mat-dialog-close (click)="openForgotPasswordDialog()">Forgot password</p>
+
   </div>
   <button
     mat-raised-button

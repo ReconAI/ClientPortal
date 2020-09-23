@@ -69,6 +69,8 @@ import { BreadcrumbsComponent } from './components/landing-page/breadcrumbs/brea
 import { BreadcrumbsContainer } from './components/landing-page/breadcrumbs/breadcrumbs.container';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
+import { UnauthorizedPageComponent } from './components/unauthorized-page/unauthorized-page.component';
+import { AuthorizationRedirectComponent } from './authorization-redirect/authorization-redirect.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -112,6 +114,8 @@ import { LeafletModule } from '@asymmetrik/ngx-leaflet';
     PurchaseCardContainer,
     BreadcrumbsComponent,
     BreadcrumbsContainer,
+    UnauthorizedPageComponent,
+    AuthorizationRedirectComponent,
   ],
   imports: [
     BrowserModule,

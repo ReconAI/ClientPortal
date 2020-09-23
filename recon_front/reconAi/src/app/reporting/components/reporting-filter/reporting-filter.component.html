@@ -266,8 +266,17 @@
       class="filter-button"
       matTooltip="Apply filters"
       (click)="clickApply()"
+      [ngClass]="{ 'green-filter': isFiltersApplied }"
     >
-      <img src="assets/icons/magnifying-glass.svg" height="25" width="25" />
+      <img
+        [src]="
+          isFiltersApplied
+            ? 'assets/icons/magnifying-glass-white.svg'
+            : 'assets/icons/magnifying-glass.svg'
+        "
+        height="25"
+        width="25"
+      />
     </div>
     <div
       mat-raised-button
@@ -313,10 +322,13 @@
                 "
                 [formGroupName]="i"
               >
+                <!-- work around with double click events emitting by label and input from checkbox -->
                 <recon-form-checkbox
                   formControlName="selected"
                   [disabled]="isDisabledFilter(i)"
-                  (click)="$event.stopPropagation()"
+                  (changeVal)="
+                    !isDisabledFilter(i) && setSelectValueWithIndex(i, $event)
+                  "
                 ></recon-form-checkbox>
                 {{ filter.label }}
               </div>

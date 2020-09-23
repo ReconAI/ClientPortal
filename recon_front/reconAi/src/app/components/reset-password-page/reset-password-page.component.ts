@@ -35,7 +35,7 @@ export class ResetPasswordPageComponent implements OnInit {
     this.uidb64 = this.activatedRoute.snapshot.paramMap.get('uidb');
     this.token = this.activatedRoute.snapshot.paramMap.get('token');
 
-    this.router.navigate(['/']);
+    this.router.navigate(['']);
 
     if (this.uidb64 && this.token) {
       this.openDialog();

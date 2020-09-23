@@ -21,13 +21,13 @@ export class UserMenuComponent {
 
   @Output() logout$ = new EventEmitter();
   constructor(public dialog: MatDialog, private router: Router) {}
-  dialogRef: MatDialogRef<LoginModalComponent>;
 
   openDialog(): void {
-    this.dialogRef = this.dialog.open(LoginModalComponent, {
+    this.dialog.open(LoginModalComponent, {
       width: '460px',
       height: '410px',
       panelClass: 'login-modal',
+      disableClose: true,
     });
   }
 

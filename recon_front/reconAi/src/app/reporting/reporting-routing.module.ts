@@ -8,7 +8,7 @@ const routes: Routes = [
   {
     path: '',
     data: {
-      title: ' ',
+      title: 'Report portal',
       backgroundWithoutUnion: true,
     },
     component: ReportingFilteringListContainer,
