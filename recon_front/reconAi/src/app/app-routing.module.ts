@@ -48,8 +48,10 @@ const routes: Routes = [
   },
   {
     path: 'orders',
+    canActivate: [AuthRoleGuard],
     data: {
       breadcrumbTitle: 'Order portal',
+      expectedRolePriority: UserRolesPriorities.CLIENT_ROLE,
     },
     loadChildren: () =>
       import('./orders/orders.module').then((m) => m.OrdersModule),

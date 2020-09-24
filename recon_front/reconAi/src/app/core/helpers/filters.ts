@@ -55,5 +55,9 @@ export const isValueOfFilterValidForServer = (
     );
   }
 
+  if (type === FilterTypes.MULTIPLE_SELECT) {
+    return !!(value as string)?.length;
+  }
+
   return false;
 };

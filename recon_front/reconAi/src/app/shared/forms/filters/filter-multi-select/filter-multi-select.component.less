@@ -1,0 +1,109 @@
+@import "../../../../../variables.less";
+
+.filter-multi-select {
+    width: 180px;
+    position: relative;
+    text-align: center;
+
+    &:focus {
+        outline: 0;
+
+        .filter-multi-select-header {
+            border: 1px solid @recon-black;
+        }
+    }
+
+    &.recon-multi-select-invalid {
+        .filter-multi-select-header {
+            border-color: @recon-error-input-border;
+        }
+    }
+
+    &.without-value {
+        .filter-multi-select-header {
+            color: #757575;
+        }
+    }
+}
+
+
+.filter-multi-select-body.is-active {
+    display: block;
+    max-height: 200px;
+    overflow: auto;
+}
+
+
+.filter-multi-select-header {
+    width: 180px;
+    border: 1px solid @recon-border-input;
+    background-color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    height: 27px;
+
+    span {
+        margin-left: 5px;
+    }
+}
+
+.filter-multi-select-current {
+    font-size: 18px;
+    line-height: 24px;
+    padding: 8px;
+}
+
+.filter-multi-select-icon {
+    align-items: center;
+    display: flex;
+    flex-shrink: 0;
+    justify-content: center;
+    height: 40px;
+    margin-left: auto;
+    text-align: center;
+    width: 40px;
+}
+
+.filter-multi-select-body {
+    position: absolute;
+    border: 1px solid #ccc;
+    border-top: 0px;
+    display: none;
+    z-index: 3;
+    width: 180px;
+    box-sizing: border-box;
+}
+
+.filter-multi-select-item {
+    width: 100%;
+    box-sizing: border-box;
+    line-height: 24px;
+    padding-left: 5px;
+    background-color: white;
+
+    &:hover {
+        background-color: #f2f2f2;
+        cursor: pointer;
+    }
+}
+
+.filter-multi-select.disabled-field {
+    opacity: 65%;
+}
+
+// multi-select
+.filter-multi-select-menu.recon-menu {
+    div.mat-menu-content {
+        &:not(:empty) {
+            width: 180px !important;
+        }
+
+        button.mat-menu-item {
+            justify-content: flex-start;
+            height: 27px;
+            padding-left: 8px;
+        }
+    }
+}

@@ -19,6 +19,8 @@ export class HttpErrorInterceptor implements HttpInterceptor {
   readonly defaultErrorMessage = 'Server error';
   readonly errorsToNotShowMessage: UrlInterceptorInterface[] = [
     { url: '/api/profile' },
+    { url: '/api/relevant-data?page', method: 'GET' },
+    { url: '/api/sensors/', method: 'GET' },
 
     // forms
     { url: '/api/reset-password' },

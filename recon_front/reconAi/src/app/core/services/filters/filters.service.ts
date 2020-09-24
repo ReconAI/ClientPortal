@@ -120,6 +120,13 @@ export class FiltersService {
     return `${typedValue.topLeft.lat}|${typedValue.topLeft.lng}|${typedValue.bottomRight.lat}|${typedValue.bottomRight.lng}`;
   };
 
+  private transformMultipleSelectFilterValue = ({
+    value,
+  }: FilterItemInterface): string => {
+    const typedValue = value as string[];
+    return typedValue?.join('|') || '';
+  };
+
   private transformFilterField = (filter: FilterItemInterface): string => {
     let value = null;
     let field = filter.id;
@@ -155,6 +162,9 @@ export class FiltersService {
         break;
       case FilterTypes.MAP_RECTANGLE:
         value = this.transformMapRectangleFilterValue(filter);
+        break;
+      case FilterTypes.MULTIPLE_SELECT:
+        value = this.transformMultipleSelectFilterValue(filter);
         break;
     }
     return `${field}=${value}`;

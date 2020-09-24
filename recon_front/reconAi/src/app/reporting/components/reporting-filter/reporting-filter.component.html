@@ -1,3 +1,7 @@
+<mat-error *ngIf="isDevice ? filterSingularDeviceError : filterListError">
+  {{ validationErrors }}
+</mat-error>
+
 <div class="filter-container" [formGroup]="filtersForm">
   <div class="filters" formArrayName="filters">
     <div class="filter and-or" [formGroupName]="0">
@@ -68,12 +72,12 @@
       *ngIf="isSelectedAtIndex(5) && eventObjects && eventObjects.length"
       [formGroupName]="5"
     >
-      <recon-filter-select
+      <recon-filter-multi-select
         formControlName="value"
-        label="Object Class"
+        label="Event/Object class"
         [options]="eventObjects"
         (changeVal)="changeValue()"
-      ></recon-filter-select>
+      ></recon-filter-multi-select>
     </div>
     <!-- <div
       class="filter"

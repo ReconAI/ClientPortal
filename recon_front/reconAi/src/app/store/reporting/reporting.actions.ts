@@ -25,10 +25,12 @@ export enum ReportingActionTypes {
   LOAD_REPORTING_FILTERING_LIST_REQUESTED = '[Reporting] Load Reporting Filtering List Requested',
   LOAD_REPORTING_FILTERING_LIST_SUCCEEDED = '[Reporting] Load Reporting Filtering List Succeeded',
   LOAD_REPORTING_FILTERING_LIST_ERROR = '[Reporting] Load Reporting Filtering List Error',
+  RESET_REPORTING_FILTERING_LIST_ERROR = '[Reporting] Reset Reporting Filtering List Error',
 
   LOAD_REPORTING_DEVICE_REQUESTED = '[Reporting] Load Reporting Device Requested',
   LOAD_REPORTING_DEVICE_SUCCEEDED = '[Reporting] Load Reporting Device Succeeded',
   LOAD_REPORTING_DEVICE_ERROR = '[Reporting] Load Reporting Device Error',
+  RESET_REPORTING_DEVICE_ERROR = '[Reporting] Reset Reporting Device Error',
 
   SET_APPLY_FILTERS_STATUS = '[Reporting] Set Apply Filters Status',
 
@@ -94,7 +96,8 @@ export const loadReportingFilteringListSucceededAction = createAction(
 );
 
 export const loadReportingFilteringListErrorAction = createAction(
-  ReportingActionTypes.LOAD_REPORTING_FILTERING_LIST_ERROR
+  ReportingActionTypes.LOAD_REPORTING_FILTERING_LIST_ERROR,
+  props<ObjectFormErrorInterface>()
 );
 export interface LoadReportingDevicePayloadInterface {
   id: number;
@@ -114,7 +117,8 @@ export const loadReportingDeviceSucceededAction = createAction(
 );
 
 export const loadReportingDeviceErrorAction = createAction(
-  ReportingActionTypes.LOAD_REPORTING_DEVICE_ERROR
+  ReportingActionTypes.LOAD_REPORTING_DEVICE_ERROR,
+  props<ObjectFormErrorInterface>()
 );
 
 export interface SetApplyFiltersStatusPayloadInterface {
@@ -297,4 +301,12 @@ export interface SetSingularDeviceFiltersInterface {
 export const setSingularDeviceFiltersAction = createAction(
   ReportingActionTypes.SET_SINGULAR_DEVICE_FILTERS,
   props<SetSingularDeviceFiltersInterface>()
+);
+
+export const resetReportingFilteringListErrorAction = createAction(
+  ReportingActionTypes.RESET_REPORTING_FILTERING_LIST_ERROR
+);
+
+export const resetReportingDeviceErrorAction = createAction(
+  ReportingActionTypes.RESET_REPORTING_DEVICE_ERROR
 );

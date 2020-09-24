@@ -60,6 +60,7 @@ export interface ReportingFilteringDeviceServerInterface {
   pedestrian_flow_transit_method: string;
   road_temperature: number;
   ambient_temperature: number;
+  is_tagged_data: boolean;
 }
 
 export interface ReportingFilteringDeviceClientInterface {
@@ -94,6 +95,7 @@ export interface ReportingFilteringDeviceClientInterface {
   pedestrianFlowTransitMethod: string;
   roadTemperature: number;
   ambientTemperature: number;
+  isTaggedData: boolean;
 }
 
 export interface SetSelectedReportingFilteringDeviceClientInterface {
@@ -137,6 +139,7 @@ export const transformReportingDeviceFromServer = (
   pedestrianFlowTransitMethod: device?.pedestrian_flow_transit_method,
   roadTemperature: device?.road_temperature,
   ambientTemperature: device?.ambient_temperature,
+  isTaggedData: device.is_tagged_data,
 });
 
 export const transformReportingDeviceCardFromServer = (
@@ -185,6 +188,25 @@ export const transformSetGpsToServer = ({
 export const setGpsErrorFieldRelations = {
   lat: 'LAT',
   long: 'LNG',
+};
+
+export const filteringErrorFieldRelations = {
+  logical_and: 'Or / And',
+  sensor_id: 'Sensor ID',
+  timestamp: 'Time Stamp',
+  gps: 'Sensor GPS',
+  project_name: 'Project name',
+  object_class: 'Event/Object class',
+  orient_theta: 'Orient theta',
+  orient_phi: 'Orient phi',
+  vehicle_type: 'Vehicle classification',
+  pedestrian_transit_method: 'Pedestrian transit method classification',
+  road_weather_condition: 'Road weather condition',
+  license_plate_number: 'Vehicle registration plate',
+  ambient_temperature: 'Ambient temperature, C',
+  road_temperature: 'Road temperature, C',
+  is_tagged: 'Is tagged data',
+  event_object: 'Object Type',
 };
 
 // this method transform filters from array to string

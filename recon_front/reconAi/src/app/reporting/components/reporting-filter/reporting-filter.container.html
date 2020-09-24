@@ -8,6 +8,8 @@
   [pedestrianFlow]="pedestrianFlow$ | async"
   [roadWeatherConditions]="roadWeatherConditions$ | async"
   [isFiltersApplied]="isFiltersApplied$ | async"
+  [filterListError]="filterListError$ | async"
+  [filterSingularDeviceError]="filterSingularDeviceError$ | async"
   (changeFilters)="changeFilters($event)"
   (applyFilters)="applyFilters()"
   (resetFilters)="resetFilters()"

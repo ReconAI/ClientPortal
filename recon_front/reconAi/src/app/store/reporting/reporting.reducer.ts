@@ -41,14 +41,22 @@ import {
   loadAdditionalSensorInfoSucceededAction,
   SetSingularDeviceFiltersInterface,
   setSingularDeviceFiltersAction,
+  resetReportingDeviceErrorAction,
+  resetReportingFilteringListErrorAction,
+  loadReportingFilteringListErrorAction,
+  loadReportingDeviceErrorAction,
 } from './reporting.actions';
 
 export interface ReportingErrorsInterface {
   setGps: FormServerErrorInterface;
+  filterList: FormServerErrorInterface;
+  filterSingularDevice: FormServerErrorInterface;
 }
 
 const reportingErrorsInitialization: ReportingErrorsInterface = {
   setGps: null,
+  filterList: null,
+  filterSingularDevice: null,
 };
 
 export interface ReportingState {
@@ -239,6 +247,48 @@ const setSingularDeviceFiltersReducer = (
   singularDeviceFilters: filters,
 });
 
+const loadReportingFilteringListErrorReducer = (
+  state: ReportingState,
+  { type, errors }: ObjectFormErrorInterface & Action
+): ReportingState => ({
+  ...state,
+  errors: {
+    ...state.errors,
+    filterList: errors,
+  },
+});
+
+const resetReportingFilteringListErrorReducer = (
+  state: ReportingState
+): ReportingState => ({
+  ...state,
+  errors: {
+    ...state.errors,
+    filterList: reportingErrorsInitialization.filterList,
+  },
+});
+
+const loadReportingDeviceErrorReducer = (
+  state: ReportingState,
+  { type, errors }: ObjectFormErrorInterface & Action
+): ReportingState => ({
+  ...state,
+  errors: {
+    ...state.errors,
+    filterSingularDevice: errors,
+  },
+});
+
+const resetReportingDeviceErrorReducer = (
+  state: ReportingState
+): ReportingState => ({
+  ...state,
+  errors: {
+    ...state.errors,
+    filterSingularDevice: reportingErrorsInitialization.filterSingularDevice,
+  },
+});
+
 const reportingReducer = createReducer(
   initialState,
   on(
@@ -265,7 +315,17 @@ const reportingReducer = createReducer(
     loadAdditionalSensorInfoSucceededAction,
     loadAdditionalSensorInfoSucceededReducer
   ),
-  on(setSingularDeviceFiltersAction, setSingularDeviceFiltersReducer)
+  on(setSingularDeviceFiltersAction, setSingularDeviceFiltersReducer),
+  on(
+    loadReportingFilteringListErrorAction,
+    loadReportingFilteringListErrorReducer
+  ),
+  on(
+    resetReportingFilteringListErrorAction,
+    resetReportingFilteringListErrorReducer
+  ),
+  on(loadReportingDeviceErrorAction, loadReportingDeviceErrorReducer),
+  on(resetReportingDeviceErrorAction, resetReportingDeviceErrorReducer)
 );
 
 export function reducer(state: ReportingState | undefined, action: Action) {

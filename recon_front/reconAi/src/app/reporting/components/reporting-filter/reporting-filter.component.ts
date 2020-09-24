@@ -1,3 +1,4 @@
+import { generalTransformationObjectErrorsForComponent } from './../../../core/helpers/generalFormsErrorsTransformation';
 import { ReconSelectOption } from 'app/shared/types';
 import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
@@ -5,6 +6,7 @@ import moment from 'moment';
 import { FilterTypes } from 'app/core/constants/filters';
 import { FilterItemInterface } from 'app/reporting/constants/types/filters';
 import { DEFAULT_FILTER_ARRAY } from 'app/reporting/constants/filters';
+import { FormServerErrorInterface } from 'app/constants/types/requests';
 
 export interface AutocompleteChangesInterface {
   value: string;
@@ -26,6 +28,9 @@ export class ReportingFilterComponent implements OnInit {
   @Input() plateNumbers: string[] = [];
   @Input() isDevice = false;
   @Input() isFiltersApplied = false;
+
+  @Input() filterListError: FormServerErrorInterface = null;
+  @Input() filterSingularDeviceError: FormServerErrorInterface = null;
 
   @Output() changeFilters = new EventEmitter<FilterItemInterface[]>();
   @Output() applyFilters = new EventEmitter();
@@ -72,8 +77,9 @@ export class ReportingFilterComponent implements OnInit {
       filters: this.fb.array([
         ...this.filtersList.map((filter, i) =>
           this.fb.group({
-            selected: i === 0 || !!filter.selected,
             ...filter,
+            value: Array.isArray(filter.value) ? [filter.value] : filter.value, // [value, Validators...]
+            selected: i === 0 || !!filter.selected,
           })
         ),
       ]),
@@ -121,5 +127,11 @@ export class ReportingFilterComponent implements OnInit {
       value,
       index,
     });
+  }
+
+  get validationErrors(): string {
+    return generalTransformationObjectErrorsForComponent(
+      this.isDevice ? this.filterSingularDeviceError : this.filterListError
+    );
   }
 }
