@@ -281,6 +281,7 @@ export class UserEffects {
           .put('/api/reset', transformResetPasswordFormToRequest(credentials))
           .pipe(
             map(() => {
+              this.router.navigate(['']);
               return resetPasswordSucceededAction();
             }),
             catchError((error) =>

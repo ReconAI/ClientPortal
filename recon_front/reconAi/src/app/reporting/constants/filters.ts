@@ -26,7 +26,7 @@ export const DEFAULT_FILTER_ARRAY: FilterItemInterface[] = [
     },
   },
   {
-    label: 'Sensor GPS',
+    label: 'Event/Object GPS',
     id: 'gps',
     type: FilterTypes.MAP_RECTANGLE,
     value: {

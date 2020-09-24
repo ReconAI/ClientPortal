@@ -13,6 +13,10 @@ import { PreResetPasswordRequestInterface } from 'app/store/user/user.server.hel
 import { AppState } from 'app/store/reducers';
 import { preResetPasswordRequestedAction } from 'app/store/user';
 
+export interface PreResetDialogCloseDataInterface {
+  isSucceeded: boolean;
+}
+
 @Component({
   selector: 'recon-pre-reset-password-container',
   templateUrl: './pre-reset-password.container.html',
@@ -39,7 +43,9 @@ export class PreResetPasswordContainer implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscriptionToClose$ = this.closeModal$.subscribe(() => {
-      this.dialogRef.close();
+      this.dialogRef.close({
+        isSucceeded: true,
+      });
     });
   }
 

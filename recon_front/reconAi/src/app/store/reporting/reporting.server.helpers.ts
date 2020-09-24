@@ -194,7 +194,7 @@ export const filteringErrorFieldRelations = {
   logical_and: 'Or / And',
   sensor_id: 'Sensor ID',
   timestamp: 'Time Stamp',
-  gps: 'Sensor GPS',
+  gps: 'Event/Object GPS',
   project_name: 'Project name',
   object_class: 'Event/Object class',
   orient_theta: 'Orient theta',

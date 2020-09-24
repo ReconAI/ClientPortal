@@ -3,6 +3,9 @@ import { ResetPasswordModalContainer } from './reset-password-modal/reset-passwo
 import { MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
+import { AppState } from 'app/store/reducers';
+import { Store } from '@ngrx/store';
+import { setAuthStatusAction } from 'app/store/user';
 
 @Component({
   selector: 'recon-reset-password-page',
@@ -17,6 +20,7 @@ export class ResetPasswordPageComponent implements OnInit {
   constructor(
     private activatedRoute: ActivatedRoute,
     private router: Router,
+    private store: Store<AppState>,
     public dialog: MatDialog
   ) {}
 
@@ -35,8 +39,11 @@ export class ResetPasswordPageComponent implements OnInit {
     this.uidb64 = this.activatedRoute.snapshot.paramMap.get('uidb');
     this.token = this.activatedRoute.snapshot.paramMap.get('token');
 
-    this.router.navigate(['']);
-
+    this.store.dispatch(
+      setAuthStatusAction({
+        status: false,
+      })
+    );
     if (this.uidb64 && this.token) {
       this.openDialog();
     }
