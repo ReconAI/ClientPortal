@@ -16,6 +16,7 @@ export interface FilterItemInterface {
   value:
     | boolean
     | string
+    | string[]
     | RangeValueInterface
     | InputCheckboxInterface
     | ThreeInputsInterface

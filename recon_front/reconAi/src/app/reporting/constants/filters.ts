@@ -50,10 +50,10 @@ export const DEFAULT_FILTER_ARRAY: FilterItemInterface[] = [
     },
   },
   {
-    label: 'Object Class',
+    label: 'Event/Object class',
     id: 'object_class',
-    type: FilterTypes.SELECT,
-    value: '',
+    type: FilterTypes.MULTIPLE_SELECT,
+    value: [],
   },
   // {
   //   label: 'Location XYZ, mm',

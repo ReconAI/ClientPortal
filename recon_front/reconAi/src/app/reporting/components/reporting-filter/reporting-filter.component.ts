@@ -72,8 +72,9 @@ export class ReportingFilterComponent implements OnInit {
       filters: this.fb.array([
         ...this.filtersList.map((filter, i) =>
           this.fb.group({
-            selected: i === 0 || !!filter.selected,
             ...filter,
+            value: Array.isArray(filter.value) ? [filter.value] : filter.value, // [value, Validators...]
+            selected: i === 0 || !!filter.selected,
           })
         ),
       ]),

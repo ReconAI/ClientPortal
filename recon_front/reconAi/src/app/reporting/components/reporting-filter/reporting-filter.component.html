@@ -68,12 +68,12 @@
       *ngIf="isSelectedAtIndex(5) && eventObjects && eventObjects.length"
       [formGroupName]="5"
     >
-      <recon-filter-select
+      <recon-filter-multi-select
         formControlName="value"
-        label="Object Class"
+        label="Event/Object class"
         [options]="eventObjects"
         (changeVal)="changeValue()"
-      ></recon-filter-select>
+      ></recon-filter-multi-select>
     </div>
     <!-- <div
       class="filter"

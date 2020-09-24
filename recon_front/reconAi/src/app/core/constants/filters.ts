@@ -3,6 +3,7 @@ export interface FilterWithValueInterface {
   [key: string]:
     | boolean
     | string
+    | string[]
     | RangeValueInterface
     | InputCheckboxInterface
     | ThreeInputsInterface
@@ -29,6 +30,7 @@ export enum FilterTypes {
   CHECKBOX = 'checkbox',
   TWO_INPUTS_CHECKBOX = 'two inputs checkbox',
   MAP_RECTANGLE = 'map rectangle',
+  MULTIPLE_SELECT = 'multiple select',
 }
 
 export interface RangeValueInterface {

@@ -1,0 +1,54 @@
+<div
+  class="filter-multi-select"
+  [ngClass]="{
+    'is-active': isActive,
+    'without-value': !isWithValue
+  }"
+  tabindex="0"
+  (blur)="onTouched()"
+>
+  <label class="filter-multi-select-label" *ngIf="label">{{ label }}</label>
+  <div
+    class="filter-multi-select-header"
+    (click)="headerClick()"
+    [matMenuTriggerFor]="menu"
+    #trigger="matMenuTrigger"
+  >
+    <span>{{ headerLabel }}</span>
+    <div class="filter-multi-select-icon">
+      <mat-icon aria-hidden="false" aria-label="person">{{
+        trigger.menuOpen ? "keyboard_arrow_up" : "keyboard_arrow_down"
+      }}</mat-icon>
+    </div>
+  </div>
+  <ng-container [formGroup]="selectedForm">
+    <mat-menu
+      #menu="matMenu"
+      xPosition="before"
+      class="filter-multi-select-menu recon-menu"
+    >
+      <ng-container formArrayName="options">
+        <ng-container
+          *ngFor="let option of options; let i = index"
+          [formGroupName]="i"
+        >
+          <button
+            mat-menu-item
+            (click)="
+              $event.stopPropagation();
+              toggleSelectValueWithIndex(i);
+              optionClick()
+            "
+          >
+            <recon-form-checkbox
+              formControlName="checked"
+              (changeVal)="setSelectValueWithIndex(i, $event)"
+            ></recon-form-checkbox>
+            {{ option.label }}
+          </button>
+          <mat-divider></mat-divider>
+        </ng-container>
+      </ng-container>
+    </mat-menu>
+  </ng-container>
+</div>

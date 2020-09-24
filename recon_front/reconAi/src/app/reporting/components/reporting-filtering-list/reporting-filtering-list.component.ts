@@ -238,7 +238,7 @@ export class ReportingFilteringListComponent
         width: '100px',
       },
       {
-        header: 'Object class',
+        header: 'Event/Object class',
         id: 'objectClass',
         width: '100px',
       },
