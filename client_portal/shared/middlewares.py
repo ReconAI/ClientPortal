@@ -6,6 +6,7 @@ import re
 from datetime import date, datetime
 from pathlib import Path
 
+from crawlerdetect import CrawlerDetect
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.utils.deprecation import MiddlewareMixin
@@ -53,13 +54,17 @@ class HTTPLogMiddleware(MiddlewareMixin):
 
         :rtype: str
         """
-        return '{},{},{},{},{},{}\n'.format(
-            datetime.now().isoformat(),
+        return '{},{},{},{},{},{},{}\n'.format(
+            datetime.utcnow().isoformat(),
             request.method,
             request.path_info,
             request.content_type,
             response.status_code,
-            request.META.get('X-Real-IP', request.META.get('REMOTE_ADDR', ''))
+            request.META.get(
+                'HTTP_X_REAL_IP',
+                request.META.get('REMOTE_ADDR', '')
+            ),
+            request.user.id
         )
 
     @staticmethod
@@ -80,8 +85,10 @@ class HTTPLogMiddleware(MiddlewareMixin):
         :rtype: bool
         """
         try:
+            crawler_detector = CrawlerDetect(headers=request.META)
+
             return not re.compile(self.__except).search(
                 request.path_info
-            ) and settings.LOG_HTTP
+            ) and settings.LOG_HTTP and not crawler_detector.isCrawler()
         except TypeError:
             return settings.LOG_HTTP

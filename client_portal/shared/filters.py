@@ -79,7 +79,7 @@ class GPSFilter(FilterMixin, filters.NumberFilter):
         self.__lat_field_name = lat_field_name
         self.__long_field_name = long_field_name
 
-    def filter(self, qs, value):
+    def filter(self, queryset: QuerySet, value: Any) -> Optional[Q]:
         if value not in EMPTY_VALUES:
             return Q(**dict(zip(self.filter_expr, value)))
 

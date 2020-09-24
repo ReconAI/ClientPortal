@@ -78,7 +78,6 @@ class Command(SendEmailMixin, BaseCommand):
         if organization_charger.is_to_be_charged:
             users = organization.user_set.all()
 
-            # todo implement aws costs retrieval
             monthly_usage_calculator = MonthlyUsageCalculator(
                 users,
                 organization_charger.device_license_fee,

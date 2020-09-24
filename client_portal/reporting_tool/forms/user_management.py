@@ -110,13 +110,13 @@ class UserInvitationForm(ModelForm, RoleFieldMixin, SendEmailMixin):
         u_username = slugify('{}_{}'.format(firstname, lastname))
 
         # count the number of users that start with the username
-        count = get_user_model().objects.filter(
+        count = get_user_model().base_object.filter(
             username__startswith=u_username
         ).count()
 
         if count:
-            while self.Meta.model.objects.filter(
-                    username='{}{}'.format(u_username, count)
+            while self.Meta.model.base_object.filter(
+                    username__startswith='{}{}'.format(u_username, count)
             ).exists():
                 count += 1
 

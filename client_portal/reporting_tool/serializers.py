@@ -174,7 +174,7 @@ class OrderListSerializer(ReadOnlySerializerMixin, Serializer):
         Orders list fields set
         """
         # model = Purchase
-        fields = ('id', 'type', 'payment_id', 'timestamp', 'total', 'is_invoice', 'success')
+        fields = "__all__"
 
     @staticmethod
     def process_total(purchase: dict) -> float:
