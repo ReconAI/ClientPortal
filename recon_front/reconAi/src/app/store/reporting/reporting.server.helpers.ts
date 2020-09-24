@@ -60,6 +60,7 @@ export interface ReportingFilteringDeviceServerInterface {
   pedestrian_flow_transit_method: string;
   road_temperature: number;
   ambient_temperature: number;
+  is_tagged_data: boolean;
 }
 
 export interface ReportingFilteringDeviceClientInterface {
@@ -94,6 +95,7 @@ export interface ReportingFilteringDeviceClientInterface {
   pedestrianFlowTransitMethod: string;
   roadTemperature: number;
   ambientTemperature: number;
+  isTaggedData: boolean;
 }
 
 export interface SetSelectedReportingFilteringDeviceClientInterface {
@@ -137,6 +139,7 @@ export const transformReportingDeviceFromServer = (
   pedestrianFlowTransitMethod: device?.pedestrian_flow_transit_method,
   roadTemperature: device?.road_temperature,
   ambientTemperature: device?.ambient_temperature,
+  isTaggedData: device.is_tagged_data,
 });
 
 export const transformReportingDeviceCardFromServer = (

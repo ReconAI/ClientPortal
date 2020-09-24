@@ -307,10 +307,14 @@ export class ReportingFilteringListComponent
         id: 'roadWeather',
         width: '100px',
       },
-
       {
         header: 'Tagged data',
         id: 'taggedData',
+        width: '100px',
+      },
+      {
+        header: 'Is tagged data',
+        id: 'isTaggedData',
         width: '100px',
       },
       {
