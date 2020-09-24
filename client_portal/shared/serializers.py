@@ -229,9 +229,9 @@ class OrderSerializer(ModelSerializer):
         Device purchase fields list definition
         """
         model = DevicePurchase
-        fields = ('device_id', 'payment_id', 'device_name', 'price_without_vat',
-                  'price_with_vat', 'device_cnt', 'total', 'images',
-                  'created_dt')
+        fields = ('device_id', 'payment_id', 'device_name',
+                  'price_without_vat', 'price_with_vat', 'device_cnt',
+                  'total', 'images', 'created_dt')
 
     @staticmethod
     def process_price_with_vat(purchase: DevicePurchase) -> float:

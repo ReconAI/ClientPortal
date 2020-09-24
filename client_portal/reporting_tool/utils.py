@@ -21,6 +21,9 @@ from shared.models import User
 
 
 class DictWriter(csv.DictWriter):
+    """
+    Deals with custom header labels
+    """
     def __init__(self, f, fieldnames, restval="", extrasaction="raise",
                  dialect="excel", header: Optional[Iterable[str]] = None,
                  *args, **kwds):
@@ -147,6 +150,11 @@ class CSVRelevantDataFileGenerator(RelevantDataFileGenerator):
 
     @property
     def header(self) -> Iterable[str]:
+        """
+        Return header labels
+
+        :rtype: Iterable[str]
+        """
         columns_map = getattr(self, 'COLUMNS_MAP')
 
         if columns_map:

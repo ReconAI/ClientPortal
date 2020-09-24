@@ -14,6 +14,10 @@ from shared.forms import NegativeFiltersForm
 
 
 class EventObjectFilter(FilterMixin, filters.ChoiceFilter):
+    """
+    Event/Object relevant data filter
+    """
+
     EVENT_TYPE = 'event'
     OBJECT_TYPE = 'object'
 
@@ -25,6 +29,9 @@ class EventObjectFilter(FilterMixin, filters.ChoiceFilter):
 
 
 class MultipleTypeCodeFilter(FilterMixin, filters.CharFilter):
+    """
+    Multiple options filter for relevant type code
+    """
     field_class = CharRangeField
 
 

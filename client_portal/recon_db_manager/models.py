@@ -3,7 +3,7 @@ Recon db mangaer are defined here
 """
 from datetime import datetime, timedelta
 from decimal import Decimal
-from typing import Optional, List
+from typing import Optional
 
 from django.conf import settings
 from django.contrib.postgres.fields import JSONField
@@ -1667,10 +1667,16 @@ class Purchase(models.Model):
 
     @property
     def total_with_cents(self) -> float:
+        """
+        :rtype: float
+        """
         return self.total / 100
 
     @property
     def total_without_vat(self) -> float:
+        """
+        :rtype: float
+        """
         return PriceWithoutTax(
             Price(Decimal(self.total_with_cents)),
             self.vat

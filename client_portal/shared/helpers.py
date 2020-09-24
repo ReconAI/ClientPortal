@@ -93,6 +93,9 @@ class PriceWithTax(PriceDecorator):
 
 
 class PriceWithoutTax(PriceWithTax):
+    """
+    Deduct price from the initial value
+    """
     def as_price(self) -> float:
         """
         :rtype: float
@@ -290,7 +293,9 @@ class RecurrentCharger(OrganizationCharger):
 
     def charge(self, amount: float) -> Optional[str]:
         """
-        :rtype: str
+        :type amount: float
+
+        :rtype: Optional[str]
         """
         try:
             return super().charge(amount)
@@ -335,6 +340,9 @@ class RecurrentCharger(OrganizationCharger):
 
 
 class PurchaseCharger(OrganizationCharger):
+    """
+    Logic for charge for purchase is enclosed within the class
+    """
     def __init__(self, organization: 'Organization',
                  card_id: Optional[str] = None,
                  is_invoice: bool = False
