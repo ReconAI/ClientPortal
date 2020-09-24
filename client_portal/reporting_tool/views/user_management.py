@@ -2,6 +2,7 @@
 Views associated with user management. There are actions admin can
 perform over users within admin's company.
 """
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db.models.query import QuerySet
@@ -12,7 +13,7 @@ from django.utils.translation import gettext_lazy as _
 from django.views.decorators.cache import never_cache
 from drf_yasg.utils import swagger_auto_schema
 from requests import Request
-from rest_framework import status
+from rest_framework import status, exceptions
 from rest_framework.generics import ListCreateAPIView, GenericAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
@@ -21,7 +22,7 @@ from reporting_tool.forms.user_management import UserInvitationForm, \
     FollowInvitationForm, CheckUserInvitationTokenForm, UserEditForm
 from shared.models import User
 from shared.permissions import IsCompanyAdmin, IsActive, \
-    IsNotAuthenticated, PaymentRequired
+    IsNotAuthenticated, PaymentRequired, IsCompanyDeveloper
 from shared.serializers import UserSerializer, \
     form_to_formserializer, UserOrganizationSerializer, TrialSerializer
 from shared.swagger.headers import token_header
@@ -31,6 +32,9 @@ from shared.swagger.responses import data_serializer, http401, \
     DEFAULT_DELETE_REQUEST_RESPONSES, DEFAULT_GET_REQUESTS_RESPONSES, \
     default_unsafe_responses_with_custom_success
 from shared.views.utils import CheckTokenMixin, FormMixin
+
+
+
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
@@ -58,15 +62,15 @@ class UserList(ListCreateAPIView, FormMixin):
     Shows set of users.
     Sends invitation to a new user.
     """
-    permission_classes = (IsAuthenticated, IsActive,
-                          IsCompanyAdmin, PaymentRequired)
-
     serializer_class = UserSerializer
 
     queryset = get_user_model().objects.prefetch_related(
         'usergroup__group').order_by('-created_dt').all()
 
     form_class = UserInvitationForm
+
+    permission_classes = (IsAuthenticated, IsActive, IsCompanyDeveloper,
+                          PaymentRequired)
 
     def filter_queryset(self, queryset: QuerySet) -> QuerySet:
         """
@@ -86,6 +90,9 @@ class UserList(ListCreateAPIView, FormMixin):
 
         :rtype: JsonResponse
         """
+        if not request.user.is_admin:
+            raise exceptions.PermissionDenied()
+
         form = self.form_class(request.user.organization_id, data=request.data)
 
         return self.save_or_error(

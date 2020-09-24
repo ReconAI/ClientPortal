@@ -1,7 +1,6 @@
 """
 Views managing orders
 """
-from typing import Callable
 
 from django.db.models import QuerySet, Value, CharField, BooleanField, Case, \
     When, Q
@@ -57,6 +56,11 @@ class OrdersListView(ListAPIView):
 
     @property
     def purchase_queryset(self) -> QuerySet:
+        """
+        Initial purchase queryset
+
+        :rtype: QuerySet
+        """
         return Purchase.objects.all().annotate(
             is_invoice=Case(
                 When(payment_id__isnull=True, then=Value(True)),
@@ -69,6 +73,11 @@ class OrdersListView(ListAPIView):
 
     @property
     def invoice_queryset(self) -> QuerySet:
+        """
+        Initial invoice queryset
+
+        :rtype: QuerySet
+        """
         return RecurrentCharge.objects.all().annotate(
             success=Case(
                 When(
@@ -134,6 +143,10 @@ class OrderItemView(PlainListModelMixin, ListAPIView):
     ]
 ))
 class OrderItemDownload(PlainListModelMixin, RetrieveAPIView):
+    """
+    Download invoice http hanlder
+    """
+
     permission_classes = (IsAuthenticated, IsActive, IsCompanyDeveloper)
 
     serializer_class = OrderSerializer

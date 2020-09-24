@@ -1,3 +1,7 @@
+"""
+Utils made use accorss the projects
+"""
+
 from abc import abstractmethod
 
 from django.core.mail import EmailMultiAlternatives

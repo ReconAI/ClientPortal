@@ -75,14 +75,14 @@ class Order(PDFDocument):
         :rtype: Dict[str, Any]
         """
         return {
-            'organization': self.__organization,
             'root_organization': self.__root_organization,
-            'app_name': settings.APP_NAME,
+            'organization': self.__organization,
             'now': self.__purchase.created_dt.date(),
+            'app_name': settings.APP_NAME,
+            'currency': settings.CURRENCY,
             'due_date': (self.__purchase.created_dt + timedelta(
                 days=settings.TERMS_OF_PAYMENT_DAYS
             )).date(),
-            'currency': settings.CURRENCY,
             'bank_reference_code': settings.BANK_REFERENCE_CODE,
             'iban': settings.IBAN,
             'bic': settings.BIC,
