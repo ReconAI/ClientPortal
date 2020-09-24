@@ -90,6 +90,7 @@ import {
   HeatMapPointServerInterface,
   SensorClientRequestedActionInterface,
   transformSensorClientFromServer,
+  filteringErrorFieldRelations,
 } from './reporting.server.helpers';
 
 import { updateBreadcrumbByIdAction, setAppTitleAction } from '../app';
@@ -141,7 +142,16 @@ export class ReportingEffects {
                 transformReportingPaginatedDeviceListFromServer(devices)
               )
             ),
-            catchError((error) => of(loadReportingFilteringListErrorAction())),
+            catchError((error) =>
+              of(
+                loadReportingFilteringListErrorAction(
+                  generalTransformFormErrorToObject(
+                    error,
+                    filteringErrorFieldRelations
+                  )
+                )
+              )
+            ),
             finalize(() => {
               this.store.dispatch(
                 setReportingFilteringListLoadingStatusAction({
@@ -210,7 +220,16 @@ export class ReportingEffects {
                 })
               );
             }),
-            catchError(() => of(loadReportingDeviceErrorAction())),
+            catchError((error) =>
+              of(
+                loadReportingDeviceErrorAction(
+                  generalTransformFormErrorToObject(
+                    error,
+                    filteringErrorFieldRelations
+                  )
+                )
+              )
+            ),
             finalize(() => {
               this.store.dispatch(
                 setReportingDeviceLoadingStatusAction({

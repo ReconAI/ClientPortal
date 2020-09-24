@@ -187,6 +187,25 @@ export const setGpsErrorFieldRelations = {
   long: 'LNG',
 };
 
+export const filteringErrorFieldRelations = {
+  logical_and: 'Or / And',
+  sensor_id: 'Sensor ID',
+  timestamp: 'Time Stamp',
+  gps: 'Sensor GPS',
+  project_name: 'Project name',
+  object_class: 'Event/Object class',
+  orient_theta: 'Orient theta',
+  orient_phi: 'Orient phi',
+  vehicle_type: 'Vehicle classification',
+  pedestrian_transit_method: 'Pedestrian transit method classification',
+  road_weather_condition: 'Road weather condition',
+  license_plate_number: 'Vehicle registration plate',
+  ambient_temperature: 'Ambient temperature, C',
+  road_temperature: 'Road temperature, C',
+  is_tagged: 'Is tagged data',
+  event_object: 'Object Type',
+};
+
 // this method transform filters from array to string
 // from either local storage by default or argument filters
 export const transformEndpointWithApplyStatus = (

@@ -161,3 +161,15 @@ export const selectFilteredSingularDeviceFilters = createSelector(
       isValueOfFilterValidForServer(filter)
     ) || []
 );
+
+export const selectFilterListError = createSelector(
+  selectReporting,
+  (reporting: ReportingState): FormServerErrorInterface | null =>
+    reporting?.errors?.filterList
+);
+
+export const selectFilterSingularDeviceError = createSelector(
+  selectReporting,
+  (reporting: ReportingState): FormServerErrorInterface | null =>
+    reporting?.errors?.filterSingularDevice
+);

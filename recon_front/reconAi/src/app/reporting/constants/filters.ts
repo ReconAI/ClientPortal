@@ -135,7 +135,7 @@ export const DEFAULT_FILTER_ARRAY: FilterItemInterface[] = [
     },
   },
   {
-    label: 'Tagged data',
+    label: 'Is tagged data',
     id: 'is_tagged',
     type: FilterTypes.CHECKBOX,
     value: false,

@@ -5,6 +5,8 @@ import {
   selectPedestrianFlowList,
   selectSingularDeviceFilters,
   selectApplyFiltersStatus,
+  selectFilterListError,
+  selectFilterSingularDeviceError,
 } from './../../../store/reporting/reporting.selectors';
 import { loadReportingFilteringListRequestedAction } from 'app/store/reporting';
 import {
@@ -20,6 +22,8 @@ import {
   pedestrianFlowListRequestedAction,
   plateNumberListSucceededAction,
   setSingularDeviceFiltersAction,
+  resetReportingFilteringListErrorAction,
+  resetReportingDeviceErrorAction,
 } from './../../../store/reporting/reporting.actions';
 import { FiltersService } from './../../../core/services/filters/filters.service';
 import { FilterItemInterface } from 'app/reporting/constants/types/filters';
@@ -35,6 +39,7 @@ import {
   selectVehicleTypeList,
 } from 'app/store/reporting/reporting.selectors';
 import { AutocompleteChangesInterface } from './reporting-filter.component';
+import { FormServerErrorInterface } from 'app/constants/types/requests';
 
 @Component({
   selector: 'recon-reporting-filter-container',
@@ -84,6 +89,14 @@ export class ReportingFilterContainer implements OnInit, OnDestroy {
     select(selectApplyFiltersStatus)
   );
 
+  filterListError$: Observable<FormServerErrorInterface> = this.store.pipe(
+    select(selectFilterListError)
+  );
+
+  filterSingularDeviceError$: Observable<
+    FormServerErrorInterface
+  > = this.store.pipe(select(selectFilterSingularDeviceError));
+
   changeFilters(filters: FilterItemInterface[]): void {
     if (!this.isDevice) {
       this.filtersService.setValueToLocalStorage({
@@ -122,6 +135,8 @@ export class ReportingFilterContainer implements OnInit, OnDestroy {
   }
 
   applyFilters(): void {
+    this.resetErrors();
+
     this.store.dispatch(
       setApplyFiltersStatusAction({
         status: true,
@@ -140,14 +155,25 @@ export class ReportingFilterContainer implements OnInit, OnDestroy {
       })
     );
 
+    this.resetErrors();
+
     this.loadData();
     this.store.dispatch(projectNameListSucceededAction({ names: [] }));
     this.store.dispatch(plateNumberListSucceededAction({ names: [] }));
     this.store.dispatch(buildVehicleRouteSucceededAction({ points: [] }));
   }
 
+  resetErrors(): void {
+    if (!this.isDevice) {
+      this.store.dispatch(resetReportingFilteringListErrorAction());
+    } else {
+      this.store.dispatch(resetReportingDeviceErrorAction());
+    }
+  }
+
   ngOnDestroy() {
     this.currentUserIdSubscription$.unsubscribe();
+    this.resetErrors();
   }
 
   changeWithAutocomplete({ value, index }: AutocompleteChangesInterface): void {
