@@ -1,3 +1,4 @@
+import { isValueOfFilterValidForServer } from './../../core/helpers/filters';
 import { FilterItemInterface } from 'app/reporting/constants/types/filters';
 import { SensorClientInterface } from './../../constants/types/sensors';
 import { LatLngInterface } from 'app/core/helpers/markers';
@@ -148,11 +149,15 @@ export const selectReportingSensorAdditionalInfoSerial = createSelector(
 export const selectSingularDeviceFilters = createSelector(
   selectReporting,
   (reporting: ReportingState): FilterItemInterface[] =>
-    reporting?.singularDeviceFilters || []
+    reporting?.singularDeviceFilters?.filter((filter) =>
+      isValueOfFilterValidForServer(filter, false)
+    ) || []
 );
 
 export const selectFilteredSingularDeviceFilters = createSelector(
   selectReporting,
   (reporting: ReportingState): FilterItemInterface[] =>
-    reporting?.singularDeviceFilters?.filter(({ selected }) => selected) || []
+    reporting?.singularDeviceFilters?.filter((filter) =>
+      isValueOfFilterValidForServer(filter)
+    ) || []
 );

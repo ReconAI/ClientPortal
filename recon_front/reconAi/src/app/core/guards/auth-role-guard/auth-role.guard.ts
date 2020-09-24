@@ -10,9 +10,10 @@ import {
   RouterStateSnapshot,
   UrlTree,
   CanActivateChild,
+  Router,
 } from '@angular/router';
 import { Observable } from 'rxjs';
-import { filter, map, withLatestFrom } from 'rxjs/operators';
+import { filter, map, withLatestFrom, tap } from 'rxjs/operators';
 import { Store, select } from '@ngrx/store';
 import { AppState } from 'app/store/reducers';
 
@@ -20,7 +21,7 @@ import { AppState } from 'app/store/reducers';
   providedIn: 'root',
 })
 export class AuthRoleGuard implements CanActivate, CanActivateChild {
-  constructor(private store: Store<AppState>) {}
+  constructor(private store: Store<AppState>, private router: Router) {}
 
   canActivate(
     next: ActivatedRouteSnapshot,
@@ -39,7 +40,12 @@ export class AuthRoleGuard implements CanActivate, CanActivateChild {
           isAuth &&
           (!next?.data?.expectedRolePriority ||
             userRolePriority >= next?.data?.expectedRolePriority)
-      )
+      ),
+      tap((isAllowed) => {
+        if (!isAllowed) {
+          this.router.navigate(['']);
+        }
+      })
     );
   }
 

@@ -9,6 +9,7 @@ import {
   ActivatedRouteSnapshot,
   RouterStateSnapshot,
   UrlTree,
+  Router,
 } from '@angular/router';
 import { Observable, of } from 'rxjs';
 
@@ -16,7 +17,7 @@ import { Observable, of } from 'rxjs';
   providedIn: 'root',
 })
 export class NotAuthGuard implements CanActivate, CanActivateChild {
-  constructor(private store: Store<AppState>) {}
+  constructor(private store: Store<AppState>, private router: Router) {}
 
   canActivate(
     next: ActivatedRouteSnapshot,
@@ -24,8 +25,13 @@ export class NotAuthGuard implements CanActivate, CanActivateChild {
   ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | UrlTree {
     return this.store.pipe(
       select(selectIsNotAuthenticated),
-      filter((isAuth) => isAuth !== null),
-      take(1)
+      filter((isNotAuth) => isNotAuth !== null),
+      take(1),
+      tap((isNotAuth) => {
+        if (!isNotAuth) {
+          this.router.navigate(['']);
+        }
+      })
       // check it later
     );
   }

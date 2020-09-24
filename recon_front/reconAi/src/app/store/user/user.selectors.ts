@@ -39,7 +39,6 @@ export const selectUserRolePriority = createSelector(
 export const selectIsUserAbleToBuy = createSelector(
   selectUserRolePriority,
   (priority: UserRolesPriorities) =>
-    priority === UserRolesPriorities.DEVELOPER_ROLE ||
     priority === UserRolesPriorities.ADMIN_ROLE
 );
 
