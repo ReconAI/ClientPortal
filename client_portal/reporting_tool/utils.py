@@ -86,8 +86,8 @@ class CSVRelevantDataFileGenerator(RelevantDataFileGenerator):
     """
     COLUMNS_MAP = {
         'id': _('ID'),
-        'sensor_GPS_lat': _('Sensor GPS Latitude'),
-        'sensor_GPS_long': _('Sensor GPS Longitude'),
+        'sensor_GPS_lat': _('GPS Latitude'),
+        'sensor_GPS_long': _('GPS Longitude'),
         'location_x': _('Location X'),
         'location_y': _('Location Y'),
         'location_z': _('Location Z'),
@@ -96,7 +96,7 @@ class CSVRelevantDataFileGenerator(RelevantDataFileGenerator):
         'timestamp': _('Time stamp'),
         'project_name': _('Project name'),
         'sensor_id': _('Sensor ID'),
-        'license_plate_number': _('License plate number'),
+        'license_plate_number': _('Vehicle registration plate'),
         'event_object': _('Object Type'),
         'object_class': _('Object class'),
         'vehicle_classification': _('Vehicle classification'),
@@ -104,6 +104,7 @@ class CSVRelevantDataFileGenerator(RelevantDataFileGenerator):
         'road_weather': _('Road weather'),
         'stopped_vehicle_detection': _('Stopped vehicle detection'),
         'tagged_data': _('Tagged data'),
+        'is_tagged_data': _('Is tagged data'),
         'license_plate_location': _('License plate location'),
         'face_location': _('Face location'),
         'cad_file_tag': _('CAD file tag'),
@@ -243,7 +244,8 @@ class S3FileUploader:
             Params={
                 'Bucket': settings.AWS_CLIENT_PORTAL_BUCKET,
                 'Key': self.key
-            }
+            },
+            ExpiresIn=3600 * 24
         )
 
     @property
