@@ -110,13 +110,13 @@ export class PurchasesEffects {
                 updateBreadcrumbByIdAction({
                   update: {
                     oldId: '%purchase-id',
-                    newLabel: `Order ID ${id}`,
+                    newLabel: `Order ID: ${id}`,
                     newUrl: `invoice/${id}`,
                   },
                 })
               );
               this.store.dispatch(
-                setAppTitleAction({ title: `Order ID ${id}` })
+                setAppTitleAction({ title: `Order ID: ${id}` })
               );
             }),
             catchError((error) => of(loadPurchaseErrorAction())),

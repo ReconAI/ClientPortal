@@ -141,7 +141,7 @@ export const DEFAULT_FILTER_ARRAY: FilterItemInterface[] = [
     value: false,
   },
   {
-    label: 'Object Type',
+    label: 'Event/Object',
     id: 'event_object',
     type: FilterTypes.SELECT,
     value: '',

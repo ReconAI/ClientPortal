@@ -210,7 +210,7 @@ export class ReportingFilteringListComponent
         width: '100px',
       },
       {
-        header: 'Object Type',
+        header: 'Event/Object',
         id: 'isEvent',
         width: '100px',
       },

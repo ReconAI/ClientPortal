@@ -57,7 +57,7 @@ export class PurchasesListComponent implements OnInit, AfterViewInit {
         header: 'Type',
         id: 'type',
         render: (purchase: PurchaseClientInterface) =>
-          purchase.type === 'purchase' ? 'Purchase device' : 'Recurrent charge',
+          purchase.type === 'purchase' ? 'Purchase device' : 'Monthly invoice',
       },
       {
         header: 'Amount, €',

@@ -252,7 +252,7 @@
       *ngIf="isSelectedAtIndex(14)"
     >
       <recon-form-checkbox
-        label="Tagged data"
+        label="Is tagged data"
         formControlName="value"
         (changeVal)="changeValue()"
       ></recon-form-checkbox>
@@ -267,7 +267,7 @@
       [formGroupName]="15"
     >
       <recon-filter-select
-        label="Object type"
+        label="Event/Object"
         formControlName="value"
         [options]="objectTypeList"
         (changeVal)="changeValue()"
