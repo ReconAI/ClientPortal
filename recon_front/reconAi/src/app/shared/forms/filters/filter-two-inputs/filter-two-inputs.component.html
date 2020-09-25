@@ -1,10 +1,11 @@
-<div class="two-inputs-container">
+<div class="two-inputs-container" [ngClass]="{ invalid: isInvalid }">
   <label> {{ label }}</label>
   <div class="inputs-container">
     <div class="input-container">
       <recon-filter-input
         [(ngModel)]="left"
         [placeholder]="leftPlaceholder"
+        [isInvalid]="isInvalid"
         (changeVal)="changeValue()"
         (blurVal)="blurValue()"
       ></recon-filter-input>
@@ -14,6 +15,7 @@
       <recon-filter-input
         [(ngModel)]="right"
         [placeholder]="rightPlaceholder"
+        [isInvalid]="isInvalid"
         (changeVal)="changeValue()"
         (blurVal)="blurValue()"
       ></recon-filter-input>

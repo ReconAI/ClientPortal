@@ -6,6 +6,17 @@
     flex-direction: column;
     align-items: center;
 
+    &.invalid {
+
+        &>label {
+            color: @recon-error-input-border;
+        }
+
+        div.input-container input {
+            border-color: @recon-error-input-border;
+        }
+    }
+
     &>label {
         text-align: center;
     }

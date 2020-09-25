@@ -23,13 +23,14 @@ export class FilterTwoInputsComponent implements OnInit {
   left = '';
   right = '';
   @Input() disabled = false;
-  @Output() changeVal = new EventEmitter<FilterTwoInputsInterface>();
   @Output() blurVal = new EventEmitter<FilterTwoInputsInterface>();
+  @Output() changeVal = new EventEmitter<FilterTwoInputsInterface>();
 
   @Input() leftPlaceholder = '';
   @Input() rightPlaceholder = '';
 
   @Input() label = '';
+  @Input() isInvalid = false;
 
   constructor(@Optional() @Self() public controlDir: NgControl) {
     controlDir.valueAccessor = this;

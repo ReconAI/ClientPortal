@@ -2,7 +2,8 @@
   class="filter-select"
   [ngClass]="{
     'is-active': isActive,
-    'without-value': !selectedOption?.value
+    'without-value': !selectedOption?.value,
+    invalid: isInvalid
   }"
   tabindex="0"
   (blur)="onTouched()"
@@ -34,17 +35,3 @@
     </ng-container>
   </mat-menu>
 </div>
-<!-- <div
-  class="select-body"
-  [ngClass]="{
-    'is-active': isActive
-  }"
->
-  <div
-    class="select-item"
-    *ngFor="let option of options"
-    (click)="optionClick(option)"
-  >
-    {{ option.label }}
-  </div>
-</div> -->

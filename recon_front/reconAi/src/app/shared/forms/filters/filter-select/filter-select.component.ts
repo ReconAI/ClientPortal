@@ -27,6 +27,7 @@ export class FilterSelectComponent implements OnInit {
   @Input() options: ReconSelectOption[] = [];
   @Input() placeholder = '';
   @Input() disabled = false;
+  @Input() isInvalid = false;
   @Output() changeVal = new EventEmitter<any>();
 
   isActive = false;

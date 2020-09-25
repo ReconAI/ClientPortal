@@ -27,6 +27,7 @@ export class FilterInputComponent implements OnInit, ControlValueAccessor {
   @Input() disabled = false;
   @Input() isWithSearchIcon = false;
   @Input() autocompleteOptions: string[] = [];
+  @Input() isInvalid = false;
   @Output() changeVal = new EventEmitter<string>();
   @Output() blurVal = new EventEmitter<string>();
 

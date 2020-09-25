@@ -40,6 +40,7 @@ export class FilterTwoInputsCheckboxComponent implements OnInit {
   @Input() checkboxLabel = '';
 
   @Input() label = '';
+  @Input() isInvalid = false;
 
   onChange = (value: any) => {};
   onTouched = () => {};

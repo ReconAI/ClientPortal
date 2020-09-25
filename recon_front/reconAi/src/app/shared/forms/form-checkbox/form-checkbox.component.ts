@@ -18,6 +18,8 @@ export class FormCheckboxComponent implements OnInit, ControlValueAccessor {
   @Input() label = '';
   @Input() checked = false;
   @Input() disabled = false;
+  @Input() isInvalid = false;
+
   @Output() changeVal = new EventEmitter<boolean>();
 
   constructor(@Optional() @Self() public controlDir: NgControl) {

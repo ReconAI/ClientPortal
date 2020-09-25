@@ -34,6 +34,8 @@ export class FilterMultiSelectComponent implements OnInit {
   @Input() options: ReconSelectOption[] = [];
   @Input() placeholder = '';
   @Input() disabled = false;
+  @Input() isInvalid = false;
+
   @Output() changeVal = new EventEmitter<any>();
 
   isActive = false;
@@ -55,7 +57,7 @@ export class FilterMultiSelectComponent implements OnInit {
       ]),
     });
 
-    this.isWithValue = !!selectedOptions;
+    this.isWithValue = !!selectedOptions?.length;
     // this.onChange(this.selectedOption?.value || '');
     // this.changeVal.emit(this.selectedOption?.value || '');
   }
