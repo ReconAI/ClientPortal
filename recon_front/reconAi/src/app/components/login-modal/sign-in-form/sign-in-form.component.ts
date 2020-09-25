@@ -1,8 +1,14 @@
+import { take } from 'rxjs/operators';
+import { Router } from '@angular/router';
+import { LoginModalComponent } from './../login-modal.component';
 import { MatInput } from '@angular/material/input';
 import { LOGIN_RULES_TOOLTIP } from './../../../constants/labels/login';
 import { PASSWORD_RULES_TOOLTIP } from './../../../constants/labels/password';
 import { Observable, Subscription } from 'rxjs';
-import { PreResetPasswordContainer } from './../pre-reset-password/pre-reset-password.container';
+import {
+  PreResetDialogCloseDataInterface,
+  PreResetPasswordContainer,
+} from './../pre-reset-password/pre-reset-password.container';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { LoginUserFormInterface } from './../../../store/user/user.server.helpers';
 import {
@@ -38,13 +44,19 @@ export class SignInFormComponent implements OnInit, OnDestroy, AfterViewInit {
   readonly passwordTooltipText = PASSWORD_RULES_TOOLTIP;
 
   hide = true;
-  constructor(private fb: FormBuilder, public dialog: MatDialog) {}
+  constructor(
+    private fb: FormBuilder,
+    public dialog: MatDialog,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.signInForm = this.buildFormGroup();
   }
 
-  ngOnDestroy(): void {}
+  ngOnDestroy(): void {
+    // this.closeForgetPasswordDialogSubscription$.unsubscribe();
+  }
 
   ngAfterViewInit(): void {
     setTimeout(() => {
@@ -65,6 +77,13 @@ export class SignInFormComponent implements OnInit, OnDestroy, AfterViewInit {
       width: '460px',
       height: '270px',
     });
+
+    // this observable unsubscribes on its own
+    this.dialogRef
+      .afterClosed()
+      .subscribe(({ isSucceeded }: PreResetDialogCloseDataInterface) => {
+        this.router.navigate(['']);
+      });
   }
 
   onSubmit() {
