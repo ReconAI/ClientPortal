@@ -59,15 +59,20 @@ export class SetGpsDialogComponent implements OnInit {
           Validators.pattern(this.numberPattern),
         ]),
       ],
-    }, );
+    });
 
     this.center = latLng(this.lat, this.lng) || TAMPERE_COORDINATES;
 
     this.layers = [
-      generateMapMarker({
-        lat: this.data.lat,
-        lng: this.data.lng,
-      }),
+      generateMapMarker(
+        {
+          lat: this.data.lat,
+          lng: this.data.lng,
+        },
+        {
+          markerType: 'device',
+        }
+      ),
     ];
 
     this.options = generateDefaultMap(this.center);
