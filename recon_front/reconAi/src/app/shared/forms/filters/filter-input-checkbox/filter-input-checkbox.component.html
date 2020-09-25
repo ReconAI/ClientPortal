@@ -1,4 +1,4 @@
-<div class="input-checkbox-container">
+<div class="input-checkbox-container" [ngClass]="{ invalid: isInvalid }">
   <label> {{ label }}</label>
   <div class="inputs-container">
     <div class="input-icon">
@@ -8,12 +8,14 @@
         [autocompleteOptions]="autocompleteOptions"
         (changeVal)="changeValues()"
         (blurVal)="blurValue()"
+        [isInvalid]="isInvalid"
       >
       </recon-filter-input>
     </div>
     <recon-form-checkbox
       [(ngModel)]="checked"
       [label]="checkboxLabel"
+      [isInvalid]="isInvalid"
       (changeVal)="changeValues(); blurValue()"
     ></recon-form-checkbox>
   </div>

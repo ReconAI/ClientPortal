@@ -134,4 +134,13 @@ export class ReportingFilterComponent implements OnInit {
       this.isDevice ? this.filterSingularDeviceError : this.filterListError
     );
   }
+
+  isInvalidFilter(i: number): boolean {
+    const currentErrors = this.isDevice
+      ? this.filterSingularDeviceError
+      : this.filterListError;
+
+    // label should be equal to current error label!
+    return !!(currentErrors && currentErrors[DEFAULT_FILTER_ARRAY[i]?.label]);
+  }
 }

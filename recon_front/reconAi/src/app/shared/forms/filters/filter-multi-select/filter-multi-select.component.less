@@ -13,15 +13,19 @@
         }
     }
 
-    &.recon-multi-select-invalid {
-        .filter-multi-select-header {
-            border-color: @recon-error-input-border;
-        }
-    }
-
     &.without-value {
         .filter-multi-select-header {
             color: #757575;
+        }
+    }
+
+    &.invalid {
+        label {
+            color: @recon-error-input-border;
+        }
+
+        .filter-multi-select-header {
+            border-color: @recon-error-input-border;
         }
     }
 }

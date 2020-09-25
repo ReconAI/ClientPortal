@@ -2,7 +2,8 @@
   class="filter-multi-select"
   [ngClass]="{
     'is-active': isActive,
-    'without-value': !isWithValue
+    'without-value': !isWithValue,
+    invalid: isInvalid
   }"
   tabindex="0"
   (blur)="onTouched()"

@@ -1,3 +1,5 @@
+@import "../../../../../variables.less";
+
 div.input-checkbox-container {
     width: 100%;
     display: flex;
@@ -11,5 +13,11 @@ div.input-checkbox-container {
     div.input-icon {
         width: 150px;
         min-width: 150px;
+    }
+
+    &.invalid {
+        label {
+            color: @recon-error-input-border;
+        }
     }
 }

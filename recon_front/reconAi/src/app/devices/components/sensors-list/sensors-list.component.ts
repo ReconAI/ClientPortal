@@ -81,23 +81,25 @@ export class SensorsListComponent implements OnInit, AfterViewInit {
   }
 
   generateLayersFromDevices(): void {
-    this.layers = this.sensors.map((device, index) =>
-      generateMapMarker(
-        {
-          lat: +device.lat,
-          lng: +device.lng,
-        },
-        {
-          isHighlighted: index === this.selectedIndex,
-          zIndex: index === this.selectedIndex ? 1000 : 500,
-          clickHandler: () => {
-            this.zone.run(() => this.navigateToDevice(device));
+    this.layers = this.sensors
+      .filter((device) => device.lat && device.lng)
+      .map((device, index) =>
+        generateMapMarker(
+          {
+            lat: +device.lat,
+            lng: +device.lng,
           },
-          popupText: 'Click to navigate to device page',
-          markerType: 'device',
-        }
-      )
-    );
+          {
+            isHighlighted: index === this.selectedIndex,
+            zIndex: index === this.selectedIndex ? 1000 : 500,
+            clickHandler: () => {
+              this.zone.run(() => this.navigateToDevice(device));
+            },
+            popupText: 'Click to navigate to device page',
+            markerType: 'device',
+          }
+        )
+      );
   }
 
   ngAfterViewInit(): void {

@@ -140,18 +140,20 @@ export class ReportingFilteringListComponent
   }
 
   generateLayersFromDevices(): void {
-    this.layers = this.devices.map((device, index) =>
-      generateMapMarker(
-        {
-          lat: +device.lat,
-          lng: +device.lng,
-        },
-        {
-          isHighlighted: index === this.selectedIndex,
-          zIndex: index === this.selectedIndex ? 1000 : 500,
-        }
-      )
-    );
+    this.layers = this.devices
+      .filter((device) => device.lat && device.lng)
+      .map((device, index) =>
+        generateMapMarker(
+          {
+            lat: +device.lat,
+            lng: +device.lng,
+          },
+          {
+            isHighlighted: index === this.selectedIndex,
+            zIndex: index === this.selectedIndex ? 1000 : 500,
+          }
+        )
+      );
   }
 
   ngOnInit(): void {

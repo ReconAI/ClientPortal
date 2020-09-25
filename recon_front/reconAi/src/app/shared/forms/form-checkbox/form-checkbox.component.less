@@ -2,6 +2,12 @@
 
 .checkbox-button {
     cursor: pointer;
+
+    &.invalid {
+        span.checkbox-button__label {
+            color: @recon-error-input-border;
+        }
+    }
 }
 
 input[type=checkbox] {

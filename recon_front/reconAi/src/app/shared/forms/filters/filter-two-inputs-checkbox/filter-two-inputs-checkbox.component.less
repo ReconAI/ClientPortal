@@ -1,3 +1,5 @@
+@import "../../../../../variables.less";
+
 div.three-inputs-container,
 div.inputs-container {
     display: flex;
@@ -6,6 +8,15 @@ div.inputs-container {
 
 div.two-inputs-container {
     text-align: center;
+
+    &.invalid {
+
+        label,
+        span.separator {
+            color: @recon-error-input-border;
+        }
+    }
+
 
     div.input-container {
         display: flex;

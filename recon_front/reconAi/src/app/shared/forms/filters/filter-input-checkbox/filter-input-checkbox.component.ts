@@ -26,7 +26,7 @@ export class FilterInputCheckboxComponent
   @Input() placeholder = 'Search...';
   @Input() disabled = false;
   @Input() autocompleteOptions: string[] = [];
-
+  @Input() isInvalid = false;
   @Output() changeVal = new EventEmitter<FilterInputPropsInterface>();
   @Output() blurVal = new EventEmitter<FilterInputPropsInterface>();
 
