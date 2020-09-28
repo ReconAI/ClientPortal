@@ -93,10 +93,15 @@ export class SetGpsDialogComponent implements OnInit {
     });
 
     this.layers = [
-      generateMapMarker({
-        lat: props.latlng.lat,
-        lng: props.latlng.lng,
-      }),
+      generateMapMarker(
+        {
+          lat: props.latlng.lat,
+          lng: props.latlng.lng,
+        },
+        {
+          markerType: 'device',
+        }
+      ),
     ];
   }
 
