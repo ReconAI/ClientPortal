@@ -14,9 +14,9 @@
 
 <ng-template #successColumn let-element="element">
   <ng-container *ngIf="element.success; else failed">
-    <mat-icon>done</mat-icon>
+    <mat-icon matTooltip="Paid">done</mat-icon>
   </ng-container>
   <ng-template #failed>
-    <mat-icon>clear</mat-icon>
+    <mat-icon matTooltip="Unpaid">clear</mat-icon>
   </ng-template>
 </ng-template>

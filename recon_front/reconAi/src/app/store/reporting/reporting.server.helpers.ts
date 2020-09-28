@@ -206,7 +206,7 @@ export const filteringErrorFieldRelations = {
   ambient_temperature: 'Ambient temperature, C',
   road_temperature: 'Road temperature, C',
   is_tagged: 'Is tagged data',
-  event_object: 'Object Type',
+  event_object: 'Event/Object',
 };
 
 // this method transform filters from array to string

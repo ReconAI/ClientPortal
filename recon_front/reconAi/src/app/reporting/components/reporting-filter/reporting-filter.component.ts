@@ -92,7 +92,27 @@ export class ReportingFilterComponent implements OnInit {
   }
 
   isDisabledFilter(i: number): boolean {
-    return (i === 1 || i === 3) && this.isDevice;
+    if (i === 1 || i === 3) {
+      return this.isDevice;
+    }
+
+    if (i === 5) {
+      return !this.eventObjects?.length;
+    }
+
+    if (i === 8) {
+      return !this.vehicleTypes?.length;
+    }
+
+    if (i === 9) {
+      return !this.pedestrianFlow?.length;
+    }
+
+    if (i === 10) {
+      return !this.roadWeatherConditions?.length;
+    }
+
+    return false;
   }
 
   toggleSelectValueWithIndex(i: number): void {
