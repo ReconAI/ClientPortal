@@ -34,9 +34,6 @@ from shared.swagger.responses import data_serializer, http401, \
 from shared.views.utils import CheckTokenMixin, FormMixin
 
 
-
-
-
 @method_decorator(name='get', decorator=swagger_auto_schema(
     responses=DEFAULT_GET_REQUESTS_RESPONSES,
     tags=['User Management'],
@@ -90,7 +87,7 @@ class UserList(ListCreateAPIView, FormMixin):
 
         :rtype: JsonResponse
         """
-        if not request.user.is_admin:
+        if not IsCompanyAdmin().has_permission(request, self):
             raise exceptions.PermissionDenied()
 
         form = self.form_class(request.user.organization_id, data=request.data)

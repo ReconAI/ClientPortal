@@ -26,7 +26,7 @@ class CategoryListMixin:
     """
     Device list utility
     """
-    queryset = Category.objects.all()
+    queryset = Category.objects.order_by('id').all()
 
     serializer_class = CategoryDeviceSerializer
 
