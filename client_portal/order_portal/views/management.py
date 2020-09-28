@@ -38,7 +38,7 @@ class SyncCategoriesView(CategoryListMixin, ListCreateAPIView):
     permission_classes = (IsAuthenticated, IsActive,
                           IsSuperUser, PaymentRequired)
 
-    queryset = Category.objects.all()
+    queryset = Category.objects.order_by('id').all()
 
     @swagger_auto_schema(
         responses={
@@ -150,6 +150,7 @@ class ManufacturerListView(PlainListModelMixin, ManufacturerOperator,
                 data=self.request.data
             )
         )
+
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
     responses=default_get_responses_with_custom_success(

@@ -1,13 +1,16 @@
 """
 Contains forms associated with user management procedures
 """
+from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.sites.shortcuts import get_current_site
+from django.core import validators
 from django.forms import ModelForm
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.utils.text import slugify
+from django.utils.translation import gettext_lazy as _
 from requests import Request
 
 from reporting_tool.forms.accounts import UserForm
@@ -36,7 +39,16 @@ class UserInvitationForm(ModelForm, RoleFieldMixin, SendEmailMixin):
     """
     In order to be invited all the initial data must be valid
     """
+    SLUG_ERROR_MSG = _('Value should consist of latin letters, '
+                       'numbers, underscores or hyphens.')
+
     role = RoleFieldMixin.role
+    firstname = forms.CharField(required=True, error_messages={
+        'invalid': SLUG_ERROR_MSG
+    }, validators=[validators.validate_slug])
+    lastname = forms.CharField(required=True, error_messages={
+        'invalid': SLUG_ERROR_MSG
+    }, validators=[validators.validate_slug])
 
     def __init__(self, organization_id: int, *args, **kwargs):
         """
@@ -114,11 +126,13 @@ class UserInvitationForm(ModelForm, RoleFieldMixin, SendEmailMixin):
             username__startswith=u_username
         ).count()
 
-        if count:
-            while self.Meta.model.base_object.filter(
-                    username__startswith='{}{}'.format(u_username, count)
-            ).exists():
-                count += 1
+        if not count:
+            return u_username
+
+        while self.Meta.model.base_object.filter(
+                username__startswith='{}{}'.format(u_username, count)
+        ).exists():
+            count += 1
 
         return '{}{}'.format(u_username, count)
 
