@@ -203,15 +203,14 @@ export class ReportingFilteringListComponent
         id: 'timestamp',
         width: '150px',
       },
-
-      {
-        header: 'Project name',
-        id: 'project',
-        width: '100px',
-      },
       {
         header: 'Event/Object',
         id: 'isEvent',
+        width: '100px',
+      },
+      {
+        header: 'Project name',
+        id: 'project',
         width: '100px',
       },
       {
@@ -245,13 +244,24 @@ export class ReportingFilteringListComponent
         width: '100px',
       },
       {
-        header: 'Vehicle registration plate',
-        id: 'plateNumber',
+        header: 'Observation start',
+        id: 'observationStartDT',
+        width: '150px',
+      },
+      {
+        header: 'Observation end',
+        id: 'observationEndDT',
+        width: '150px',
+      },
+
+      {
+        header: 'Direction statistics',
+        id: 'directionsStatistics',
         width: '100px',
       },
       {
-        header: 'Directions statistics',
-        id: 'directionsStatistics',
+        header: 'Vehicle registration plate',
+        id: 'plateNumber',
         width: '100px',
       },
       {
@@ -265,14 +275,9 @@ export class ReportingFilteringListComponent
         width: '100px',
       },
       {
-        header: 'Observation start',
-        id: 'observationStartDT',
-        width: '150px',
-      },
-      {
-        header: 'Observation end',
-        id: 'observationEndDT',
-        width: '150px',
+        header: 'Vehicle classification',
+        id: 'vehicle',
+        width: '100px',
       },
       {
         header: 'Pedestrian Flow Number Of Objects',
@@ -290,23 +295,18 @@ export class ReportingFilteringListComponent
         width: '100px',
       },
       {
+        header: 'Road weather condition',
+        id: 'roadWeather',
+        width: '100px',
+      },
+      {
         header: 'Ambient temperature',
         id: 'ambientTemperature',
         width: '100px',
       },
       {
-        header: 'Vehicle classification',
-        id: 'vehicle',
-        width: '100px',
-      },
-      {
         header: 'Ambient weather condition',
         id: 'ambientWeather',
-        width: '100px',
-      },
-      {
-        header: 'Road weather condition',
-        id: 'roadWeather',
         width: '100px',
       },
       {
@@ -329,7 +329,7 @@ export class ReportingFilteringListComponent
 
     if (!this.isDevice) {
       this.columns.splice(
-        2,
+        3,
         0,
         ...[
           {
