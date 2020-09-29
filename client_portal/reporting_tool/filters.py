@@ -28,6 +28,23 @@ class EventObjectFilter(FilterMixin, filters.ChoiceFilter):
         )
 
 
+class IsTaggedFilter(BooleanFilter):
+    """
+    Is tagged filter logic.
+    Null and False should be considered as False.
+    """
+    def filter(self, queryset: QuerySet, value: Any) -> Optional[Q]:
+        q = super().filter(queryset, value)
+
+        if value is False:
+            return Q(
+                **{'{}__{}'.format(self.field_name, self.lookup_expr): True},
+                _negated=True
+            )
+
+        return q
+
+
 class MultipleTypeCodeFilter(FilterMixin, filters.CharFilter):
     """
     Multiple options filter for relevant type code
@@ -60,7 +77,9 @@ class RelevantDataSensorFilter(FilterSet):
     ambient_temperature = NumericRangeFilter(
         field_name="ambient_temperature", lookup_expr='range'
     )
-    is_tagged = BooleanFilter(field_name='is_tagged_data', lookup_expr='exact')
+    is_tagged = IsTaggedFilter(
+        field_name='is_tagged_data', lookup_expr='exact'
+    )
     vehicle_type = CharFilter(
         field_name='vehicle_classification', lookup_expr='exact', strip=False
     )

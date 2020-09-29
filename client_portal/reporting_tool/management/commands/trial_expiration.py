@@ -79,8 +79,8 @@ class Command(BaseCommand, SendEmailMixin):
         now_ts = now() - timedelta(days=settings.TRIAL_PERIOD_DAYS)
 
         return query_set.filter(
-            created_dt__lt=now_ts,
-            created_dt__gt=(now_ts - timedelta(days=1))
+            created_dt__lt=(now_ts - timedelta(days=1)),
+            created_dt__gt=(now_ts - timedelta(days=2))
         )
 
     def get_objects(self) -> QuerySet:
