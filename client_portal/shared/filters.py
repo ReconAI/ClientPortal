@@ -24,7 +24,7 @@ class FilterMixin:
         :rtype: Optional[Q]
         """
         if value not in EMPTY_VALUES:
-            lookup = '%s__%s' % (self.field_name, self.lookup_expr)
+            lookup = '{}__{}'.format(self.field_name, self.lookup_expr)
 
             return Q(**{lookup: value})
 

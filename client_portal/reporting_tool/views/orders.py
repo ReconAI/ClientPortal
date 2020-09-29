@@ -176,6 +176,5 @@ class OrderItemDownload(PlainListModelMixin, RetrieveAPIView):
     def filter_queryset(self, queryset: QuerySet) -> QuerySet:
         return queryset.filter(
             organization_id=self.request.user.organization.id,
-            id=self.kwargs[self.lookup_field],
-            payment_id__isnull=True
+            id=self.kwargs[self.lookup_field]
         )
