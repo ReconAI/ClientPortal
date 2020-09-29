@@ -15,6 +15,7 @@ import {
   Input,
   Output,
   EventEmitter,
+  NgZone,
 } from '@angular/core';
 import { latLng, Layer } from 'leaflet';
 import { generateMapMarker } from 'app/core/helpers/markers';
@@ -36,7 +37,8 @@ export class SetGpsDialogComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     @Inject(MAT_DIALOG_DATA)
-    public data: LatLngInterface
+    public data: LatLngInterface,
+    private ngZone: NgZone
   ) {}
 
   center = null;
@@ -114,7 +116,11 @@ export class SetGpsDialogComponent implements OnInit {
         lat: this.coordinate.value.latitude,
         lng: this.coordinate.value.longitude,
       };
-      this.layers = [generateMapMarker(newMarkerCoordinates)];
+      this.layers = [
+        generateMapMarker(newMarkerCoordinates, {
+          markerType: 'device',
+        }),
+      ];
       this.setCenter(newMarkerCoordinates);
     } else {
       this.layers = [];
