@@ -102,6 +102,12 @@ import {
 } from 'app/constants/types';
 import { CardServerInterface } from 'app/constants/types/card';
 import { loadCategoriesRequestedAction } from '../orders';
+import {
+  eventObjectListSucceededAction,
+  pedestrianFlowListSucceededAction,
+  roadWeatherConditionListSucceededAction,
+  vehicleTypeListSucceededAction,
+} from '../reporting';
 
 @Injectable()
 export class UserEffects {
@@ -214,6 +220,28 @@ export class UserEffects {
           tap(() => {
             this.basketService.deleteDevicesOfUser(+userId);
             this.filtersService.resetUserFilters(+userId);
+
+            // reset cached data
+            this.store.dispatch(
+              pedestrianFlowListSucceededAction({
+                options: [],
+              })
+            );
+            this.store.dispatch(
+              eventObjectListSucceededAction({
+                options: [],
+              })
+            );
+            this.store.dispatch(
+              roadWeatherConditionListSucceededAction({
+                options: [],
+              })
+            );
+            this.store.dispatch(
+              vehicleTypeListSucceededAction({
+                options: [],
+              })
+            );
             this.store.dispatch(resetCurrentUserAction());
             this.router.navigate(['/']);
           }),
