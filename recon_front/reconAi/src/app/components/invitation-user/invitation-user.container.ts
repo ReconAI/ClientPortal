@@ -20,6 +20,7 @@ import {
   selectInviteSignUpUserLoadingStatus,
 } from 'app/store/loaders/loaders.selectors';
 import { FormServerErrorInterface } from 'app/constants/types/requests';
+import { setAuthStatusAction } from 'app/store/user';
 
 @Component({
   selector: 'recon-invitation-user-container',
@@ -68,6 +69,12 @@ export class InvitationUserContainer implements OnInit {
   }
 
   ngOnInit(): void {
+    this.store.dispatch(
+      setAuthStatusAction({
+        status: false,
+      })
+    );
+
     this.uidb64 = this.activatedRoute.snapshot.paramMap.get('uidb');
     this.token = this.activatedRoute.snapshot.paramMap.get('token');
 

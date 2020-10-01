@@ -1,4 +1,7 @@
-import { selectPurchaseLoadingStatus } from './../../../store/loaders/loaders.selectors';
+import {
+  selectPurchaseLoadingStatus,
+  selectPurchasePdfLoadingStatus,
+} from './../../../store/loaders/loaders.selectors';
 import {
   selectCurrentUserProfileInvoicingEmail,
   selectCurrentUserProfileOrganizationLastName,
@@ -7,7 +10,10 @@ import {
   selectCurrentUserProfileInvoicingAddress,
 } from './../../../store/user/user.selectors';
 import { Observable, Subscription } from 'rxjs';
-import { loadPurchaseRequestedAction } from './../../../store/purchases/purchases.actions';
+import {
+  loadPurchasePdfRequestedAction,
+  loadPurchaseRequestedAction,
+} from './../../../store/purchases/purchases.actions';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AppState } from 'app/store/reducers';
@@ -73,6 +79,10 @@ export class PurchaseCardContainer implements OnInit, OnDestroy {
     select(selectCurrentUserProfileInvoicingAddress)
   );
 
+  loadingPdf$: Observable<boolean> = this.store.pipe(
+    select(selectPurchasePdfLoadingStatus)
+  );
+
   recalculateTotal(): void {
     this.totalAmountWithVat = 0;
     this.totalAmountWithoutVat = 0;
@@ -96,5 +106,13 @@ export class PurchaseCardContainer implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.purchasesSubscription$.unsubscribe();
+  }
+
+  public downloadPdf(): void {
+    this.store.dispatch(
+      loadPurchasePdfRequestedAction({
+        id: +this.id,
+      })
+    );
   }
 }

@@ -19,7 +19,7 @@ export class HttpReqFormatInterceptor implements HttpInterceptor {
   ): Observable<HttpEvent<unknown>> {
     return next.handle(request).pipe(
       filter((event) => event instanceof HttpResponse),
-      map((event: HttpResponse<any>) => event.clone({ body: event.body?.data })),
+      map((event: HttpResponse<any>) => event.clone({ body: event.body?.data }))
     );
   }
 }

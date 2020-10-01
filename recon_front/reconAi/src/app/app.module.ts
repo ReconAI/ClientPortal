@@ -71,6 +71,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { UnauthorizedPageComponent } from './components/unauthorized-page/unauthorized-page.component';
 import { AuthorizationRedirectComponent } from './authorization-redirect/authorization-redirect.component';
+import { DownloadPurchasePdfComponent } from './components/purchases/purchase-card/download-purchase-pdf/download-purchase-pdf.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -116,6 +117,7 @@ import { AuthorizationRedirectComponent } from './authorization-redirect/authori
     BreadcrumbsContainer,
     UnauthorizedPageComponent,
     AuthorizationRedirectComponent,
+    DownloadPurchasePdfComponent,
   ],
   imports: [
     BrowserModule,

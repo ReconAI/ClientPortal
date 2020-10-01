@@ -48,6 +48,7 @@ export enum LoadersActionTypes {
   SET_HEAT_MAP_DATA_LOADING_STATUS = '[Loaders | Reporting] Set Heat Map Data Loading Status',
   SET_ADDITIONAL_SENSOR_INFO_LOADING_STATUS = '[Loaders | Reporting] Set Additional Sensor Info Loading Status',
   SET_SENSOR_LIST_LOADING_STATUS = '[Loaders | Devices] Set Sensor List Loading Status',
+  SET_PURCHASE_PDF_LOADING_STATUS = '[Loaders | Purchases] Set Purchase Pdf Loading Status',
 }
 
 export interface LoaderInterface {
@@ -290,5 +291,11 @@ export const setAdditionalSensorInfoLoadingStatusAction = createAction(
 // user => change password
 export const setChangePasswordLoadingStatusAction = createAction(
   LoadersActionTypes.SET_CHANGE_PASSWORD_LOADING_STATUS,
+  props<LoaderInterface>()
+);
+
+// purchases
+export const setPurchasePdfLoadingStatusAction = createAction(
+  LoadersActionTypes.SET_PURCHASE_PDF_LOADING_STATUS,
   props<LoaderInterface>()
 );
