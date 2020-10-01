@@ -235,3 +235,9 @@ export const selectChangePasswordStatus = createSelector(
   selectLoaders,
   (loaders: LoadersState): boolean => loaders.changePassword
 );
+
+// purchase
+export const selectPurchasePdfLoadingStatus = createSelector(
+  selectLoaders,
+  (loaders: LoadersState): boolean => loaders.pdfLoading
+);

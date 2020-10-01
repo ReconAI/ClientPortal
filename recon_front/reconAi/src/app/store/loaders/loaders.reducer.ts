@@ -44,7 +44,8 @@ import {
   setBuildingRouteLoadingStatusAction,
   setHeatMapDataLoadingStatusAction,
   setSensorListLoadingStatusAction,
-  setAdditionalSensorInfoLoadingStatusAction
+  setAdditionalSensorInfoLoadingStatusAction,
+  setPurchasePdfLoadingStatusAction,
 } from './loaders.actions';
 import { createReducer, on, Action } from '@ngrx/store';
 
@@ -103,6 +104,8 @@ export interface LoadersState {
   additionalSensorInfo: boolean;
   // user -> change password
   changePassword: boolean;
+  // purchases
+  pdfLoading: boolean;
 }
 
 const initialState: LoadersState = {
@@ -159,6 +162,8 @@ const initialState: LoadersState = {
   additionalSensorInfo: false,
   // user -> change password
   changePassword: false,
+  // purchase
+  pdfLoading: false,
 };
 
 const setCurrentUserLoadingStatusReducer = (
@@ -392,6 +397,13 @@ const setAdditionalSensorInfoLoadingStatusReducer = (
   { status }: Action & LoaderInterface
 ): LoadersState => ({ ...state, additionalSensorInfo: status });
 
+// purchases
+
+const setPurchasePdfLoadingStatusReducer = (
+  state: LoadersState,
+  { status }: Action & LoaderInterface
+): LoadersState => ({ ...state, pdfLoading: status });
+
 const loadersReducer = createReducer(
   initialState,
   on(setCurrentUserLoadingStatusAction, setCurrentUserLoadingStatusReducer),
@@ -488,12 +500,17 @@ const loadersReducer = createReducer(
   on(setHeatMapDataLoadingStatusAction, setHeatMapDataLoadingStatusReducer),
   on(setBuildingRouteLoadingStatusAction, setBuildingRouteLoadingStatusReducer),
   on(setSensorListLoadingStatusAction, setsensorListLoadingReducer),
-  on(setAdditionalSensorInfoLoadingStatusAction, setAdditionalSensorInfoLoadingStatusReducer),
+  on(
+    setAdditionalSensorInfoLoadingStatusAction,
+    setAdditionalSensorInfoLoadingStatusReducer
+  ),
   // user -> change password
   on(
     setChangePasswordLoadingStatusAction,
     setChangePasswordLoadingStatusReducer
-  )
+  ),
+  // purchases
+  on(setPurchasePdfLoadingStatusAction, setPurchasePdfLoadingStatusReducer)
 );
 
 export function reducer(state: LoadersState | undefined, action: Action) {

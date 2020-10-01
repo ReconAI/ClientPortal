@@ -21,6 +21,10 @@ export enum PurchaseActionTypes {
   LOAD_PURCHASE_REQUESTED = '[Purchase] Load Purchase Requested',
   LOAD_PURCHASE_SUCCEEDED = '[Purchase] Load Purchase Succeeded',
   LOAD_PURCHASE_ERROR = '[Purchase] Load Purchase Error',
+
+  LOAD_PURCHASE_PDF_REQUESTED = '[Purchase] Load Pdf Requested',
+  LOAD_PURCHASE_PDF_SUCCEEDED = '[Purchase] Load Pdf Succeeded',
+  LOAD_PURCHASE_PDF_ERROR = '[Purchase] Load Pdf Error',
 }
 
 export const loadPurchaseListRequestedAction = createAction(
@@ -49,4 +53,20 @@ export const loadPurchaseSucceededAction = createAction(
 
 export const loadPurchaseErrorAction = createAction(
   PurchaseActionTypes.LOAD_PURCHASE_ERROR
+);
+
+export interface LoadPurchasePdfRequestInterface {
+  id: number;
+}
+
+export const loadPurchasePdfRequestedAction = createAction(
+  PurchaseActionTypes.LOAD_PURCHASE_PDF_REQUESTED,
+  props<LoadPurchasePdfRequestInterface>()
+);
+
+export const loadPurchasePdfSucceededAction = createAction(
+  PurchaseActionTypes.LOAD_PURCHASE_PDF_SUCCEEDED
+);
+export const loadPurchasePdfErrorAction = createAction(
+  PurchaseActionTypes.LOAD_PURCHASE_PDF_ERROR
 );

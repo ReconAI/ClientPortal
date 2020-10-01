@@ -1,0 +1,11 @@
+<button
+  mat-raised-button
+  color="accent"
+  (click)="onDownloadClick()"
+  [disabled]="loading"
+>
+  <mat-icon *ngIf="loading; else loaded">
+    <mat-spinner color="primary" diameter="20"></mat-spinner>
+  </mat-icon>
+  <ng-template #loaded>DOWNLOAD PDF</ng-template>
+</button>

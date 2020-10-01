@@ -146,6 +146,10 @@ const routes: Routes = [
   },
   {
     path: 'devices',
+    canActivate: [AuthRoleGuard],
+    data: {
+      expectedRolePriority: UserRolesPriorities.DEVELOPER_ROLE,
+    },
     loadChildren: () =>
       import('./devices/devices.module').then((m) => m.DevicesModule),
   },
