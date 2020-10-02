@@ -7,6 +7,7 @@ import unicodedata
 from typing import Tuple, Optional, Iterable, Type
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password, check_password, \
     is_password_usable
 from django.contrib.auth.models import Group
@@ -319,4 +320,7 @@ class Role:
                 group__name=Role.ADMIN
             ).values_list('user_id', flat=True))
 
-        return organization.user_set.filter(pk__in=among).all()
+        return get_user_model().objects.filter(
+            pk__in=among,
+            organization_id=organization.id
+        ).all()

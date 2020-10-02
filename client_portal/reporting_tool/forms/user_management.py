@@ -39,15 +39,15 @@ class UserInvitationForm(ModelForm, RoleFieldMixin, SendEmailMixin):
     """
     In order to be invited all the initial data must be valid
     """
-    SLUG_ERROR_MSG = _('Value should consist of latin letters, '
+    SLUG_ERROR_MSG = _('should consist of latin letters, '
                        'numbers, underscores or hyphens.')
 
     role = RoleFieldMixin.role
     firstname = forms.CharField(required=True, error_messages={
-        'invalid': SLUG_ERROR_MSG
+        'invalid': '{} {}'.format(_('First name'), SLUG_ERROR_MSG)
     }, validators=[validators.validate_slug])
     lastname = forms.CharField(required=True, error_messages={
-        'invalid': SLUG_ERROR_MSG
+        'invalid': '{} {}'.format(_('Last name'), SLUG_ERROR_MSG)
     }, validators=[validators.validate_slug])
 
     def __init__(self, organization_id: int, *args, **kwargs):

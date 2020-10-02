@@ -3,7 +3,7 @@ Sends mails to thosw whose trial is expiring before long
 """
 
 
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 from argparse import ArgumentParser
 from django.conf import settings
@@ -45,7 +45,7 @@ class Command(BaseCommand, SendEmailMixin):
             self.stdout.write("No one's trial is expiring shortly")
 
         authorized_users_ids = list(UserGroup.objects.filter(
-            group__name__in=[Role.SUPER_ADMIN, Role.ADMIN, Role.DEVELOPER]
+            group__name__in=[Role.ADMIN]
         ).values_list('user_id', flat=True))
 
         for organization in objects:
@@ -79,8 +79,8 @@ class Command(BaseCommand, SendEmailMixin):
         now_ts = now() - timedelta(days=settings.TRIAL_PERIOD_DAYS)
 
         return query_set.filter(
-            created_dt__lt=(now_ts - timedelta(days=1)),
-            created_dt__gt=(now_ts - timedelta(days=2))
+            created_dt__gt=(now_ts + timedelta(days=1)),
+            created_dt__lt=(now_ts + timedelta(days=2))
         )
 
     def get_objects(self) -> QuerySet:
