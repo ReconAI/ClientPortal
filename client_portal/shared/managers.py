@@ -558,9 +558,3 @@ class StripeCustomerManager(AbstractCustomerManager):
             return self.retrieve()
         except InvalidRequestError:
             return self.create()
-
-# class OrganizationManager(models.Manager):
-#     def exclude_root(self) -> 'QuerySet':
-#         from recon_db_manager.models import Organization
-#
-#         return self.exclude(name=Organization.ROOT)

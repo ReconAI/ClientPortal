@@ -8,6 +8,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
 from django.db import models
+from django.db.transaction import atomic
 from django.utils.module_loading import import_string
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -259,7 +260,8 @@ class UserInvoiceSerializer(ModelSerializer):
         )
 
 
-class DefaultPaymentMethodSerializer(ReadOnlySerializerMixin, Serializer):
+class DefaultPaymentMethodSerializer(SendEmailMixin, ReadOnlySerializerMixin,
+                                     Serializer):
     """
     Default payment method modification serializer
     """
@@ -267,6 +269,7 @@ class DefaultPaymentMethodSerializer(ReadOnlySerializerMixin, Serializer):
     is_card = serializers.BooleanField(required=True, allow_null=False)
     card_id = serializers.CharField(required=False)
 
+    @atomic(settings.RECON_AI_CONNECTION_NAME)
     def update(self, instance: Organization,
                validated_data: dict) -> Organization:
         """
@@ -280,7 +283,24 @@ class DefaultPaymentMethodSerializer(ReadOnlySerializerMixin, Serializer):
         instance.is_invoice_payment_method = not is_card
         instance.save()
 
+        if instance.is_invoice_payment_method:
+            self.send_mail(
+                [settings.INFO_EMAIL],
+                'emails/invoice_method_subject.txt',
+                'emails/invoice_method.html',
+                from_email=self.context.get('request').user.email
+            )
+
         return instance
+
+    def get_email_context(self, *args, **kwargs) -> dict:
+        user = self.context.get('request').user
+
+        return {
+            'user_email': user.email,
+            'organization_name': user.organization.name,
+            'app_name': settings.APP_NAME
+        }
 
 
 class ProjectSerializer(ModelSerializer):

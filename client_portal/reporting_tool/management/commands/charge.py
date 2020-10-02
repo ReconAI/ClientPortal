@@ -7,6 +7,7 @@ from typing import List, Dict
 
 from argparse import ArgumentParser
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.management import BaseCommand
 from django.db.models import Count
 from django.db.models.expressions import F
@@ -76,7 +77,9 @@ class Command(SendEmailMixin, BaseCommand):
         )
 
         if organization_charger.is_to_be_charged:
-            users = organization.user_set.all()
+            users = get_user_model().objects.filter(
+                organization_id=organization.id
+            ).all()
 
             monthly_usage_calculator = MonthlyUsageCalculator(
                 users,
@@ -115,6 +118,11 @@ class Command(SendEmailMixin, BaseCommand):
                 organization,
                 invoice
             )
+
+            self.stdout.write('Organization {}({}) is successfully charged'.format(
+                organization.name,
+                organization.id
+            ))
 
     @staticmethod
     def __create_charge(organization: Organization, payment_id: str,
@@ -183,9 +191,7 @@ class Command(SendEmailMixin, BaseCommand):
             ))
         ).order_by(
             '-id', '-recurrentcharge__created_dt'
-        ).prefetch_related(
-            'user_set', 'edgenode_set'
-        ).all()
+        ).prefetch_related('edgenode_set').all()
 
         device_cnt = self.__device_cnt_query(
             list(organizations.values_list('id', flat=True))

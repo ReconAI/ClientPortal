@@ -1,0 +1,11 @@
+{% load i18n %}{% autoescape off %}
+{% blocktrans %}Dear {{ app_name }} team{% endblocktrans %}.
+
+{% blocktrans %}Admin {{ user_email }} from {{ organization_name }} is requesting invoicing approval for their account{% endblocktrans %}.
+{% trans "Please notify client in case we are not able to credit them via email." %}
+
+{% trans "Automated notification" %}
+
+{{ app_name }}
+
+{% endautoescape %}

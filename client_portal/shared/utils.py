@@ -14,7 +14,8 @@ class SendEmailMixin:
     Class allowing client to send an email
     """
     def send_mail(self, to_email: list, subject_location: str,
-                  body_location: str, attachments=None, *args, **kwargs):
+                  body_location: str, attachments=None, from_email=None,
+                  *args, **kwargs):
         """
         Sends email on invocation
 
@@ -22,6 +23,7 @@ class SendEmailMixin:
         :type subject_location: str
         :type body_location: str
         :type attachments: Optional[List]
+        :type from_email: str
         """
         context = self.get_email_context(*args, **kwargs)
 
@@ -33,6 +35,7 @@ class SendEmailMixin:
             ''.join(subject.splitlines()),
             message,
             to=to_email,
+            from_email=from_email,
             attachments=attachments
         ).send()
 
