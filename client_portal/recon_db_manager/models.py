@@ -1758,4 +1758,7 @@ class RecurrentCharge(models.Model):
         """
         :rtype: bool
         """
-        return self.payment_id is not None
+        return (
+            self.payment_id is not None
+            or self.is_invoice
+        )
