@@ -84,7 +84,7 @@
 	  </div>
 	  <div class="col-60">
 		  {% include 'pdf/enclosed_company_data.html' %}
-		  {% if charge.payment_id %}
+		  {% if charge.is_successful %}
 			  <div class="col-wrap">
 				  <div class="col-40">Payment ID:</div>
 				  <div class="col-60">{{ charge.payment_id }}</div>
