@@ -3,7 +3,7 @@ import { UnauthorizedPageComponent } from './components/unauthorized-page/unauth
 import { IsPossibleToBuyGuard } from './core/guards/is-possible-to-buy/is-possible-to-buy.guard';
 import { PurchaseCardContainer } from './components/purchases/purchase-card/purchase-card.container';
 import { CurrentUserProfileContainer } from './components/current-user-profile/current-user-profile.container';
-import { UserRolesPriorities } from './constants/types/user';
+import { UserRolesPriorities, CLIENT_ROLE } from './constants/types/user';
 import { InvitationUserContainer } from './components/invitation-user/invitation-user.container';
 
 import { SuccessSignUpGuard } from './core/guards/successSignUp/success-sign-up.guard';
@@ -148,7 +148,7 @@ const routes: Routes = [
     path: 'devices',
     canActivate: [AuthRoleGuard],
     data: {
-      expectedRolePriority: UserRolesPriorities.DEVELOPER_ROLE,
+      expectedRolePriority: UserRolesPriorities.CLIENT_ROLE,
     },
     loadChildren: () =>
       import('./devices/devices.module').then((m) => m.DevicesModule),

@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { activationRequestedAction } from 'app/store/signUp';
 import { Component, OnInit } from '@angular/core';
 import { AppState } from 'app/store/reducers';
+import { setAuthStatusAction } from 'app/store/user';
 
 @Component({
   selector: 'recon-activation',
@@ -24,12 +25,18 @@ export class ActivationComponent implements OnInit {
     this.token = this.activatedRoute.snapshot.paramMap.get('token');
 
     this.store.dispatch(
+      setAuthStatusAction({
+        status: false,
+      })
+    );
+
+    this.store.dispatch(
       activationRequestedAction({
         uidb64: this.uidb64,
         token: this.token,
       })
     );
 
-    this.router.navigate(['/orders']);
+    this.router.navigate(['/']);
   }
 }
