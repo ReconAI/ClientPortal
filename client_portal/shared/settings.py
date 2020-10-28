@@ -4,6 +4,8 @@ import os
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'jq)oglowie!vb8rz3h+zo(bc(*!_ops)7#5dbbe&88cc#^-(1-'
 
+API_SDK_KEY = os.environ.get('API_SDK_KEY')
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True') not in ['False', '0']
 
