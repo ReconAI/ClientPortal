@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 from typing import Optional
 
+import uuid as uuid
 from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 from django.db import models
@@ -1435,6 +1436,7 @@ class RelevantData(models.Model):
         FileStorage, models.DO_NOTHING, null=True, blank=True,
         db_column='cadFileTag'
     )
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     EVENT_TYPE = _('Event')
     OBJECT_TYPE = _('Object')
