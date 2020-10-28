@@ -10,6 +10,7 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django_filters import rest_framework as filters
 from drf_yasg import openapi
+from drf_yasg.openapi import Parameter, IN_HEADER, TYPE_STRING
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.exceptions import NotFound
 from rest_framework.generics import ListAPIView
@@ -20,14 +21,16 @@ from rest_framework.response import Response
 from recon_db_manager.models import RelevantData, TypeCode
 from reporting_tool.filters import RelevantDataFilter, \
     RelevantDataSensorFilter, ProjectFilter, LicensePlateFilter
+from reporting_tool.permissions import IsAPISDKAuthorized
 from reporting_tool.serializers import RelevantDataSerializer, \
-    TypeCodeSerializer, HeatMapSerializer, RelevantDataGPSSerializer
+    TypeCodeSerializer, HeatMapSerializer, RelevantDataGPSSerializer, \
+    BulkCreateRelevantDataSerializer
 from shared.permissions import IsActive, PaymentRequired
 from shared.swagger.headers import token_header
 from shared.swagger.responses import \
     default_get_responses_with_custom_success, data_serializer, \
-    data_serializer_many, http200
-from shared.views.utils import PlainListModelMixin
+    data_serializer_many, http200, DEFAULT_UNSAFE_REQUEST_RESPONSES
+from shared.views.utils import PlainListModelMixin, CreateAPIView
 
 
 class RelevantDataHandler:
@@ -410,3 +413,26 @@ class RelevantDataLicensePlatesView(PlainListModelMixin, ListAPIView):
         return Response({
             'data': queryset.values_list('license_plate_number', flat=True)[:5]
         })
+
+
+@method_decorator(name='post', decorator=swagger_auto_schema(
+    responses=DEFAULT_UNSAFE_REQUEST_RESPONSES,
+    tags=['Relevant data'],
+    operation_summary='Relevant data import',
+    operation_description='Imports data from api sdk omitting duplications',
+    manual_parameters=[
+        Parameter(
+            'X-Api-Sdk-Key', IN_HEADER,
+            'Token', required=True, type=TYPE_STRING
+        )
+    ]
+))
+class RelevantDataImportView(CreateAPIView):
+    """
+    Imports relevent data from api sdk
+    """
+    serializer_class = BulkCreateRelevantDataSerializer
+
+    create_success_message = _('Relevant data is inserted')
+
+    permission_classes = (IsAPISDKAuthorized,)

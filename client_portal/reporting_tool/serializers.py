@@ -7,7 +7,7 @@ from typing import List
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
-from django.db import models
+from django.db import models, IntegrityError
 from django.db.transaction import atomic
 from django.utils.module_loading import import_string
 from rest_framework import serializers
@@ -555,3 +555,26 @@ class RelevantDataGPSSerializer(ModelSerializer):
         """
         model = RelevantData
         fields = ('lat', 'long')
+
+
+class RelevantDataImportSerializer(serializers.ModelSerializer):
+    """
+    Import relevant data item
+    """
+    uuid = serializers.UUIDField(required=True)
+
+    class Meta:
+        model = RelevantData
+        exclude = ('id', )
+
+
+class BulkCreateRelevantDataSerializer(serializers.ListSerializer):
+    """
+    Relevant data bulk create serializer
+    """
+    child = RelevantDataImportSerializer()
+
+    def create(self, validated_data):
+        result = [self.child.Meta.model(**attrs) for attrs in validated_data]
+
+        return RelevantData.objects.bulk_create(result, ignore_conflicts=True)

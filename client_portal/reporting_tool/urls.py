@@ -34,7 +34,8 @@ from .views.relevant_data import RelevantDataView, \
     RelevantDataEventsVehiclesView, \
     RelevantDataProjectsView, RelevantDataRoadConditionsView, \
     ExportRelevantDataView, RouteGenerationView, RelevantDataHeatMapView, \
-    RelevantDataLicensePlatesView, RelevantDataPedestrianTransitTypeView
+    RelevantDataLicensePlatesView, RelevantDataPedestrianTransitTypeView, \
+    RelevantDataImportView
 from .views.sensors import SensorSetGPSView, RelevantDataSensorView, \
     SensorsListView, SensorsItemView
 from .views.user_management import UserList, UserItem, InvitationView
@@ -75,6 +76,7 @@ urlpatterns = [
     path('relevant-data/export/<str:export_format>', ExportRelevantDataView.as_view(), name='relevant_data.export'),
     path('relevant-data/route/<str:license_plate_number>', RouteGenerationView.as_view(), name='relevant_data.route'),
     path('relevant-data/heat-map', RelevantDataHeatMapView.as_view(), name='relevant_data.heat_map'),
+    path('relevant-data/import', RelevantDataImportView.as_view(), name='relevant_data.import'),
 
     path('sensors', SensorsListView.as_view(), name='sensror.list'),
     path('sensors/<int:pk>', SensorsItemView.as_view(), name='sensrors.item'),
